@@ -126,7 +126,7 @@ const Navbar = () => {
 
                         <div className={`hidden sm:block border-l h-6 ${!isHomePage ? 'border-gray-300' : 'border-gray-600'}`}></div>
                         
-                        <Link href={"/account"}>
+                        <Link href={"/account/login"}>
                             <Button
                                 className={`hidden sm:block nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
                                 aria-label="Account"
