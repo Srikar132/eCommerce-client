@@ -4,16 +4,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { Button } from "./ui/button";
 
-gsap.registerPlugin(ScrollTrigger);
-
 const HeroSection = () => {
-
+    
     useGSAP(() => {
-        // Only run animation on lg screens and above
+        gsap.registerPlugin(ScrollTrigger);
         const mm = gsap.matchMedia();
 
         mm.add("(min-width: 1024px)", () => {
-            // Animation for lg screens and above
             gsap.set("#hero-text", {
                 position: "fixed",
                 bottom: "0",
@@ -51,14 +48,16 @@ const HeroSection = () => {
             });
         });
 
-        return () => mm.revert(); // Cleanup
+        return () => mm.revert();
 
     }, []);
     
     return (
-        <section id="hero-section" className="relative h-[80vh] lg:h-[120vh] w-full overflow-hidden">
-
-            <div className="z-0">
+        <section 
+            id="hero-section" 
+        >
+            {/* Background Image with Overlay */}
+            <div className="absolute inset-0 z-0">
                 <Image
                     src="/home/section8/BANNER-wonder.webp"
                     alt="Hero Image"
@@ -67,32 +66,45 @@ const HeroSection = () => {
                         objectFit: 'cover',
                         objectPosition: 'top'
                     }}
-                    // className="w-full h-full "
                     priority
+                    quality={90}
                 />
+                {/* Dark overlay for better text readability */}
+                <div className="absolute inset-0 bg-black/20 lg:bg-black/10" />
             </div>
 
             <div className="relative lg:static h-full flex items-end justify-center">
-                <div id="hero-text" className="text-center opacity-100 px-4 pb-8 md:pb-12 lg:pb-16">
-                    <p className="uppercase font-bold text-white drop-shadow-lg">
+                <div 
+                    id="hero-text" 
+                >
+                    {/* Subtitle */}
+                    <p id="sub-title">
                         Discover Your Style
                     </p>
-                    <p className="mt-4 text-lg sm:text-xl md:text-2xl lg:text-5xl text-white drop-shadow-md uppercase font-medium">
-                       WHERE BEAUTY ROARS IN EVERY STITCH
-                    </p>
+                    
+                    {/* Main Heading */}
+                    <h1 id="main-heading">
+                        Where Beauty Roars in Every Stitch
+                    </h1>
 
-                    <div className="mt-8 flex justify-center gap-4">
-                        <Button className="bg-white text-black px-3 md:px-5 lg:px-7 py-5 lg:py-9 rounded-none cursor-pointer hover:bg-black hover:text-white lg:text-md">
+                    
+                    <div id="cta-wrapper">
+                        <Button 
+                            size="lg"
+                            className="cta-button-primary"
+                        >
                             Shop Now
                         </Button>
-                        <Button className="bg-white text-black px-3 md:px-5 lg:px-7 py-5 lg:py-9 rounded-none cursor-pointer hover:bg-black hover:text-white lg:text-md">
-                            Learn More
+                        <Button 
+                            size="lg"
+                            variant="outline"
+                            className="cta-button-secondary"
+                        >
+                            Discover
                         </Button>
                     </div>
                 </div>
             </div>
-
-
         </section>
     );
 }
