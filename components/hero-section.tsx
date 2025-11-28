@@ -2,6 +2,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import { Button } from "./ui/button";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -77,16 +78,16 @@ const HeroSection = () => {
                         Discover Your Style
                     </p>
                     <p className="mt-4 text-lg sm:text-xl md:text-2xl lg:text-5xl text-white drop-shadow-md uppercase font-medium">
-                       DRESSES THAT MAKE A STATEMENT
+                       WHERE BEAUTY ROARS IN EVERY STITCH
                     </p>
 
                     <div className="mt-8 flex justify-center gap-4">
-                        <button className="border border-white border-3 px-4 py-2  text-sm md:text-md lg:text-lg shadow-lg cursor-pointer bg-white text-black transition-colors">
+                        <Button className="bg-white text-black px-3 md:px-5 lg:px-7 py-5 lg:py-9 rounded-none cursor-pointer hover:bg-black hover:text-white lg:text-md">
                             Shop Now
-                        </button>
-                        <button className="border border-white border-3 px-4 py-2  text-sm md:text-md lg:text-lg shadow-lg cursor-pointer bg-white text-black transition-colors">
+                        </Button>
+                        <Button className="bg-white text-black px-3 md:px-5 lg:px-7 py-5 lg:py-9 rounded-none cursor-pointer hover:bg-black hover:text-white lg:text-md">
                             Learn More
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>
