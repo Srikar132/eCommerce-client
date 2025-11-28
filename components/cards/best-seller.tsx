@@ -14,7 +14,7 @@ const BestsellerCard: React.FC<BestsellerCardProps> = ({
   return (
     <div className="bg-white overflow-hidden shadow-sm  transition-shadow duration-200">
       {/* Image Container */}
-      <div className="relative bg-gray-50 aspect-[3/4] sm:aspect-[2.5/4] md:aspect-[2.7/4] overflow-hidden group">
+      <div className="relative bg-gray-50 aspect-3/4 sm:aspect-2.5/4 md:aspect-2.7/4 overflow-hidden group">
         <Image
           src={imageUrl}
           alt={name}

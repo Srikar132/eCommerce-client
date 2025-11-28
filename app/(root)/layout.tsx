@@ -1,5 +1,6 @@
 import AppSidebar from "@/components/app-sidebar";
-import { Navbar } from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import TanstackProvider from "@/providers/tanstack";
 
@@ -17,7 +18,7 @@ export default function RootLayout({
         <SidebarProvider 
           defaultOpen={false}          
         >
-          <div className="font-sans w-full overflow-x-hidden">
+          <div className="font-sans w-full overflow-x-hidden no-scrollbar">
             <AppSidebar />
             
             <header className="header">
@@ -29,7 +30,7 @@ export default function RootLayout({
             </main>
 
             <footer className="">
-              {/* <Footer /> */}
+              <Footer />
             </footer>
           </div>
         </SidebarProvider>

@@ -1,6 +1,7 @@
 "use client"
 
 import BestSeller from "./best-seller";
+import DealSection from "./deal-section";
 import HeroSection from "./hero-section";
 import MCategories from "./main-categories";
 import SplitScreenHero from "@/components/split-screen";
@@ -19,12 +20,15 @@ export default function HomeClient() {
 
       <BestSeller />
 
+
       <SplitScreenHero />
 
-      <SmoothSlider />
+
+      <DealSection />
+
+      <SmoothSlider />  
 
       <Features />
-      <Footer />
     </div>
   );
 }

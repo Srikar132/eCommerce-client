@@ -2,29 +2,29 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from "next/image";
 import {featuredCards} from "@/lib/types";
 
+const posts: featuredCards[] = [
+    { id: 1, image: "/home/section11/image1.png", alt: "Fashion post 1" },
+    { id: 2, image: "/home/section11/image8.png", alt: "Fashion post 2" },
+    { id: 3, image: "/home/section11/image7.png", alt: "Fashion post 3" },
+    { id: 4, image: "/home/section11/image4.png", alt: "Fashion post 4" },
+    { id: 5, image: "/home/section11/image5.png", alt: "Fashion post 5" },
+    { id: 6, image: "/home/section11/image6.png", alt: "Fashion post 6" },
+];
 
 const SmoothSlider = () => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const animationRef = useRef<number | null>(null);
     const [isPaused, setIsPaused] = useState(false);
 
-    const posts: featuredCards[] = [
-        { id: 1, image: "/home/section11/image1.png", alt: "Fashion post 1" },
-        { id: 2, image: "/home/section11/image8.png", alt: "Fashion post 2" },
-        { id: 3, image: "/home/section11/image7.png", alt: "Fashion post 3" },
-        { id: 4, image: "/home/section11/image4.png", alt: "Fashion post 4" },
-        { id: 5, image: "/home/section11/image5.png", alt: "Fashion post 5" },
-        { id: 6, image: "/home/section11/image6.png", alt: "Fashion post 6" },
-    ];
 
-    const duplicatedPosts = [...posts, ...posts];
+    const duplicatedPosts = [...posts, ...posts , ...posts];
 
     useEffect(() => {
         const scrollContainer = scrollRef.current;
         if (!scrollContainer) return;
 
-        const scrollSpeed = 1; // Pixels per frame
-        const singleSetWidth = (scrollContainer.scrollWidth / 2); // Width of one set of images
+        const scrollSpeed = 1;
+        const singleSetWidth = (scrollContainer.scrollWidth / 2);
 
         const animate = () => {
             if (!isPaused && scrollContainer) {
@@ -32,7 +32,6 @@ const SmoothSlider = () => {
                 let currentPosition = scrollContainer.scrollLeft;
                 currentPosition += scrollSpeed;
 
-                // Reset position seamlessly when first set is fully scrolled
                 if (currentPosition >= singleSetWidth) {
                     currentPosition = 0;
                 }
@@ -78,7 +77,7 @@ const SmoothSlider = () => {
                 {duplicatedPosts.map((post, index) => (
                     <div
                         key={`${post.id}-${index}`}
-                        className="flex-shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden"
+                        className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden"
                     >
                         <Image
                             src={post.image}

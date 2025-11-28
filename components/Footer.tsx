@@ -125,7 +125,7 @@ const Footer: React.FC = () => {
                 <div className="max-w-7xl mx-auto py-12">
                     <p className="text-center text-2xl font-bold">THE NALA</p>
                     <h2 className="text-[80px] sm:text-[120px] md:text-[180px] lg:text-[270px] font-medium leading-none tracking-widest text-center">
-                        ARMOIRE
+                        ALMORIE
                     </h2>
                 </div>
             </div>
