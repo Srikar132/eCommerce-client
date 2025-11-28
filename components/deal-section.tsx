@@ -3,16 +3,37 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useLayoutEffect } from "react";
+import { Card } from "./ui/card";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "./ui/button";
+import { ChevronDown } from "lucide-react";
+
+interface DealCardProps {
+  image : string;
+  href : string;
+}
+
+const DealCard = ({image , href} : DealCardProps) => {
+  return (
+    <Link href={href} className="card-link">
+      <Image
+        src={image}
+        alt="Deal Card"
+        className="object-contain w-full h-auto aspect-auto"
+        width={500}
+        height={700}
+      />
+    </Link>
+  );
+};
 
 export default function DealSection() {
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    // ensure we start from a deterministic state (override Tailwind transforms)
     const vh = window.innerHeight;
 
-    // pin the content full-screen
     ScrollTrigger.create({
       trigger: "#deal-section",
       start: "top top",
@@ -64,8 +85,8 @@ export default function DealSection() {
       },
       {
         y: -70,
-        rotation: -150,
-        rotateX: 50,
+        rotation: -45,
+        rotateX: 0,
         scale: 1.04,
         opacity: 0.95,
         ease: "none",
@@ -80,9 +101,7 @@ export default function DealSection() {
       }
     );
 
-    // Optional: improve GPU usage / keep transforms clean on refresh
     ScrollTrigger.addEventListener("refreshInit", () => {
-      // re-apply start positions if needed (helps on resize)
       gsap.set(".card.left", { y: vh * 1.5 });
       gsap.set(".card.right", { y: vh * 1.0 });
     });
@@ -96,13 +115,28 @@ export default function DealSection() {
           <p className="content-subtitle">
             Enjoy up to <span className="font-bold">50% OFF</span> on today’s hottest picks!
           </p>
+
+          <Button className="content-button" variant="outline" size="lg">
+            Check Now
+          </Button>
+
+          <div className="content-icon">
+            <ChevronDown className="icon"/>
+          </div>
         </div>
 
         <div className="cards-wrapper common-padding">
-          <div className="card left"></div>
-          <div className="card right"></div>
+          <div className="card left">
+            <DealCard image="/home/section2/sec1-col-1.webp" href="#" />
+          </div>
+          <div className="card right">
+            <DealCard image="/home/section2/sec1-col-2.webp" href="#" />
+          </div>  
         </div>
       </div>
     </section>
   );
 }
+
+
+

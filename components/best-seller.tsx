@@ -5,47 +5,9 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import BestsellerCard, { BestsellerCardProps } from "./cards/best-seller";
+import BestsellerCard from "./cards/best-seller";
+import {items} from "@/constants";
 
-const items: BestsellerCardProps[] = [
-    {
-        imageUrl: "/home/section2/sec1-col-1.webp",
-        brand: "Nike",
-        name: "Air Max 270",
-        price: 150,
-        colors: ["#000000", "#FFFFFF", "#FF0000"]
-    },
-    {
-        imageUrl: "/home/section2/sec1-col-2.webp",
-        brand: "Adidas",
-        name: "Ultraboost 21",
-        price: 180,
-        colors: ["#000000", "#00FF00", "#0000FF"]
-    },
-    {
-        imageUrl: "/home/section2/sec1-col-3.webp",
-        brand: "Puma",
-        name: "RS-X3",
-        price: 120,
-        colors: ["#FFFF00", "#FF00FF", "#00FFFF"]
-    },
-    {
-        imageUrl: "/home/section2/sec1-col-4.webp",
-        brand: "Reebok",
-        name: "Nano X1",
-        price: 130,
-        colors: ["#C0C0C0", "#808080", "#800000"]
-    },
-    {
-        imageUrl: "/home/section2/sec2-col-2.webp",
-        brand: "New Balance",
-        name: "Fresh Foam 1080v11",
-
-        price: 160,
-
-        colors: ["#008000", "#000080", "#FFA500"]
-    }
-];
 
 export function CarouselComponent() {
     return (
