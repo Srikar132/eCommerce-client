@@ -1,6 +1,6 @@
 import AppSidebar from "@/components/app-sidebar";
 import Footer from "@/components/Footer";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import TanstackProvider from "@/providers/tanstack";
 

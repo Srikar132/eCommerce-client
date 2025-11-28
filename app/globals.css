@@ -47,6 +47,7 @@
 :root {
 
   /* Fallback fonts */
+  /* Fallback fonts */
   --font-sans-fallback: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   --font-heading-fallback: Georgia, "Times New Roman", serif;
 
@@ -123,6 +124,7 @@
     @apply border-border outline-ring/50;
   }
 
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans), var(--font-sans-fallback);
@@ -146,7 +148,6 @@
   h1 {
     font-size: theme('fontSize.5xl');
     letter-spacing: -0.02em;
-
   }
 
   h2 {
@@ -225,6 +226,7 @@
       }
     }
   }
+  
 
 
   #deal-section {
@@ -329,6 +331,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
 
   body {
     @apply bg-background text-foreground;

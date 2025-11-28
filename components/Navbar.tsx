@@ -69,7 +69,7 @@ const Navbar = () => {
             className={`${
                 isHomePage 
                     ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed` 
-                    : 'static'
+                    : 'sticky'
             } ${
                 shouldShowBackdrop 
                     ? isHomePage 

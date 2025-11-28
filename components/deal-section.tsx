@@ -21,8 +21,8 @@ const DealCard = ({image , href} : DealCardProps) => {
         src={image}
         alt="Deal Card"
         className="object-contain w-full h-auto aspect-auto"
-        width={500}
-        height={700}
+        width={400}
+        height={900}
       />
     </Link>
   );
@@ -30,6 +30,7 @@ const DealCard = ({image , href} : DealCardProps) => {
 
 export default function DealSection() {
   useGSAP(() => {
+    gsap.registerPlugin(ScrollTrigger);
 
     const vh = window.innerHeight;
 
@@ -126,10 +127,10 @@ export default function DealSection() {
 
         <div className="cards-wrapper common-padding">
           <div className="card left">
-            <DealCard image="/home/section2/sec1-col-1.webp" href="#" />
+            <DealCard image="/home/section7/left-1.webp" href="#" />
           </div>
           <div className="card right">
-            <DealCard image="/home/section2/sec1-col-2.webp" href="#" />
+            <DealCard image="/home/section7/right-1.webp" href="#" />
           </div>  
         </div>
       </div>
