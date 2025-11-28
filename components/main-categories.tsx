@@ -1,29 +1,7 @@
 import CategoryCard from "./cards/category-card";
-
+import {categories} from "@/constants";
 
 const MCategories = () => {
-    const categories = [
-        {
-            id: 1,
-            title: "MEN",
-            image: "/home/section2/sec1-col-1.webp"
-        },
-        {
-            id: 2,
-            title: "WOMEN",
-            image: "/home/section2/sec1-col-2.webp"
-        },
-        {
-            id: 3,
-            title: "KIDS BOYS",
-            image: "/home/section2/sec1-col-3.webp"
-        },
-        {
-            id: 4,
-            title: "KIDS GIRLS",
-            image: "/home/section2/sec1-col-4.webp"
-        }
-    ];
 
     return (
         <section className="w-full py-12 px-4 md:px-8 lg:px-16 ">

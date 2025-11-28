@@ -1,14 +1,8 @@
 
 import React from 'react';
 import Image from 'next/image';
+import {BestsellerCardProps} from "@/lib/types";
 
-export interface BestsellerCardProps {
-  imageUrl: string;
-  brand: string;
-  name: string;
-  price: number;
-  colors?: string[];
-}
 
 const BestsellerCard: React.FC<BestsellerCardProps> = ({
   imageUrl,
@@ -18,7 +12,7 @@ const BestsellerCard: React.FC<BestsellerCardProps> = ({
   colors = ['#000000']
 }) => {
   return (
-    <div className="bg-white overflow-hidden rounded-lg shadow-sm  transition-shadow duration-200">
+    <div className="bg-white overflow-hidden shadow-sm  transition-shadow duration-200">
       {/* Image Container */}
       <div className="relative bg-gray-50 aspect-[3/4] sm:aspect-[2.5/4] md:aspect-[2.7/4] overflow-hidden group">
         <Image

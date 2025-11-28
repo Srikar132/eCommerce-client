@@ -82,10 +82,10 @@ const HeroSection = () => {
                     </p>
 
                     <div className="mt-8 flex justify-center gap-4">
-                        <Button className="bg-white text-black px-3 md:px-5 lg:px-7 py-5 lg:py-9 rounded-none cursor-pointer hover:bg-black hover:text-white lg:text-md">
+                        <Button className="bg-white text-black px-3 md:px-5 lg:px-7 py-5 lg:py-8 rounded-none cursor-pointer hover:bg-black hover:text-white lg:text-md">
                             Shop Now
                         </Button>
-                        <Button className="bg-white text-black px-3 md:px-5 lg:px-7 py-5 lg:py-9 rounded-none cursor-pointer hover:bg-black hover:text-white lg:text-md">
+                        <Button className="bg-white text-black px-3 md:px-5 lg:px-7 py-5 lg:py-8 rounded-none cursor-pointer hover:bg-black hover:text-white lg:text-md">
                             Learn More
                         </Button>
                     </div>

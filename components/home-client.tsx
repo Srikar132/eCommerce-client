@@ -3,6 +3,10 @@
 import BestSeller from "./best-seller";
 import HeroSection from "./hero-section";
 import MCategories from "./main-categories";
+import SplitScreenHero from "@/components/split-screen";
+import SmoothSlider from "@/components/smooth-slider";
+import Features from "@/components/Features";
+import Footer from "@/components/Footer";
 
 
 export default function HomeClient() {
@@ -15,7 +19,12 @@ export default function HomeClient() {
 
       <BestSeller />
 
-      <div className="h-[200vh]"/>
+      <SplitScreenHero />
+
+      <SmoothSlider />
+
+      <Features />
+      <Footer />
     </div>
   );
 }

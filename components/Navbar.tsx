@@ -2,7 +2,7 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import { Menu, Search, ShoppingCart, User, X } from 'lucide-react';
-import NavbarTitle from './NavbarTitle';
+import NavbarTitle from './navbar-title';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
 import Image from 'next/image';
