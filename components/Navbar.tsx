@@ -8,14 +8,14 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 
 const menuItems = [
-    { name: 'Men', href: '/products?category=men' },
-    { name: 'Women', href: '/products?category=women' },
-    { name: 'Kids', href: '/products?category=kids' },
+    { name: 'Men', href: '/category/men?sort=relevance' },
+    { name: 'Women', href: '/category/women?sort=relevance' },
+    { name: 'Kids', href: '/category/kids?sort=relevance' },
 ];
 
- const HERO_SECTION_HEIGHT = 1000; 
+const HERO_SECTION_HEIGHT = 1000; 
 
-export const Navbar = () => {
+const Navbar = () => {
     const pathname = usePathname();
     const { setOpen, open, isMobile, setOpenMobile, openMobile } = useSidebar();
     const logoRef = useRef<HTMLDivElement>(null);
@@ -24,9 +24,12 @@ export const Navbar = () => {
     const [isAtTop, setIsAtTop] = useState(true);
     const [isPastHero, setIsPastHero] = useState(false);
 
+    const isHomePage = pathname === '/';
 
-    // Scroll handler
+    // Scroll handler - only for home page
     useEffect(() => {
+        if (!isHomePage) return;
+
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
 
@@ -57,17 +60,21 @@ export const Navbar = () => {
         window.addEventListener('scroll', handleScroll, { passive: true });
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY, isAtTop, isPastHero]);
+    }, [lastScrollY, isAtTop, isPastHero, isHomePage]);
 
-    const shouldShowBackdrop = pathname !== '/' || isPastHero;
+    const shouldShowBackdrop = !isHomePage || isPastHero;
 
     return (
         <nav
             className={`${
-                isVisible ? 'translate-y-0' : '-translate-y-[150%]'
+                isHomePage 
+                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed` 
+                    : 'static'
             } ${
                 shouldShowBackdrop 
-                    ? 'bg-white/20 backdrop-blur-md shadow-sm' 
+                    ? isHomePage 
+                        ? 'bg-black/50 backdrop-blur-md shadow-sm' 
+                        : 'bg-white shadow-sm'
                     : 'bg-transparent'
             }`}
         >
@@ -75,7 +82,7 @@ export const Navbar = () => {
                 <div className="grid grid-cols-3 items-center h-16 gap-4">
                     <div className='flex items-center space-x-4'>
                         <Button
-                            className="nav-btn"
+                            className={`nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
                             aria-label="Toggle menu"
                             onClick={() => isMobile ? setOpenMobile(!openMobile) : setOpen(!open)}
                         >
@@ -92,7 +99,7 @@ export const Navbar = () => {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className="nav-link"
+                                    className={`nav-link ${!isHomePage ? 'text-black!' : ''}`}
                                 >
                                     {item.name}
                                 </Link>
@@ -101,12 +108,12 @@ export const Navbar = () => {
                     </div>
 
                     <div className="flex justify-center">
-                        <NavbarTitle logoRef={logoRef} pathname={pathname} isAtTop={isAtTop} />
+                        <NavbarTitle logoRef={logoRef} pathname={pathname} isAtTop={isAtTop} isHome={isHomePage} />
                     </div>
 
                     <div className="flex items-center justify-end space-x-4">
                         <Button 
-                            className="nav-btn"
+                            className={`nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
                             aria-label="Search"
                         >
                             <Image
@@ -117,31 +124,35 @@ export const Navbar = () => {
                             />
                         </Button>
 
-                        <div className="hidden sm:block border-l border-gray-600 h-6"></div>
-
-                        <Button
-                            className="hidden sm:block nav-btn"
-                            aria-label="Account"
-                        >
-                            <Image
-                                src={'/icons/profile_icon.png'}
-                                alt='profile'
-                                height={15}
-                                width={15}
-                            />
-                        </Button>
-
-                        <Button
-                            className="nav-btn relative"
-                            aria-label="Shopping cart"
-                        >
-                            <Image
-                                src={'/icons/cart_icon.png'}
-                                alt='cart'
-                                height={15}
-                                width={15}
-                            />
-                        </Button>
+                        <div className={`hidden sm:block border-l h-6 ${!isHomePage ? 'border-gray-300' : 'border-gray-600'}`}></div>
+                        
+                        <Link href={"/account"}>
+                            <Button
+                                className={`hidden sm:block nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
+                                aria-label="Account"
+                            >
+                                <Image
+                                    src={'/icons/profile_icon.png'}
+                                    alt='profile'
+                                    height={15}
+                                    width={15}
+                                />
+                            </Button>
+                        </Link>
+                        
+                        <Link href={"/cart"}>
+                            <Button
+                                className={`nav-btn relative ${!isHomePage ? 'invert-0!' : ''}`}
+                                aria-label="Shopping cart"
+                            >
+                                <Image
+                                    src={'/icons/cart_icon.png'}
+                                    alt='cart'
+                                    height={15}
+                                    width={15}
+                                />
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>

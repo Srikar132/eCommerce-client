@@ -4,19 +4,32 @@ import Link from "next/link";
 import { Ref } from "react";
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import path from "path";
 
 export default function NavbarTitle({
     logoRef,
     pathname,
-    isAtTop
+    isAtTop,
+    isHome
 }: {
     logoRef: Ref<HTMLDivElement>;
     pathname: string;
     isAtTop: boolean;
+    isHome: boolean;
 }) {
     
     useGSAP(() => {
-        if (pathname !== '/' || !logoRef || typeof logoRef === 'function') return;
+        if (!logoRef || typeof logoRef === 'function') return;
+
+        if(pathname !== '/') {
+            gsap.to(logoRef.current, {
+                y: 0,
+                scale: 1,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+            return;
+        }   
 
         const mm = gsap.matchMedia();
 
@@ -86,7 +99,7 @@ export default function NavbarTitle({
                     alt="Logo"
                     width={100}
                     height={100}
-                    className="w-24 h-16 lg:w-32  object-contain select-none"
+                    className={`w-24 h-16 lg:w-32  object-contain select-none ${!isHome ? 'invert' : ''}`}    
                     style={{ userSelect: 'none', WebkitUserDrag: 'none' } as React.CSSProperties}
                     priority={true}
                     draggable={false}

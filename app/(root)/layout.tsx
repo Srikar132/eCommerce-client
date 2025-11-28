@@ -21,11 +21,11 @@ export default function RootLayout({
           <div className="font-sans w-full overflow-x-hidden no-scrollbar">
             <AppSidebar />
             
-            <header className="header">
+            <header id="header">
               <Navbar />
             </header>
 
-            <main className="w-full overflow-x-hidden">
+            <main className="w-full overflow-x-hidden relative">
               {children}
             </main>
 

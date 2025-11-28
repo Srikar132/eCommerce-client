@@ -181,9 +181,9 @@
     @apply w-full py-12 sm:py-16 md:py-20 lg:py-24;
   }
 
-  header {
+  #header {
     nav {
-      @apply fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out;
+      @apply top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out;
 
       .nav-btn {
         @apply p-2 rounded-md bg-transparent aspect-square hover:bg-transparent flex items-center justify-center cursor-pointer invert;
@@ -208,7 +208,7 @@
       }
 
       #main-heading {
-        @apply text-2xl sm:text-3xl md:text-4xl   text-white uppercase font-thin leading-tight sm:leading-tight md:leading-tight lg:leading-tight max-w-4xl mx-auto px-2;
+        @apply text-2xl sm:text-3xl md:text-4xl text-white uppercase font-thin leading-tight sm:leading-tight md:leading-tight lg:leading-tight max-w-4xl mx-auto px-2;
       }
     }
 
@@ -231,10 +231,10 @@
     @apply h-[300vh] relative;
 
     .content {
-      @apply h-screen relative flex items-center justify-center bg-orange-100;
+      @apply h-screen relative flex items-center justify-center bg-zinc-100;
 
       .content-text {
-        @apply text-[4rem] font-bold text-center flex items-center flex-col justify-center h-full ;
+        @apply text-[4rem] font-bold text-center flex items-center flex-col justify-center h-full;
 
         .content-title {
           @apply mb-4;
@@ -245,7 +245,7 @@
         }
 
         .content-button {
-          @apply mt-8 bg-transparent border-2 border-black text-black px-8 py-8 rounded-none font-semibold text-lg hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 shadow-xl cursor-pointer;
+          @apply mt-8 bg-transparent border-2 text-black px-8 py-8 rounded-none bg-white font-semibold text-lg hover:bg-black hover:text-white cursor-pointer;
         }
 
         .content-icon {
@@ -261,7 +261,7 @@
         @apply absolute top-0 left-0 w-full h-full flex items-center justify-between gap-20 lg:gap-[150px] pointer-events-none;
 
         .card {
-          @apply bg-black w-[300px] lg:w-[400px] aspect-auto  bg-white rounded-lg shadow-lg overflow-hidden flex flex-col z-10 will-change-transform p-5;
+          @apply bg-black w-[300px] lg:w-[400px] aspect-auto bg-white rounded-lg shadow-lg overflow-hidden flex flex-col z-10 will-change-transform p-5;
 
 
           .card-link {
@@ -280,6 +280,48 @@
     }
 
 
+  }
+
+
+  #category-container {
+    @apply container mx-auto;
+
+    .category-header {
+      @apply text-3xl font-bold mb-8 text-center py-10 px-5 md:px-6 lg:px-8;
+
+      h1 {
+        @apply underline underline-offset-8 uppercase font-bold mb-5 lg:text-3xl;
+      }
+
+      p {
+        @apply text-lg md:text-xl font-light;
+      }
+    }
+
+
+    .category-section {
+      @apply container mx-auto bg-white;
+
+      .filter-header {
+        @apply sticky top-0 bg-white col-span-full py-4  px-5  md:px-6 lg:px-8  flex items-center justify-between;
+
+        .filter-button {
+          @apply flex items-center cursor-pointer bg-transparent! text-black px-4 py-2;
+        }
+      }
+
+      .product-list {
+        @apply w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2  pb-12 px-5  md:px-6 gap-y-10 lg:px-8 ;
+
+        .product-card {
+          @apply block cursor-pointer transition-opacity duration-200 hover:opacity-90;
+        }
+
+        .product-card:active {
+          @apply opacity-75;
+        }
+      }
+    }
   }
 }
 

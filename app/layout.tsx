@@ -20,7 +20,7 @@ const oswald = Oswald({
 export const metadata : Metadata = {
   title: {
     default: "THE NALA ARMOIRE — Bold Streetwear Fashion",
-    template: "%s | THE NALA ARMOIRE",
+    template: "%s",
   },
   description:
     "Discover premium streetwear clothing with bold fits and modern aesthetic. Designed for everyday attitude and urban lifestyle.",

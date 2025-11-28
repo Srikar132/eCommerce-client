@@ -124,7 +124,7 @@ const Footer: React.FC = () => {
             <div className="w-full overflow-hidden">
                 <div className="max-w-7xl mx-auto py-12 px-4">
                     <p className="text-center text-2xl font-bold">THE NALA</p>
-                    <h2 className="text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] xl:text-[220px] font-medium leading-none tracking-wider text-center overflow-wrap-break-word">
+                    <h2 className="text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] xl:text-[220px] font-medium leading-none tracking-widest text-center overflow-wrap-break-word">
                         ALMORIE
                     </h2>
                 </div>
