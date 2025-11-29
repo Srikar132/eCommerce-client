@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Image from "next/image";
-import {featuredCards} from "@/lib/types";
+import Link from 'next/link';
+import React, { useState } from 'react';
 
-const posts: featuredCards[] = [
+const posts = [
     { id: 1, image: "/home/section11/image1.png", alt: "Fashion post 1" },
     { id: 2, image: "/home/section11/image8.png", alt: "Fashion post 2" },
     { id: 3, image: "/home/section11/image7.png", alt: "Fashion post 3" },
@@ -12,47 +11,10 @@ const posts: featuredCards[] = [
 ];
 
 const SmoothSlider = () => {
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const animationRef = useRef<number | null>(null);
     const [isPaused, setIsPaused] = useState(false);
 
-
-    const duplicatedPosts = [...posts, ...posts , ...posts];
-
-    useEffect(() => {
-        const scrollContainer = scrollRef.current;
-        if (!scrollContainer) return;
-
-        const scrollSpeed = 1;
-        const singleSetWidth = (scrollContainer.scrollWidth / 2);
-
-        const animate = () => {
-            if (!isPaused && scrollContainer) {
-                // Continue from current scroll position
-                let currentPosition = scrollContainer.scrollLeft;
-                currentPosition += scrollSpeed;
-
-                if (currentPosition >= singleSetWidth) {
-                    currentPosition = 0;
-                }
-
-                scrollContainer.scrollLeft = currentPosition;
-            }
-
-            animationRef.current = requestAnimationFrame(animate);
-        };
-
-        animationRef.current = requestAnimationFrame(animate);
-
-        return () => {
-            if (animationRef.current) {
-                cancelAnimationFrame(animationRef.current);
-            }
-        };
-    }, [isPaused]);
-
-    const handleMouseEnter = () => setIsPaused(true);
-    const handleMouseLeave = () => setIsPaused(false);
+    // Duplicate posts for seamless loop
+    const duplicatedPosts = [...posts, ...posts];
 
     return (
         <section className="w-full py-10 px-4 overflow-hidden bg-white">
@@ -63,44 +25,54 @@ const SmoothSlider = () => {
                 </h2>
             </div>
 
-            {/* Scroll Container */}
-            <div
-                ref={scrollRef}
-                className="flex gap-2 overflow-x-hidden will-change-scroll"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                style={{
-                    scrollBehavior: 'auto',
-                    WebkitOverflowScrolling: 'touch'
-                }}
-            >
-                {duplicatedPosts.map((post, index) => (
-                    <div
-                        key={`${post.id}-${index}`}
-                        className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden"
-                    >
-                        <Image
-                            src={post.image}
-                            alt={post.alt}
-                            width={500}
-                            height={400}
-                            className="w-full h-full object-cover"
-                            priority={index < 6}
-                        />
-                    </div>
-                ))}
+            {/* Marquee Container */}
+            <div className="relative overflow-hidden">
+                <div
+                    className="flex gap-2"
+                    style={{
+                        animation: 'marquee 30s linear infinite',
+                        animationPlayState: isPaused ? 'paused' : 'running',
+                        width: 'max-content'
+                    }}
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
+                >
+                    {duplicatedPosts.map((post, index) => (
+                        <div
+                            key={`${post.id}-${index}`}
+                            className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden"
+                        >
+                            <img
+                                src={post.image}
+                                alt={post.alt}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <div className="text-center mt-8">
-                <a
+                <Link
                     href="https://instagram.com/the-nala-almorie"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block border-b-2 border-gray-900 text-gray-900 font-medium pb-1 hover:opacity-70 transition-all"
                 >
                     Follow Us
-                </a>
+                </Link>
             </div>
+
+            <style jsx>{`
+                @keyframes marquee {
+                    0% {
+                        transform: translateX(0);
+                    }
+                    100% {
+                        transform: translateX(-50%);
+                    }
+                }
+            `}</style>
         </section>
     );
 };

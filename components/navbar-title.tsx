@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Ref } from "react";
+import { Ref, useEffect } from "react";
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import path from "path";
@@ -89,7 +89,31 @@ export default function NavbarTitle({
         });
 
         return () => mm.revert();
-    }, [isAtTop, pathname, logoRef]);
+
+        // do this even resize is happening
+    }, [isAtTop, pathname, logoRef ]);
+
+    useEffect(() => {
+
+        const fixedLogoOnNavigate = () => {
+            if (logoRef && !(typeof logoRef === 'function')) {
+                gsap.to(logoRef.current, {
+                    y: 0,
+                    scale: 1,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            }
+        };
+
+        window.addEventListener('resize', fixedLogoOnNavigate);
+
+        return () => window.removeEventListener('resize', fixedLogoOnNavigate);
+
+        // do this even resize is happening
+    }, [logoRef]);
+
+
 
     return (
         <Link href="/" className="flex items-center">

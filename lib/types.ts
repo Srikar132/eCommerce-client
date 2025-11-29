@@ -106,3 +106,21 @@ export type Facets = {
   brands?: string[];
   [key: string]: any;
 };
+
+
+/**
+ * SEARCH PAGE PROPS
+ */
+export type AutocompleteSuggestion = {
+  text: string;
+  count?: number; // optional popularity
+};
+
+export type SearchResultsPage = {
+  items: ProductCard[];
+  total: number;
+  page?: number;
+  size?: number;
+  query?: string;
+  // facets?: any; // extend if needed
+};

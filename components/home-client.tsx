@@ -6,8 +6,7 @@ import HeroSection from "./hero-section";
 import MCategories from "./main-categories";
 import SplitScreenHero from "@/components/split-screen";
 import SmoothSlider from "@/components/smooth-slider";
-import Features from "@/components/Features";
-import Footer from "@/components/Footer";
+import Features from "@/components/features";
 
 
 export default function HomeClient() {
