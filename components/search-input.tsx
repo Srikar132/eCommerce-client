@@ -44,7 +44,7 @@ export function SearchInput({
         .finally(() => setIsLoading(false));
     } else {
       setSuggestions([]);
-    }kkkkkkkk
+    }
   }, [debouncedQuery, showSuggestions]);
 
   // Handle search submission
