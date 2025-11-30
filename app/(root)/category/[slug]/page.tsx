@@ -42,7 +42,6 @@ export default async function CategoryPage({ params , searchParams }: Props) {
             size: typeof size === 'string' ? parseInt(size) : 20,
             sort: typeof sort === 'string' ? sort : 'relevance',
             filters: rest as Record<string, string>,
-            rawQuery: searchParams,
         }),
     ]);
 
@@ -64,7 +63,6 @@ export default async function CategoryPage({ params , searchParams }: Props) {
                 initialPage={productsData.page}
                 initialSize={productsData.size}
                 initialFacets={productsData.facets}
-                serverSearchParams={searchParams}
             />
         </div>
     );

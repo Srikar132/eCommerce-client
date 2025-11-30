@@ -67,7 +67,7 @@ const HeroSection = () => {
                         objectPosition: 'top'
                     }}
                     priority
-                    quality={90}
+                    // quality={90}
                 />
                 {/* Dark overlay for better text readability */}
                 <div className="absolute inset-0 bg-black/20 lg:bg-black/10" />

@@ -29,7 +29,7 @@ export default function ProductList({ products, showPrefetch }: Props) {
     return (
         <div className="product-list">
             {products.map((p) => (
-                <ProductCardComponent key={p.id} product={p} onMouseEnter={() => prefetch(p.id)} />
+                <ProductCardComponent key={p.id} product={p} onMouseEnter={() => prefetch(p.id)} viewMode='grid'/>
             ))}
         </div>
     );

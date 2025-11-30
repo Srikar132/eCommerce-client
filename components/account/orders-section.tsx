@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Order } from '@/lib/types';
+import Image from "next/image";
 
 interface OrdersSectionProps {
     orders: Order[];
@@ -105,8 +106,8 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({ orders }) => {
                                         <div className="space-y-6">
                                             {order.items.map((item) => (
                                                 <div key={item.id} className="flex items-center gap-6">
-                                                    <div className="w-20 h-20 bg-zinc-100 flex items-center justify-center text-4xl">
-                                                        {item.image}
+                                                    <div className="">
+                                                        <Image src={item.image} alt={"order-images"} width={180} height={130} className="rounded-lg"/>
                                                     </div>
                                                     <div className="flex-1">
                                                         <p className="font-light text-lg tracking-wide">{item.name}</p>

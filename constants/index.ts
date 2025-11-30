@@ -233,8 +233,8 @@ export const INITIAL_ORDERS: Order[] = [
         total: 299.99,
         status: 'delivered',
         items: [
-            { id: 'item-1', name: 'Wireless Headphones', quantity: 1, price: 149.99, image: '🎧' },
-            { id: 'item-2', name: 'Phone Case', quantity: 2, price: 75.00, image: '📱' }
+            { id: 'item-1', name: 'Wireless Headphones', quantity: 1, price: 149.99, image: '/home/section10/img1.webp' },
+            { id: 'item-2', name: 'Phone Case', quantity: 2, price: 75.00, image: '/home/section10/img2.webp' },
         ],
         deliveryAddress: '123 Main St, New York, NY 10001'
     },
@@ -244,7 +244,7 @@ export const INITIAL_ORDERS: Order[] = [
         total: 89.99,
         status: 'expected',
         items: [
-            { id: 'item-3', name: 'Fitness Tracker', quantity: 1, price: 89.99, image: '⌚' }
+            { id: 'item-3', name: 'Fitness Tracker', quantity: 1, price: 89.99, image: '/home/section10/img3.webp' },
         ],
         deliveryAddress: '123 Main St, New York, NY 10001'
     },
@@ -254,7 +254,7 @@ export const INITIAL_ORDERS: Order[] = [
         total: 45.50,
         status: 'returned',
         items: [
-            { id: 'item-4', name: 'USB Cable', quantity: 3, price: 45.50, image: '🔌' }
+            { id: 'item-4', name: 'USB Cable', quantity: 3, price: 45.50, image: '/home/section6/image1.png' },
         ],
         deliveryAddress: '123 Main St, New York, NY 10001'
     }

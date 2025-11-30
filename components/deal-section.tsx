@@ -30,7 +30,7 @@ const DealCard = ({image , href} : DealCardProps) => {
 
 export default function DealSection() {
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    // gsap.registerPlugin(ScrollTrigger);
 
     const vh = window.innerHeight;
 

@@ -11,6 +11,8 @@ const menuItems = [
     { name: 'Men', href: '/category/men?sort=relevance' },
     { name: 'Women', href: '/category/women?sort=relevance' },
     { name: 'Kids', href: '/category/kids?sort=relevance' },
+    {name : 'Genz' , href: '/category/genz?sort=relevance' }
+
 ];
 
 const HERO_SECTION_HEIGHT = 1000; 
@@ -112,21 +114,23 @@ const Navbar = () => {
                     </div>
 
                     <div className="flex items-center justify-end space-x-4">
-                        <Button 
-                            className={`nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
-                            aria-label="Search"
-                        >
-                            <Image
-                                src={'/icons/search_icon.png'}
-                                alt='search'
-                                height={15}
-                                width={15}
-                            />
-                        </Button>
+                        <Link href={"/search"}>
+                            <Button 
+                                className={`nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
+                                aria-label="Search"
+                            >
+                                <Image
+                                    src={'/icons/search_icon.png'}
+                                    alt='search'
+                                    height={15}
+                                    width={15}
+                                />
+                            </Button>
+                        </Link>
 
                         <div className={`hidden sm:block border-l h-6 ${!isHomePage ? 'border-gray-300' : 'border-gray-600'}`}></div>
                         
-                        <Link href={"/account/login"}>
+                        <Link href={"/account"}>
                             <Button
                                 className={`hidden sm:block nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
                                 aria-label="Account"
