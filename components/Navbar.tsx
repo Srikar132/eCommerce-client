@@ -112,7 +112,7 @@ const Navbar = () => {
                         <NavbarTitle logoRef={logoRef} pathname={pathname} isAtTop={isAtTop} isHome={isHomePage} />
                     </div>
 
-                    <div className="flex items-center justify-end space-x-4">
+                    <div className="flex items-center justify-end   md:space-x-3 space-x-2 lg:space-x-4">
                         {/* Mobile Search Icon - Always show below lg */}
                         <Link href={"/search"} className='lg:hidden'>
                             <Button
