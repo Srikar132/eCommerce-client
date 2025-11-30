@@ -1,17 +1,18 @@
 "use client";
 
+
 import { Category, Facets, ProductCard } from "@/lib/types";
 import { Button } from "./ui/button";
 import { SlidersHorizontal } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
 import { fetchProductsByCategory } from "@/lib/api";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import FilterSidebar from "./filter-sidebar";
 import SortDropdown from "./sort-dropdown";
 import ErrorCard from "./error-card";
 import { Results } from "./product-results";
+import { useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 type Props = {
   slug: string;

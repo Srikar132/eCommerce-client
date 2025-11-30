@@ -12,8 +12,8 @@ const menuItems = [
     { name: 'Men', href: '/category/men?sort=relevance' },
     { name: 'Women', href: '/category/women?sort=relevance' },
     { name: 'Kids', href: '/category/kids?sort=relevance' },
-    { name: 'Genz', href: '/category/genz?sort=relevance' }
-
+    { name: 'Genz', href: '/category/genz?sort=relevance' },
+    { name: 'Brands & Designs', href: '/customization' }
 ];
 
 const HERO_SECTION_HEIGHT = 1000;

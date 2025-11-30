@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props) {
     }
 
     return {
-        title: category.name,
+        title: category.name.toLocaleLowerCase(),
         description: category.description,
     };
 }

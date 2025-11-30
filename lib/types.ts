@@ -124,3 +124,70 @@ export type SearchResultsPage = {
   query?: string;
   // facets?: any; // extend if needed
 };
+
+
+// types.ts
+export interface Order {
+    id: string;
+    date: string;
+    total: number;
+    status: 'expected' | 'delivered' | 'returned';
+    items: OrderItem[];
+    deliveryAddress: string;
+}
+
+export interface OrderItem {
+    id: string;
+    name: string;
+    quantity: number;
+    price: number;
+    image: string;
+}
+
+export interface PaymentCard {
+    id: string;
+    last4: string;
+    brand: string;
+    expiry: string;
+    isDefault: boolean;
+}
+
+export interface Address {
+    id: string;
+    type: string;
+    name: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    isDefault: boolean;
+}
+
+export interface SignInDetails {
+    email: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+export interface MarketingPreference {
+    id: string;
+    title: string;
+    description: string;
+    enabled: boolean;
+}
+
+// types/cart.ts
+export interface cartProduct {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    size?: string;
+    quantity?: number;
+    stockStatus: 'in-stock' | 'out-of-stock';
+}
+
+export interface CartItem extends cartProduct {
+    quantity: number;
+}

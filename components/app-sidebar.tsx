@@ -66,7 +66,7 @@ export default function AppSidebar() {
                 onClick={() => toggleSection('mens')}
                 className="w-full justify-between text-base py-6 border-b"
               >
-                <span>Mens</span>
+                <span>Men's</span>
                 <ChevronDown className={`transition-transform ${expandedSection === 'mens' ? 'rotate-180' : ''}`} />
               </SidebarMenuButton>
               {expandedSection === 'mens' && (
@@ -85,7 +85,7 @@ export default function AppSidebar() {
                 onClick={() => toggleSection('womens')}
                 className="w-full justify-between text-base py-6 border-b"
               >
-                <span>Womens</span>
+                <span>Women's</span>
                 <ChevronDown className={`transition-transform ${expandedSection === 'womens' ? 'rotate-180' : ''}`} />
               </SidebarMenuButton>
               {expandedSection === 'womens' && (
