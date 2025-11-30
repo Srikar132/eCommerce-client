@@ -158,3 +158,18 @@ export interface MarketingPreference {
     description: string;
     enabled: boolean;
 }
+
+// types/cart.ts
+export interface cartProduct {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    size?: string;
+    quantity?: number;
+    stockStatus: 'in-stock' | 'out-of-stock';
+}
+
+export interface CartItem extends cartProduct {
+    quantity: number;
+}

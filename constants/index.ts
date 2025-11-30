@@ -1,9 +1,9 @@
 import {BestsellerCardProps} from "@/lib/types";
-import {Product} from "@/lib/types";
 import { SizeGuideRow, SizeGuideMeasurement } from "@/lib/types";
 //account
 import { Order, PaymentCard, Address, MarketingPreference } from '@/lib/types';
-
+import { Product } from '@/lib/types';
+import {cartProduct} from "@/lib/types";
 
 export const items: BestsellerCardProps[] = [
     {
@@ -314,4 +314,41 @@ export const INITIAL_PREFERENCES: MarketingPreference[] = [
         enabled: false
     }
 ];
+
+
+
+export const sampleProducts: cartProduct[] = [
+    {id: 'AN2-518',
+    name: 'Black Slim Tailored Trousers With Wool',
+    price: 3543,
+    image: '/home/section4/img1.webp',
+    size: 'UK 12 Short (Medium)',
+    stockStatus: 'in-stock'},
+
+    {id: 'AN2-517',
+        name: 'Black Slim Tailored Trousers With Wool',
+        price: 3543,
+        image: '/home/section4/img1.webp',
+        size: 'UK 12 Short (Medium)',
+        stockStatus: 'in-stock'},
+
+];
+
+export const customersAlsoBought: cartProduct[] = [
+    { id: '1', name: 'Next Black Tailored Single Breasted...', price: 6089, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+    { id: '2', name: 'Next Black Slim Tailored Trousers', price: 3764, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+    { id: '3', name: 'Next Navy Blue Tailored Single...', price: 6089, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+    { id: '4', name: 'Next Black Tailored Pencil Skirt With...', price: 3321, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+    { id: '5', name: 'Next Black Button Detail Skinny...', price: 4650, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+    { id: '6', name: 'Next Black Tailored Single Breasted...', price: 6089, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+
+];
+
+export const recentlyViewedProducts: cartProduct[] = [
+    { id: 'rv1', name: 'Black Trousers', price: 3543, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+    { id: 'rv2', name: 'White Shirts Pack', price: 2426, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+    { id: 'rv3', name: 'Colored Shirts Pack', price: 2426, image: '/home/section4/img1.webp', stockStatus: 'in-stock' },
+    { id: 'rv4', name: 'White Shirts Pack', price: 2426, image: '/home/section4/img1.webp', stockStatus: 'in-stock' }
+];
+
 

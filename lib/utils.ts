@@ -23,3 +23,8 @@ export const buildQueryFromURL = (searchParams: Record<string , string | string[
   });
   return out;
 };
+
+// utils/format.ts
+export const formatPrice = (price: number): string => {
+    return `INR ${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
