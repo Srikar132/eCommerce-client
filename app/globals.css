@@ -472,15 +472,22 @@
            ============================================ */
 
   .pdp-image-gallery {
-    @apply flex flex-col-reverse lg:flex-row gap-4;
+    @apply flex flex-col-reverse lg:flex-row gap-3 sm:gap-4;
   }
 
   .pdp-thumbnails {
-    @apply flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible;
+    @apply flex flex-row lg:flex-col gap-2 sm:gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0;
+    /* Hide scrollbar on mobile */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .pdp-thumbnails::-webkit-scrollbar {
+    display: none;
   }
 
   .pdp-thumbnail {
-    @apply relative w-20 h-20 shrink-0 border-2 border-gray-200 hover:border-gray-400 transition-colors cursor-pointer overflow-hidden;
+    @apply relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 border-2 border-gray-200 hover:border-gray-400 transition-colors cursor-pointer overflow-hidden rounded-sm;
   }
 
   .pdp-thumbnail-active {
@@ -488,7 +495,7 @@
   }
 
   .pdp-main-image {
-    @apply relative w-full aspect-3/4 lg:aspect-2/3 bg-gray-100 overflow-hidden;
+    @apply relative w-full aspect-square sm:aspect-4/5 lg:aspect-2/3 bg-gray-100 overflow-hidden rounded-lg;
   }
 
   .pdp-no-image {
@@ -508,11 +515,11 @@
   }
 
   .pdp-title {
-    @apply text-lg sm:text-xl lg:text-2xl font-normal tracking-wide text-gray-800 uppercase;
+    @apply text-xl sm:text-2xl lg:text-3xl font-normal tracking-wide text-gray-800 uppercase leading-tight;
   }
 
   .pdp-price {
-    @apply text-base sm:text-lg lg:text-xl text-gray-900 font-medium;
+    @apply text-lg sm:text-xl lg:text-2xl text-gray-900 font-medium;
   }
 
   /* ============================================
@@ -592,7 +599,7 @@
   }
 
   .pdp-add-to-cart-btn {
-    @apply w-full sm:w-[400px] h-12 sm:h-14 bg-black text-white rounded-none cursor-pointer flex items-center justify-center gap-2 text-sm sm:text-base font-light uppercase tracking-wide transition-colors;
+    @apply w-full h-12 sm:h-14 bg-black text-white rounded-md sm:rounded-none cursor-pointer flex items-center justify-center gap-2 text-sm sm:text-base font-medium uppercase tracking-wide transition-colors hover:bg-gray-800 active:bg-gray-900;
   }
 
   .pdp-add-to-cart-btn:disabled {

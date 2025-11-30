@@ -41,45 +41,65 @@ export default function ProductDetailPage() {
     };
 
     return (
-        <div className="pdp-container">
-            <div className="pdp-layout">
-                {/* Left Side - Image Gallery */}
-                <div className="pdp-gallery-section">
-                    <ProductImageGallery images={selectedVariant?.images || []} />
-                </div>
+        <div className="min-h-screen bg-white overflow-x-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+                    {/* Image Gallery - Mobile First */}
+                    <div className="order-1 w-full">
+                        <ProductImageGallery images={selectedVariant?.images || []} />
+                    </div>
 
-                {/* Right Side - Product Details */}
-                <div className="pdp-details-section">
-                    <ProductInfo
-                        brand={MOCK_PRODUCT.brand}
-                        name={MOCK_PRODUCT.name}
-                        price={MOCK_PRODUCT.price}
-                        currency={MOCK_PRODUCT.currency}
-                    />
+                    {/* Product Details - Mobile Optimized */}
+                    <div className="order-2 w-full space-y-6">
+                        {/* Product Info */}
+                        <div className="border-b border-gray-100 pb-6">
+                            <ProductInfo
+                                brand={MOCK_PRODUCT.brand}
+                                name={MOCK_PRODUCT.name}
+                                price={MOCK_PRODUCT.price}
+                                currency={MOCK_PRODUCT.currency}
+                            />
+                        </div>
 
-                    <ColorSelector
-                        variants={MOCK_PRODUCT.variants}
-                        selectedVariantId={selectedVariantId}
-                        onColorChange={handleColorChange}
-                    />
+                        {/* Color Selection */}
+                        <div className="space-y-4">
+                            <ColorSelector
+                                variants={MOCK_PRODUCT.variants}
+                                selectedVariantId={selectedVariantId}
+                                onColorChange={handleColorChange}
+                            />
+                        </div>
 
-                    <SizeSelector
-                        sizes={selectedVariant?.sizes || []}
-                        selectedSize={selectedSize}
-                        onSizeChange={setSelectedSize}
-                    />
+                        {/* Size Selection */}
+                        <div className="space-y-4">
+                            <SizeSelector
+                                sizes={selectedVariant?.sizes || []}
+                                selectedSize={selectedSize}
+                                onSizeChange={setSelectedSize}
+                            />
+                        </div>
 
-                    <ProductActions
-                        onAddToCart={handleAddToCart}
-                        disabled={!selectedSize}
-                    />
+                        {/* Action Buttons - Sticky on Mobile */}
+                        <div className="sticky bottom-0 bg-white border-t border-gray-100 pt-4 pb-4 px-4 sm:pb-0 sm:px-0 sm:static sm:border-0 sm:pt-0 z-10">
+                            <ProductActions
+                                onAddToCart={handleAddToCart}
+                                disabled={!selectedSize}
+                            />
+                        </div>
 
-                    <ProductFeatures features={MOCK_PRODUCT.features} />
+                        {/* Features */}
+                        <div className="space-y-4">
+                            <ProductFeatures features={MOCK_PRODUCT.features} />
+                        </div>
 
-                    <ProductAccordion
-                        description={MOCK_PRODUCT.description}
-                        washCare={MOCK_PRODUCT.washCare}
-                    />
+                        {/* Accordion */}
+                        <div className="space-y-4">
+                            <ProductAccordion
+                                description={MOCK_PRODUCT.description}
+                                washCare={MOCK_PRODUCT.washCare}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

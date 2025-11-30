@@ -47,7 +47,6 @@ const SmoothSlider = () => {
                                 src={post.image}
                                 alt={post.alt}
                                 className="w-full h-full object-cover"
-                                fill
                                 width={320}
                                 height={400}
                             />

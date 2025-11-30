@@ -1,7 +1,8 @@
 "use client";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/components/ui/sidebar"
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, User, HelpCircle, Mail, MapPin } from "lucide-react";
+import { ChevronDown, User, HelpCircle, Mail, ShoppingCart, Search, Home, MapPin } from "lucide-react";
+import Link from "next/link";
 
 export default function AppSidebar() {
   const { open, setOpen, isMobile, setOpenMobile } = useSidebar()
@@ -60,113 +61,53 @@ export default function AppSidebar() {
 
         <SidebarContent className="px-6 py-4">
           <SidebarMenu>
-            {/* Men's Section */}
+            {/* Home */}
+            <SidebarMenuItem>
+              <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
+                <Home className="w-5 h-5 mr-3" />
+                <Link href="/" className="w-full">Home</Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* Categories */}
             <SidebarMenuItem>
               <SidebarMenuButton 
-                onClick={() => toggleSection('mens')}
+                onClick={() => toggleSection('categories')}
                 className="w-full justify-between text-base py-6 border-b"
               >
-                <span>Men's</span>
-                <ChevronDown className={`transition-transform ${expandedSection === 'mens' ? 'rotate-180' : ''}`} />
+                <span>Categories</span>
+                <ChevronDown className={`transition-transform ${expandedSection === 'categories' ? 'rotate-180' : ''}`} />
               </SidebarMenuButton>
-              {expandedSection === 'mens' && (
+              {expandedSection === 'categories' && (
                 <div className="pl-4 py-2 space-y-2">
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Clothing</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Shoes</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Accessories</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Sale</a>
+                  <Link href="/category/men?sort=relevance" className="block py-2 text-sm hover:opacity-70">Men</Link>
+                  <Link href="/category/women?sort=relevance" className="block py-2 text-sm hover:opacity-70">Women</Link>
+                  <Link href="/category/kids?sort=relevance" className="block py-2 text-sm hover:opacity-70">Kids</Link>
+                  <Link href="/category/genz?sort=relevance" className="block py-2 text-sm hover:opacity-70">GenZ</Link>
                 </div>
               )}
             </SidebarMenuItem>
 
-            {/* Women's Section */}
-            <SidebarMenuItem>
-              <SidebarMenuButton 
-                onClick={() => toggleSection('womens')}
-                className="w-full justify-between text-base py-6 border-b"
-              >
-                <span>Women's</span>
-                <ChevronDown className={`transition-transform ${expandedSection === 'womens' ? 'rotate-180' : ''}`} />
-              </SidebarMenuButton>
-              {expandedSection === 'womens' && (
-                <div className="pl-4 py-2 space-y-2">
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Clothing</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Shoes</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Accessories</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Sale</a>
-                </div>
-              )}
-            </SidebarMenuItem>
-
-            {/* Kids Section */}
-            <SidebarMenuItem>
-              <SidebarMenuButton 
-                onClick={() => toggleSection('kids')}
-                className="w-full justify-between text-base py-6 border-b"
-              >
-                <span>Kids</span>
-                <ChevronDown className={`transition-transform ${expandedSection === 'kids' ? 'rotate-180' : ''}`} />
-              </SidebarMenuButton>
-              {expandedSection === 'kids' && (
-                <div className="pl-4 py-2 space-y-2">
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Boys</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Girls</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Baby</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Sale</a>
-                </div>
-              )}
-            </SidebarMenuItem>
-
-            {/* Bags */}
+            {/* Search */}
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
-                <a href="#" className="w-full">Bags</a>
+                <Search className="w-5 h-5 mr-3" />
+                <Link href="/search" className="w-full">Search</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* Bestsellers */}
-            <SidebarMenuItem>
-              <SidebarMenuButton 
-                onClick={() => toggleSection('bestsellers')}
-                className="w-full justify-between text-base py-6 border-b"
-              >
-                <span>Bestsellers</span>
-                <ChevronDown className={`transition-transform ${expandedSection === 'bestsellers' ? 'rotate-180' : ''}`} />
-              </SidebarMenuButton>
-              {expandedSection === 'bestsellers' && (
-                <div className="pl-4 py-2 space-y-2">
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Top Rated</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Most Popular</a>
-                  <a href="#" className="block py-2 text-sm hover:opacity-70">Trending Now</a>
-                </div>
-              )}
-            </SidebarMenuItem>
-
-            {/* Sale */}
+            {/* Cart */}
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
-                <a href="#" className="w-full">Sale</a>
+                <ShoppingCart className="w-5 h-5 mr-3" />
+                <Link href="/cart" className="w-full">Cart</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* New Arrival */}
+            {/* Customization */}
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
-                <a href="#" className="w-full">New Arrival</a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            {/* Lookbook */}
-            <SidebarMenuItem>
-              <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
-                <a href="#" className="w-full">Lookbook</a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            {/* About Us */}
-            <SidebarMenuItem>
-              <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
-                <a href="#" className="w-full">About Us</a>
+                <Link href="/customization" className="w-full">Brands & Designs</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -177,25 +118,13 @@ export default function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-3">
                 <User className="w-5 h-5 mr-3" />
-                <a href="#" className="w-full">Log in</a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton className="w-full justify-start text-base py-3">
-                <HelpCircle className="w-5 h-5 mr-3" />
-                <a href="#" className="w-full">FAQ</a>
+                <Link href="/account" className="w-full">Account</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-3">
                 <Mail className="w-5 h-5 mr-3" />
-                <a href="#" className="w-full">Contact</a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton className="w-full justify-start text-base py-3">
-                <MapPin className="w-5 h-5 mr-3" />
-                <a href="#" className="w-full">USD</a>
+                <Link href="/contact" className="w-full">Contact</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

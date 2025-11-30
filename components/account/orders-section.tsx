@@ -49,19 +49,19 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({ orders }) => {
                 <TabsList className="bg-zinc-100 p-1 h-12  border  rounded-none">
                     <TabsTrigger
                         value="expected"
-                        className="uppercase text-xs cursor-pointer tracking-widest rounded-none data-[state=active]:bg-black data-[state=active]:text-white h-10 px-6 font-medium"
+                        className="uppercase text-xs cursor-pointer tracking-widest rounded-none data-[state=active]:bg-black data-[state=active]:text-white lg:h-10 px-3 h-7 lg:px-6 font-medium"
                     >
                         Expected
                     </TabsTrigger>
                     <TabsTrigger
                         value="delivered"
-                        className="uppercase text-xs cursor-pointer tracking-widest rounded-none data-[state=active]:bg-black data-[state=active]:text-white h-10 px-6 font-medium"
+                        className="uppercase text-xs cursor-pointer tracking-widest rounded-none data-[state=active]:bg-black data-[state=active]:text-white lg:h-10 px-3 h-7 lg:px-6 font-medium"
                     >
                         Delivered
                     </TabsTrigger>
                     <TabsTrigger
                         value="returned"
-                        className="uppercase text-xs cursor-pointer tracking-widest rounded-none data-[state=active]:bg-black data-[state=active]:text-white h-10 px-6 font-medium"
+                        className="uppercase text-xs cursor-pointer tracking-widest rounded-none data-[state=active]:bg-black data-[state=active]:text-white lg:h-10 px-3 h-7 lg:px-6 font-medium"
                     >
                         Returned
                     </TabsTrigger>
