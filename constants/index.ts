@@ -1,6 +1,9 @@
 import {BestsellerCardProps} from "@/lib/types";
 import {Product} from "@/lib/types";
 import { SizeGuideRow, SizeGuideMeasurement } from "@/lib/types";
+//account
+import { Order, PaymentCard, Address, MarketingPreference } from '@/lib/types';
+
 
 export const items: BestsellerCardProps[] = [
     {
@@ -220,5 +223,95 @@ export const MEASUREMENT_DESCRIPTIONS: SizeGuideMeasurement[] = [
         label: "Outseam:",
         description: "Measured from the waist to the bottom of the leg.",
     },
+];
+
+
+export const INITIAL_ORDERS: Order[] = [
+    {
+        id: 'ORD-2024-001',
+        date: '2024-11-15',
+        total: 299.99,
+        status: 'delivered',
+        items: [
+            { id: 'item-1', name: 'Wireless Headphones', quantity: 1, price: 149.99, image: '🎧' },
+            { id: 'item-2', name: 'Phone Case', quantity: 2, price: 75.00, image: '📱' }
+        ],
+        deliveryAddress: '123 Main St, New York, NY 10001'
+    },
+    {
+        id: 'ORD-2024-002',
+        date: '2024-11-20',
+        total: 89.99,
+        status: 'expected',
+        items: [
+            { id: 'item-3', name: 'Fitness Tracker', quantity: 1, price: 89.99, image: '⌚' }
+        ],
+        deliveryAddress: '123 Main St, New York, NY 10001'
+    },
+    {
+        id: 'ORD-2024-003',
+        date: '2024-10-28',
+        total: 45.50,
+        status: 'returned',
+        items: [
+            { id: 'item-4', name: 'USB Cable', quantity: 3, price: 45.50, image: '🔌' }
+        ],
+        deliveryAddress: '123 Main St, New York, NY 10001'
+    }
+];
+
+export const INITIAL_CARDS: PaymentCard[] = [
+    { id: 'card-1', last4: '4242', brand: 'Visa', expiry: '12/25', isDefault: true },
+    { id: 'card-2', last4: '8888', brand: 'Mastercard', expiry: '06/26', isDefault: false }
+];
+
+export const INITIAL_ADDRESSES: Address[] = [
+    {
+        id: 'addr-1',
+        type: 'Home',
+        name: 'John Doe',
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zip: '10001',
+        isDefault: true
+    },
+    {
+        id: 'addr-2',
+        type: 'Work',
+        name: 'John Doe',
+        street: '456 Business Ave',
+        city: 'New York',
+        state: 'NY',
+        zip: '10002',
+        isDefault: false
+    }
+];
+
+export const INITIAL_PREFERENCES: MarketingPreference[] = [
+    {
+        id: 'pref-1',
+        title: 'Email Newsletters',
+        description: 'Receive our weekly newsletter with the latest products and exclusive offers.',
+        enabled: true
+    },
+    {
+        id: 'pref-2',
+        title: 'SMS Notifications',
+        description: 'Get order updates and special promotions sent directly to your phone.',
+        enabled: false
+    },
+    {
+        id: 'pref-3',
+        title: 'Personalized Recommendations',
+        description: 'Allow us to send product suggestions based on your browsing and purchase history.',
+        enabled: true
+    },
+    {
+        id: 'pref-4',
+        title: 'Partner Offers',
+        description: 'Receive special deals from our trusted partners and affiliated brands.',
+        enabled: false
+    }
 ];
 
