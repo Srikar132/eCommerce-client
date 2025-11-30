@@ -270,7 +270,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             {/* Mobile Backdrop - only on small screens */}
             <div
                 className={cn(
-                    "fixed inset-0 bg-black/50 z-40 transition-opacity lg:hidden",
+                    "fixed inset-0 bg-black/50 z-40 transition-opacity lg:hidden ",
                     isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 onClick={onClose}
@@ -283,7 +283,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     // Base styles
                     "bg-background border-r border-border flex flex-col",
                     // Desktop: Always visible left panel
-                    "hidden lg:flex lg:w-64 lg:sticky lg:top-0 lg:h-auto lg:overflow-y-auto",
+                    "hidden lg:flex lg:w-64 lg:sticky lg:top-0 lg:h-auto ",
                     // Mobile: Modal overlay
                     "lg:block",
                     isOpen && "fixed inset-y-0 left-0 z-50 w-80 sm:w-96 flex shadow-2xl lg:shadow-none transform transition-transform duration-300 ease-in-out lg:transform-none",
@@ -307,7 +307,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 </header>
 
                 {/* Desktop Header */}
-                <header className="hidden lg:block p-6 border-b">
+                <header className="hidden lg:block px-4 py-4.5 border-b">
                     <div className="flex items-center gap-3">
                         <h2 className="text-lg font-semibold">Filters</h2>
                         {activeFilterCount > 0 && (

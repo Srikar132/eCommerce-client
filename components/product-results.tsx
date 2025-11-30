@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import ProductCardComponent from './cards/product-card';
@@ -15,7 +13,7 @@ interface SearchResultsProps {
         total: number;
         page: number;
         size: number;
-        query: string;
+        query?: string;
     };
     isLoading?: boolean;
     onLoadMore?: () => void;
@@ -23,15 +21,14 @@ interface SearchResultsProps {
     isFetchingNextPage?: boolean;
 }
 
-export function SearchResults({ results, isLoading, onLoadMore, hasMore, isFetchingNextPage }: SearchResultsProps) {
+export function Results({ results, isLoading, onLoadMore, hasMore, isFetchingNextPage }: SearchResultsProps) {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-    const [showFilters, setShowFilters] = useState(false);
 
     // Use infinite scroll hook for automatic loading
     const sentinelRef = useInfiniteScroll({
         hasNextPage: hasMore || false,
         isFetchingNextPage: isFetchingNextPage || false,
-        fetchNextPage: onLoadMore || (() => {}),
+        fetchNextPage: onLoadMore || (() => { }),
         rootMargin: "400px"
     });
 
@@ -64,25 +61,26 @@ export function SearchResults({ results, isLoading, onLoadMore, hasMore, isFetch
 
     return (
         <div className="space-y-6">
-            {/* Results Header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-2xl font-semibold text-gray-900">
-                        Search Results
-                    </h2>
-                    <p className="text-gray-500 mt-1">
-                        {results.total.toLocaleString()} results for "{results.query}"
-                    </p>
-                </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center w-full justify-end gap-2">
+                        {results.query && (
+                            <div className='flex-1'>
+                                <h2 className="text-2xl font-semibold text-gray-900">
+                                    Search Results
+                                </h2>
+                                <p className="text-gray-500 mt-1">
+                                    {results.total} results for "{results.query}"
+                                </p>
+                            </div>
+                        )}
                     {/* View Mode Toggle */}
                     <div className="flex border border-gray-200 rounded-lg p-1">
                         <button
                             onClick={() => setViewMode('grid')}
                             className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
-                                    ? 'bg-gray-900 text-white'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                ? 'bg-gray-900 text-white'
+                                : 'text-gray-600 hover:bg-gray-100'
                                 }`}
                         >
                             <Grid className="w-4 h-4" />
@@ -90,24 +88,14 @@ export function SearchResults({ results, isLoading, onLoadMore, hasMore, isFetch
                         <button
                             onClick={() => setViewMode('list')}
                             className={`p-2 rounded-md transition-colors ${viewMode === 'list'
-                                    ? 'bg-gray-900 text-white'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                ? 'bg-gray-900 text-white'
+                                : 'text-gray-600 hover:bg-gray-100'
                                 }`}
                         >
                             <List className="w-4 h-4" />
                         </button>
                     </div>
 
-                    {/* Mobile Filter Button */}
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowFilters(!showFilters)}
-                        className="md:hidden"
-                    >
-                        <SlidersHorizontal className="w-4 h-4 mr-2" />
-                        Filter
-                    </Button>
                 </div>
             </div>
 

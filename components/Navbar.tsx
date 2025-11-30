@@ -6,16 +6,17 @@ import Image from 'next/image';
 import { useSidebar } from './ui/sidebar';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { SearchInput } from './search-input';
 
 const menuItems = [
     { name: 'Men', href: '/category/men?sort=relevance' },
     { name: 'Women', href: '/category/women?sort=relevance' },
     { name: 'Kids', href: '/category/kids?sort=relevance' },
-    {name : 'Genz' , href: '/category/genz?sort=relevance' }
+    { name: 'Genz', href: '/category/genz?sort=relevance' }
 
 ];
 
-const HERO_SECTION_HEIGHT = 1000; 
+const HERO_SECTION_HEIGHT = 1000;
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -68,17 +69,15 @@ const Navbar = () => {
 
     return (
         <nav
-            className={`${
-                isHomePage 
-                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed` 
+            className={`${isHomePage
+                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed`
                     : 'sticky'
-            } ${
-                shouldShowBackdrop 
-                    ? isHomePage 
-                        ? 'bg-black/50 backdrop-blur-md shadow-sm' 
+                } ${shouldShowBackdrop
+                    ? isHomePage
+                        ? 'bg-black/50 backdrop-blur-md lg:shadow-sm'
                         : 'bg-white shadow-sm'
                     : 'bg-transparent'
-            }`}
+                }`}
         >
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-3 items-center h-16 gap-4">
@@ -114,8 +113,9 @@ const Navbar = () => {
                     </div>
 
                     <div className="flex items-center justify-end space-x-4">
-                        <Link href={"/search"}>
-                            <Button 
+                        {/* Mobile Search Icon - Always show below lg */}
+                        <Link href={"/search"} className='lg:hidden'>
+                            <Button
                                 className={`nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
                                 aria-label="Search"
                             >
@@ -128,8 +128,33 @@ const Navbar = () => {
                             </Button>
                         </Link>
 
+                        {/* Desktop Search - Show icon on home page, input on other pages */}
+                        {isHomePage ? (
+                            <Link href={"/search"} className='hidden lg:block'>
+                                <Button
+                                    className={`nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
+                                    aria-label="Search"
+                                >
+                                    <Image
+                                        src={'/icons/search_icon.png'}
+                                        alt='search'
+                                        height={15}
+                                        width={15}
+                                    />
+                                </Button>
+                            </Link>
+                        ) : (
+                            <div className="max-w-2xl max-lg:hidden w-full">
+                                <SearchInput
+                                    className="w-full"
+                                    placeholder="Search for products, brands, categories..."
+                                    variant={shouldShowBackdrop ? "light" : "dark"}
+                                />
+                            </div>
+                        )}
+
                         <div className={`hidden sm:block border-l h-6 ${!isHomePage ? 'border-gray-300' : 'border-gray-600'}`}></div>
-                        
+
                         <Link href={"/account"}>
                             <Button
                                 className={`hidden sm:block nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
@@ -143,7 +168,7 @@ const Navbar = () => {
                                 />
                             </Button>
                         </Link>
-                        
+
                         <Link href={"/cart"}>
                             <Button
                                 className={`nav-btn relative ${!isHomePage ? 'invert-0!' : ''}`}

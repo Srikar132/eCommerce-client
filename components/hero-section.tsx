@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 const HeroSection = () => {
     
@@ -95,13 +96,15 @@ const HeroSection = () => {
                         >
                             Shop Now
                         </Button>
-                        <Button 
-                            size="lg"
-                            variant="outline"
-                            className="cta-button-secondary"
-                        >
-                            Discover
-                        </Button>
+                        <Link href={'/contact'}>
+                            <Button 
+                                size="lg"
+                                variant="outline"
+                                className="cta-button-secondary"
+                            >
+                                Contact us
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import CategoryClient from "@/components/category-client";
 import { fetchCategoryBySlug, fetchProductsByCategory } from "@/lib/api";
+import { Suspense } from "react";
 
 
 
@@ -29,9 +30,9 @@ export async function generateMetadata({ params }: Props) {
     };
 }
 
-export default async function CategoryPage({ params , searchParams }: Props) {
-    const { slug } =  await params;
-    const { page , sort , size , ...rest} = await searchParams;
+export default async function CategoryPage({ params, searchParams }: Props) {
+    const { slug } = await params;
+    const { page, sort, size, ...rest } = await searchParams;
 
     // Fetch category details
     const [categoryData, productsData] = await Promise.all([
@@ -48,22 +49,23 @@ export default async function CategoryPage({ params , searchParams }: Props) {
 
     return (
         <div id="category-container">
-            <header className="category-header">
-                <h1>{categoryData.name}</h1>
-                {categoryData.description && (
-                    <p>{categoryData.description}</p>
-                )}
-            </header>
-
-            <CategoryClient
-                slug={slug}
-                initialCategory={categoryData}
-                initialProducts={productsData.items}
-                initialTotal={productsData.total}
-                initialPage={productsData.page}
-                initialSize={productsData.size}
-                initialFacets={productsData.facets}
-            />
+            <Suspense fallback={
+                <div className="container mx-auto px-4 py-16">
+                    <div className="flex items-center justify-center">
+                        <div className="w-8 h-8 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
+                    </div>
+                </div>
+            }>
+                <CategoryClient
+                    slug={slug}
+                    initialCategory={categoryData}
+                    initialProducts={productsData.items}
+                    initialTotal={productsData.total}
+                    initialPage={productsData.page}
+                    initialSize={productsData.size}
+                    initialFacets={productsData.facets}
+                />
+            </Suspense>
         </div>
     );
 }

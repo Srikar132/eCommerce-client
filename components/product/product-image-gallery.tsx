@@ -1,9 +1,12 @@
-// src/components/product/ProductImageGallery.tsx
 "use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
 import { ProductImage } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import ImageZoomModal from "./image-zoom-modal";
+import { Button } from "../ui/button";
+
 
 interface ProductImageGalleryProps {
     images: ProductImage[];
@@ -11,6 +14,7 @@ interface ProductImageGalleryProps {
 
 export default function ProductImageGallery({ images }: ProductImageGalleryProps) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
 
     if (!images || images.length === 0) {
         return (
@@ -21,11 +25,13 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
     }
 
     return (
-        <div className="pdp-image-gallery">
+        <div className={cn(
+            "pdp-image-gallery",
+        )}>
             {/* Thumbnail Column */}
             <div className="pdp-thumbnails">
                 {images.map((image, index) => (
-                    <button
+                    <Button
                         key={image.id}
                         onClick={() => setSelectedImageIndex(index)}
                         className={`pdp-thumbnail ${
@@ -40,21 +46,16 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                             className="object-cover"
                             sizes="80px"
                         />
-                    </button>
+                    </Button>
                 ))}
             </div>
 
-            {/* Main Image */}
-            <div className="pdp-main-image">
-                <Image
-                    src={images[selectedImageIndex].url}
-                    alt={images[selectedImageIndex].alt}
-                    fill
-                    className="object-cover"
-                    priority
-                    sizes="(max-width: 768px) 100vw, 50vw"
+             {/* Main Image with Zoom */}
+            <div className="pdp-main-image relative">
+                <ImageZoomModal
+                    image={images[selectedImageIndex]}
                 />
-            </div>
+            </div> *
         </div>
     );
 }

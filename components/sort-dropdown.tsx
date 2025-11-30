@@ -58,13 +58,13 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild className="z-40!">
         <Button variant="outline" size="sm" className="gap-2">
           <span className="text-sm">Sort: {currentLabel}</span>
           <ChevronsUpDown className="h-4 w-4 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[200px]">
+      <DropdownMenuContent align="end" className="w-[200px] z-40">
         {sortOptions.map((option) => (
           <DropdownMenuItem
             key={option.value}

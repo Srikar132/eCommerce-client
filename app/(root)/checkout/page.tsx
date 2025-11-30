@@ -1,15 +1,14 @@
-
 import { Suspense } from 'react';
-import { SearchClient } from '@/components/search-client';
+import CheckoutClient from '@/components/checkout/checkout-client';
 
 export const metadata = {
-  title: 'Search Results',
-  description: 'Search for products in our store',
+  title: 'Checkout - THE NALA ARMOIRE',
+  description: 'Complete your purchase securely with our streamlined checkout process.',
 };
 
-export default function SearchPage() {
+export default function CheckoutPage() {
   return (
-    <main  id="search-container">
+    <main className="min-h-screen bg-gray-50">
       <Suspense fallback={
         <div className="container mx-auto px-4 py-16">
           <div className="flex items-center justify-center">
@@ -17,7 +16,7 @@ export default function SearchPage() {
           </div>
         </div>
       }>
-        <SearchClient />
+        <CheckoutClient />
       </Suspense>
     </main>
   );

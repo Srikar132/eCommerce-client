@@ -37,7 +37,7 @@ export default function ProductDetailPage() {
 
     const handleColorChange = (variantId: string) => {
         setSelectedVariantId(variantId);
-        setSelectedSize(""); // Reset size when color changes
+        setSelectedSize(""); // Reset size when color changes   
     };
 
     return (

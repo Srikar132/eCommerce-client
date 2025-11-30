@@ -4,12 +4,13 @@ import { useState, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { SearchInput } from '@/components/search-input';
-import { SearchResults } from '@/components/search-results';
+import { Results } from '@/components/product-results';
 import FilterSidebar from '@/components/filter-sidebar';
 import SortDropdown from '@/components/sort-dropdown';
 import { fetchSearchResults } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { SlidersHorizontal, X } from 'lucide-react';
+import ErrorCard from './error-card';
 
 // Define the search result type
 interface SearchResult {
@@ -29,7 +30,6 @@ export function SearchClient() {
   // Get search query from URL
   const query = searchParams.get('q') || '';
 
-  // Memoize search params object (similar to category-client)
   const searchParamsObj = useMemo(() => {
     const params: Record<string, string | string[]> = {};
     searchParams.forEach((value, key) => {
@@ -75,7 +75,7 @@ export function SearchClient() {
     queryKey,
     queryFn: async ({ pageParam = 1 }) => {
       return await fetchSearchResults({
-        q: query || '', // Pass empty string if no query to fetch all products
+        q: query || '',
         page: pageParam as number,
         size: 24,
         filters: activeFilters,
@@ -99,7 +99,7 @@ export function SearchClient() {
 
     const params = new URLSearchParams();
     params.set('q', searchQuery.trim());
-    
+
     // Preserve existing filters if any
     Object.entries(activeFilters).forEach(([key, value]) => {
       if (Array.isArray(value)) {
@@ -122,34 +122,21 @@ export function SearchClient() {
   const facets = data?.pages[0]?.facets;
 
   if (isError) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center">
-          <div className="text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h2>
-          <p className="text-gray-600 mb-6">
-            We couldn't fetch the search results. Please try again.
-          </p>
-          <Button onClick={() => window.location.reload()}>
-            Try Again
-          </Button>
-        </div>
-      </div>
-    );
+    return <ErrorCard />
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <section className="search-section ">
       {/* Search Header */}
-      <div className="mb-6">
+      <header className="search-header lg:hidden">
         <div className="max-w-2xl">
-          <SearchInput 
+          <SearchInput
             onSearch={handleSearch}
             className="w-full"
             placeholder="Search for products, brands, categories..."
           />
         </div>
-      </div>
+      </header>
 
 
       {/* Mobile Filter Button */}
@@ -169,36 +156,47 @@ export function SearchClient() {
             )}
           </Button>
 
-          <SortDropdown 
+          <SortDropdown
             currentSort={searchParams.get('sort') || 'relevance'}
           />
         </div>
       </div>
 
-      <div className="flex gap-8">
-        {/* Desktop Sidebar - Use existing FilterSidebar */}
-        <div className="hidden lg:block w-80 shrink-0">
-          <div className="sticky top-6">
-            <FilterSidebar
-              isOpen={true}
-              onClose={() => {}}
-              facets={facets}
-              currentFilters={activeFilters}
-            />
-          </div>
-        </div>
+
+
+      <div className="flex gap-6 lg:gap-8">
+
+        <FilterSidebar
+          isOpen={showMobileFilters}
+          onClose={() => setShowMobileFilters(false)}
+          facets={facets}
+          currentFilters={activeFilters}
+        />
+
 
         {/* Main Content */}
         <div className="flex-1 min-w-0">
-          {/* Desktop Sort */}
-          <div className="hidden lg:flex justify-end items-center mb-6">
-            <SortDropdown 
-              currentSort={searchParams.get('sort') || 'relevance'}
-            />
-          </div>
+
+          {/* Sticky Desktop Header - Outside container for proper sticking */}
+          <header className="hidden lg:block sticky top-0 bg-white z-40 border-b">
+            <div className="container mx-auto px-4 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-muted-foreground">
+                    {totalResults} {totalResults === 1 ? "product" : "products"}
+                    {query && ` for "${query}"`}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <SortDropdown currentSort={searchParams.get('sort') || 'relevance'} />
+                </div>
+              </div>
+            </div>
+          </header>
 
           {/* Search Results */}
-          <SearchResults
+          <Results
             results={{
               items: allResults,
               total: totalResults,
@@ -214,18 +212,7 @@ export function SearchClient() {
         </div>
       </div>
 
-      {showMobileFilters && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50">
-          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-white">
-            <FilterSidebar
-              isOpen={showMobileFilters}
-              onClose={() => setShowMobileFilters(false)}
-              facets={facets}
-              currentFilters={activeFilters}
-            />
-          </div>
-        </div>
-      )}
-    </div>
+
+    </section>
   );
 }

@@ -18,14 +18,14 @@ export default function RootLayout({
         <SidebarProvider 
           defaultOpen={false}          
         >
-          <div className="font-sans w-full overflow-x-hidden no-scrollbar">
+          <div className="font-sans w-full  no-scrollbar">
             <AppSidebar />
             
             <header id="header">
               <Navbar />
             </header>
 
-            <main className="w-full overflow-x-hidden relative">
+            <main className="w-full relative">
               {children}
             </main>
 

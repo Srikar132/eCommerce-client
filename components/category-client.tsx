@@ -8,9 +8,10 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { fetchProductsByCategory } from "@/lib/api";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import ProductList from "./product-grid";
 import FilterSidebar from "./filter-sidebar";
 import SortDropdown from "./sort-dropdown";
+import ErrorCard from "./error-card";
+import { Results } from "./product-results";
 
 type Props = {
   slug: string;
@@ -24,12 +25,12 @@ type Props = {
 
 const CategoryClient = ({
   slug,
-  initialCategory,
   initialProducts,
   initialTotal,
   initialPage,
   initialSize,
   initialFacets,
+  initialCategory
 }: Props) => {
   const searchParams = useSearchParams();
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false);
@@ -80,6 +81,7 @@ const CategoryClient = ({
     hasNextPage,
     isFetchingNextPage,
     status,
+    isError,
     isLoading,
   } = useInfiniteQuery({
     queryKey,
@@ -129,11 +131,26 @@ const CategoryClient = ({
   );
 
   const totalProducts = data?.pages[0]?.total || 0;
+  const activeFilterCount = Object.keys(activeFilters).length;
+
+
+  if(isError) {
+    return <ErrorCard/>
+  }
+
+
 
   return (
     <section className="category-section">
+      <header className="category-header">
+        <h1>{initialCategory?.name}</h1>
+        {initialCategory?.description && (
+          <p>{initialCategory.description}</p>
+        )}
+      </header>
+
       {/* Mobile Filter Header - Only on small screens */}
-      <header className="filter-header lg:hidden!">
+      <div className="filter-header lg:hidden!">
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">
             {totalProducts} {totalProducts === 1 ? "product" : "products"}
@@ -149,11 +166,16 @@ const CategoryClient = ({
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span>Filter</span>
+                        {activeFilterCount > 0 && (
+              <span className="bg-gray-900 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
           </Button>
 
           <SortDropdown currentSort={currentSort} />
         </div>
-      </header>
+      </div>
 
       {/* Desktop Layout - Two columns */}
       <div className="flex gap-6 lg:gap-8">
@@ -161,14 +183,14 @@ const CategoryClient = ({
         <FilterSidebar
           isOpen={isFilterSidebarOpen}
           onClose={() => setIsFilterSidebarOpen(false)}
-          facets={initialFacets}
           currentFilters={activeFilters}
+          facets={data?.pages[0]?.facets || initialFacets}
         />
 
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           {/* Desktop Header */}
-          <header className="hidden lg:flex items-center justify-between mb-6 pb-4 border-b px-2 md:px-4 lg:px-6">
+          <header className="hidden lg:flex z-50 bg-white sticky top-0 items-center justify-between mb-6  border-b px-4 py-4">
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground">
                 {totalProducts} {totalProducts === 1 ? "product" : "products"}
@@ -180,44 +202,19 @@ const CategoryClient = ({
             </div>
           </header>
 
-          {/* Product Grid */}
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-muted-foreground">Loading products...</div>
-            </div>
-          ) : status === "error" ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-destructive">Error loading products</div>
-            </div>
-          ) : (
-            <>
-              <ProductList products={allProducts} />
-
-              {/* Load More Button */}
-              {hasNextPage && (
-                <div className="flex justify-center mt-12">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => fetchNextPage()}
-                    disabled={isFetchingNextPage}
-                    className="min-w-[200px]"
-                  >
-                    {isFetchingNextPage ? "Loading..." : "Load More Products"}
-                  </Button>
-                </div>
-              )}
-
-              {!hasNextPage && allProducts.length > 0 && (
-                <div className="text-center mt-12 text-sm text-muted-foreground">
-                  You've viewed all products
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Intersection Observer Sentinel */}
-          <div ref={sentinelRef} className="h-px" />
+          {/* Product Grid/List */}
+          <Results
+            results={{
+              items: allProducts,
+              total: totalProducts,
+              page: data?.pages?.length || 1,
+              size: currentSize,
+            }}
+            isLoading={isLoading}
+            onLoadMore={fetchNextPage}
+            hasMore={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
       </div>
     </section>
