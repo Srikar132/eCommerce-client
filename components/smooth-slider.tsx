@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -42,10 +43,13 @@ const SmoothSlider = () => {
                             key={`${post.id}-${index}`}
                             className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden"
                         >
-                            <img
+                            <Image
                                 src={post.image}
                                 alt={post.alt}
                                 className="w-full h-full object-cover"
+                                fill
+                                width={320}
+                                height={400}
                             />
                         </div>
                     ))}
