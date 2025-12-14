@@ -1,21 +1,24 @@
 "use client";
 
 import { useAuthStore } from "@/lib/store/auth-store";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { authApi } from "@/lib/api/auth";
+import { ROUTE_CONFIG } from "@/lib/auth/middleware-config";
 
 interface AuthProviderProps {
   children: React.ReactNode;
-  initialUser?: any; // Pass from server
+  initialUser?: any;
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
-  const { setUser, clearUser } = useAuthStore();
+  const { setUser, clearUser, isAuthenticated } = useAuthStore();
   const pathname = usePathname();
+  const router = useRouter();
+  const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Hydrate store with server data on mount
   useEffect(() => {
-    // Hydrate store with server data on mount
     if (initialUser) {
       setUser(initialUser);
     } else {
@@ -23,22 +26,57 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     }
   }, [initialUser, setUser, clearUser]);
 
-  // Optional: Revalidate auth on route changes
+  // Periodic auth check to catch token expiry
   useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const checkAuthStatus = async () => {
+      try {
+        const response = await authApi.getCurrentUser();
+        setUser(response.user);
+      } catch (error) {
+        console.log('[Auth] Session expired, clearing user');
+        clearUser();
+        
+        // Only redirect if on protected route
+        if (ROUTE_CONFIG.protected.some(route => 
+            pathname === route || pathname.startsWith(`${route}/`))) {
+          router.push('/login');
+        }
+      }
+    };
+
+    // Check auth every 5 minutes
+    checkIntervalRef.current = setInterval(checkAuthStatus, 5 * 60 * 1000);
+
+    return () => {
+      if (checkIntervalRef.current) {
+        clearInterval(checkIntervalRef.current);
+      }
+    };
+  }, [isAuthenticated, pathname, router, setUser, clearUser]);
+
+  // Revalidate on route changes to protected routes
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
     const revalidateAuth = async () => {
       try {
         const response = await authApi.getCurrentUser();
         setUser(response.user);
       } catch (error) {
         clearUser();
+        router.push('/login');
       }
     };
 
-    // Only revalidate on specific routes if needed
-    if (pathname.startsWith('/account') || pathname.startsWith('/orders')) {
+    // Revalidate when navigating to sensitive routes
+    if (pathname.startsWith('/account') || 
+        pathname.startsWith('/orders') || 
+        pathname.startsWith('/checkout')) {
       revalidateAuth();
     }
-  }, [pathname]);
+  }, [pathname, isAuthenticated, setUser, clearUser, router]);
 
   return <>{children}</>;
 }

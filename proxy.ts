@@ -1,102 +1,117 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { isTokenExpired, hasRole } from './lib/auth/utils';
+import { isTokenExpired, hasRole, decodeJWT } from './lib/auth/utils';
 import { ROUTE_CONFIG, isRouteMatch } from './lib/auth/middleware-config';
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for static files and API routes
+  console.log('\n────────────────────────────');
+  console.log('[Middleware] Incoming request:', pathname);
+
+  // Skip static & API routes
   if (
-    pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
     pathname.includes('.') ||
     pathname === '/favicon.ico'
   ) {
     return NextResponse.next();
   }
 
-  console.log('[Middleware] Processing:', pathname);
-
-  // Get tokens from cookies
+  // Read cookies
   const accessToken = request.cookies.get('accessToken')?.value;
   const refreshToken = request.cookies.get('refreshToken')?.value;
 
-  console.log('[Middleware] Access Token:', accessToken ? 'Present' : 'Missing');
-  console.log('[Middleware] Refresh Token:', refreshToken ? 'Present' : 'Missing');
-  
-  let isAuthenticated = false;
+  console.log('[Middleware] Access Token:', accessToken ? 'FOUND' : 'MISSING');
+  console.log('[Middleware] Refresh Token:', refreshToken ? 'FOUND' : 'MISSING');
 
-  // Check route type first to avoid unnecessary processing
+  // Route classification
   const isProtectedRoute = isRouteMatch(pathname, ROUTE_CONFIG.protected);
   const isGuestOnlyRoute = isRouteMatch(pathname, ROUTE_CONFIG.guestOnly);
   const isAdminRoute = isRouteMatch(pathname, ROUTE_CONFIG.admin);
 
-  // Check if access token is valid
+  console.log('[Middleware] Route Type:', {
+    protected: isProtectedRoute,
+    guestOnly: isGuestOnlyRoute,
+    admin: isAdminRoute,
+  });
+
+  let isAuthenticated = false;
+  let userInfo: any = null;
+
+  // Validate access token
   if (accessToken && !isTokenExpired(accessToken)) {
     isAuthenticated = true;
-  } 
-  // Only attempt refresh if we're accessing a protected route and have a valid refresh token
-  else if (refreshToken && !isTokenExpired(refreshToken) && (isProtectedRoute || isAdminRoute)) {
-    console.log('[Middleware] Access token expired, redirecting to refresh endpoint');
-    
-    // Redirect to a special refresh route that will handle the token refresh
-    const refreshUrl = new URL('/api/auth/refresh-redirect', request.url);
-    refreshUrl.searchParams.set('returnTo', pathname);
-    return NextResponse.redirect(refreshUrl);
+    userInfo = decodeJWT(accessToken);
+
+    console.log('[Middleware] User authenticated');
+    console.log('[Middleware] User info:', {
+      id: userInfo?.sub,
+      email: userInfo?.email,
+      role: userInfo?.role || userInfo?.roles,
+      emailVerified: userInfo?.emailVerified,
+    });
+  } else {
+    console.log('[Middleware] User NOT authenticated');
   }
 
-  console.log('[Middleware] Auth status:', isAuthenticated ? 'Authenticated' : 'Not authenticated');
+  // Guest-only routes
+  if (isGuestOnlyRoute) {
+    console.log('[Middleware] Guest-only route');
 
-  // Handle guest-only routes (login, signup)
-  if (isGuestOnlyRoute && isAuthenticated) {
-    console.log('[Middleware] Redirecting authenticated user away from guest-only route');
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+    if (isAuthenticated) {
+      console.log('[Middleware] Authenticated user → redirecting to /');
+      return NextResponse.redirect(new URL('/', request.url));
+    }
 
-  // If accessing guest-only routes without authentication, allow it
-  if (isGuestOnlyRoute && !isAuthenticated) {
-    console.log('[Middleware] Allowing access to guest-only route');
+    console.log('[Middleware] Guest allowed → continuing');
     return NextResponse.next();
   }
 
-  // Handle protected routes
-  if (isProtectedRoute && !isAuthenticated) {
-    console.log('[Middleware] Redirecting unauthenticated user to login');
-    const loginUrl = new URL('/login', request.url);
-    const redirectResponse = NextResponse.redirect(loginUrl);
-    // Clear expired cookies
-    redirectResponse.cookies.delete('accessToken');
-    redirectResponse.cookies.delete('refreshToken');
-    return redirectResponse;
-  }
+  // Protected & admin routes
+  if (isProtectedRoute || isAdminRoute) {
+    console.log('[Middleware] Protected/Admin route');
 
-  // Handle admin routes
-  if (isAdminRoute) {
     if (!isAuthenticated) {
-      console.log('[Middleware] Redirecting unauthenticated user to login (admin route)');
+      console.log('[Middleware] No valid access token');
+
+      if (refreshToken && !isTokenExpired(refreshToken)) {
+        console.log('[Middleware] Refresh token valid → redirecting to refresh');
+
+        const refreshUrl = new URL('/api/auth/refresh-redirect', request.url);
+        refreshUrl.searchParams.set('returnTo', pathname);
+        return NextResponse.redirect(refreshUrl);
+      }
+
+      console.log('[Middleware] No valid tokens → redirecting to /login');
+
       const loginUrl = new URL('/login', request.url);
-      const redirectResponse = NextResponse.redirect(loginUrl);
-      redirectResponse.cookies.delete('accessToken');
-      redirectResponse.cookies.delete('refreshToken');
-      return redirectResponse;
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete('accessToken');
+      response.cookies.delete('refreshToken');
+      return response;
     }
 
-    if (!hasRole(accessToken!, 'ADMIN')) {
-      console.log('[Middleware] User lacks admin role, redirecting to unauthorized');
-      return NextResponse.redirect(new URL('/unauthorized', request.url));
+    // Admin check
+    if (isAdminRoute) {
+      console.log('[Middleware] Admin route → checking role');
+
+      if (!hasRole(accessToken!, 'ADMIN')) {
+        console.log('[Middleware] Access denied (not ADMIN)');
+        return NextResponse.redirect(new URL('/unauthorized', request.url));
+      }
+
+      console.log('[Middleware] Admin access granted');
     }
   }
 
-  // Allow request to proceed
-  console.log('[Middleware] Request allowed');
+  console.log('[Middleware] Access allowed → continuing');
   return NextResponse.next();
 }
 
-// Config moved to middleware.ts
-
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 };

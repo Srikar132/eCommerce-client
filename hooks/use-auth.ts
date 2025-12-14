@@ -54,33 +54,40 @@ export const useAuth = () => {
   const logout = async () => {
     setIsLoading(true);
     try {
-      // Call logout API which handles backend logout and cookie clearing
+      // Call logout API
       await authApi.logout();
 
-      // Clear client state
+      // Clear Zustand state
       clearUser();
 
-      // Clear any remaining client-side cookies as backup
+      // Clear localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth-storage');
+        
+        // Clear any other app-specific storage
+        localStorage.removeItem('cart');
+        localStorage.removeItem('wishlist');
+        
+        // Clear session storage
+        sessionStorage.clear();
+      }
+
+      // Clear cookies as backup
       clearAuthCookies();
 
-      // Force a hard navigation to ensure all client state is cleared
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      } else {
-        router.push("/login");
-      }
+      // Hard navigation to clear all client state
+      window.location.href = '/login';
     } catch (error: any) {
       console.error("Logout failed:", error);
 
-      // Always clear user session and cookies on logout attempt
+      // Force cleanup even on error
       clearUser();
       clearAuthCookies();
-
-      // Force a hard navigation even on error to ensure cleanup
+      
       if (typeof window !== 'undefined') {
+        localStorage.clear();
+        sessionStorage.clear();
         window.location.href = '/login';
-      } else {
-        router.push("/login");
       }
     } finally {
       setIsLoading(false);

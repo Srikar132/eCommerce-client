@@ -7,6 +7,8 @@ import { getServerAuth } from "@/lib/auth/server";
 import { AuthProvider } from "@/providers/auth-provider";
 import TanstackProvider from "@/providers/tanstack";
 import { Toaster } from "sonner";
+import { cookies } from "next/headers";
+import { isTokenExpired } from "@/lib/auth/utils";
 
 
 
@@ -17,8 +19,20 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
 
-  const auth = await getServerAuth();
+ // Check if access token is expired on server
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  const refreshToken = cookieStore.get('refreshToken')?.value;
 
+  let auth = await getServerAuth();
+
+  // If access token expired but refresh token valid, trigger refresh
+  if (!auth.isAuthenticated && 
+      refreshToken && 
+      !isTokenExpired(refreshToken)) {
+    // User will be redirected to refresh endpoint by middleware
+    auth = { user: null, isAuthenticated: false };
+  }
 
   return (
     <>
