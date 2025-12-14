@@ -1,4 +1,4 @@
-import { LoginRequest, AuthResponse, RegisterRequest } from "@/types/auth";
+import { LoginRequest, AuthResponse, RegisterRequest } from "@/types";
 import { apiClient } from "./client";
 import { AxiosResponse } from "axios";
 

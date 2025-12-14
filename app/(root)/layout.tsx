@@ -1,6 +1,5 @@
 import AppSidebar from "@/components/app-sidebar";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar";
 import EmailVerificationBanner from "@/components/auth/email-verification-banner";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { getServerAuth } from "@/lib/auth/server";
@@ -9,6 +8,7 @@ import TanstackProvider from "@/providers/tanstack";
 import { Toaster } from "sonner";
 import { cookies } from "next/headers";
 import { isTokenExpired } from "@/lib/auth/utils";
+import Footer from "@/components/footer";
 
 
 
@@ -21,7 +21,7 @@ export default async function RootLayout({
 
  // Check if access token is expired on server
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
+  // const accessToken = cookieStore.get('accessToken')?.value;
   const refreshToken = cookieStore.get('refreshToken')?.value;
 
   let auth = await getServerAuth();

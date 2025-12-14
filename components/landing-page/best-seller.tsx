@@ -5,8 +5,8 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import BestsellerCard from "./cards/best-seller";
-import {items} from "@/constants";
+import { items } from "@/constants";
+import BestsellerCard from "../cards/best-seller";
 
 
 export function CarouselComponent() {

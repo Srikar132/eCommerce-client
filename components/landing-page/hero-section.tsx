@@ -2,7 +2,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const HeroSection = () => {
@@ -90,12 +90,17 @@ const HeroSection = () => {
 
                     
                     <div id="cta-wrapper">
-                        <Button 
-                            size="lg"
-                            className="cta-button-primary"
-                        >
-                            Shop Now
-                        </Button>
+                        
+                        <Link href={'/products'}>
+                            <Button 
+                                size="lg"
+                                className="cta-button-primary"
+                            >
+                                Shop Now
+                            </Button>
+                        </Link>
+
+
                         <Link href={'/contact'}>
                             <Button 
                                 size="lg"

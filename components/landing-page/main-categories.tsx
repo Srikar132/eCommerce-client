@@ -1,5 +1,5 @@
-import CategoryCard from "./cards/category-card";
 import {categories} from "@/constants";
+import CategoryCard from "../cards/category-card";
 
 const MCategories = () => {
 

@@ -3,11 +3,10 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Card } from "./ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { ChevronDown } from "lucide-react";
+import { Button } from "../ui/button";
 
 interface DealCardProps {
   image : string;

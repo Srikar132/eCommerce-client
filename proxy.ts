@@ -65,6 +65,16 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      console.log('[Middleware] Guest route but Refresh Token valid → attempting auto-login');
+      
+      const refreshUrl = new URL('/api/auth/refresh-redirect', request.url);
+      // IMPORTANT: After refresh, send them to Home ('/'), NOT back to '/login'
+      refreshUrl.searchParams.set('returnTo', '/'); 
+      
+      return NextResponse.redirect(refreshUrl);
+    }
+
     console.log('[Middleware] Guest allowed → continuing');
     return NextResponse.next();
   }

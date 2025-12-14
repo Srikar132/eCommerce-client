@@ -65,7 +65,7 @@ export default function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
                 <Home className="w-5 h-5 mr-3" />
-                <Link href="/" className="w-full">Home</Link>
+                <Link href="/" className="w-full" onClick={handleClose}>Home</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
@@ -80,10 +80,10 @@ export default function AppSidebar() {
               </SidebarMenuButton>
               {expandedSection === 'categories' && (
                 <div className="pl-4 py-2 space-y-2">
-                  <Link href="/category/men?sort=relevance" className="block py-2 text-sm hover:opacity-70">Men</Link>
-                  <Link href="/category/women?sort=relevance" className="block py-2 text-sm hover:opacity-70">Women</Link>
-                  <Link href="/category/kids?sort=relevance" className="block py-2 text-sm hover:opacity-70">Kids</Link>
-                  <Link href="/category/genz?sort=relevance" className="block py-2 text-sm hover:opacity-70">GenZ</Link>
+                  <Link href="/category/men?sort=relevance" className="block py-2 text-sm hover:opacity-70" onClick={handleClose}>Men</Link>
+                  <Link href="/category/women?sort=relevance" className="block py-2 text-sm hover:opacity-70" onClick={handleClose}>Women</Link>
+                  <Link href="/category/kids?sort=relevance" className="block py-2 text-sm hover:opacity-70" onClick={handleClose}>Kids</Link>
+                  <Link href="/category/genz?sort=relevance" className="block py-2 text-sm hover:opacity-70" onClick={handleClose}>GenZ</Link>
                 </div>
               )}
             </SidebarMenuItem>
@@ -92,7 +92,7 @@ export default function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
                 <Search className="w-5 h-5 mr-3" />
-                <Link href="/search" className="w-full">Search</Link>
+                <Link href="/search" className="w-full" onClick={handleClose}>Search</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
@@ -100,14 +100,14 @@ export default function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
                 <ShoppingCart className="w-5 h-5 mr-3" />
-                <Link href="/cart" className="w-full">Cart</Link>
+                <Link href="/cart" className="w-full" onClick={handleClose}>Cart</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             {/* Customization */}
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-6 border-b">
-                <Link href="/customization" className="w-full">Brands & Designs</Link>
+                <Link href="/customization" className="w-full" onClick={handleClose}>Brands & Designs</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -118,13 +118,13 @@ export default function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-3">
                 <User className="w-5 h-5 mr-3" />
-                <Link href="/account" className="w-full">Account</Link>
+                <Link href="/account" className="w-full" onClick={handleClose}>Account</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton className="w-full justify-start text-base py-3">
                 <Mail className="w-5 h-5 mr-3" />
-                <Link href="/contact" className="w-full">Contact</Link>
+                <Link href="/contact" className="w-full" onClick={handleClose}>Contact</Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
