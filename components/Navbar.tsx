@@ -8,13 +8,7 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import { SearchInput } from './search-input';
 
-const menuItems = [
-    { name: 'Men', href: '/category/men?sort=relevance' },
-    { name: 'Women', href: '/category/women?sort=relevance' },
-    { name: 'Kids', href: '/category/kids?sort=relevance' },
-    { name: 'Genz', href: '/category/genz?sort=relevance' },
-    { name: 'Brands & Designs', href: '/customization' }
-];
+
 
 const HERO_SECTION_HEIGHT = 1000;
 
@@ -95,17 +89,7 @@ const Navbar = () => {
                             />
                         </Button>
 
-                        <div className="hidden lg:flex items-center space-x-3">
-                            {menuItems.map((item) => (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={`nav-link ${!isHomePage ? 'text-black!' : ''}`}
-                                >
-                                    {item.name}
-                                </Link>
-                            ))}
-                        </div>
+                        
                     </div>
 
                     <div className="flex justify-center">

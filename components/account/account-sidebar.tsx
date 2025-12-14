@@ -4,6 +4,7 @@ import React from "react";
 import {Button} from "@/components/ui/button";
 import {Separator} from "@/components/ui/separator";
 import {CreditCard, Mail, MapPin, ShoppingBag, Bell, ChevronRight, LogOut} from "lucide-react";
+import LogoutButton from "../auth/logout-button";
 
 interface SidebarProps {
     activeSection: string;
@@ -65,14 +66,7 @@ const Sidebar = ({ activeSection, onSectionChange, onSignOut }: SidebarProps) =>
             </nav>
 
             <div className="p-6">
-                <Button
-                    variant="outline"
-                    className="w-full h-12 border-zinc-300 rounded-none hover:bg-zinc-100 hover:border-zinc-400"
-                    onClick={onSignOut}
-                >
-                    <LogOut size={18} className="mr-3" />
-                    <span className="font-medium tracking-widest">SIGN OUT</span>
-                </Button>
+                <LogoutButton/>
             </div>
         </div>
     )

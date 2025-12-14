@@ -355,6 +355,10 @@
 
   .auth-container {
     @apply w-full max-w-xl;
+
+    .auth-footer {
+      @apply mt-12 text-center text-xs text-gray-800;
+    }
   }
 
   .auth-header {
@@ -373,13 +377,6 @@
     @apply space-y-2;
   }
 
-  .auth-input {
-    @apply h-12 border-gray-300 rounded-none bg-white;
-  }
-
-  .auth-input-error {
-    @apply h-12 border-red-500 rounded-none bg-white;
-  }
 
   .auth-label-floating {
     @apply absolute -top-2 left-3 bg-white px-1 text-xs text-gray-600;
@@ -387,6 +384,26 @@
 
   .auth-input-wrapper {
     @apply relative;
+
+    .auth-input {
+      @apply h-12 border-gray-600 rounded-none bg-white;
+    }
+
+    .auth-input-error {
+      @apply h-12 border-red-500 rounded-none bg-white;
+    }
+
+    .auth-label-floating {
+      @apply absolute -top-2 left-3 bg-white px-1 text-xs text-gray-600;
+    }
+
+
+          .auth-label-floating {
+        @apply absolute -top-2 left-3 bg-white px-1 text-xs text-gray-600;
+      }
+
+
+
   }
 
   .auth-password-toggle {
@@ -443,6 +460,12 @@
 
   .auth-toggle-link {
     @apply text-black underline cursor-pointer font-medium hover:no-underline;
+  }
+
+
+  /* auth footer */
+  .auth-footer {
+    @apply mt-12 text-center text-xs text-gray-400;
   }
 
   /* Add these utilities to your global.css file under @layer utilities */
