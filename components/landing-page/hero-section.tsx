@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const HeroSection = () => {
-    
+
     useGSAP(() => {
         gsap.registerPlugin(ScrollTrigger);
         const mm = gsap.matchMedia();
@@ -52,10 +52,10 @@ const HeroSection = () => {
         return () => mm.revert();
 
     }, []);
-    
+
     return (
-        <section 
-            id="hero-section" 
+        <section
+            id="hero-section"
         >
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 z-0">
@@ -68,31 +68,31 @@ const HeroSection = () => {
                         objectPosition: 'top'
                     }}
                     priority
-                    // quality={90}
+                // quality={90}
                 />
                 {/* Dark overlay for better text readability */}
                 <div className="absolute inset-0 bg-black/20 lg:bg-black/10" />
             </div>
 
             <div className="relative lg:static h-full flex items-end justify-center">
-                <div 
-                    id="hero-text" 
+                <div
+                    id="hero-text"
                 >
                     {/* Subtitle */}
                     <p id="sub-title">
                         Discover Your Style
                     </p>
-                    
+
                     {/* Main Heading */}
                     <h1 id="main-heading">
                         Where Beauty Roars in Every Stitch
                     </h1>
 
-                    
+
                     <div id="cta-wrapper">
-                        
+
                         <Link href={'/products'}>
-                            <Button 
+                            <Button
                                 size="lg"
                                 className="cta-button-primary"
                             >
@@ -102,7 +102,7 @@ const HeroSection = () => {
 
 
                         <Link href={'/contact'}>
-                            <Button 
+                            <Button
                                 size="lg"
                                 variant="outline"
                                 className="cta-button-secondary"

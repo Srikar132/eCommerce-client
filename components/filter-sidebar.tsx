@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { X, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
-import { Facets } from "@/lib/types";
+import { ProductFacets, FacetItem, PriceRange } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
@@ -18,58 +18,9 @@ import { cn } from "@/lib/utils";
 interface FilterSidebarProps {
     isOpen: boolean;
     onClose: () => void;
-    facets?: Facets;
+    facets?: ProductFacets;
     currentFilters: Record<string, string | string[]>;
 }
-
-// Configuration for each filter type
-const FILTER_CONFIG = {
-    availability: {
-        label: "Availability",
-        options: [
-            { value: "in-stock", label: "In Stock" },
-            { value: "out-of-stock", label: "Out of Stock" },
-        ],
-    },
-    priceRanges: {
-        label: "Price",
-        formatOption: (range: any) => ({
-            value: `${range.min}-${range.max}`,
-            label: `$${range.min} - $${range.max}`,
-        }),
-    },
-    colors: {
-        label: "Color",
-        formatOption: (color: string) => ({
-            value: color,
-            label: color,
-            className: "capitalize",
-        }),
-    },
-    sizes: {
-        label: "Size",
-        formatOption: (size: string) => ({
-            value: size,
-            label: size,
-            className: "uppercase",
-        }),
-    },
-    brands: {
-        label: "Brand",
-        formatOption: (brand: string) => ({
-            value: brand,
-            label: brand,
-        }),
-    },
-    categories: {
-        label: "Category",
-        formatOption: (category: string) => ({
-            value: category,
-            label: category,
-            className: "capitalize",
-        }),
-    },
-};
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({
     isOpen,
@@ -80,12 +31,17 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     const router = useRouter();
     const searchParams = useSearchParams();
 
+    // Define available filter sections
+    const filterSections = ['categories', 'brands', 'sizes', 'colors'] as const;
+
     // Dynamic expanded sections based on available facets
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
         const initial: Record<string, boolean> = {};
-        Object.keys(FILTER_CONFIG).forEach((key) => {
-            initial[key] = true;
+        filterSections.forEach((section) => {
+            initial[section] = true;
         });
+        initial['price'] = true; // Add price section
+        initial['customizable'] = true; // Add customizable section
         return initial;
     });
 
@@ -159,7 +115,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     // Clear all filters
     const clearAllFilters = () => {
         const params = new URLSearchParams(searchParams.toString());
-        const paramsToKeep = ["page", "size", "sort"];
+        const paramsToKeep = ["page", "size", "sort", "searchQuery"];
 
         Array.from(params.keys())
             .filter((key) => !paramsToKeep.includes(key))
@@ -185,81 +141,210 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         return current === value;
     };
 
-    // Get filter key name for URL params
-    const getFilterKey = (configKey: string): string => {
-        if (configKey === "priceRanges") return "price";
-        if (configKey === "brands") return "brand";
-        if (configKey === "categories") return "category";
-        return configKey;
+    // Get URL parameter name for filter type
+    const getFilterUrlParam = (filterType: string): string => {
+        switch (filterType) {
+            case 'categories':
+                return 'category';
+            case 'brands':
+                return 'brand';
+            case 'sizes':
+                return 'productSize';
+            case 'colors':
+                return 'color';
+            default:
+                return filterType;
+        }
     };
 
-    // Render dynamic filter section
-    const renderFilterSection = (configKey: string) => {
-        const config = FILTER_CONFIG[configKey as keyof typeof FILTER_CONFIG];
-        const filterKey = getFilterKey(configKey);
+    // Render facet filter section
+    const renderFacetSection = (
+        sectionKey: keyof ProductFacets,
+        title: string,
+        items: FacetItem[]
+    ) => {
+        if (!items || items.length === 0) return null;
 
-        // Get options based on config
-        let options: Array<{ value: string; label: string; className?: string }> = [];
-
-        if (configKey === "availability") {
-            options = (config as { options: { value: string; label: string; }[] })?.options || [];
-        } else if (facets && configKey in facets) {
-            const facetData = facets[configKey as keyof Facets];
-            if (facetData && Array.isArray(facetData) && facetData.length > 0) {
-                options = facetData.map((item: any) =>
-                    'formatOption' in config ? config.formatOption(item) : { value: item, label: item }
-                );
-            } else {
-                return null; // Don't render if no data
-            }
-        } else {
-            return null; // Don't render if not in facets
-        }
-
-        if (options.length === 0) return null;
+        const urlParam = getFilterUrlParam(sectionKey);
 
         return (
             <Collapsible
-                key={configKey}
-                open={expandedSections[configKey]}
-                onOpenChange={() => toggleSection(configKey)}
+                key={sectionKey}
+                open={expandedSections[sectionKey]}
+                onOpenChange={() => toggleSection(sectionKey)}
             >
                 <CollapsibleTrigger className="flex items-center justify-between w-full group">
                     <h3 className="font-medium text-sm uppercase tracking-wide">
-                        {config.label}
+                        {title}
                     </h3>
                     <ChevronDown
                         className={cn(
                             "h-4 w-4 transition-transform duration-200",
-                            expandedSections[configKey] && "rotate-180"
+                            expandedSections[sectionKey] && "rotate-180"
                         )}
                     />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="pt-4 space-y-3">
-                    {options.map((option, index) => {
-                        const id = `${configKey}-${index}`;
+                    {items.map((item, index) => {
+                        const id = `${sectionKey}-${index}`;
+                        const isSelected = isFilterSelected(urlParam, item.value);
+                        
                         return (
                             <div key={id} className="flex items-center space-x-2">
                                 <Checkbox
                                     id={id}
-                                    checked={isFilterSelected(filterKey, option.value)}
+                                    checked={isSelected}
                                     onCheckedChange={(checked) =>
-                                        handleFilterChange(filterKey, option.value, checked as boolean)
+                                        handleFilterChange(urlParam, item.value, checked as boolean)
                                     }
                                     className="border-gray-900 hover:border-black rounded-none transition-colors duration-200 cursor-pointer"
                                 />
                                 <Label
                                     htmlFor={id}
                                     className={cn(
-                                        "text-sm font-normal cursor-pointer",
-                                        option.className
+                                        "text-sm font-normal cursor-pointer flex items-center gap-2",
+                                        sectionKey === 'colors' && "capitalize",
+                                        sectionKey === 'sizes' && "uppercase"
                                     )}
                                 >
-                                    {option.label}
+                                    {/* Color dot for color filters */}
+                                    {sectionKey === 'colors' && item.colorHex && (
+                                        <div 
+                                            className="w-4 h-4 rounded-full border border-gray-300"
+                                            style={{ backgroundColor: item.colorHex }}
+                                        />
+                                    )}
+                                    <span>
+                                        {item.label} ({item.count})
+                                    </span>
                                 </Label>
                             </div>
                         );
                     })}
+                </CollapsibleContent>
+            </Collapsible>
+        );
+    };
+
+    // Handle price range filter change
+    const handlePriceRangeChange = (range: string, isChecked: boolean) => {
+        const updatedFilters = { ...currentFilters };
+        
+        if (isChecked) {
+            const [minStr, maxStr] = range.split('-');
+            updatedFilters['minPrice'] = minStr;
+            updatedFilters['maxPrice'] = maxStr;
+        } else {
+            delete updatedFilters['minPrice'];
+            delete updatedFilters['maxPrice'];
+        }
+        
+        applyFilters(updatedFilters);
+    };
+
+    // Check if price range is selected
+    const isPriceRangeSelected = (range: string): boolean => {
+        const [minStr, maxStr] = range.split('-');
+        return currentFilters['minPrice'] === minStr && currentFilters['maxPrice'] === maxStr;
+    };
+
+    // Render price range section
+    const renderPriceRangeSection = () => {
+        if (!facets?.priceRange) return null;
+
+        const { min, max } = facets.priceRange;
+        
+        // Generate some common price ranges
+        const priceRanges = [
+            { min: min, max: 30, label: `$${min.toFixed(0)} - $30` },
+            { min: 30, max: 50, label: '$30 - $50' },
+            { min: 50, max: 100, label: '$50 - $100' },
+            { min: 100, max: max, label: `$100 - $${max.toFixed(0)}` },
+        ].filter(range => range.min < range.max);
+        
+        return (
+            <Collapsible
+                open={expandedSections['price']}
+                onOpenChange={() => toggleSection('price')}
+            >
+                <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                    <h3 className="font-medium text-sm uppercase tracking-wide">
+                        Price Range
+                    </h3>
+                    <ChevronDown
+                        className={cn(
+                            "h-4 w-4 transition-transform duration-200",
+                            expandedSections['price'] && "rotate-180"
+                        )}
+                    />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4 space-y-3">
+                    {priceRanges.map((range, index) => {
+                        const rangeValue = `${range.min}-${range.max}`;
+                        const id = `price-${index}`;
+                        const isSelected = isPriceRangeSelected(rangeValue);
+                        
+                        return (
+                            <div key={id} className="flex items-center space-x-2">
+                                <Checkbox
+                                    id={id}
+                                    checked={isSelected}
+                                    onCheckedChange={(checked) =>
+                                        handlePriceRangeChange(rangeValue, checked as boolean)
+                                    }
+                                    className="border-gray-900 hover:border-black rounded-none transition-colors duration-200 cursor-pointer"
+                                />
+                                <Label
+                                    htmlFor={id}
+                                    className="text-sm font-normal cursor-pointer"
+                                >
+                                    {range.label}
+                                </Label>
+                            </div>
+                        );
+                    })}
+                </CollapsibleContent>
+            </Collapsible>
+        );
+    };
+
+    // Render customizable products section
+    const renderCustomizableSection = () => {
+        const isSelected = isFilterSelected('customizable', 'true');
+        
+        return (
+            <Collapsible
+                open={expandedSections['customizable']}
+                onOpenChange={() => toggleSection('customizable')}
+            >
+                <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                    <h3 className="font-medium text-sm uppercase tracking-wide">
+                        Customizable
+                    </h3>
+                    <ChevronDown
+                        className={cn(
+                            "h-4 w-4 transition-transform duration-200",
+                            expandedSections['customizable'] && "rotate-180"
+                        )}
+                    />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4 space-y-3">
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="customizable-true"
+                            checked={isSelected}
+                            onCheckedChange={(checked) =>
+                                handleFilterChange('customizable', 'true', checked as boolean)
+                            }
+                            className="border-gray-900 hover:border-black rounded-none transition-colors duration-200 cursor-pointer"
+                        />
+                        <Label
+                            htmlFor="customizable-true"
+                            className="text-sm font-normal cursor-pointer"
+                        >
+                            Customizable Products Only
+                        </Label>
+                    </div>
                 </CollapsibleContent>
             </Collapsible>
         );
@@ -321,9 +406,23 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 {/* Filter Content */}
                 <div className="flex-1 overflow-y-auto">
                     <div className="p-6 space-y-6">
-                        {Object.keys(FILTER_CONFIG).map((configKey) =>
-                            renderFilterSection(configKey)
-                        )}
+                        {/* Categories */}
+                        {facets?.categories && renderFacetSection('categories', 'Categories', facets.categories)}
+                        
+                        {/* Brands */}
+                        {facets?.brands && renderFacetSection('brands', 'Brands', facets.brands)}
+                        
+                        {/* Sizes */}
+                        {facets?.sizes && renderFacetSection('sizes', 'Sizes', facets.sizes)}
+                        
+                        {/* Colors */}
+                        {facets?.colors && renderFacetSection('colors', 'Colors', facets.colors)}
+                        
+                        {/* Price Range */}
+                        {renderPriceRangeSection()}
+                        
+                        {/* Customizable */}
+                        {renderCustomizableSection()}
                     </div>
                 </div>
 

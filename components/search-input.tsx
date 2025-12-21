@@ -80,7 +80,7 @@ export function SearchInput({
     if (onSearch) {
       onSearch(searchQuery);
     } else {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/products?searchQuery=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 

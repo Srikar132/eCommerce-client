@@ -18,14 +18,10 @@ interface SortOption {
 }
 
 const sortOptions: SortOption[] = [
-  { value: "relevance", label: "Featured" },
-  { value: "bestselling", label: "Best Selling" },
-  { value: "name-asc", label: "A-Z" },
-  { value: "name-desc", label: "Z-A" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "date-asc", label: "Date: Old to New" },
-  { value: "date-desc", label: "Date: New to Old" },
+  { value: "basePrice,asc", label: "Price: Low to High" },
+  { value: "basePrice,desc", label: "Price: High to Low" },
+  { value: "createdAt,asc", label: "Date: Old to New" },
+  { value: "createdAt,desc", label: "Date: New to Old" },
 ];
 
 interface SortDropdownProps {

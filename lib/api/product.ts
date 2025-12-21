@@ -1,54 +1,49 @@
-import { FetchProductList, ProductListResponse } from "@/types";
-import { buildParams, normalizeArray } from "../utils";
+import { FetchProductList, ProductSearchResponse } from "@/types";
+import { buildParams } from "../utils";
 import { apiClient } from "./client";
-import { Axios, AxiosResponse } from "axios";
+import {  AxiosResponse } from "axios";
+
 
 
 export const productApi = {
     /**
      * GET /api/v1/products?
-        category=t-shirts,jeans&
-        brand=nike,adidas&
-        minPrice=0&
-        maxPrice=200&
-        size=M,L&
-        color=black,blue&
+        category=shirts&
+        category=hoodies&
+        brand=nike&
+        brand=adidas&
+        minPrice=1000&
+        maxPrice=5000&
+        size=M&
+        size=L&
+        color=black&
+        color=white&
         customizable=true&
-        sort=price:asc&
-        page=1&
-        limit=24
+        page=0&
+        size=24&
+        sort=createdAt,desc
      */
     getProducts: async ({
         filters,
-        page = 1,
-        limit,
-        sort = 'createdAt:desc'
+        page = 0,
+        size = 24,
+        sort = 'createdAt,desc'
     }: FetchProductList) => {
 
-
+        console.log('Fetching products with params:', { filters });
 
         const params = {
             page,
-            limit,
+            size,
             sort,
-
-            // Extract filters
-            category: normalizeArray(filters.category),
-            brand: normalizeArray(filters.brand),
-            size: normalizeArray(filters.size), // Product sizes
-            color: normalizeArray(filters.color),
-            minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
-            maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
-            customizable: filters.customizable === 'true',
+            ...filters, // Spread filters directly
         };
 
         const queryString = buildParams(params);
-
-        const res: AxiosResponse<ProductListResponse> = await apiClient.get(`/api/v1/products?${queryString}`);
+        const res: AxiosResponse<ProductSearchResponse> = await apiClient.get(
+            `/api/v1/products?${queryString}`
+        );
 
         return res.data;
     },
-
-
-
-}
+};

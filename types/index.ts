@@ -177,22 +177,56 @@ export type ProductResponse =
 
 
 
-export type ProductListResponse = PagedResponse<ProductResponse>;
+
+export interface ProductSearchResponse {
+    products: PagedResponse<ProductResponse>;
+    facets: ProductFacets;
+}
+
+
 export type ProductListRequestParams = {
-    category?: string[];  // slugs
-    brand?: string[];     // slugs
-    minPrice?: number;
-    maxPrice?: number;
-    size?: string[];      // S, M, L, XL
-    color?: string[];     // color names
-    customizable?: boolean;
-    sort?: 'price:asc' | 'price:desc' | 'rating:asc' | 'rating:desc' | 'newest' | 'popularity' | 'relevance' | 'createdAt:asc' | 'createdAt:desc';
-    page?: number;
-    limit?: number;
+    category?: string[];      // Array of category slugs
+    brand?: string[];         // Array of brand slugs
+    minPrice?: number;        // Minimum price filter
+    maxPrice?: number;        // Maximum price filter
+    productSize?: string[];   // Product sizes: ["S", "M", "L", "XL"]
+    color?: string[];         // Array of color names
+    customizable?: boolean;   // Filter for customizable products
+    searchQuery?: string;    // Full-text search query
+    sort?: string;           // Sort format: "field,direction" e.g., "createdAt,desc"
+    page?: number;           // 0-based page number
+    size?: number;           // Page size (items per page)
 };
+
 export type FetchProductList = {
-    filters: Record<string, string | string[]>;
+    filters: Record<string, string | string[] | boolean | number>;
     page?: number;
-    limit?: number;
-    sort?: ProductListRequestParams['sort'];
+    size?: number;
+    sort?: string;
 };
+
+
+// ================================================
+// TYPES FOR FACETS
+// ================================================
+export interface FacetItem {
+    value: string;        // slug or raw value (e.g. "t-shirts", "M", "black")
+    label: string;        // display label (e.g. "T-Shirts", "Medium")
+    count: number;        // number of matching products
+    selected?: boolean;   // whether user selected this filter
+    colorHex?: string;    // only for color facet
+}
+
+export interface PriceRange {
+    min: number;
+    max: number;
+}
+
+export interface ProductFacets {
+    categories: FacetItem[];
+    brands: FacetItem[];
+    sizes: FacetItem[];
+    colors: FacetItem[];
+    priceRange: PriceRange;
+    totalProducts?: number;
+}
