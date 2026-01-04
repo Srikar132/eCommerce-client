@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { ProductImage } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import ImageZoomModal from "./image-zoom-modal";
 import { Button } from "../ui/button";
 
@@ -34,9 +34,8 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                     <Button
                         key={image.id}
                         onClick={() => setSelectedImageIndex(index)}
-                        className={`pdp-thumbnail ${
-                            selectedImageIndex === index ? "pdp-thumbnail-active" : ""
-                        }`}
+                        className={`pdp-thumbnail ${selectedImageIndex === index ? "pdp-thumbnail-active" : ""
+                            }`}
                     >
 
                         <Image
@@ -50,7 +49,7 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                 ))}
             </div>
 
-             {/* Main Image with Zoom */}
+            {/* Main Image with Zoom */}
             <div className="pdp-main-image relative">
                 <ImageZoomModal
                     image={images[selectedImageIndex]}

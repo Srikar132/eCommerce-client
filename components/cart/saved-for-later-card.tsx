@@ -1,7 +1,7 @@
 // components/cart/saved-for-later-card.tsx
 import React from 'react';
 import { cartProduct } from '@/lib/types';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils/utils';
 import Image from "next/image";
 
 interface SavedForLaterCardProps {
@@ -11,10 +11,10 @@ interface SavedForLaterCardProps {
 }
 
 export const SavedForLaterCard: React.FC<SavedForLaterCardProps> = ({
-                                                                        item,
-                                                                        onMoveToBag,
-                                                                        onRemove,
-                                                                    }) => (
+    item,
+    onMoveToBag,
+    onRemove,
+}) => (
     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 py-4 sm:py-6 border-b">
         <div className="flex-shrink-0 mx-auto sm:mx-0">
             <Image

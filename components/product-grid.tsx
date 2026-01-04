@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import ProductCardComponent from './cards/product-card';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { ProductResponse } from '@/types';
@@ -103,7 +102,7 @@ export default function ProductGrid({
             {/* End of Results Message */}
             {!hasMore && results.items.length > 0 && (
                 <div className="text-center mt-12 text-sm text-muted-foreground">
-                    You've viewed all {results.total} products
+                    You have viewed all {results.total} products
                 </div>
             )}
 

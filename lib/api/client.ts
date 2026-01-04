@@ -36,6 +36,7 @@ apiClient.interceptors.request.use(
     if (process.env.NODE_ENV === 'development') {
       console.log('[API]', config.method?.toUpperCase(), config.url);
     }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -48,13 +49,13 @@ apiClient.interceptors.response.use(
 
     if (!error.response) {
       console.error('[API] Network error:', error.message);
-      
+
       if (typeof window !== 'undefined') {
         toast.error('Network Error', {
           description: 'Please check your internet connection',
         });
       }
-      
+
       return Promise.reject(new Error('Network error'));
     }
 
@@ -65,7 +66,7 @@ apiClient.interceptors.response.use(
 
     // Handle 401/403 errors
     if (
-      error.response?.status === 401 &&
+      (error.response?.status === 401 || error.response?.status === 403) &&
       originalRequest &&
       !originalRequest._retry
     ) {
@@ -97,14 +98,14 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as Error);
-        
+
         // Clear auth and redirect to login
         if (typeof window !== 'undefined') {
           // Clear client-side state
           localStorage.removeItem('auth-storage');
           window.location.href = '/login';
         }
-        
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

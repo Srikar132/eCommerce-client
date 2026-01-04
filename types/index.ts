@@ -230,3 +230,67 @@ export interface ProductFacets {
     priceRange: PriceRange;
     totalProducts?: number;
 }
+
+
+//category.ts
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  subCategories?: Category[]; // Recursive structure for nested categories
+  productCount?: number; // Optional, included when includeProductCount=true
+  description?: string;
+  imageUrl?: string;
+  isActive: boolean;
+  parentId?: string | null;
+  level?: number; // Category hierarchy level
+  createdAt: string;
+  updatedAt?: string;
+}
+
+/**
+ * Category Tree Node
+ * Used for building category navigation trees
+ */
+export interface CategoryTreeNode extends Category {
+  children: CategoryTreeNode[];
+  parent?: CategoryTreeNode;
+  path: string[]; // Array of slugs from root to current node
+}
+
+/**
+ * Category Navigation Item
+ * Simplified structure for rendering navigation
+ */
+export interface CategoryNavItem {
+  id: string;
+  name: string;
+  slug: string;
+  href: string; // Full URL path
+  subItems?: CategoryNavItem[];
+  productCount?: number;
+}
+
+/**
+ * Mega Menu Section
+ * Represents a column in the mega menu dropdown
+ */
+export interface MegaMenuSection {
+  title: string;
+  slug: string;
+  items: {
+    name: string;
+    slug: string;
+    href: string;
+    productCount?: number;
+  }[];
+}
+
+/**
+ * Category Breadcrumb Item
+ */
+export interface CategoryBreadcrumb {
+  name: string;
+  slug: string;
+  href: string;
+}

@@ -1,7 +1,7 @@
 import { FetchProductList, ProductSearchResponse } from "@/types";
-import { buildParams } from "../utils";
+import { buildParams } from "../utils/utils";
 import { apiClient } from "./client";
-import {  AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 
 
 

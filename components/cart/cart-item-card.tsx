@@ -1,7 +1,7 @@
 // components/cart/cart-item-card.tsx
 import React from 'react';
 import { CartItem } from '@/lib/types';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils/utils';
 import { QuantitySelector } from '@/components/cart/quantity-selector';
 import { SizeSelector } from '@/components/cart/size-selector';
 
@@ -14,12 +14,12 @@ interface CartItemCardProps {
 }
 
 export const CartItemCard: React.FC<CartItemCardProps> = ({
-                                                              item,
-                                                              onQuantityChange,
-                                                              onSaveForLater,
-                                                              onRemove,
-                                                              onSizeChange,
-                                                          }) => (
+    item,
+    onQuantityChange,
+    onSaveForLater,
+    onRemove,
+    onSizeChange,
+}) => (
     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 py-4 sm:py-6 border-b">
         <div className="flex-shrink-0 mx-auto sm:mx-0">
             <img

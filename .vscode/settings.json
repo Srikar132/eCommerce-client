@@ -2,5 +2,8 @@
     "css.lint.unknownAtRules": "ignore",
     "scss.lint.unknownAtRules": "ignore",
     "less.lint.unknownAtRules": "ignore",
-    "css.experimental.enableNesting": true
+    "css.experimental.enableNesting": true,
+    "workbench.iconTheme": "fira-code-material-minimal",
+    "editor.fontFamily": "fira-code-nerd, FiraCode Nerd Font, Consolas, 'Courier New', monospace",
+    "editor.fontLigatures": true
 }

@@ -16,7 +16,7 @@ type Props = {
 
 
 const ProductsPage = async ({ searchParams }: Props) => {
-  const resolvedParams = await searchParams;
+  const resolvedParams = (await searchParams);
   const queryClient = getQueryClient();
 
   // Parse page (0-based)

@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface SortOption {
   value: string;
@@ -28,8 +28,8 @@ interface SortDropdownProps {
   currentSort?: string;
 }
 
-const SortDropdown: React.FC<SortDropdownProps> = ({ 
-  currentSort = "relevance" 
+const SortDropdown: React.FC<SortDropdownProps> = ({
+  currentSort = "relevance"
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();

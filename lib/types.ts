@@ -80,31 +80,31 @@ export interface SizeGuideMeasurement {
 
 
 export type Category = {
-  id: UUID;
-  name: string;
-  slug: string;
-  description?: string;
-  metadata?: Record<string, any>;
+    id: UUID;
+    name: string;
+    slug: string;
+    description?: string;
+    metadata?: Record<string, any>;
 };
 
 export type ProductCard = {
-  id: UUID;
-  name: string;
-  slug: string;
-  brand?: string;
-  price: number; // cents
-  imageUrl: string;
-  badge?: string;
+    id: UUID;
+    name: string;
+    slug: string;
+    brand?: string;
+    price: number; // cents
+    imageUrl: string;
+    badge?: string;
 };
 
 
 
 export type Facets = {
-  colors?: string[];
-  sizes?: string[];
-  priceRanges?: { min: number; max: number }[];
-  brands?: string[];
-  [key: string]: any;
+    colors?: string[];
+    sizes?: string[];
+    priceRanges?: { min: number; max: number }[];
+    brands?: string[];
+    [key: string]: any;
 };
 
 
@@ -112,17 +112,17 @@ export type Facets = {
  * SEARCH PAGE PROPS
  */
 export type AutocompleteSuggestion = {
-  text: string;
-  count?: number; // optional popularity
+    text: string;
+    count?: number; // optional popularity
 };
 
 export type SearchResultsPage = {
-  items: ProductCard[];
-  total: number;
-  page?: number;
-  size?: number;
-  query?: string;
-  // facets?: any; // extend if needed
+    items: ProductCard[];
+    total: number;
+    page?: number;
+    size?: number;
+    query?: string;
+    // facets?: any; // extend if needed
 };
 
 
@@ -191,3 +191,5 @@ export interface cartProduct {
 export interface CartItem extends cartProduct {
     quantity: number;
 }
+
+// category.ts

@@ -1,6 +1,6 @@
 // components/cart/order-summary.tsx
 import React from 'react';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
 
 interface OrderSummaryProps {
@@ -10,10 +10,10 @@ interface OrderSummaryProps {
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
-                                                              total,
-                                                              deliveryCost,
-                                                              onCheckout,
-                                                          }) => (
+    total,
+    deliveryCost,
+    onCheckout,
+}) => (
     <div className="bg-gray-50 p-6 sm:p-8 border rounded-sm w-full">
         <div className="mb-6 sm:mb-8">
             <div className="flex justify-between items-baseline mb-2 sm:mb-3">

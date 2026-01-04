@@ -13,7 +13,7 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "./ui/collapsible";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface FilterSidebarProps {
     isOpen: boolean;
@@ -188,7 +188,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     {items.map((item, index) => {
                         const id = `${sectionKey}-${index}`;
                         const isSelected = isFilterSelected(urlParam, item.value);
-                        
+
                         return (
                             <div key={id} className="flex items-center space-x-2">
                                 <Checkbox
@@ -209,7 +209,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                                 >
                                     {/* Color dot for color filters */}
                                     {sectionKey === 'colors' && item.colorHex && (
-                                        <div 
+                                        <div
                                             className="w-4 h-4 rounded-full border border-gray-300"
                                             style={{ backgroundColor: item.colorHex }}
                                         />
@@ -229,7 +229,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     // Handle price range filter change
     const handlePriceRangeChange = (range: string, isChecked: boolean) => {
         const updatedFilters = { ...currentFilters };
-        
+
         if (isChecked) {
             const [minStr, maxStr] = range.split('-');
             updatedFilters['minPrice'] = minStr;
@@ -238,7 +238,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             delete updatedFilters['minPrice'];
             delete updatedFilters['maxPrice'];
         }
-        
+
         applyFilters(updatedFilters);
     };
 
@@ -253,7 +253,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         if (!facets?.priceRange) return null;
 
         const { min, max } = facets.priceRange;
-        
+
         // Generate some common price ranges
         const priceRanges = [
             { min: min, max: 30, label: `$${min.toFixed(0)} - $30` },
@@ -261,7 +261,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             { min: 50, max: 100, label: '$50 - $100' },
             { min: 100, max: max, label: `$100 - $${max.toFixed(0)}` },
         ].filter(range => range.min < range.max);
-        
+
         return (
             <Collapsible
                 open={expandedSections['price']}
@@ -283,7 +283,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                         const rangeValue = `${range.min}-${range.max}`;
                         const id = `price-${index}`;
                         const isSelected = isPriceRangeSelected(rangeValue);
-                        
+
                         return (
                             <div key={id} className="flex items-center space-x-2">
                                 <Checkbox
@@ -311,7 +311,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     // Render customizable products section
     const renderCustomizableSection = () => {
         const isSelected = isFilterSelected('customizable', 'true');
-        
+
         return (
             <Collapsible
                 open={expandedSections['customizable']}
@@ -408,19 +408,19 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     <div className="p-6 space-y-6">
                         {/* Categories */}
                         {facets?.categories && renderFacetSection('categories', 'Categories', facets.categories)}
-                        
+
                         {/* Brands */}
                         {facets?.brands && renderFacetSection('brands', 'Brands', facets.brands)}
-                        
+
                         {/* Sizes */}
                         {facets?.sizes && renderFacetSection('sizes', 'Sizes', facets.sizes)}
-                        
+
                         {/* Colors */}
                         {facets?.colors && renderFacetSection('colors', 'Colors', facets.colors)}
-                        
+
                         {/* Price Range */}
                         {renderPriceRangeSection()}
-                        
+
                         {/* Customizable */}
                         {renderCustomizableSection()}
                     </div>

@@ -1,67 +1,127 @@
-import AppSidebar from "@/components/app-sidebar";
-import Navbar from "@/components/navbar";
-import EmailVerificationBanner from "@/components/auth/email-verification-banner";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { getServerAuth } from "@/lib/auth/server";
-import { AuthProvider } from "@/providers/auth-provider";
-import TanstackProvider from "@/providers/tanstack";
-import { Toaster } from "sonner";
+// app/layout.tsx
 import { cookies } from "next/headers";
-import { isTokenExpired } from "@/lib/auth/utils";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
+import { getQueryClient } from "@/lib/tanstack/query-client";
+import { categoryApi } from "@/lib/api/category";
+import { FALLBACK_CATEGORIES } from "@/lib/constants/fallback-data";
+
+import AppSidebar from "@/components/app-sidebar";
+import Navbar from "@/components/navbar/navbar";
+import EmailVerificationBanner from "@/components/auth/email-verification-banner";
 import Footer from "@/components/footer";
 
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AuthProvider } from "@/providers/auth-provider";
+import TanstackProvider from "@/providers/tanstack";
+
+import { getServerAuth } from "@/lib/auth/server";
+import { isTokenExpired } from "@/lib/auth/utils";
+
+import { Toaster } from "sonner";
+import { Category } from "@/types";
 
 
+export const metadata = {
+  title: "The Nala Armoire - Discover Your Style",
+  description: "Where beauty roars in every stitch. Shop the latest fashion trends.",
+};
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
- // Check if access token is expired on server
+  /* ---------------- AUTH (SERVER) ---------------- */
   const cookieStore = await cookies();
-  // const accessToken = cookieStore.get('accessToken')?.value;
-  const refreshToken = cookieStore.get('refreshToken')?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
 
   let auth = await getServerAuth();
 
-  // If access token expired but refresh token valid, trigger refresh
-  if (!auth.isAuthenticated && 
-      refreshToken && 
-      !isTokenExpired(refreshToken)) {
-    // User will be redirected to refresh endpoint by middleware
+  if (
+    !auth.isAuthenticated &&
+    refreshToken &&
+    !isTokenExpired(refreshToken)
+  ) {
     auth = { user: null, isAuthenticated: false };
   }
 
+  /* ---------------- REACT QUERY PREFETCH ---------------- */
+  const queryClient = getQueryClient();
+
+  try {
+    // Root categories
+    await queryClient.prefetchQuery({
+      queryKey: ["categories", { minimal: true }],
+      queryFn: async () => {
+        return categoryApi.getCategories({
+          filters: { minimal: true },
+        });
+      },
+      staleTime: 1000 * 60 * 60,
+    });
+
+    // First category children (mega menu)
+    const rootCategories = queryClient.getQueryData([
+      "categories",
+      { minimal: true },
+    ]) as Category[];
+
+    if (rootCategories?.length) {
+      const first = rootCategories[0];
+
+      await queryClient.prefetchQuery({
+        queryKey: ["category-children", first.slug],
+        queryFn: async () => {
+          const data = await categoryApi.getCategories({
+            filters: {
+              slug: first.slug,
+              recursive: true,
+              minimal: true,
+              includeProductCount: true,
+            },
+          });
+          return data[0];
+        },
+        staleTime: 1000 * 60 * 60,
+      });
+    }
+  } catch (_) {
+    // Fallback safety
+    queryClient.setQueryData(
+      ["categories", { minimal: true }],
+      FALLBACK_CATEGORIES
+    );
+  }
+
+  const dehydratedState = dehydrate(queryClient);
+
+  /* ---------------- RENDER ---------------- */
   return (
-    <>
-      <TanstackProvider>
-        <AuthProvider initialUser={auth.user}>
-        <SidebarProvider 
-          defaultOpen={false}          
-        >
-          <div className="font-sans w-full  no-scrollbar">
-            <AppSidebar />
-            
-            <header id="header">
-              <Navbar />
-              <EmailVerificationBanner className="mx-4 mb-4" />
-            </header>
+    <html lang="en">
+      <body>
+        <TanstackProvider>
+          <HydrationBoundary state={dehydratedState}>
+            <AuthProvider initialUser={auth.user}>
+              <SidebarProvider defaultOpen={false}>
+                <div className="font-sans w-full no-scrollbar">
+                  <AppSidebar />
 
-            <main className="w-full relative">
-              {children}
-            </main>
+                  <header id="header">
+                    <Navbar />
+                    <EmailVerificationBanner className="mx-4 mb-4" />
+                  </header>
 
-            <footer className="">
-              <Footer />
-            </footer>
+                  <main className="w-full relative">{children}</main>
 
-            <Toaster position="top-right" className="z-50" />
-          </div>
-        </SidebarProvider>
-        </AuthProvider>
-      </TanstackProvider>
-    </>
+                  <Footer />
+                  <Toaster position="top-right" className="z-50" />
+                </div>
+              </SidebarProvider>
+            </AuthProvider>
+          </HydrationBoundary>
+        </TanstackProvider>
+      </body>
+    </html>
   );
 }
