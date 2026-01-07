@@ -1,6 +1,6 @@
 // components/cart/order-summary.tsx
 import React from 'react';
-import { formatPrice } from '@/lib/utils/utils';
+import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 interface OrderSummaryProps {

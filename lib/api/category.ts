@@ -1,7 +1,7 @@
 // lib/api/category.ts
 import { apiClient } from "./client";
 import { AxiosResponse } from "axios";
-import { Category } from "@/types";
+import { CategoryResponse as Category } from "@/types";
 
 export interface CategoryFilters {
     slug?: string;

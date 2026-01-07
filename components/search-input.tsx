@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { fetchAutocomplete } from '@/lib/api';
 import { useDebounce } from '@/hooks/use-debounce';
+import { productApi } from '@/lib/api/product';
 
 interface SearchInputProps {
   placeholder?: string;
@@ -15,20 +15,15 @@ interface SearchInputProps {
   variant?: 'light' | 'dark';
 }
 
-interface Suggestion {
-  text: string;
-  count: number;
-}
-
 export function SearchInput({ 
-  placeholder = "Search products...", 
+  placeholder = "Search for products, brands and more", 
   className = "", 
   showSuggestions = true,
   onSearch,
   variant = 'light'
 }: SearchInputProps) {
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const debouncedQuery = useDebounce(query, 300);
@@ -41,7 +36,7 @@ export function SearchInput({
   useEffect(() => {
     if (debouncedQuery.trim() && showSuggestions) {
       setIsLoading(true);
-      fetchAutocomplete(debouncedQuery)
+      productApi.fetchAutocomplete(debouncedQuery)
         .then((newSuggestions) => {
           setSuggestions(newSuggestions);
           setShowDropdown(newSuggestions.length > 0);
@@ -126,22 +121,14 @@ export function SearchInput({
     inputRef.current?.focus();
   };
 
-  // Theme-based styles
-  const themeStyles = variant === 'light' ? {
-    searchIcon: "text-gray-600",
-    input: "bg-white border border-gray-300 text-black placeholder:text-gray-500",
-    clearButton: "text-gray-400 hover:text-gray-600"
-  } : {
-    searchIcon: "text-white/70",
-    input: "bg-white/10 border border-white/20 text-white placeholder:text-white/70",
-    clearButton: "text-white/70 hover:text-white"
-  };
-
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      <div className="relative">
-        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${themeStyles.searchIcon}`} />
-        <Input
+      <div className="relative flex items-center">
+        <div className="absolute left-4 flex items-center pointer-events-none z-10">
+          <Search className="w-5 h-5 text-gray-500" strokeWidth={2} />
+        </div>
+        
+        <input
           ref={inputRef}
           type="text"
           placeholder={placeholder}
@@ -150,15 +137,22 @@ export function SearchInput({
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          className={`pl-10 pr-10 transition-colors rounded py-2 h-10 w-full ${themeStyles.input}`}
+          className="w-full h-11 pl-12 pr-12 bg-gray-50 border-none rounded text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-0 focus:bg-white transition-all duration-200"
         />
-        {query && (
+        
+        {query && !isLoading && (
           <button
             onClick={clearSearch}
-            className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${themeStyles.clearButton}`}
+            className="absolute right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors z-10"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" strokeWidth={2} />
           </button>
+        )}
+
+        {isLoading && (
+          <div className="absolute right-4 flex items-center z-10">
+            <div className="w-4 h-4 border-2 border-gray-300 border-t-pink-500 rounded-full animate-spin"></div>
+          </div>
         )}
       </div>
 
@@ -166,7 +160,7 @@ export function SearchInput({
       {showDropdown && suggestions.length > 0 && (
         <div 
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-9999 max-h-60 overflow-y-auto"
+          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl z-9999 max-h-80 overflow-y-auto border border-gray-100"
           onMouseDown={(e) => e.preventDefault()} // Prevent blur when clicking
         >
           {suggestions.map((suggestion, index) => (
@@ -176,23 +170,14 @@ export function SearchInput({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleSuggestionClick(suggestion.text);
+                handleSuggestionClick(suggestion);
               }}
-              className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 focus:outline-none focus:bg-gray-50"
+              className="w-full px-5 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3 border-b border-gray-50 last:border-b-0 group focus:outline-none focus:bg-gray-50"
             >
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-900">{suggestion.text}</span>
-                <span className="text-xs text-gray-500">{suggestion.count} results</span>
-              </div>
+              <Search className="w-4 h-4 text-gray-400 group-hover:text-black transition-colors shrink-0" strokeWidth={2} />
+              <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{suggestion}</span>
             </button>
           ))}
-        </div>
-      )}
-
-      {/* Loading indicator */}
-      {isLoading && (
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
         </div>
       )}
     </div>

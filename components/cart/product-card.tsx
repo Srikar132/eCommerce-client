@@ -1,7 +1,7 @@
 // components/cart/product-card.tsx
 import React from 'react';
 import { cartProduct } from '@/lib/types';
-import { formatPrice } from '@/lib/utils/utils';
+import { formatPrice } from '@/lib/utils';
 import Image from "next/image";
 
 interface ProductCardProps {

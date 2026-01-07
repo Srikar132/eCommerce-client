@@ -112,7 +112,7 @@ const ProductCardComponent = ({
     }
 
     return (
-        <Link onMouseEnter={onMouseEnter} href={`/product/${product.slug}`} className="product-card group">
+        <Link onMouseEnter={onMouseEnter} href={`/products/${product.slug}`} className="product-card group">
             <div className="relative aspect-[2.6/3] bg-gray-100 overflow-hidden">
                 <Image
                     src={primaryImage}
@@ -124,7 +124,7 @@ const ProductCardComponent = ({
                 />
 
                 {badge && (
-                    <div className="absolute top-3 left-3 bg-white px-3 py-1 text-xs font-medium uppercase tracking-wide">
+                    <div className="absolute top-3 left-3 bg-white px-3 py-1 text-xs font-medium uppercase tracking-wide rounded-2xl    ">
                         {badge}
                     </div>
                 )}

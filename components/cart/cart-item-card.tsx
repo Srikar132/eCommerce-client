@@ -1,7 +1,7 @@
 // components/cart/cart-item-card.tsx
 import React from 'react';
 import { CartItem } from '@/lib/types';
-import { formatPrice } from '@/lib/utils/utils';
+import { formatPrice } from '@/lib/utils';
 import { QuantitySelector } from '@/components/cart/quantity-selector';
 import { SizeSelector } from '@/components/cart/size-selector';
 

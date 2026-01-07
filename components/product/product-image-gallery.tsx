@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { ProductImage } from "@/lib/types";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 import ImageZoomModal from "./image-zoom-modal";
 import { Button } from "../ui/button";
 

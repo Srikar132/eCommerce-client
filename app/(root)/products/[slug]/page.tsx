@@ -1,7 +1,6 @@
-// src/app/products/[slug]/page.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { MOCK_PRODUCT } from "@/constants";
 import ProductImageGallery from "@/components/product/product-image-gallery";
 import ProductInfo from "@/components/product/product-info";

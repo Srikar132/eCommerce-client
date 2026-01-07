@@ -81,14 +81,9 @@ export const categories = [
     },
     {
         id: 3,
-        title: "KIDS BOYS",
+        title: "KIDS",
         image: "/home/section2/sec1-col-3.webp"
     },
-    {
-        id: 4,
-        title: "KIDS GIRLS",
-        image: "/home/section2/sec1-col-4.webp"
-    }
 ];
 
 

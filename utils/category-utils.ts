@@ -1,11 +1,11 @@
 // lib/utils/category-utils.ts
-import { CategoryDTO, CategoryNavItem, MegaMenuSection } from '@/types';
+import { CategoryResponse as Category, CategoryNavItem, MegaMenuSection } from '@/types';
 
 /**
- * Transform CategoryDTO to CategoryNavItem for navigation rendering
+ * Transform Category to CategoryNavItem for navigation rendering
  * Converts API response to a more navigation-friendly structure
  */
-export const transformToNavItem = (category: CategoryDTO): CategoryNavItem => {
+export const transformToNavItem = (category: Category): CategoryNavItem => {
   console.log('[CategoryUtils] Transforming category to nav item:', category.slug);
 
   return {
@@ -19,11 +19,11 @@ export const transformToNavItem = (category: CategoryDTO): CategoryNavItem => {
 };
 
 /**
- * Transform CategoryDTO to MegaMenuSection for mega menu rendering
+ * Transform Category to MegaMenuSection for mega menu rendering
  * Groups subcategories into columns for better visual organization
  */
 export const transformToMegaMenuSections = (
-  category: CategoryDTO
+  category: Category
 ): MegaMenuSection[] => {
   console.log('[CategoryUtils] Transforming to mega menu sections:', category.slug);
 
@@ -49,9 +49,9 @@ export const transformToMegaMenuSections = (
  * Recursively searches through the category hierarchy
  */
 export const findCategoryBySlug = (
-  categories: CategoryDTO[],
+  categories: Category[],
   slug: string
-): CategoryDTO | null => {
+): Category | null => {
   console.log('[CategoryUtils] Finding category by slug:', slug);
 
   for (const category of categories) {
@@ -77,7 +77,7 @@ export const findCategoryBySlug = (
  * Traverses up the category tree to build the full path
  */
 export const buildCategoryBreadcrumb = (
-  categories: CategoryDTO[],
+  categories: Category[],
   targetSlug: string
 ): { name: string; slug: string; href: string }[] => {
   console.log('[CategoryUtils] Building breadcrumb for:', targetSlug);
@@ -85,9 +85,9 @@ export const buildCategoryBreadcrumb = (
   const breadcrumb: { name: string; slug: string; href: string }[] = [];
 
   const findPath = (
-    cats: CategoryDTO[],
+    cats: Category[],
     target: string,
-    path: CategoryDTO[] = []
+    path: Category[] = []
   ): boolean => {
     for (const cat of cats) {
       const currentPath = [...path, cat];
@@ -122,12 +122,12 @@ export const buildCategoryBreadcrumb = (
  * Get all leaf categories (categories without subcategories)
  * Useful for filtering or displaying only end-level categories
  */
-export const getLeafCategories = (categories: CategoryDTO[]): CategoryDTO[] => {
+export const getLeafCategories = (categories: Category[]): Category[] => {
   console.log('[CategoryUtils] Getting leaf categories');
 
-  const leaves: CategoryDTO[] = [];
+  const leaves: Category[] = [];
 
-  const traverse = (cats: CategoryDTO[]) => {
+  const traverse = (cats: Category[]) => {
     for (const cat of cats) {
       if (!cat.subCategories || cat.subCategories.length === 0) {
         leaves.push(cat);
@@ -146,7 +146,7 @@ export const getLeafCategories = (categories: CategoryDTO[]): CategoryDTO[] => {
  * Get category depth/level in the hierarchy
  */
 export const getCategoryDepth = (
-  categories: CategoryDTO[],
+  categories: Category[],
   targetSlug: string,
   currentDepth: number = 0
 ): number => {
@@ -168,12 +168,12 @@ export const getCategoryDepth = (
  * Flatten category tree to a single array
  * Useful for search or listing all categories
  */
-export const flattenCategories = (categories: CategoryDTO[]): CategoryDTO[] => {
+export const flattenCategories = (categories: Category[]): Category[] => {
   console.log('[CategoryUtils] Flattening category tree');
 
-  const flattened: CategoryDTO[] = [];
+  const flattened: Category[] = [];
 
-  const traverse = (cats: CategoryDTO[]) => {
+  const traverse = (cats: Category[]) => {
     for (const cat of cats) {
       flattened.push(cat);
       if (cat.subCategories && cat.subCategories.length > 0) {

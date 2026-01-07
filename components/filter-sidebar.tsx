@@ -13,7 +13,7 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "./ui/collapsible";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 interface FilterSidebarProps {
     isOpen: boolean;

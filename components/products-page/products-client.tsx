@@ -10,6 +10,7 @@ import { SlidersHorizontal } from "lucide-react";
 import SortDropdown from "../sort-dropdown";
 import ProductGrid from "../product-grid";
 import FilterSidebar from "../filter-sidebar";
+import NoResults from "./no-results";
 
 
 const ProductsClient = () => {
@@ -78,7 +79,7 @@ const ProductsClient = () => {
                 sort: queryParams.sort,
             }),
         initialPageParam: queryParams.page,
-        getNextPageParam: (lastPage : { products: { last: boolean; page: number } }) =>
+        getNextPageParam: (lastPage: { products: { last: boolean; page: number } }) =>
             lastPage.products.last ? undefined : lastPage.products.page + 1,
     });
 
@@ -92,7 +93,7 @@ const ProductsClient = () => {
     // Convert filters to the format expected by FilterSidebar
     const currentFilters = useMemo(() => {
         const converted: Record<string, string | string[]> = {};
-        
+
         Object.entries(queryParams.filters).forEach(([key, value]) => {
             if (Array.isArray(value)) {
                 converted[key] = value;
@@ -104,9 +105,10 @@ const ProductsClient = () => {
                 converted[key] = value.toString();
             }
         });
-        
+
         return converted;
     }, [queryParams.filters]);
+
 
     if (error) {
         return <ErrorCard
@@ -116,14 +118,18 @@ const ProductsClient = () => {
         />;
     }
 
+    // if products are empty
+    if (products.length === 0) {
+        return <NoResults
+            searchQuery={queryParams.filters.searchQuery as string}
+            
+        />;
+    }
+
     return (
         <section className="category-section">
-            <header>
-                {/*  */}
-            </header>
-
             {/* Mobile Filter Header - Only on small screens */}
-            <div className="sticky top-0 bg-white grid grid-cols-2 border-b z-20 lg:hidden py-2">
+            <div className="sticky top-0 z-10 bg-white grid grid-cols-2 border-b lg:hidden py-2">
                 <Button
                     variant="outline"
                     size="sm"
@@ -162,7 +168,7 @@ const ProductsClient = () => {
                 {/* Main Content */}
                 <div className="flex-1 min-w-0">
                     {/* Desktop Header */}
-                    <header className="hidden lg:flex z-50 bg-white sticky top-0 items-center justify-between mb-6  border-b px-4 py-4">
+                    <header className="hidden lg:flex z-10 bg-white sticky top-0 items-center justify-between mb-6  border-b px-4 py-4">
                         <div className="flex items-center gap-4">
                             <span className="text-sm text-muted-foreground">
                                 {/* Convert to showing some out of total */}

@@ -16,7 +16,6 @@ export default function HomeClient() {
       <HeroSection />
 
       <MCategories />
-      <MCategories />
 
       <SplitScreenHero />
 

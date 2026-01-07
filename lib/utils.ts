@@ -69,7 +69,7 @@ export const buildParams = (params: Record<string, any>) => {
   
   if (params.productSize) {
     (Array.isArray(params.productSize) ? params.productSize : [params.productSize])
-      .forEach(v => append("productSize", v));
+      .forEach(v => append("productSize", v));  // Changed back to "productSize"
   }
   
   if (params.color) {

@@ -1,25 +1,20 @@
 // app/layout.tsx
 import { cookies } from "next/headers";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-
-import { getQueryClient } from "@/lib/tanstack/query-client";
-import { categoryApi } from "@/lib/api/category";
-import { FALLBACK_CATEGORIES } from "@/lib/constants/fallback-data";
 
 import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
 import EmailVerificationBanner from "@/components/auth/email-verification-banner";
-import Footer from "@/components/footer";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/providers/auth-provider";
 import TanstackProvider from "@/providers/tanstack";
+import { PrefetchProvider } from "@/providers/prefetch-provider";
 
 import { getServerAuth } from "@/lib/auth/server";
 import { isTokenExpired } from "@/lib/auth/utils";
 
 import { Toaster } from "sonner";
-import { Category } from "@/types";
+import Footer from "@/components/footer";
 
 
 export const metadata = {
@@ -46,62 +41,12 @@ export default async function RootLayout({
     auth = { user: null, isAuthenticated: false };
   }
 
-  /* ---------------- REACT QUERY PREFETCH ---------------- */
-  const queryClient = getQueryClient();
 
-  try {
-    // Root categories
-    await queryClient.prefetchQuery({
-      queryKey: ["categories", { minimal: true }],
-      queryFn: async () => {
-        return categoryApi.getCategories({
-          filters: { minimal: true },
-        });
-      },
-      staleTime: 1000 * 60 * 60,
-    });
-
-    // First category children (mega menu)
-    const rootCategories = queryClient.getQueryData([
-      "categories",
-      { minimal: true },
-    ]) as Category[];
-
-    if (rootCategories?.length) {
-      const first = rootCategories[0];
-
-      await queryClient.prefetchQuery({
-        queryKey: ["category-children", first.slug],
-        queryFn: async () => {
-          const data = await categoryApi.getCategories({
-            filters: {
-              slug: first.slug,
-              recursive: true,
-              minimal: true,
-              includeProductCount: true,
-            },
-          });
-          return data[0];
-        },
-        staleTime: 1000 * 60 * 60,
-      });
-    }
-  } catch (_) {
-    // Fallback safety
-    queryClient.setQueryData(
-      ["categories", { minimal: true }],
-      FALLBACK_CATEGORIES
-    );
-  }
-
-  const dehydratedState = dehydrate(queryClient);
-
-  /* ---------------- RENDER ---------------- */
   return (
     <html lang="en">
       <body>
         <TanstackProvider>
-          <HydrationBoundary state={dehydratedState}>
+          <PrefetchProvider>
             <AuthProvider initialUser={auth.user}>
               <SidebarProvider defaultOpen={false}>
                 <div className="font-sans w-full no-scrollbar">
@@ -119,7 +64,7 @@ export default async function RootLayout({
                 </div>
               </SidebarProvider>
             </AuthProvider>
-          </HydrationBoundary>
+          </PrefetchProvider>
         </TanstackProvider>
       </body>
     </html>
