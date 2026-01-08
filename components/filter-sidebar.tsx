@@ -1,18 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { X, ChevronDown } from "lucide-react";
+import React, { useMemo } from "react";
+import { X } from "lucide-react";
 import { Button } from "./ui/button";
-import { ProductFacets, FacetItem, PriceRange } from "@/types";
+import { ProductFacets, FacetItem } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "./ui/collapsible";
 import { cn } from "@/lib/utils";
 
 interface FilterSidebarProps {
@@ -30,20 +25,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
-
-    // Define available filter sections
-    const filterSections = ['categories', 'brands', 'sizes', 'colors'] as const;
-
-    // Dynamic expanded sections based on available facets
-    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
-        const initial: Record<string, boolean> = {};
-        filterSections.forEach((section) => {
-            initial[section] = true;
-        });
-        initial['price'] = true; // Add price section
-        initial['customizable'] = true; // Add customizable section
-        return initial;
-    });
 
     // Count active filters
     const activeFilterCount = useMemo(() => {
@@ -124,14 +105,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         router.push(`?${params.toString()}`);
     };
 
-    // Toggle section
-    const toggleSection = (section: string) => {
-        setExpandedSections((prev) => ({
-            ...prev,
-            [section]: !prev[section],
-        }));
-    };
-
     // Check if filter is selected
     const isFilterSelected = (filterType: string, value: string): boolean => {
         const current = currentFilters[filterType];
@@ -168,23 +141,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         const urlParam = getFilterUrlParam(sectionKey);
 
         return (
-            <Collapsible
-                key={sectionKey}
-                open={expandedSections[sectionKey]}
-                onOpenChange={() => toggleSection(sectionKey)}
-            >
-                <CollapsibleTrigger className="flex items-center justify-between w-full group">
-                    <h3 className="font-medium text-sm uppercase tracking-wide">
-                        {title}
-                    </h3>
-                    <ChevronDown
-                        className={cn(
-                            "h-4 w-4 transition-transform duration-200",
-                            expandedSections[sectionKey] && "rotate-180"
-                        )}
-                    />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-4 space-y-3">
+            <div key={sectionKey} className="space-y-4">
+                <h3 className="font-semibold text-sm uppercase tracking-wide">
+                    {title}
+                </h3>
+                <div className="space-y-3">
                     {items.map((item, index) => {
                         const id = `${sectionKey}-${index}`;
                         const isSelected = isFilterSelected(urlParam, item.value);
@@ -221,8 +182,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                             </div>
                         );
                     })}
-                </CollapsibleContent>
-            </Collapsible>
+                </div>
+            </div>
         );
     };
 
@@ -263,22 +224,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         ].filter(range => range.min < range.max);
 
         return (
-            <Collapsible
-                open={expandedSections['price']}
-                onOpenChange={() => toggleSection('price')}
-            >
-                <CollapsibleTrigger className="flex items-center justify-between w-full group">
-                    <h3 className="font-medium text-sm uppercase tracking-wide">
-                        Price Range
-                    </h3>
-                    <ChevronDown
-                        className={cn(
-                            "h-4 w-4 transition-transform duration-200",
-                            expandedSections['price'] && "rotate-180"
-                        )}
-                    />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-4 space-y-3">
+            <div className="space-y-4">
+                <h3 className="font-semibold text-sm uppercase tracking-wide">
+                    Price Range
+                </h3>
+                <div className="space-y-3">
                     {priceRanges.map((range, index) => {
                         const rangeValue = `${range.min}-${range.max}`;
                         const id = `price-${index}`;
@@ -303,8 +253,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                             </div>
                         );
                     })}
-                </CollapsibleContent>
-            </Collapsible>
+                </div>
+            </div>
         );
     };
 
@@ -313,22 +263,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         const isSelected = isFilterSelected('customizable', 'true');
 
         return (
-            <Collapsible
-                open={expandedSections['customizable']}
-                onOpenChange={() => toggleSection('customizable')}
-            >
-                <CollapsibleTrigger className="flex items-center justify-between w-full group">
-                    <h3 className="font-medium text-sm uppercase tracking-wide">
-                        Customizable
-                    </h3>
-                    <ChevronDown
-                        className={cn(
-                            "h-4 w-4 transition-transform duration-200",
-                            expandedSections['customizable'] && "rotate-180"
-                        )}
-                    />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-4 space-y-3">
+            <div className="space-y-4">
+                <h3 className="font-semibold text-sm uppercase tracking-wide">
+                    Customizable
+                </h3>
+                <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                         <Checkbox
                             id="customizable-true"
@@ -345,8 +284,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                             Customizable Products Only
                         </Label>
                     </div>
-                </CollapsibleContent>
-            </Collapsible>
+                </div>
+            </div>
         );
     };
 
@@ -367,8 +306,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 className={cn(
                     // Base styles
                     "bg-background border-r border-border flex flex-col",
-                    // Desktop: Always visible left panel
-                    "hidden lg:flex lg:w-64 lg:sticky lg:top-0 lg:h-auto ",
+                    // Desktop: Always visible left panel with sticky positioning
+                    "hidden lg:flex lg:w-64 lg:sticky lg:top-0 lg:h-screen lg:max-h-screen",
                     // Mobile: Modal overlay
                     "lg:block",
                     isOpen && "fixed inset-y-0 left-0 z-50 w-80 sm:w-96 flex shadow-2xl lg:shadow-none transform transition-transform duration-300 ease-in-out lg:transform-none",

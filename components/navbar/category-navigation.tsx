@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { categoryApi } from "@/lib/api/category";
 import { FALLBACK_CATEGORIES } from "@/lib/constants/fallback-data";
+import { useRootCategories, useCategoryChildren } from "@/lib/tanstack/queries";
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -24,17 +23,7 @@ export function CategoryNavigation({ isHomePage = false, className }: CategoryNa
     /**
      * Get root categories (prefetched on server)
      */
-    const { data: rootCategories = FALLBACK_CATEGORIES } = useQuery({
-        queryKey: ["categories", { minimal: true }],
-        queryFn: async () => {
-            return await categoryApi.getCategories({
-                filters: { minimal: true },
-            });
-        },
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours - keep data fresh all day
-        gcTime: 1000 * 60 * 60 * 24 * 7, // 7 days - keep in cache for a week
-        placeholderData: FALLBACK_CATEGORIES as any,
-    });
+    const { data: rootCategories = FALLBACK_CATEGORIES } = useRootCategories();
 
     return (
         <NavigationMenu viewport={false} className={cn("hidden xl:flex", className)}>
@@ -71,23 +60,7 @@ function CategoryMegaMenu({ categorySlug }: { categorySlug: string }) {
     /**
      * Get category children - always use cached data, never show loading
      */
-    const { data: subCategories = [] } = useQuery({
-        queryKey: ["category-children", categorySlug],
-        queryFn: async () => {
-            const data = await categoryApi.getCategories({
-                filters: {
-                    slug: categorySlug,
-                    recursive: true,
-                    minimal: true,
-                    includeProductCount: true,
-                },
-            });
-            return data;
-        },
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours - keep data fresh all day
-        gcTime: 1000 * 60 * 60 * 24 * 7, // 7 days - keep in cache for a week
-        placeholderData: [], // Always have data, never show loading
-    });
+    const { data: subCategories = [] } = useCategoryChildren(categorySlug);
 
     // Never show loading or empty states - data is always prefetched
     if (!subCategories || subCategories.length === 0) {

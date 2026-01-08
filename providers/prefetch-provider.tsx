@@ -4,6 +4,7 @@ import { getQueryClient } from "@/lib/tanstack/query-client";
 import { categoryApi } from "@/lib/api/category";
 import { FALLBACK_CATEGORIES } from "@/lib/constants/fallback-data";
 import { Category } from "@/types";
+import { queryKeys } from "@/lib/tanstack/query-keys";
 
 interface PrefetchProviderProps {
   children: ReactNode;
@@ -23,7 +24,7 @@ export async function PrefetchProvider({ children }: PrefetchProviderProps) {
   try {
     // Step 1: Prefetch root categories
     await queryClient.prefetchQuery({
-      queryKey: ["categories", { minimal: true }],
+      queryKey: queryKeys.categories.root(),
       queryFn: async () => {
         console.log("[PrefetchProvider] Fetching root categories");
         return categoryApi.getCategories({
@@ -34,10 +35,9 @@ export async function PrefetchProvider({ children }: PrefetchProviderProps) {
     });
 
     // Step 2: Get the root categories from cache
-    const rootCategories = queryClient.getQueryData([
-      "categories",
-      { minimal: true },
-    ]) as Category[];
+    const rootCategories = queryClient.getQueryData(
+      queryKeys.categories.root()
+    ) as Category[];
 
     // Step 3: Prefetch children for ALL root categories
     if (rootCategories?.length) {
@@ -49,7 +49,7 @@ export async function PrefetchProvider({ children }: PrefetchProviderProps) {
       await Promise.all(
         rootCategories.map((category) =>
           queryClient.prefetchQuery({
-            queryKey: ["category-children", category.slug],
+            queryKey: queryKeys.categories.children(category.slug),
             queryFn: async () => {
               console.log(
                 `[PrefetchProvider] Fetching children for: ${category.slug}`
@@ -78,7 +78,7 @@ export async function PrefetchProvider({ children }: PrefetchProviderProps) {
     // Fallback safety: set fallback data if prefetch fails
     console.error("[PrefetchProvider] Error prefetching categories:", error);
     queryClient.setQueryData(
-      ["categories", { minimal: true }],
+      queryKeys.categories.root(),
       FALLBACK_CATEGORIES
     );
   }

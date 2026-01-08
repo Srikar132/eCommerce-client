@@ -2,40 +2,49 @@
 "use client";
 
 import React from "react";
-import { ProductVariant } from "@/lib/types";
+
+interface ColorGroup {
+    color: string;
+    colorHex: string;
+    sizes: {
+        size: string;
+        variantId: string;
+        inStock: boolean;
+        additionalPrice: number;
+    }[];
+}
 
 interface ColorSelectorProps {
-    variants: ProductVariant[];
-    selectedVariantId: string;
-    onColorChange: (variantId: string) => void;
+    colors: ColorGroup[];
+    selectedColor: string;
+    onColorChange: (color: string) => void;
 }
 
 export default function ColorSelector({
-                                          variants,
-                                          selectedVariantId,
-                                          onColorChange,
-                                      }: ColorSelectorProps) {
-    const selectedVariant = variants.find((v) => v.id === selectedVariantId);
-
+    colors,
+    selectedColor,
+    onColorChange,
+}: ColorSelectorProps) {
     return (
         <div className="pdp-color-selector">
             <div className="pdp-selector-label">
                 <span className="pdp-label-text">Color:</span>
-                <span className="pdp-label-value">{selectedVariant?.color}</span>
+                <span className="pdp-label-value">{selectedColor}</span>
             </div>
 
             <div className="pdp-color-options">
-                {variants.map((variant) => (
+                {colors.map((colorGroup) => (
                     <button
-                        key={variant.id}
-                        onClick={() => onColorChange(variant.id)}
+                        key={colorGroup.color}
+                        onClick={() => onColorChange(colorGroup.color)}
                         className={`pdp-color-swatch ${
-                            selectedVariantId === variant.id ? "pdp-color-swatch-active" : ""
+                            selectedColor === colorGroup.color ? "pdp-color-swatch-active" : ""
                         }`}
-                        style={{ backgroundColor: variant.colorCode }}
-                        aria-label={`Select ${variant.color} color`}
+                        style={{ backgroundColor: colorGroup.colorHex }}
+                        aria-label={`Select ${colorGroup.color} color`}
+                        title={colorGroup.color}
                     >
-                        {selectedVariantId === variant.id && (
+                        {selectedColor === colorGroup.color && (
                             <span className="pdp-color-checkmark">✓</span>
                         )}
                     </button>

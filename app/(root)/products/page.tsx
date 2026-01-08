@@ -2,6 +2,7 @@ import ProductsClient from "@/components/products-page/products-client";
 import { productApi } from "@/lib/api/product";
 import { getQueryClient } from "@/lib/tanstack/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/tanstack/query-keys";
 
 export const revalidate = 150;
 
@@ -78,7 +79,7 @@ const ProductsPage = async ({ searchParams }: Props) => {
   }
 
   await queryClient.prefetchInfiniteQuery({
-    queryKey: ['products', { filters, page, size, sort }],
+    queryKey: queryKeys.products.list({ filters, page, size, sort }),
     queryFn: ({ pageParam = page }) =>
       productApi.getProducts({
         filters,

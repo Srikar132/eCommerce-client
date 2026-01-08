@@ -9,8 +9,8 @@ interface NoResultsProps {
   imageSrc?: string;
 }
 
-export function NoResults({ 
-  searchQuery, 
+export function NoResults({
+  searchQuery,
   popularSearches = [
     'Nike Shoes',
     'Woodland Shoes',
@@ -20,7 +20,7 @@ export function NoResults({
     'Puma Shoes',
     'Fastrack Watches'
   ],
-  imageSrc = '/images/no-results.png' 
+  imageSrc = '/images/no-results.png'
 }: NoResultsProps) {
 
 
@@ -57,6 +57,16 @@ export function NoResults({
         </p>
       </div>
 
+      {/* Browse all button */}
+      <div className="text-center mb-12">
+        <Link
+          href="/products"
+          className="inline-block px-6 py-3 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
+        >
+          Browse All Products
+        </Link>
+      </div>
+
       {/* Search Input */}
       <div className="max-w-2xl mx-auto mb-10">
         <form action={handleSearchAction} className="flex gap-3">
@@ -76,23 +86,26 @@ export function NoResults({
         </form>
       </div>
 
+
+
       {/* Popular Searches */}
-      <div className="text-center flex gap-2">
-        <span className="text-gray-600 text-sm">Popular searches: </span>
+      <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-gray-500">
+        <span className="text-gray-600">Popular searches:</span>
+
         {popularSearches.map((search, index) => (
-          <span key={search}>
-            <Link
-              href={`/products?searchQuery=${encodeURIComponent(search)}`}
-              className="text-gray-600 text-sm hover:text-black-600 transition-colors"
-            >
-              {search}
-            </Link>
+          <Link
+            key={search}
+            href={`/products?searchQuery=${encodeURIComponent(search)}`}
+            className="hover:text-black transition-colors"
+          >
+            {search}
             {index < popularSearches.length - 1 && (
-              <span className="text-gray-400 text-sm">,</span>
+              <span className="text-gray-400">,</span>
             )}
-          </span>
+          </Link>
         ))}
       </div>
+
     </div>
   );
 }

@@ -304,15 +304,7 @@ export interface CategoryBreadcrumb {
  * Full product details with all related information
  * Used when fetching a single product by slug
  */
-export interface ProductDetail extends Product {
-    // Includes all Product fields plus computed/aggregated data
-    averageRating?: number;
-    reviewCount: number;
-    totalReviews: number;
-    
-    // Related products or recommendations can be added here
-    relatedProducts?: ProductResponse[];
-}
+export type ProductDetail = ProductResponse
 
 /**
  * Response containing paginated product reviews

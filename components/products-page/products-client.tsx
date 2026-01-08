@@ -1,7 +1,5 @@
 "use client";
 
-import { productApi } from "@/lib/api/product";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import ErrorCard from "../cart/error-card";
@@ -11,56 +9,21 @@ import SortDropdown from "../sort-dropdown";
 import ProductGrid from "../product-grid";
 import FilterSidebar from "../filter-sidebar";
 import NoResults from "./no-results";
+import { useInfiniteProducts, useFlatProducts, useProductCount, useProductFacets } from "@/lib/tanstack/queries";
+import { parseSearchParams, formatFiltersForSidebar, countActiveFilters } from "@/utils/filter-utils";
 
 
 const ProductsClient = () => {
     const searchParams = useSearchParams();
     const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false);
 
-    // Build filters from searchParams
-    const queryParams = useMemo(() => {
-        const filters: Record<string, string | string[] | boolean | number> = {};
+    // Parse query params from URL 
+    const queryParams = useMemo(
+        () => parseSearchParams(searchParams),
+        [searchParams]
+    );
 
-        const getParam = (key: string) => {
-            const values = searchParams.getAll(key);
-            return values.length > 1 ? values : values[0];
-        };
-
-        const category = getParam('category');
-        if (category) filters.category = category;
-
-        const brand = getParam('brand');
-        if (brand) filters.brand = brand;
-
-        const productSize = getParam('productSize');
-        if (productSize) filters.productSize = productSize;
-
-        const color = getParam('color');
-        if (color) filters.color = color;
-
-        const minPrice = searchParams.get('minPrice');
-        if (minPrice) filters.minPrice = Number(minPrice);
-
-        const maxPrice = searchParams.get('maxPrice');
-        if (maxPrice) filters.maxPrice = Number(maxPrice);
-
-        const customizable = searchParams.get('customizable');
-        if (customizable === 'true') filters.customizable = true;
-
-        const searchQuery = searchParams.get('searchQuery');
-        if (searchQuery) filters.searchQuery = searchQuery;
-
-        const page = searchParams.get('page');
-        const pageNum = page ? Math.max(0, parseInt(page) - 1) : 0;
-
-        const size = searchParams.get('size');
-        const sizeNum = size ? parseInt(size) : 24;
-
-        const sort = searchParams.get('sort') || 'createdAt,desc';
-
-        return { filters, page: pageNum, size: sizeNum, sort };
-    }, [searchParams]);
-
+    // Fetch products with infinite scroll
     const {
         data,
         isLoading,
@@ -69,45 +32,24 @@ const ProductsClient = () => {
         isFetchingNextPage,
         error,
         refetch
-    } = useInfiniteQuery({
-        queryKey: ['products', queryParams],
-        queryFn: ({ pageParam = queryParams.page }) =>
-            productApi.getProducts({
-                filters: queryParams.filters,
-                page: pageParam,
-                size: queryParams.size,
-                sort: queryParams.sort,
-            }),
-        initialPageParam: queryParams.page,
-        getNextPageParam: (lastPage: { products: { last: boolean; page: number } }) =>
-            lastPage.products.last ? undefined : lastPage.products.page + 1,
-    });
+    } = useInfiniteProducts(queryParams);
 
-    const products = useMemo(
-        () => data?.pages.flatMap((page) => page.products.content) ?? [],
-        [data]
+    // Extract derived data
+    const products = useFlatProducts(data);
+    const totalProducts = useProductCount(data);
+    const facets = useProductFacets(data);
+
+    // Format filters for sidebar - clean conversion
+    const currentFilters = useMemo(
+        () => formatFiltersForSidebar(queryParams.filters),
+        [queryParams.filters]
     );
 
-    const totalProducts = data?.pages[0]?.products.totalElements ?? 0;
-
-    // Convert filters to the format expected by FilterSidebar
-    const currentFilters = useMemo(() => {
-        const converted: Record<string, string | string[]> = {};
-
-        Object.entries(queryParams.filters).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-                converted[key] = value;
-            } else if (typeof value === 'string') {
-                converted[key] = value;
-            } else if (typeof value === 'boolean' && value) {
-                converted[key] = 'true';
-            } else if (typeof value === 'number') {
-                converted[key] = value.toString();
-            }
-        });
-
-        return converted;
-    }, [queryParams.filters]);
+    // Count active filters for badge
+    const activeFilterCount = useMemo(
+        () => countActiveFilters(queryParams.filters),
+        [queryParams.filters]
+    );
 
 
     if (error) {
@@ -118,16 +60,22 @@ const ProductsClient = () => {
         />;
     }
 
-    // if products are empty
-    if (products.length === 0) {
+    // if products are empty and not loading
+    if (!isLoading && products.length === 0) {
         return <NoResults
             searchQuery={queryParams.filters.searchQuery as string}
-            
         />;
     }
 
     return (
         <section className="category-section">
+            {/* Loading indicator for filter changes */}
+            {isLoading && (
+                <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-white shadow-lg rounded-full p-3">
+                    <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
+                </div>
+            )}
+
             {/* Mobile Filter Header - Only on small screens */}
             <div className="sticky top-0 z-10 bg-white grid grid-cols-2 border-b lg:hidden py-2">
                 <Button
@@ -139,14 +87,9 @@ const ProductsClient = () => {
                     <SlidersHorizontal className="w-4 h-4" />
                     <span>Filter</span>
 
-                    {Object.keys(queryParams.filters).length > 0 && (
+                    {activeFilterCount > 0 && (
                         <span className="bg-gray-900 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                            {Object.values(queryParams.filters).reduce((count: number, value) => {
-                                if (Array.isArray(value)) return count + value.length;
-                                if (typeof value === 'string') return count + 1;
-                                if (typeof value === 'boolean' && value) return count + 1;
-                                return count;
-                            }, 0)}
+                            {activeFilterCount}
                         </span>
                     )}
                 </Button>
@@ -162,7 +105,7 @@ const ProductsClient = () => {
                     isOpen={isFilterSidebarOpen}
                     onClose={() => setIsFilterSidebarOpen(false)}
                     currentFilters={currentFilters}
-                    facets={data?.pages[0]?.facets}
+                    facets={facets}
                 />
 
                 {/* Main Content */}

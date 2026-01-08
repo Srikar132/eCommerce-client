@@ -142,11 +142,10 @@ const Navbar = () => {
                                     </Button>
                                 </Link>
                             ) : (
-                                <div className="min-w-xl border border-black max-lg:hidden w-full">
+                                <div className="min-w-xl max-lg:hidden w-full">
                                     <SearchInput
                                         className="w-full"
                                         placeholder="Search for products, brands, categories..."
-                                        variant={shouldShowBackdrop ? "light" : "dark"}
                                     />
                                 </div>
                             )}

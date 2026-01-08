@@ -1,22 +1,6 @@
-// import { QueryClient } from '@tanstack/react-query';
-// import { cache } from 'react';
-
-// // cache() ensures this is unique per request in Next.js
-// export const getQueryClient = cache(() => new QueryClient({
-//   defaultOptions: {
-//     queries: {
-//       staleTime: 6000 * 1000, // 1 minute
-//     },
-//   },
-// }));
-
-// lib/tanstack/query-client.ts
 import { QueryClient, defaultShouldDehydrateQuery, isServer } from '@tanstack/react-query';
 
-/**
- * Creates a new QueryClient instance
- * Used for both server and client-side rendering
- */
+
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
