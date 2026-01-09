@@ -2,6 +2,8 @@
 "use client";
 
 import React from "react";
+import { Label } from "@/components/ui/label";
+import { Check } from "lucide-react";
 
 interface ColorGroup {
     color: string;
@@ -26,26 +28,37 @@ export default function ColorSelector({
     onColorChange,
 }: ColorSelectorProps) {
     return (
-        <div className="pdp-color-selector">
-            <div className="pdp-selector-label">
-                <span className="pdp-label-text">Color:</span>
-                <span className="pdp-label-value">{selectedColor}</span>
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <Label className="text-base font-medium text-foreground">
+                    Color
+                </Label>
+                <span className="text-sm text-muted-foreground capitalize">
+                    {selectedColor}
+                </span>
             </div>
 
-            <div className="pdp-color-options">
+            <div className="flex flex-wrap gap-3">
                 {colors.map((colorGroup) => (
                     <button
                         key={colorGroup.color}
                         onClick={() => onColorChange(colorGroup.color)}
-                        className={`pdp-color-swatch ${
-                            selectedColor === colorGroup.color ? "pdp-color-swatch-active" : ""
-                        }`}
+                        className={`
+                            relative w-10 h-10 rounded-full border-2 transition-all duration-200 
+                            hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+                            ${selectedColor === colorGroup.color 
+                                ? "border-primary shadow-lg scale-110" 
+                                : "border-border hover:border-primary/50"
+                            }
+                        `}
                         style={{ backgroundColor: colorGroup.colorHex }}
                         aria-label={`Select ${colorGroup.color} color`}
                         title={colorGroup.color}
                     >
                         {selectedColor === colorGroup.color && (
-                            <span className="pdp-color-checkmark">✓</span>
+                            <span className="absolute inset-0 flex items-center justify-center">
+                                <Check className="w-5 h-5 text-white drop-shadow-lg" strokeWidth={3} />
+                            </span>
                         )}
                     </button>
                 ))}

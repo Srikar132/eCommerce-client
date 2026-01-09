@@ -102,6 +102,7 @@ export interface ProductImage {
 
 export interface ProductVariant {
     id: UUID;
+    productId?: UUID | null;  // May be null in some responses
 
     size: string;        // S, M, L, XL
     color: string;
@@ -112,6 +113,9 @@ export interface ProductVariant {
 
     sku: string;
     isActive: boolean;
+    
+    // Images now belong to variants
+    images?: ProductImage[];
 }
 
 export interface Review {
@@ -163,6 +167,7 @@ export type ProductResponse =
         | 'category'
         | 'variants'
         | 'reviews'
+        | 'images'  // Images no longer at product level - moved to variants
     > & {
         brandId: UUID;
         brandName: string;
@@ -172,6 +177,9 @@ export type ProductResponse =
 
         averageRating?: number;
         reviewCount?: number;
+        
+        // Variants now include their specific images
+        variants?: ProductVariant[];
     };
 
 

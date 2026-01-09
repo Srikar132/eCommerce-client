@@ -16,21 +16,21 @@ interface ProductAccordionProps {
 
 export default function ProductAccordion({ description, washCare }: ProductAccordionProps) {
     return (
-        <Accordion type="single" collapsible className="pdp-accordion">
-            <AccordionItem value="description" className="pdp-accordion-item">
-                <AccordionTrigger className="pdp-accordion-trigger">
-                    DESCRIPTION
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="description" className="border-border">
+                <AccordionTrigger className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+                    Description
                 </AccordionTrigger>
-                <AccordionContent className="pdp-accordion-content">
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
                     {description}
                 </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="wash-care" className="pdp-accordion-item">
-                <AccordionTrigger className="pdp-accordion-trigger">
-                    WASH & CARE
+            <AccordionItem value="wash-care" className="border-border">
+                <AccordionTrigger className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+                    Wash & Care
                 </AccordionTrigger>
-                <AccordionContent className="pdp-accordion-content">
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
                     {washCare}
                 </AccordionContent>
             </AccordionItem>

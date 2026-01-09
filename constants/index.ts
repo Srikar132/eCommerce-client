@@ -1,3 +1,4 @@
+import { PremiumProductCardProps } from "@/components/cards/home-premimum-product-card";
 import {BestsellerCardProps} from "@/lib/types";
 import { SizeGuideRow, SizeGuideMeasurement } from "@/lib/types";
 //account
@@ -72,17 +73,47 @@ export const categories = [
     {
         id: 1,
         title: "MEN",
-        image: "/home/section2/sec1-col-1.webp"
+        image: "/home/section2/sec1-col-1.webp",
+        url : "/products?category=men"
     },
     {
         id: 2,
         title: "WOMEN",
-        image: "/home/section2/sec1-col-2.webp"
+        image: "/home/section2/sec1-col-2.webp",
+        url : "/products?category=women"
     },
     {
         id: 3,
         title: "KIDS",
-        image: "/home/section2/sec1-col-3.webp"
+        image: "/home/section2/sec1-col-3.webp",
+        url : "/products?category=kids"
+    },
+];
+
+export const testimonials = [
+    {
+        id: 1,
+        name: "Sarah Mitchell",
+        role: "Fashion Enthusiast",
+        avatar: "/home/testimonials/avatar1.jpg",
+        rating: 5,
+        text: "Absolutely in love with the quality and craftsmanship! Every piece feels like it was made just for me. The attention to detail is remarkable.",
+    },
+    {
+        id: 2,
+        name: "Emily Rodriguez",
+        role: "Style Blogger",
+        avatar: "/home/testimonials/avatar2.jpg",
+        rating: 5,
+        text: "The Nala Armoire has become my go-to for unique, handmade pieces. The designs are timeless and the customer service is exceptional!",
+    },
+    {
+        id: 3,
+        name: "Jessica Chen",
+        role: "Creative Director",
+        avatar: "/home/testimonials/avatar3.jpg",
+        rating: 5,
+        text: "I've never felt more confident in my wardrobe choices. These pieces are not just clothes, they're wearable art. Highly recommend!",
     },
 ];
 

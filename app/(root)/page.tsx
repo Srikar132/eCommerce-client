@@ -2,7 +2,7 @@ import HomeClient from "@/components/home-client";
 import { getServerAuth } from "@/lib/auth/server";
 
 
-export default async  function Home() {
+export default   function Home() {
 
   // // fetch some random promise
   // // just using delayed promise

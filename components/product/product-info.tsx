@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import { Badge } from "@/components/ui/badge";
 
 interface ProductInfoProps {
     brand: string;
@@ -19,10 +20,16 @@ export default function ProductInfo({ brand, name, price, currency }: ProductInf
     };
 
     return (
-        <div className="pdp-product-info">
-            <p className="pdp-brand">{brand}</p>
-            <h1 className="pdp-title">{name}</h1>
-            <p className="pdp-price">{formatPrice(price, currency)}</p>
+        <div className="space-y-3">
+            <Badge variant="secondary" className="text-xs font-medium tracking-wide uppercase">
+                {brand}
+            </Badge>
+            <h1 className="text-3xl sm:text-4xl font-light text-foreground tracking-tight">
+                {name}
+            </h1>
+            <p className="text-2xl sm:text-3xl font-semibold text-primary">
+                {formatPrice(price, currency)}
+            </p>
         </div>
     );
 }

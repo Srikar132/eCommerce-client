@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { SearchInput } from '../search-input';
 import { CategoryNavigation } from './category-navigation';
 import { cn } from '@/lib/utils';
+import { is } from 'zod/v4/locales';
 
 const HERO_SECTION_HEIGHT = 1000;
 
@@ -62,37 +63,35 @@ const Navbar = () => {
         <>
             <nav
                 className={`${isHomePage
-                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed`
+                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-full max-w-[90vw] mx-auto my-7 py-2 shadow-lg border border-black/10`
                     : 'sticky'
                     } ${shouldShowBackdrop
-                        ? isHomePage
-                            ? 'bg-black/50 backdrop-blur-md lg:shadow-sm'
-                            : 'bg-white shadow-sm'
-                        : 'bg-transparent'
+                        ? 'bg-white/50 backdrop-blur-md lg:shadow-sm'
+                        : 'bg-white'
                     } w-full top-0 z-50 transition-all duration-300`}
             >
                 <div className="mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16 gap-4">
                         {/* LEFT: Menu/Logo + Categories */}
-                        <div className='flex items-center space-x-6'>
-                            {/* Menu Button - Mobile Only */}
-
+                        <div className='flex items-center space-x-2'>
 
                             {/* Logo - Desktop Only */}
-                            <Link href="/" className="hidden lg:block">
-                                <div className="relative w-20 h-20" >
+                            <Link href="/" className="hidden lg:flex items-center space-x-2">
+                                <div className="relative w-14 h-14" >
                                     <Image
-                                        src="/images/na-logo.png"
+                                        src="/images/logo.png"
                                         alt="Logo"
                                         fill
-                                        className={`object-cover ${isHomePage ? 'brightness-0 invert' : ''}`}
+                                        className={`object-cover `}
                                         priority
                                     />
+
                                 </div>
+
                             </Link>
 
                             <Button
-                                className={cn(`nav-btn lg:hidden!`, !isHomePage && 'invert-0!')}
+                                className={cn(`nav-btn lg:hidden!`)}
                                 aria-label="Toggle menu"
                                 onClick={() => isMobile ? setOpenMobile(!openMobile) : setOpen(!open)}
                             >
@@ -105,43 +104,37 @@ const Navbar = () => {
                             </Button>
 
                             {/* Category Navigation - Desktop Only */}
-                            <CategoryNavigation isHomePage={isHomePage} />
+                            {<CategoryNavigation />}
                         </div>
 
 
-                        {/* RIGHT: Search + Profile + Cart */}
                         <div className="flex items-center justify-end md:space-x-3 space-x-2 lg:space-x-4">
-                            {/* Mobile Search */}
+
+
+                            {isHomePage && (
+                                <>
+                                    <Link href="/products" className="nav-link">Shop</Link>
+                                    <Link href="/about" className="nav-link">About</Link>
+                                    <Link href="/contact" className="nav-link">Contact</Link>
+                                </>
+                            )}
+
+                            
                             <Link href={"/search"} className='lg:hidden'>
                                 <Button
-                                    className={`nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
+                                    className={`nav-btn`}
                                     aria-label="Search"
                                 >
                                     <Image
-                                        src={'/icons/search_icon.png'}
+                                        src={'/icons/search.svg'}
                                         alt='search'
-                                        height={15}
-                                        width={15}
+                                        height={24}
+                                        width={24}
                                     />
                                 </Button>
                             </Link>
 
-                            {/* Desktop Search */}
-                            {isHomePage ? (
-                                <Link href={"/products"} className='hidden lg:block'>
-                                    <Button
-                                        className={`nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
-                                        aria-label="Search"
-                                    >
-                                        <Image
-                                            src={'/icons/search_icon.png'}
-                                            alt='search'
-                                            height={15}
-                                            width={15}
-                                        />
-                                    </Button>
-                                </Link>
-                            ) : (
+                            {!isHomePage && (
                                 <div className="min-w-xl max-lg:hidden w-full">
                                     <SearchInput
                                         className="w-full"
@@ -150,32 +143,32 @@ const Navbar = () => {
                                 </div>
                             )}
 
-                            <div className={`hidden sm:block border-l h-6 ${!isHomePage ? 'border-gray-300' : 'border-gray-600'}`}></div>
+                            <div className={`hidden sm:block border-l h-6 border-gray-600`}></div>
 
                             <Link href={"/account"}>
                                 <Button
-                                    className={`hidden sm:block nav-btn ${!isHomePage ? 'invert-0!' : ''}`}
+                                    className={`hidden sm:block nav-btn `}
                                     aria-label="Account"
                                 >
                                     <Image
-                                        src={'/icons/profile_icon.png'}
+                                        src={'/icons/account.svg'}
                                         alt='profile'
-                                        height={15}
-                                        width={15}
+                                        height={24}
+                                        width={24}
                                     />
                                 </Button>
                             </Link>
 
                             <Link href={"/cart"}>
                                 <Button
-                                    className={`nav-btn relative ${!isHomePage ? 'invert-0!' : ''}`}
+                                    className={`nav-btn relative`}
                                     aria-label="Shopping cart"
                                 >
                                     <Image
-                                        src={'/icons/cart_icon.png'}
+                                        src={'/icons/cart.svg'}
                                         alt='cart'
-                                        height={15}
-                                        width={15}
+                                        height={24}
+                                        width={24}
                                     />
                                 </Button>
                             </Link>

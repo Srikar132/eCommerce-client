@@ -125,7 +125,7 @@ export function SearchInput({
     <div ref={containerRef} className={`relative ${className}`}>
       <div className="relative flex items-center">
         <div className="absolute left-4 flex items-center pointer-events-none z-10">
-          <Search className="w-5 h-5 text-gray-500" strokeWidth={2} />
+          <Search className="w-5 h-5 " strokeWidth={2} />
         </div>
         
         <input
@@ -137,7 +137,7 @@ export function SearchInput({
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          className="w-full h-11 pl-12 pr-12 bg-gray-50 border-none rounded text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-0 focus:bg-white transition-all duration-200"
+          className="w-full h-11 pl-12 pr-12  border-none rounded text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-0 focus:bg-white transition-all duration-200"
         />
         
         {query && !isLoading && (

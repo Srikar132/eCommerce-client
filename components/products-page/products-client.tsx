@@ -2,7 +2,6 @@
 
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import ErrorCard from "../cart/error-card";
 import { Button } from "../ui/button";
 import { SlidersHorizontal } from "lucide-react";
 import SortDropdown from "../sort-dropdown";
@@ -11,6 +10,7 @@ import FilterSidebar from "../filter-sidebar";
 import NoResults from "./no-results";
 import { useInfiniteProducts, useFlatProducts, useProductCount, useProductFacets } from "@/lib/tanstack/queries";
 import { parseSearchParams, formatFiltersForSidebar, countActiveFilters } from "@/utils/filter-utils";
+import ErrorCard from "../cards/error-card";
 
 
 const ProductsClient = () => {

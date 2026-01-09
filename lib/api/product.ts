@@ -54,8 +54,8 @@ export const productApi = {
             `/api/v1/products?${queryString}`
         );
 
-        console.log('API Response:', res.data);
-        console.log(`Fetched ${res.data.products.content.length} products`);
+        // console.log('API Response:', res.data);
+        // console.log(`Fetched ${res.data.products.content.length} products`);
 
         return res.data;
     },

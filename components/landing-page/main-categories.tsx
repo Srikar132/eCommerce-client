@@ -1,107 +1,117 @@
-import { useState } from 'react';
+"use client";
+
 import Image from 'next/image';
 import { categories } from '@/constants';
+import CategoryCard from '@/components/cards/category-card';
 
-
-const MCategories = () => {
-    const [hoveredId, setHoveredId] = useState<number | null>(null);
-
-   
-
-    const displayCategories = categories;
-
+export default function ShopByCategories() {
     return (
-        <section className="w-full py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">
-                    Shop By Category
-                </h2>
-                <p className="text-gray-600 text-lg">Discover your perfect style</p>
+        <section className="relative w-full py-16 sm:py-20 md:py-24 lg:py-28 bg-background overflow-hidden">
+            
+            {/* Decorative Flowers - Top Corners */}
+            {/* Top Left Corner */}
+            <div className="absolute top-8 left-4 sm:left-8 lg:left-12 w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 opacity-50 pointer-events-none z-10">
+                <Image
+                    src="/images/home/flower2.png"
+                    alt=""
+                    fill
+                    className="object-contain select-none"
+                    draggable={false}
+                />
             </div>
 
-            {/* 3-Column Bento Grid - Dynamic Heights */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
-                {/* Men - Large Left Card (spans 5 columns, taller) */}
-                <div 
-                    className="md:col-span-5 relative group overflow-hidden rounded-2xl cursor-pointer h-[500px] md:h-[600px]"
-                    onMouseEnter={() => setHoveredId(displayCategories[0].id)}
-                    onMouseLeave={() => setHoveredId(null)}
-                >
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70 z-10 group-hover:from-black/30 group-hover:to-black/80 transition-all duration-500" />
-                    <Image
-                        src={displayCategories[0].image}
-                        alt={displayCategories[0].title}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
-                        <h3 className="text-white text-4xl md:text-5xl font-bold mb-3 transform group-hover:translate-y-[-8px] transition-transform duration-300">
-                            {displayCategories[0].title}
-                        </h3>
-                        <p className="text-white/90 text-base opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                            Explore Men's Collection →
-                        </p>
-                    </div>
-                </div>
-
-                {/* Right Column - Women & Kids Stacked */}
-                <div className="md:col-span-7 grid grid-rows-2 gap-4 md:gap-6">
-                    {/* Women - Top Card */}
-                    <div 
-                        className="relative group overflow-hidden rounded-2xl cursor-pointer h-[400px] md:h-full"
-                        onMouseEnter={() => setHoveredId(displayCategories[1].id)}
-                        onMouseLeave={() => setHoveredId(null)}
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70 z-10 group-hover:from-black/30 group-hover:to-black/80 transition-all duration-500" />
-                        <Image
-                            src={displayCategories[1].image}
-                            alt={displayCategories[1].title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-20">
-                            <h3 className="text-white text-3xl md:text-4xl font-bold mb-2 transform group-hover:translate-y-[-8px] transition-transform duration-300">
-                                {displayCategories[1].title}
-                            </h3>
-                            <p className="text-white/90 text-sm md:text-base opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                                Explore Women's Collection →
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Kids - Bottom Card */}
-                    <div 
-                        className="relative group overflow-hidden rounded-2xl cursor-pointer h-[400px] md:h-full"
-                        onMouseEnter={() => setHoveredId(displayCategories[2].id)}
-                        onMouseLeave={() => setHoveredId(null)}
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70 z-10 group-hover:from-black/30 group-hover:to-black/80 transition-all duration-500" />
-                        <Image
-                            src={displayCategories[2].image}
-                            alt={displayCategories[2].title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-20">
-                            <h3 className="text-white text-3xl md:text-4xl font-bold mb-2 transform group-hover:translate-y-[-8px] transition-transform duration-300">
-                                {displayCategories[2].title}
-                            </h3>
-                            <p className="text-white/90 text-sm md:text-base opacity-0 group-hover:opacity-100 transform translate-y-4 group-group-hover:translate-y-0 transition-all duration-300">
-                                Explore Kids' Collection →
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            {/* Top Right Corner */}
+            <div className="absolute top-12 right-4 sm:right-8 lg:right-12 w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 opacity-45 pointer-events-none z-10">
+                <Image
+                    src="/images/home/flower5.webp"
+                    alt=""
+                    fill
+                    className="object-contain select-none scale-150"
+                    draggable={false}
+                />
             </div>
+
+            {/* Left Side Middle */}
+            <div className="absolute top-1/3 left-0 sm:left-4 w-24 h-24 sm:w-36 sm:h-36 md:w-44 md:h-44 opacity-40 pointer-events-none z-10 hidden sm:block">
+                <Image
+                    src="/images/home/flower4.webp"
+                    alt=""
+                    fill
+                    className="object-contain select-none scale-150"
+                    draggable={false}
+                />
+            </div>
+
+            {/* Right Side Middle */}
+            <div className="absolute top-1/2 right-0 sm:right-4 w-28 h-28 sm:w-40 sm:h-40 md:w-48 md:h-48 opacity-45 pointer-events-none z-10 hidden sm:block">
+                <Image
+                    src="/images/home/flower3.webp"
+                    alt=""
+                    fill
+                    className="object-cover select-none scale-150"
+                    draggable={false}
+                />
+            </div>
+
+            {/* Bottom Left */}
+            <div className="absolute bottom-16 left-8 sm:left-12 lg:left-16 w-20 h-20 sm:w-28 sm:h-28 opacity-35 pointer-events-none z-10 hidden md:block">
+                <Image
+                    src="/images/home/flower6.webp"
+                    alt=""
+                    fill
+                    className="object-cover select-none scale-150"
+                    draggable={false}
+                />
+            </div>
+
+            {/* Bottom Right */}
+            <div className="absolute bottom-20 right-8 sm:right-16 lg:right-20 w-16 h-16 sm:w-24 sm:h-24 opacity-40 pointer-events-none z-10 hidden md:block">
+                <Image
+                    src="/images/home/flower2.png"
+                    alt=""
+                    fill
+                    className="object-contain select-none"
+                    draggable={false}
+                />
+            </div>
+
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+                
+                {/* Section Header */}
+                <div className="relative text-center mb-12 sm:mb-16 space-y-3">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
+                        Shop by Category
+                    </h2>
+                    <p className="text-sm sm:text-base md:text-lg text-muted-foreground italic tracking-wide">
+                        Explore our handpicked collections for everyone
+                    </p>
+                </div>
+
+                {/* Categories Grid */}
+                <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 max-w-6xl mx-auto">
+                    {categories.map((category) => (
+                        <CategoryCard
+                            key={category.id}
+                            id={category.id}
+                            title={category.title}
+                            image={category.image}
+                            url={category.url}
+                        />
+                    ))}
+                </div>
+
+                {/* Bottom Tagline */}
+                <div className="relative text-center mt-12 sm:mt-16">
+                    <p className="text-base sm:text-lg md:text-xl text-muted-foreground italic">
+                        Every piece tells a story, every stitch crafted with love
+                    </p>
+                </div>
+
+            </div>
+
+            {/* Soft Gradient Blobs for Ambiance */}
+            <div className="absolute top-20 left-0 w-[300px] h-[300px] bg-pink-200/20 rounded-full blur-[100px] pointer-events-none z-0" />
+            <div className="absolute bottom-20 right-0 w-[350px] h-[350px] bg-blue-200/15 rounded-full blur-[120px] pointer-events-none z-0" />
         </section>
-    );
-};
-
-// Demo Component
-export default function CategoryDemo() {
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <MCategories />
-        </div>
     );
 }

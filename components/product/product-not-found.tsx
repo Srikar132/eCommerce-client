@@ -32,7 +32,7 @@ export function ProductNotFound({
 
         {/* 404 Icon/Image */}
         <div className="flex justify-center mb-8">
-          <div className="relative w-56 h-40">
+          <div className="relative w-56 h-52">
             <Image
               src={imageSrc}
               alt="Product not found"
@@ -57,14 +57,14 @@ export function ProductNotFound({
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white  hover:bg-gray-800 transition-colors font-medium"
           >
             <Home className="w-4 h-4" />
             Back to Home
           </Link>
           <Link
             href="/products"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-900 border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors font-medium"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-900 border-2 border-gray-300  hover:bg-gray-50 transition-colors font-medium"
           >
             <ShoppingBag className="w-4 h-4" />
             Browse Products

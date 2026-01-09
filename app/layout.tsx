@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
-import { Montserrat, Oswald } from "next/font/google";
+import { Playfair_Display , Inter  } from "next/font/google";
 import "./globals.css";
 
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-sans",         // body + UI
-  display: "swap",
-});
 
-const oswald = Oswald({
+const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-heading",      // headlines
   display: "swap",
 });
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",         // body + UI
+  display: "swap",
+});
+
 
 export const metadata : Metadata = {
   title: {
@@ -33,7 +35,7 @@ export default function Layout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserrat.variable} ${oswald.variable} antialiased`}>
+      <body className={`${inter.variable} ${playfair.variable} antialiased`}>
           {children}
       </body>
     </html>

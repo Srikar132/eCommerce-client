@@ -11,6 +11,9 @@ import ProductFeatures from "@/components/product/product-features";
 import ProductAccordion from "@/components/product/product-accordian";
 import ProductDetailLoading from "@/components/product/product-detail-loading";
 import ProductNotFound from "@/components/product/product-not-found";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { ProductVariant as APIProductVariant } from "@/types";
 
 interface ProductDetailClientProps {
@@ -61,6 +64,20 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
         v.color === selectedColor && v.size === selectedSize
     );
 
+    // Get images for the selected color (prioritize variants with images)
+    const selectedColorVariant = useMemo(() => {
+        if (!apiVariants || !selectedColor) return undefined;
+        
+        // Get all variants for the selected color
+        const colorVariants = apiVariants.filter(v => v.color === selectedColor);
+        
+        // First, try to find a variant with images
+        const variantWithImages = colorVariants.find(v => v.images && v.images.length > 0);
+        
+        // If found, use it; otherwise, use the first variant of that color
+        return variantWithImages || colorVariants[0];
+    }, [apiVariants, selectedColor]);
+    
     const finalPrice = product 
         ? product.basePrice + (selectedVariant?.additionalPrice || 0)
         : 0;
@@ -72,17 +89,18 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
         ...(product.careInstructions ? [{ id: 'care', text: product.careInstructions }] : [])
     ] : [];
 
-    const galleryImages = !product?.images || product.images.length === 0
-        ? [{
+    // Get images from the selected color variant, or use placeholder
+    const galleryImages = selectedColorVariant?.images && selectedColorVariant.images.length > 0
+        ? selectedColorVariant.images.map(img => ({
+            id: img.id,
+            url: img.imageUrl,
+            alt: img.altText || `${product?.name} - ${selectedColor}`
+        }))
+        : [{
             id: 'default',
             url: '/placeholder-product.jpg',
             alt: product?.name || 'Product image'
-        }]
-        : product.images.map(img => ({
-            id: img.id,
-            url: img.imageUrl,
-            alt: img.altText || product.name
-        }));
+        }];
 
     const handleAddToCart = () => {
         if (!selectedSize) {
@@ -129,66 +147,100 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
     }
 
     return (
-        <div className="min-h-screen bg-white overflow-x-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+        <div className="min-h-screen bg-background overflow-x-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+                    {/* Image Gallery Section */}
                     <div className="order-1 w-full">
-                        <ProductImageGallery images={galleryImages} />
+                        <div className="rounded-xl border border-border/30 overflow-hidden bg-card">
+                            <ProductImageGallery images={galleryImages} />
+                        </div>
                     </div>
 
-                    <div className="order-2 w-full space-y-6">
-                        <div className="border-b border-gray-100 pb-6">
-                            <ProductInfo
-                                brand={product.brandName}
-                                name={product.name}
-                                price={finalPrice}
-                                currency="INR"
-                            />
-                            {selectedVariant && selectedVariant.additionalPrice > 0 && (
-                                <p className="text-sm text-gray-500 mt-2">
-                                    Base price: ₹{product.basePrice.toFixed(2)} + ₹{selectedVariant.additionalPrice.toFixed(2)} for {selectedColor}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-4">
-                            <ColorSelector
-                                colors={colorGroups}
-                                selectedColor={selectedColor}
-                                onColorChange={handleColorChange}
-                            />
-                        </div>
-
-                        <div className="space-y-4">
-                            <SizeSelector
-                                sizes={availableSizes}
-                                selectedSize={selectedSize}
-                                onSizeChange={setSelectedSize}
-                            />
-                        </div>
-
-                        <div className="sticky bottom-0 bg-white border-t border-gray-100 pt-4 pb-4 px-4 sm:pb-0 sm:px-0 sm:static sm:border-0 sm:pt-0 z-10">
-                            <ProductActions
-                                onAddToCart={handleAddToCart}
-                                disabled={!selectedSize || !selectedVariant}
-                                isCustomizable={product.isCustomizable}
-                                productSlug={product.slug}
-                            />
-                        </div>
-
-                        {features.length > 0 && (
-                            <div className="space-y-4">
-                                <ProductFeatures features={features} />
+                    {/* Product Details Section */}
+                    <ScrollArea className="order-2 w-full h-full">
+                        <div className="space-y-4 pr-4">
+                            {/* Product Info */}
+                            <div className="pb-4">
+                                <ProductInfo
+                                    brand={product.brandName}
+                                    name={product.name}
+                                    price={finalPrice}
+                                    currency="INR"
+                                />
+                                
+                                {selectedVariant && selectedVariant.additionalPrice > 0 && (
+                                    <div className="mt-3">
+                                        <Badge variant="secondary" className="text-xs">
+                                            Base: ₹{product.basePrice.toFixed(2)} + ₹{selectedVariant.additionalPrice.toFixed(2)} for {selectedColor}
+                                        </Badge>
+                                    </div>
+                                )}
+                                
+                                {selectedVariant && selectedVariant.stockQuantity < 10 && selectedVariant.stockQuantity > 0 && (
+                                    <div className="mt-2">
+                                        <Badge variant="destructive" className="text-xs">
+                                            Only {selectedVariant.stockQuantity} left in stock!
+                                        </Badge>
+                                    </div>
+                                )}
                             </div>
-                        )}
 
-                        <div className="space-y-4">
-                            <ProductAccordion
-                                description={product.description || 'No description available'}
-                                washCare={product.careInstructions || 'Standard care instructions apply'}
-                            />
+                            <Separator className="bg-border/40" />
+
+                            {/* Color Selector */}
+                            <div className="py-4">
+                                <ColorSelector
+                                    colors={colorGroups}
+                                    selectedColor={selectedColor}
+                                    onColorChange={handleColorChange}
+                                />
+                            </div>
+
+                            <Separator className="bg-border/40" />
+
+                            {/* Size Selector */}
+                            <div className="py-4">
+                                <SizeSelector
+                                    sizes={availableSizes}
+                                    selectedSize={selectedSize}
+                                    onSizeChange={setSelectedSize}
+                                />
+                            </div>
+
+                            <Separator className="bg-border/40" />
+
+                            {/* Product Actions - Sticky on Mobile */}
+                            <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 p-4 -mx-4 sm:mx-0 sm:static sm:border-0 sm:p-0 sm:bg-transparent z-20">
+                                <ProductActions
+                                    onAddToCart={handleAddToCart}
+                                    disabled={!selectedSize || !selectedVariant}
+                                    isCustomizable={product.isCustomizable}
+                                    productSlug={product.slug}
+                                />
+                            </div>
+
+                            {/* Features Section */}
+                            {features.length > 0 && (
+                                <>
+                                    <Separator className="bg-border/40" />
+                                    <div className="py-4">
+                                        <ProductFeatures features={features} />
+                                    </div>
+                                </>
+                            )}
+
+                            <Separator className="bg-border/40" />
+
+                            {/* Accordion Section */}
+                            <div className="py-4">
+                                <ProductAccordion
+                                    description={product.description || 'No description available'}
+                                    washCare={product.careInstructions || 'Standard care instructions apply'}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    </ScrollArea>
                 </div>
             </div>
         </div>
