@@ -2,7 +2,7 @@
 
 import { authApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/store/auth-store";
-import { LoginRequest, RegisterRequest } from "@/types/auth";
+import { LoginRequest, RegisterRequest } from "@/types";
 import { clearAuthCookies } from "@/lib/auth/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

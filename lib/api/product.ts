@@ -2,11 +2,11 @@ import {
     FetchProductList, 
     ProductSearchResponse, 
     ProductDetail,
-    ProductVariant,
     ProductReviewsResponse,
     AddReviewRequest,
     AddReviewResponse,
-    DesignCompatibilityResponse
+    PagedResponse,
+    Design
 } from "@/types";
 import { apiClient } from "./client";
 import { AxiosResponse } from "axios";
@@ -88,18 +88,18 @@ export const productApi = {
         return data;
     },
 
-    /**
-     * GET /api/v1/products/{slug}/variants
-     * Get all variants for a specific product
-     * 
-     * @param slug - Product slug identifier
-     */
-    getProductVariants: async (slug: string): Promise<ProductVariant[]> => {
-        const { data } = await apiClient.get<ProductVariant[]>(
-            `/api/v1/products/${slug}/variants`
-        );
-        return data;
-    },
+    // /**
+    //  * GET /api/v1/products/{slug}/variants
+    //  * Get all variants for a specific product
+    //  * 
+    //  * @param slug - Product slug identifier
+    //  */
+    // getProductVariants: async (slug: string): Promise<ProductVariant[]> => {
+    //     const { data } = await apiClient.get<ProductVariant[]>(
+    //         `/api/v1/products/${slug}/variants`
+    //     );
+    //     return data;
+    // },
 
     /**
      * GET /api/v1/products/{slug}/reviews
@@ -153,8 +153,8 @@ export const productApi = {
         slug: string,
         page: number = 0,
         size: number = 20
-    ): Promise<DesignCompatibilityResponse> => {
-        const { data } = await apiClient.get<DesignCompatibilityResponse>(
+    ): Promise<PagedResponse<Design>> => {
+        const { data } = await apiClient.get<PagedResponse<Design>>(
             `/api/v1/products/${slug}/designs`,
             { params: { page, size } }
         );

@@ -7,7 +7,6 @@ import EmailVerificationBanner from "@/components/auth/email-verification-banner
 
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/providers/auth-provider";
-import TanstackProvider from "@/providers/tanstack";
 import { PrefetchProvider } from "@/providers/prefetch-provider";
 
 import { getServerAuth } from "@/lib/auth/server";
@@ -41,32 +40,27 @@ export default async function RootLayout({
     auth = { user: null, isAuthenticated: false };
   }
 
+  console.log('[Layout] Initial User:', auth.user);
 
   return (
-    <html lang="en">
-      <body>
-        <TanstackProvider>
-          <PrefetchProvider>
-            <AuthProvider initialUser={auth.user}>
-              <SidebarProvider defaultOpen={false}>
-                <div className="font-sans w-full no-scrollbar">
-                  <AppSidebar />
+    <PrefetchProvider>
+      <AuthProvider initialUser={auth.user}>
+        <SidebarProvider defaultOpen={false}>
+          <div className="font-sans w-full no-scrollbar">
+            <AppSidebar />
 
-                  <header id="header">
-                    <Navbar />
-                    <EmailVerificationBanner className="mx-4 mb-4" />
-                  </header>
+            <header id="header">
+              <Navbar />
+              <EmailVerificationBanner className="mx-4 mb-4" />
+            </header>
 
-                  <main className="w-full relative">{children}</main>
+            <main className="w-full relative">{children}</main>
 
-                  <Footer />
-                  <Toaster position="top-right" className="z-50" />
-                </div>
-              </SidebarProvider>
-            </AuthProvider>
-          </PrefetchProvider>
-        </TanstackProvider>
-      </body>
-    </html>
+            <Footer />
+            <Toaster position="top-right" className="z-50" />
+          </div>
+        </SidebarProvider>
+      </AuthProvider>
+    </PrefetchProvider>
   );
 }

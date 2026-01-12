@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display , Inter  } from "next/font/google";
 import "./globals.css";
+import TanstackProvider from "@/providers/tanstack";
 
 
 
@@ -36,7 +37,9 @@ export default function Layout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} antialiased`}>
+        <TanstackProvider>
           {children}
+        </TanstackProvider>
       </body>
     </html>
   );

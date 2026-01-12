@@ -1,315 +1,659 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useProduct } from '@/lib/tanstack/queries/product.queries';
+import { useInfiniteDesigns, useFlatDesigns, useDesignCount, useDesignCategories } from '@/lib/tanstack/queries/design.queries';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { SlidersHorizontal, Heart, Star, Shirt, Palette } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Check, Sparkles, ShoppingBag, Download, Search } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import type { Design } from '@/types';
 
-// Sample brands data
-const brands = [
-  { 
-    id: 'nike', 
-    name: 'Nike', 
-    image: '/home/section2/sec1-col-1.webp', 
-    popular: true, 
-    productCount: 156,
-    description: 'Just Do It - Premium Athletic Wear'
-  },
-  { 
-    id: 'adidas', 
-    name: 'Adidas', 
-    image: '/home/section2/sec1-col-2.webp', 
-    popular: true, 
-    productCount: 132,
-    description: 'Impossible is Nothing - Sport Fashion'
-  },
-  { 
-    id: 'puma', 
-    name: 'Puma', 
-    image: '/home/section2/sec1-col-3.webp', 
-    popular: false, 
-    productCount: 98,
-    description: 'Forever Faster - Street Style'
-  },
-  { 
-    id: 'reebok', 
-    name: 'Reebok', 
-    image: '/home/section2/sec1-col-4.webp', 
-    popular: false, 
-    productCount: 76,
-    description: 'Be More Human - Fitness Lifestyle'
-  },
-  { 
-    id: 'new-balance', 
-    name: 'New Balance', 
-    image: '/home/section2/sec2-col-1.webp', 
-    popular: true, 
-    productCount: 89,
-    description: 'Endorsed by No One - Performance'
-  },
-  { 
-    id: 'under-armour', 
-    name: 'Under Armour', 
-    image: '/home/section2/sec2-col-2.webp', 
-    popular: false, 
-    productCount: 67,
-    description: 'I Will - Innovation & Performance'
-  },
-];
+interface CustomizationClientProps {
+  slug: string;
+  variantId?: string;
+}
 
-// Sample design collections
-const designs = [
-  { 
-    id: 'minimal', 
-    name: 'Minimal Collection', 
-    image: '/home/section4/img1.webp', 
-    premium: false, 
-    productCount: 45,
-    description: 'Clean, simple designs for everyday wear'
-  },
-  { 
-    id: 'vintage', 
-    name: 'Vintage Revival', 
-    image: '/home/section4/img2.webp', 
-    premium: false, 
-    productCount: 38,
-    description: 'Retro-inspired graphics and typography'
-  },
-  { 
-    id: 'abstract', 
-    name: 'Abstract Art', 
-    image: '/home/section4/img3.webp', 
-    premium: true, 
-    productCount: 29,
-    description: 'Artistic expressions and bold patterns'
-  },
-  { 
-    id: 'nature', 
-    name: 'Nature Elements', 
-    image: '/home/section4/img4.webp', 
-    premium: true, 
-    productCount: 34,
-    description: 'Botanical and natural world inspirations'
-  },
-  { 
-    id: 'geometric', 
-    name: 'Geometric Patterns', 
-    image: '/home/section2/sec2-col-3.webp', 
-    premium: true, 
-    productCount: 41,
-    description: 'Mathematical precision meets fashion'
-  },
-  { 
-    id: 'typography', 
-    name: 'Typography Art', 
-    image: '/home/section2/sec2-col-4.webp', 
-    premium: false, 
-    productCount: 52,
-    description: 'Words as art, text as design'
-  },
-];
+export default function CustomizationClient({ slug, variantId }: CustomizationClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null);
+  
+  // Get search and category from URL query parameters
+  const searchQuery = searchParams.get('search') || '';
+  const selectedCategory = searchParams.get('tab') || 'all';
 
-const CustomizationClient: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<'all' | 'brands' | 'designs'>('all');
-  const [showFilters, setShowFilters] = useState(false);
+  const { data: product, isLoading: isProductLoading } = useProduct(slug);
+  const { data: categories, isLoading: isCategoriesLoading } = useDesignCategories();
 
-  const filteredItems = activeFilter === 'all' 
-    ? [...brands.map(b => ({...b, type: 'brand' as const})), ...designs.map(d => ({...d, type: 'design' as const}))]
-    : activeFilter === 'brands' 
-    ? brands.map(b => ({...b, type: 'brand' as const}))
-    : designs.map(d => ({...d, type: 'design' as const}));
+  // Helper function to build URL with query params
+  const buildURL = (params: { search?: string; tab?: string }) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    
+    // Update search param
+    if (params.search !== undefined) {
+      if (params.search) {
+        current.set('search', params.search);
+      } else {
+        current.delete('search');
+      }
+    }
+    
+    // Update tab param
+    if (params.tab !== undefined) {
+      if (params.tab && params.tab !== 'all') {
+        current.set('tab', params.tab);
+      } else {
+        current.delete('tab');
+      }
+    }
+    
+    // Keep variantId in URL
+    if (variantId) {
+      current.set('variantId', variantId);
+    }
+    
+    // Build the new URL
+    const search = current.toString();
+    const query = search ? `?${search}` : '';
+    
+    return `/customization/${slug}${query}`;
+  };
+
+  // Handler for search form submission
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const searchValue = formData.get('search') as string;
+    router.push(buildURL({ search: searchValue }));
+  };
+
+  // Handler for category tab change
+  const handleCategoryChange = (value: string) => {
+    router.push(buildURL({ tab: value }));
+  };
+
+  // Handler to clear all filters
+  const handleClearFilters = () => {
+    router.push(buildURL({ search: '', tab: 'all' }));
+  };
+
+  const {
+    data: designsData,
+    isLoading: isDesignsLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteDesigns(
+    {
+      categorySlug: selectedCategory === 'all' ? undefined : selectedCategory,
+      q: searchQuery || undefined,
+    },
+    20
+  );
+
+  const designs = useFlatDesigns(designsData);
+  const totalDesigns = useDesignCount(designsData);
+
+  const sentinelRef = useInfiniteScroll({
+    hasNextPage: hasNextPage || false,
+    isFetchingNextPage,
+    fetchNextPage,
+    rootMargin: '400px'
+  });
+
+  // Find the selected variant
+  const selectedVariant = product?.variants?.find(v => v.id === variantId);
+
+  // Safety checks
+  const hasValidVariant = variantId && selectedVariant;
+  const hasVariants = product?.variants && product.variants.length > 0;
+
+  // Get the variant image - ONLY show PREVIEW_BASE images for customization
+  const previewBaseImages = selectedVariant?.images?.filter(img =>
+    img.imageRole === 'PREVIEW_BASE' || !img.imageRole // Fallback for images without role
+  );
+  const variantImage = previewBaseImages?.[0]; // Use the first PREVIEW_BASE image
+  const productImage = variantImage;
+
+  const handleContinue = () => {
+    // Safety check before continuing
+    if (!selectedDesignId) {
+      alert("Please select a design first");
+      return;
+    }
+
+    if (!product) {
+      alert("Product not found");
+      return;
+    }
+
+    if (!variantId || !selectedVariant) {
+      alert("Invalid variant selection. Please go back and select a variant.");
+      return;
+    }
+
+    // Pass both variantId and designId to the next page
+    router.push(`/customization-studio/${slug}/${selectedDesignId}?variantId=${variantId}`);
+  };
+
+  if (isProductLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="text-center space-y-4 max-w-md">
+          <ShoppingBag className="h-16 w-16 mx-auto opacity-30 text-muted-foreground" />
+          <h2 className="text-2xl font-semibold text-foreground">Product Not Found</h2>
+          <p className="text-muted-foreground">
+            The product you're looking for doesn't exist or has been removed.
+          </p>
+          <Button onClick={() => router.push('/products')} size="lg" className="rounded-full">
+            Browse Products
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if product has variants
+  if (!hasVariants) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="text-center space-y-4 max-w-md">
+          <ShoppingBag className="h-16 w-16 mx-auto opacity-30 text-muted-foreground" />
+          <h2 className="text-2xl font-semibold text-foreground">No Variants Available</h2>
+          <p className="text-muted-foreground">
+            This product doesn't have any variants available for customization.
+          </p>
+          <Button onClick={() => router.push(`/products/${slug}`)} size="lg" className="rounded-full">
+            Back to Product
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no variant is selected
+  if (!variantId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="text-center space-y-4 max-w-md">
+          <Sparkles className="h-16 w-16 mx-auto opacity-30 text-muted-foreground" />
+          <h2 className="text-2xl font-semibold text-foreground">Select a Variant First</h2>
+          <p className="text-muted-foreground">
+            Please select a color and size from the product page before customizing.
+          </p>
+          <Button onClick={() => router.push(`/products/${slug}`)} size="lg" className="rounded-full">
+            Go to Product Page
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if variant ID provided but not found
+  if (variantId && !selectedVariant) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="text-center space-y-4 max-w-md">
+          <ShoppingBag className="h-16 w-16 mx-auto opacity-30 text-muted-foreground" />
+          <h2 className="text-2xl font-semibold text-foreground">Variant Not Found</h2>
+          <p className="text-muted-foreground">
+            The selected variant is not available or out of stock. Please select another variant.
+          </p>
+          <Button onClick={() => router.push(`/products/${slug}`)} size="lg" className="rounded-full">
+            Back to Product
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-gray-900 mb-4">
-            BRANDS & DESIGNS
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover premium brands and exclusive design collections for your perfect style
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col bg-background">
+      <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-        {/* Filter Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              Filters
-            </Button>
-            
-            <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
-              <button
-                onClick={() => setActiveFilter('all')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  activeFilter === 'all' 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                All ({brands.length + designs.length})
-              </button>
-              <button
-                onClick={() => setActiveFilter('brands')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1 ${
-                  activeFilter === 'brands' 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Shirt className="w-4 h-4" />
-                Brands ({brands.length})
-              </button>
-              <button
-                onClick={() => setActiveFilter('designs')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1 ${
-                  activeFilter === 'designs' 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Palette className="w-4 h-4" />
-                Designs ({designs.length})
-              </button>
-            </div>
-          </div>
-          
-          <div className="text-sm text-gray-600">
-            Showing {filteredItems.length} collections
-          </div>
-        </div>
+          {/* Left Column - Product Preview */}
+          <div className="lg:col-span-2">
+            <div className="lg:sticky lg:top-8 space-y-6">
+              {/* Header */}
+              <div className='flex items-center gap-3'>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => router.back()}
+                  className="h-10 w-10 rounded-full hover:bg-accent transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+                    Customize Your Style
+                  </h1>
+                  <p className="text-sm text-muted-foreground mt-0.5">Choose a design that speaks to you</p>
+                </div>
+              </div>
 
-        {/* Results Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredItems.map((item) => (
-            <Link 
-              key={item.id} 
-              href={`/category/${item.type === 'brand' ? 'brand' : 'design'}?filter=${item.id}`}
-              className="group"
-            >
-              <div className="relative bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-300">
-                <div className="relative aspect-[2.6/3] bg-gray-100 overflow-hidden">
+              {/* Product Card */}
+              <div className="relative w-full rounded-4xl overflow-hidden shadow-lg border-2 border-border/50 bg-linear-to-br from-card to-muted/20 group"
+                style={{ aspectRatio: '4.9999/5' }}>
+                {productImage && productImage.imageUrl ? (
                   <Image
-                    src={item.image}
-                    alt={item.name}
+                    src={productImage.imageUrl}
+                    alt={productImage.altText || `${product.name} - ${selectedVariant?.color}`}
                     fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority
                   />
-                  
-                  {/* Badge */}
-                  <div className="absolute top-3 left-3">
-                    <div className="bg-white px-3 py-1 text-xs font-medium uppercase tracking-wide">
-                      {item.type === 'brand' ? 'Brand' : 'Design'}
-                    </div>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-br from-muted to-muted/50 gap-3">
+                    <ShoppingBag className="h-24 w-24 opacity-10 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">No Image Available</p>
                   </div>
+                )}
 
-                  {/* Status Badge */}
-                  {((item.type === 'brand' && 'popular' in item && item.popular) || 
-                    (item.type === 'design' && 'premium' in item && item.premium)) && (
-                    <div className="absolute top-3 right-3">
-                      <div className="bg-black text-white px-3 py-1 text-xs font-medium uppercase tracking-wide">
-                        {item.type === 'brand' ? 'Popular' : 'Premium'}
+                <div className="absolute inset-0 bg-linear-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
+
+                <Badge className="absolute top-5 right-5 bg-primary/90 backdrop-blur-md border-0 shadow-lg text-primary-foreground px-3 py-1.5 text-xs font-medium">
+                  <Sparkles className="h-3 w-3 mr-1.5" />
+                  CUSTOMIZABLE
+                </Badge>
+              </div>
+
+              {/* Product Info */}
+              <div className="space-y-3 px-1">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                  {product.name}
+                </h2>
+                {selectedVariant ? (
+                  <div className="space-y-2">
+                    {/* Color */}
+                    {selectedVariant.color && (
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-4 w-4 rounded-full border-2 border-border shadow-sm"
+                          style={{ backgroundColor: selectedVariant.colorHex || '#ffffff' }}
+                          title={selectedVariant.color}
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Color: <span className="font-semibold text-foreground">{selectedVariant.color}</span>
+                        </p>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Hover Actions */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                      className="p-2 rounded-full bg-white text-gray-600 hover:text-red-500 shadow-md transition-colors"
-                    >
-                      <Heart className="w-4 h-4" />
-                    </button>
+                    {/* Size */}
+                    {selectedVariant.size && (
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-muted-foreground">
+                          Size: <span className="font-semibold text-foreground">{selectedVariant.size}</span>
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Stock Status */}
+                    {selectedVariant.stockQuantity !== undefined && (
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-muted-foreground">
+                          Stock: <span className={cn(
+                            "font-semibold",
+                            selectedVariant.stockQuantity > 10 ? "text-green-600" :
+                              selectedVariant.stockQuantity > 0 ? "text-amber-600" :
+                                "text-red-600"
+                          )}>
+                            {selectedVariant.stockQuantity > 0
+                              ? `${selectedVariant.stockQuantity} available`
+                              : 'Out of stock'}
+                          </span>
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Price */}
+                    {product.basePrice !== undefined && selectedVariant.additionalPrice !== undefined && (
+                      <div className="flex items-center gap-2 pt-1">
+                        <p className="text-sm text-muted-foreground">
+                          Price: <span className="font-semibold text-foreground text-base">
+                            ₹{(product.basePrice + selectedVariant.additionalPrice).toFixed(2)}
+                          </span>
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
-                
-                <div className="p-4">
-                  <div className="text-sm text-gray-500 mb-1 uppercase tracking-wide">
-                    {item.type === 'brand' ? 'Brand Collection' : 'Design Collection'}
+                ) : (
+                  <div className="text-sm text-muted-foreground">
+                    <p>No variant information available</p>
                   </div>
-                  
-                  <h3 className="font-medium text-gray-900 mb-2 group-hover:text-gray-600 transition-colors line-clamp-1">
-                    {item.name}
-                  </h3>
-                  
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                    {item.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">
-                      {item.productCount} items
-                    </span>
-                    
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">4.{Math.floor(Math.random() * 10)}</span>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredItems.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Shirt className="w-16 h-16 mx-auto" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No collections found</h3>
-            <p className="text-gray-600">Try adjusting your filters to see more results.</p>
           </div>
-        )}
 
-        {/* Featured Section */}
-        <div className="mt-16 text-center border-t pt-16">
-          <h2 className="text-xl font-semibold mb-6 tracking-wide">Why Choose Our Collections?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Shirt className="w-6 h-6 text-gray-600" />
+          {/* Right Column - Design Selection */}
+          <div className="lg:col-span-3 space-y-6 lg:px-5">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-2 text-foreground">
+                  Choose Your Embroidery
+                </h3>
+                <p className="text-sm text-muted-foreground">Browse our collection of unique designs</p>
               </div>
-              <h3 className="font-semibold mb-2 tracking-wide">Premium Brands</h3>
-              <p className="text-sm text-gray-600">Curated selection of top global fashion brands</p>
+
+              {/* Search Input */}
+              <form onSubmit={handleSearchSubmit} className="relative group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary pointer-events-none z-10" />
+                <Input
+                  type="text"
+                  name="search"
+                  placeholder="Search for designs..."
+                  defaultValue={searchQuery}
+                  className="pl-11 pr-24 h-12 rounded-2xl border-2 border-border bg-background focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all"
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 px-4 rounded-xl"
+                >
+                  Search
+                </Button>
+              </form>
+
+              {/* Category Tabs */}
+              <Tabs value={selectedCategory} onValueChange={handleCategoryChange} className="w-full">
+                <div className="relative">
+                  <div className="overflow-x-auto overflow-y-hidden scrollbar-hide">
+                    <TabsList className="inline-flex w-auto min-w-full h-auto p-1.5 rounded-2xl bg-muted/50 backdrop-blur-sm border border-border/50">
+                      <TabsTrigger
+                        value="all"
+                        className="rounded-xl px-6 py-2.5 whitespace-nowrap data-[state=active]:bg-card data-[state=active]:shadow-md transition-all font-medium"
+                      >
+                        All Designs
+                      </TabsTrigger>
+                      {isCategoriesLoading ? (
+                        <>
+                          <Skeleton className="h-9 w-20 rounded-xl" />
+                          <Skeleton className="h-9 w-24 rounded-xl" />
+                        </>
+                      ) : (
+                        categories?.map((category) => (
+                          <TabsTrigger
+                            key={category.id}
+                            value={category.slug}
+                            className="rounded-xl px-6 py-2.5 whitespace-nowrap data-[state=active]:bg-card data-[state=active]:shadow-md transition-all font-medium"
+                          >
+                            {category.name}
+                          </TabsTrigger>
+                        ))
+                      )}
+                    </TabsList>
+                  </div>
+                </div>
+              </Tabs>
             </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Palette className="w-6 h-6 text-gray-600" />
+
+            {isDesignsLoading ? (
+              <DesignsLoadingSkeleton />
+            ) : designs.length === 0 ? (
+              <div className="flex items-center justify-center p-16 border-2 border-dashed rounded-3xl border-border/60 bg-muted/20 backdrop-blur-sm">
+                <div className="text-center max-w-sm">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-5">
+                    <Sparkles className="h-8 w-8 text-primary" />
+                  </div>
+                  <h4 className="text-lg font-semibold mb-2 text-foreground">No Designs Available</h4>
+                  <p className="text-sm mb-5 text-muted-foreground leading-relaxed">
+                    {searchQuery
+                      ? `No designs found matching "${searchQuery}". Try a different search term.`
+                      : 'There are currently no designs available in this category.'}
+                  </p>
+                  {(searchQuery || selectedCategory !== 'all') && (
+                    <Button
+                      variant="outline"
+                      onClick={handleClearFilters}
+                      className="rounded-full border-2 hover:bg-accent hover:border-accent-foreground/20"
+                    >
+                      Clear Filters
+                    </Button>
+                  )}
+                </div>
               </div>
-              <h3 className="font-semibold mb-2 tracking-wide">Exclusive Designs</h3>
-              <p className="text-sm text-gray-600">Unique patterns and artistic collections</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Star className="w-6 h-6 text-gray-600" />
-              </div>
-              <h3 className="font-semibold mb-2 tracking-wide">Quality Assured</h3>
-              <p className="text-sm text-gray-600">High-quality materials and craftsmanship</p>
-            </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {designs.map((design) => (
+                    <DesignCard
+                      key={design.id}
+                      design={design}
+                      isSelected={selectedDesignId === design.id}
+                      onSelect={() => setSelectedDesignId(design.id)}
+                    />
+                  ))}
+                </div>
+
+                {hasNextPage && (
+                  <div ref={sentinelRef} className="flex items-center justify-center py-8">
+                    {isFetchingNextPage && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                        Loading more designs...
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {!hasNextPage && designs.length > 0 && (
+                  <p className="text-center text-sm py-4 text-muted-foreground">
+                    You have viewed all {totalDesigns} designs
+                  </p>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Bottom Action Bar - Fixed */}
+      <div className="fixed bottom-0 left-0 right-0 border-t-2 border-border/50 backdrop-blur-xl bg-background/95 z-50 shadow-2xl">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="h-24 flex items-center justify-between">
+            <div className="hidden sm:flex items-center gap-3">
+              {selectedDesignId ? (
+                <>
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Check className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Design Selected</p>
+                    <p className="text-xs text-muted-foreground">Ready to customize</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                    <Sparkles className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Select a Design</p>
+                    <p className="text-xs text-muted-foreground">Choose from our collection</p>
+                  </div>
+                </>
+              )}
+            </div>
+            <Button
+              size="lg"
+              onClick={handleContinue}
+              disabled={!selectedDesignId}
+              className={cn(
+                "gap-2 rounded-full px-8 sm:px-12 h-12 sm:h-14 transition-all duration-300 font-semibold shadow-lg text-base",
+                selectedDesignId
+                  ? "bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-xl hover:shadow-primary/20"
+                  : "cursor-not-allowed opacity-50 bg-muted text-muted-foreground"
+              )}
+            >
+              {selectedDesignId ? (
+                <>
+                  Continue to Customize
+                  <ArrowLeft className="h-4 w-4 rotate-180" />
+                </>
+              ) : (
+                'Select a Design First'
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Spacer for fixed button */}
+      <div className="h-24" />
     </div>
   );
-};
+}
 
-export default CustomizationClient;
+interface DesignCardProps {
+  design: Design;
+  isSelected: boolean;
+  onSelect: () => void;
+}
+
+function DesignCard({ design, isSelected, onSelect }: DesignCardProps) {
+  return (
+    <Card
+      onClick={onSelect}
+      className={cn(
+        'group relative overflow-hidden cursor-pointer transition-all duration-300 rounded-3xl border-2',
+        'hover:shadow-2xl hover:-translate-y-1',
+        isSelected
+          ? 'ring-4 ring-primary/30 shadow-2xl scale-[1.03] border-primary/50 bg-linear-to-br from-primary/5 to-transparent'
+          : 'shadow-md hover:scale-[1.02] border-border/50 hover:border-primary/30 bg-card'
+      )}
+    >
+      <div className="relative aspect-[1.3/1] bg-card overflow-hidden">
+        {design.imageUrl ? (
+          <Image
+            src={design.imageUrl}
+            alt={design.name}
+            fill
+            className={cn(
+              "object-cover transition-all duration-700",
+              isSelected ? "scale-105" : "group-hover:scale-110"
+            )}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-muted to-muted/50">
+            <Sparkles className="h-12 w-12 text-muted-foreground opacity-40" />
+          </div>
+        )}
+
+        {/* Overlay gradient */}
+        <div className={cn(
+          "absolute inset-0 bg-linear-to-t from-black/10 via-transparent to-transparent transition-opacity duration-300",
+          isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+        )} />
+
+        {/* Selection Indicator */}
+        {isSelected && (
+          <div className="absolute top-3 right-3 h-9 w-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-xl animate-in zoom-in-50 duration-300" >
+            <Check className="h-5 w-5" strokeWidth={3} />
+          </div>
+        )}
+
+        {/* Premium Badge */}
+        {design.isPremium && (
+          <Badge className="absolute top-3 left-3 bg-amber-500 hover:bg-amber-600 text-white text-xs border-0 shadow-lg font-medium px-2.5 py-1">
+            <Sparkles className="h-3 w-3 mr-1" />
+            Premium
+          </Badge>
+        )}
+
+        {/* Download Count */}
+        {design.downloadCount !== undefined && design.downloadCount > 0 && !isSelected && (
+          <Badge variant="secondary" className="absolute bottom-3 right-3 bg-card/95 backdrop-blur-md text-xs border border-border/50 shadow-sm font-medium">
+            <Download className="h-3 w-3 mr-1" />
+            {design.downloadCount}
+          </Badge>
+        )}
+      </div>
+
+      <div className={cn(
+        "p-4 transition-colors duration-300",
+        isSelected ? "bg-primary/5" : "bg-card"
+      )}>
+        <p className={cn(
+          "font-semibold text-sm truncate mb-1 transition-colors",
+          isSelected ? "text-primary" : "text-foreground"
+        )}>
+          {design.name}
+        </p>
+        <p className="text-xs capitalize truncate text-muted-foreground">
+          {design.category.name}
+        </p>
+      </div>
+    </Card>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <Skeleton className="h-7 w-48" />
+            <Skeleton className="w-full rounded-3xl" style={{ aspectRatio: '4/5' }} />
+            <div className="space-y-3 px-2">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          </div>
+
+          <div className="lg:col-span-3 space-y-6">
+            <div>
+              <Skeleton className="h-7 w-64 mb-6" />
+              <Skeleton className="h-12 w-full rounded-xl mb-6" />
+              <div className="flex gap-2">
+                <Skeleton className="h-9 w-16 rounded-lg" />
+                <Skeleton className="h-9 w-20 rounded-lg" />
+                <Skeleton className="h-9 w-24 rounded-lg" />
+              </div>
+            </div>
+            <DesignsLoadingSkeleton />
+          </div>
+        </div>
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 border-t border-border backdrop-blur-sm bg-background/95">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="h-20 flex items-center justify-end">
+            <Skeleton className="h-12 w-56 rounded-full" />
+          </div>
+        </div>
+      </div>
+      <div className="h-20" />
+    </div>
+  );
+}
+
+function DesignsLoadingSkeleton() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <Card key={i} className="overflow-hidden rounded-2xl shadow-sm border-border">
+          <Skeleton className="aspect-square w-full" />
+          <div className="p-4 space-y-2 bg-card">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}

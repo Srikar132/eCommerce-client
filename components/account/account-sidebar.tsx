@@ -1,75 +1,74 @@
-"use client"
-
-import React from "react";
-import {Button} from "@/components/ui/button";
-import {Separator} from "@/components/ui/separator";
-import {CreditCard, Mail, MapPin, ShoppingBag, Bell, ChevronRight, LogOut} from "lucide-react";
-import LogoutButton from "../auth/logout-button";
-
-interface SidebarProps {
-    activeSection: string;
-    onSectionChange: (section: string) => void;
-    onSignOut: () => void;
-}
+import Link from 'next/link';
+import { 
+  LayoutDashboard, 
+  ShoppingBag, 
+  Heart, 
+  MapPin, 
+  User, 
+  Shield, 
+  CreditCard, 
+  MessageSquare,
+  LogOut,
+  ChevronRight
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 const menuItems = [
-    { id: 'orders', label: 'My Orders', icon: ShoppingBag },
-    { id: 'cards', label: 'Saved Cards', icon: CreditCard },
-    { id: 'signin', label: 'Edit Sign In Details', icon: Mail },
-    { id: 'address', label: 'Edit Billing Address', icon: MapPin },
-    { id: 'preferences', label: 'Marketing Preferences', icon: Bell}
-]
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/account' },
+  { icon: ShoppingBag, label: 'Orders', href: '/account/orders' },
+  { icon: Heart, label: 'Wishlist', href: '/account/wishlist' },
+  { icon: MapPin, label: 'Saved Addresses', href: '/account/saved-addresses' },
+  { icon: User, label: 'Account Details', href: '/account/account-details' },
+  { icon: Shield, label: 'Security', href: '/account/security' },
+  { icon: CreditCard, label: 'Payments', href: '/account/payments' },
+  { icon: MessageSquare, label: 'Contact Us', href: '/contact' },
+];
 
-const Sidebar = ({ activeSection, onSectionChange, onSignOut }: SidebarProps) => {
-    return(
-        <div className="w-full lg:w-72 bg-white border-r border-zinc-200">
-            <div className="p-8 border-b border-zinc-200">
-                <h2 className="text-2xl font-medium tracking-wider">MY ACCOUNT</h2>
-            </div>
+const Sidebar = ({ currentPath = '/account' }) => {
+  return (
+    <div className="w-full bg-card rounded-lg border overflow-hidden">
+      {/* Navigation Menu */}
+      <nav className="p-2 space-y-1">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = currentPath === item.href;
+          
+          return (
+            <Button
+              key={item.label}
+              variant={isActive ? 'default' : 'ghost'}
+              className={cn(
+                "w-full justify-start gap-3 text-sm font-light",
+                isActive && "bg-primary text-primary-foreground hover:bg-primary/90"
+              )}
+              asChild
+            >
+              <Link href={item.href}>
+                <Icon size={18} className="shrink-0" />
+                <span className="flex-1 text-left">{item.label}</span>
+                {isActive && <ChevronRight size={16} className="shrink-0" />}
+              </Link>
+            </Button>
+          );
+        })}
+      </nav>
 
-            <nav className="p-6 space-y-2">
-                {menuItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                        <Button
-                            key={item.id}
-                            onClick={() => onSectionChange(item.id)}
-                            variant={activeSection === item.id ? "secondary" : "ghost"}
-                            className={`w-full justify-between cursor-pointer rounded-none h-12 px-4 transition-all duration-200 ${
-                                activeSection === item.id
-                                    ? 'bg-black text-white hover:bg-black'
-                                    : 'hover:bg-zinc-100 text-zinc-700'
-                            }`}
-                        >
-                            <div className="flex items-center gap-4">
-                                <Icon size={18} />
-                                <span className="text-sm font-medium tracking-wide">{item.label}</span>
-                            </div>
-                            <ChevronRight size={16} />
-                        </Button>
-                    );
-                })}
+      <Separator className="my-2" />
 
-                <Separator className="my-6 bg-zinc-200" />
-
-                <Button
-                    onClick={() => console.log('Navigate to shop')}
-                    variant="ghost"
-                    className="w-full justify-between h-12 px-4 hover:bg-zinc-100 text-zinc-700"
-                >
-                    <div className="flex items-center gap-4">
-                        <ShoppingBag size={18} />
-                        <span className="text-sm font-medium tracking-wide">Shop Now</span>
-                    </div>
-                    <ChevronRight size={16} />
-                </Button>
-            </nav>
-
-            <div className="p-6">
-                <LogoutButton/>
-            </div>
-        </div>
-    )
-}
+      {/* Logout Button */}
+      <div className="p-2">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-3 text-sm font-light text-destructive hover:text-destructive hover:bg-accent"
+        >
+          <LogOut size={18} className="shrink-0" />
+          <span className="flex-1 text-left">Log Out</span>
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export default Sidebar;

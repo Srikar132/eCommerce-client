@@ -12,15 +12,19 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
-  const { setUser, clearUser, isAuthenticated } = useAuthStore();
+  const { setUser, clearUser, isAuthenticated , user } = useAuthStore();
   const pathname = usePathname();
   const router = useRouter();
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  
+  console.log('[AuthProvider] Current User:', user);
 
   // Hydrate store with server data on mount
   useEffect(() => {
     if (initialUser) {
       setUser(initialUser);
+
     } else {
       clearUser();
     }

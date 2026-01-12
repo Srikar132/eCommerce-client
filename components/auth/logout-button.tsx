@@ -1,10 +1,9 @@
 "use client";
 
 
-import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import { LogOut } from 'lucide-react';
+import { LogOut, Loader2 } from 'lucide-react';
 
 export default function LogoutButton() {
   const { logout , isLoading } = useAuth();
@@ -12,12 +11,16 @@ export default function LogoutButton() {
   return (
     <Button
       variant="outline"
-      className="w-full h-12 border-zinc-300 rounded-none hover:bg-zinc-100 hover:border-zinc-400 max-w-sm"
+      className="w-full h-12 border-2 border-primary/20 rounded-2xl hover:bg-primary/5 hover:border-primary/30 hover:scale-[1.02] transition-all duration-200 max-w-sm shadow-md hover:shadow-lg"
       onClick={logout}
       disabled={isLoading}
     >
-      <LogOut size={18} className="mr-3" />
-      <span className="font-medium tracking-widest">
+      {isLoading ? (
+        <Loader2 size={18} className="mr-3 animate-spin text-primary" />
+      ) : (
+        <LogOut size={18} className="mr-3 text-primary" />
+      )}
+      <span className="font-medium">
         {isLoading ? 'Signing Out...' : 'Sign Out'}
       </span>
     </Button>

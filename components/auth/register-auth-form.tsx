@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import { Mail, CheckCircle } from "lucide-react";
+import { Mail, CheckCircle, User, Phone, Lock, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { authApi } from "@/lib/api/auth";
 import { toast } from "sonner";
 
@@ -59,46 +59,61 @@ export default function RegisterAuthForm() {
   if (registrationSuccess) {
     return (
       <div className="space-y-6">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6 space-y-4">
+        {/* Success Alert */}
+        <div className="bg-linear-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 space-y-4">
           <div className="flex items-start gap-3">
-            <CheckCircle className="w-6 h-6 text-green-600 mt-1 shrink-0" />
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-green-900">
+            <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+            <div className="space-y-2 flex-1">
+              <h3 className="text-lg font-bold text-green-900">
                 Registration Successful!
               </h3>
-              <p className="text-green-700">
+              <p className="text-sm text-green-700">
                 Your account has been created successfully.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
+        {/* Email Verification Notice */}
+        <div className="bg-linear-to-r from-primary/5 to-accent/5 border-2 border-primary/20 rounded-2xl p-6 space-y-4">
           <div className="flex items-start gap-3">
-            <Mail className="w-6 h-6 text-blue-600 mt-1 shrink-0" />
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-blue-900">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Mail className="w-6 h-6 text-primary" />
+            </div>
+            <div className="space-y-2 flex-1">
+              <h3 className="text-lg font-bold text-foreground">
                 Verify Your Email
               </h3>
-              <p className="text-blue-700">
+              <p className="text-sm text-muted-foreground">
                 We've sent a verification link to{" "}
-                <span className="font-semibold">{userEmail}</span>
+                <span className="font-semibold text-primary">{userEmail}</span>
               </p>
-              <p className="text-sm text-blue-600">
+              <p className="text-sm text-muted-foreground">
                 Please check your inbox and click the verification link to activate your
                 account.
               </p>
             </div>
           </div>
 
-          <div className="pt-2 space-y-2">
-            <p className="text-sm text-blue-800 font-medium">
+          <div className="pt-2 space-y-3 border-t border-border/50">
+            <p className="text-sm font-semibold text-foreground">
               Didn't receive the email?
             </p>
-            <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
-              <li>Check your spam or junk folder</li>
-              <li>Make sure you entered the correct email address</li>
-              <li>Wait a few minutes for the email to arrive</li>
+            <ul className="text-sm text-muted-foreground space-y-2">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                Check your spam or junk folder
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                Make sure you entered the correct email address
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                Wait a few minutes for the email to arrive
+              </li>
             </ul>
           </div>
 
@@ -118,18 +133,30 @@ export default function RegisterAuthForm() {
               }
             }}
             variant="outline"
-            className="w-full mt-4"
+            className="w-full h-12 rounded-2xl border-2 border-primary/30 hover:bg-primary/5 transition-all duration-200"
             disabled={isResending}
           >
-            {isResending ? "Sending..." : "Resend Verification Email"}
+            {isResending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              <>
+                <Mail className="w-4 h-4 mr-2" />
+                Resend Verification Email
+              </>
+            )}
           </Button>
         </div>
 
         <Button
           onClick={() => (window.location.href = "/login")}
-          className="w-full"
+          className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl font-semibold shadow-lg shadow-primary/20 transition-all duration-200 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] group"
         >
+          <ArrowRight className="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1" />
           Go to Login
+          <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
         </Button>
       </div>
     );
@@ -137,83 +164,175 @@ export default function RegisterAuthForm() {
 
   // Show registration form
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="auth-form space-y-4">
-      <div className="auth-input-group">
-        <div className="auth-input-wrapper">
-          <Label className="auth-label-floating">Username</Label>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Username Field */}
+      <div className="space-y-2">
+        <Label 
+          htmlFor="username" 
+          className="text-sm font-semibold text-foreground flex items-center gap-2"
+        >
+          <User className="h-4 w-4 text-primary" />
+          Username
+        </Label>
+        <div className="relative group">
           <Input
+            id="username"
             type="text"
             autoComplete="username"
+            placeholder="Choose a username"
             {...register("username")}
-            className="auth-input"
-            aria-invalid={!!errors.username}
+            className={`h-12 rounded-2xl border-2 transition-all duration-200 ${
+              errors.username 
+                ? 'border-destructive bg-destructive/5 focus-visible:ring-destructive/20' 
+                : 'border-border bg-background focus-visible:border-primary focus-visible:ring-primary/20'
+            } pl-4 pr-4 text-base placeholder:text-muted-foreground`}
           />
         </div>
-        {errors.username && <p className="auth-error-text">{errors.username.message}</p>}
-      </div>
-
-      <div className="auth-input-group">
-        <div className="auth-input-wrapper">
-          <Label className="auth-label-floating">Email</Label>
-          <Input
-            type="email"
-            autoComplete="email"
-            {...register("email")}
-            className="auth-input"
-            aria-invalid={!!errors.email}
-          />
-        </div>
-        {errors.email && <p className="auth-error-text">{errors.email.message}</p>}
-      </div>
-
-      <div className="auth-input-group">
-        <div className="auth-input-wrapper relative">
-          <Label className="auth-label-floating">Phone</Label>
-          <div className="flex items-center gap-2">
-            <Input
-              type="tel"
-              autoComplete="tel"
-              {...register("phone")}
-              className="auth-input"
-              aria-invalid={!!errors.phone}
-            />
-          </div>
-        </div>
-        {errors.phone && <p className="auth-error-text">{errors.phone.message}</p>}
-      </div>
-
-      <div className="auth-input-group">
-        <div className="auth-input-wrapper">
-          <Label className="auth-label-floating">Password</Label>
-          <Input
-            type="password"
-            autoComplete="new-password"
-            {...register("password")}
-            className="auth-input"
-            aria-invalid={!!errors.password}
-          />
-        </div>
-        {errors.password && <p className="auth-error-text">{errors.password.message}</p>}
-      </div>
-
-      <div className="auth-input-group">
-        <div className="auth-input-wrapper">
-          <Label className="auth-label-floating">Confirm Password</Label>
-          <Input
-            type="password"
-            autoComplete="new-password"
-            {...register("confirmPassword")}
-            className="auth-input"
-            aria-invalid={!!errors.confirmPassword}
-          />
-        </div>
-        {errors.confirmPassword && (
-          <p className="auth-error-text">{errors.confirmPassword.message}</p>
+        {errors.username && (
+          <p className="text-sm text-destructive font-medium animate-in slide-in-from-top-1 duration-200">
+            {errors.username.message}
+          </p>
         )}
       </div>
 
-      <Button type="submit" className="auth-submit-btn w-full" disabled={isLoading}>
-        {isLoading ? "Registering..." : "Register"}
+      {/* Email Field */}
+      <div className="space-y-2">
+        <Label 
+          htmlFor="email" 
+          className="text-sm font-semibold text-foreground flex items-center gap-2"
+        >
+          <Mail className="h-4 w-4 text-primary" />
+          Email Address
+        </Label>
+        <div className="relative group">
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            {...register("email")}
+            className={`h-12 rounded-2xl border-2 transition-all duration-200 ${
+              errors.email 
+                ? 'border-destructive bg-destructive/5 focus-visible:ring-destructive/20' 
+                : 'border-border bg-background focus-visible:border-primary focus-visible:ring-primary/20'
+            } pl-4 pr-4 text-base placeholder:text-muted-foreground`}
+          />
+        </div>
+        {errors.email && (
+          <p className="text-sm text-destructive font-medium animate-in slide-in-from-top-1 duration-200">
+            {errors.email.message}
+          </p>
+        )}
+      </div>
+
+      {/* Phone Field */}
+      <div className="space-y-2">
+        <Label 
+          htmlFor="phone" 
+          className="text-sm font-semibold text-foreground flex items-center gap-2"
+        >
+          <Phone className="h-4 w-4 text-primary" />
+          Phone Number
+        </Label>
+        <div className="relative group">
+          <Input
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+            placeholder="+1234567890"
+            {...register("phone")}
+            className={`h-12 rounded-2xl border-2 transition-all duration-200 ${
+              errors.phone 
+                ? 'border-destructive bg-destructive/5 focus-visible:ring-destructive/20' 
+                : 'border-border bg-background focus-visible:border-primary focus-visible:ring-primary/20'
+            } pl-4 pr-4 text-base placeholder:text-muted-foreground`}
+          />
+        </div>
+        {errors.phone && (
+          <p className="text-sm text-destructive font-medium animate-in slide-in-from-top-1 duration-200">
+            {errors.phone.message}
+          </p>
+        )}
+      </div>
+
+      {/* Password Field */}
+      <div className="space-y-2">
+        <Label 
+          htmlFor="password" 
+          className="text-sm font-semibold text-foreground flex items-center gap-2"
+        >
+          <Lock className="h-4 w-4 text-primary" />
+          Password
+        </Label>
+        <div className="relative group">
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Create a password"
+            {...register("password")}
+            className={`h-12 rounded-2xl border-2 transition-all duration-200 ${
+              errors.password 
+                ? 'border-destructive bg-destructive/5 focus-visible:ring-destructive/20' 
+                : 'border-border bg-background focus-visible:border-primary focus-visible:ring-primary/20'
+            } pl-4 pr-4 text-base placeholder:text-muted-foreground`}
+          />
+        </div>
+        {errors.password && (
+          <p className="text-sm text-destructive font-medium animate-in slide-in-from-top-1 duration-200">
+            {errors.password.message}
+          </p>
+        )}
+      </div>
+
+      {/* Confirm Password Field */}
+      <div className="space-y-2">
+        <Label 
+          htmlFor="confirmPassword" 
+          className="text-sm font-semibold text-foreground flex items-center gap-2"
+        >
+          <Lock className="h-4 w-4 text-primary" />
+          Confirm Password
+        </Label>
+        <div className="relative group">
+          <Input
+            id="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Confirm your password"
+            {...register("confirmPassword")}
+            className={`h-12 rounded-2xl border-2 transition-all duration-200 ${
+              errors.confirmPassword 
+                ? 'border-destructive bg-destructive/5 focus-visible:ring-destructive/20' 
+                : 'border-border bg-background focus-visible:border-primary focus-visible:ring-primary/20'
+            } pl-4 pr-4 text-base placeholder:text-muted-foreground`}
+          />
+        </div>
+        {errors.confirmPassword && (
+          <p className="text-sm text-destructive font-medium animate-in slide-in-from-top-1 duration-200">
+            {errors.confirmPassword.message}
+          </p>
+        )}
+      </div>
+
+      {/* Submit Button */}
+      <Button 
+        type="submit" 
+        disabled={isLoading}
+        className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl font-semibold text-base shadow-lg shadow-primary/20 transition-all duration-200 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group"
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            Creating Account...
+          </>
+        ) : (
+          <>
+            <Sparkles className="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" />
+            Create Account
+            <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+          </>
+        )}
       </Button>
     </form>
   );

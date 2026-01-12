@@ -18,7 +18,7 @@ type Props = {
     onAddToCart?: (id: UUID) => void;
 };
 
-const PLACEHOLDER_IMAGE = '/placeholder-product.jpg';
+const PLACEHOLDER_IMAGE = '/images/error.png';
 const IMAGE_ROTATION_INTERVAL = 800;
 
 const ProductCardComponent = ({
@@ -124,12 +124,14 @@ const ProductCardComponent = ({
                 <div className="relative aspect-[2.9/3] overflow-hidden rounded-3xl m-2 shadow-2xl bg-gray-100">
                     <Image
                         src={images[currentImageIndex]}
-                        alt={product.name}
+                        alt={"/images/loo.png"}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                         priority={false}
                     />
+
+                    {images[currentImageIndex]}
 
                     {badge && (
                         <Badge className="absolute top-3 left-3 bg-white text-black hover:bg-white border-0 shadow-md uppercase tracking-wide text-xs">

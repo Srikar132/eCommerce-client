@@ -96,13 +96,15 @@ export default function EmailVerificationClient() {
   if (state === 'verifying') {
     return (
       <div className="max-w-2xl mx-auto min-h-screen pt-10 p-5">
-        <div className="bg-white border border-gray-200 rounded-lg p-8 space-y-6 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <div className="bg-linear-to-r from-primary/5 to-accent/5 border-2 border-primary/20 rounded-2xl p-8 space-y-6 text-center shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-xl">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">Verifying Your Email</h1>
-            <p className="text-gray-600">
+            <h1 className="text-2xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+              Verifying Your Email
+            </h1>
+            <p className="text-foreground/70">
               Please wait while we verify your email address...
             </p>
           </div>
@@ -115,9 +117,9 @@ export default function EmailVerificationClient() {
   if (state === 'invalid-token') {
     return (
       <div className="max-w-2xl mx-auto min-h-screen pt-10 p-5">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-8 space-y-6">
+        <div className="bg-linear-to-r from-red-50 to-rose-50 border-2 border-red-200 rounded-2xl p-8 space-y-6 shadow-lg">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-xl mb-4">
               <XCircle className="w-8 h-8 text-red-600" />
             </div>
             <h1 className="text-2xl font-bold text-red-900">Invalid Verification Link</h1>
@@ -128,13 +130,13 @@ export default function EmailVerificationClient() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link 
               href="/login" 
-              className="inline-block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors text-center"
+              className="inline-flex items-center justify-center h-12 bg-red-600 text-white px-6 rounded-2xl hover:bg-red-700 transition-all duration-200 hover:scale-[1.02] font-semibold shadow-lg hover:shadow-xl"
             >
               Go to Login
             </Link>
             <Link 
               href="/resend-verification" 
-              className="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors text-center"
+              className="inline-flex items-center justify-center h-12 bg-muted text-foreground px-6 rounded-2xl hover:bg-muted/80 transition-all duration-200 hover:scale-[1.02] font-semibold border-2 border-border"
             >
               Get New Link
             </Link>
@@ -148,9 +150,9 @@ export default function EmailVerificationClient() {
   if (state === 'success') {
     return (
       <div className="max-w-2xl mx-auto min-h-screen pt-10 p-5">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-8 space-y-6">
+        <div className="bg-linear-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-8 space-y-6 shadow-lg">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-xl mb-4">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             <h1 className="text-2xl font-bold text-green-900">Email Verified Successfully!</h1>
@@ -159,8 +161,8 @@ export default function EmailVerificationClient() {
             </p>
           </div>
           
-          <div className="bg-green-100 border border-green-300 rounded-lg p-4">
-            <p className="text-green-800 text-sm text-center">
+          <div className="bg-green-100 border-2 border-green-300 rounded-2xl p-4">
+            <p className="text-green-800 text-sm text-center font-medium">
               🎉 You will be redirected to the account page in a few seconds...
             </p>
           </div>
@@ -168,7 +170,7 @@ export default function EmailVerificationClient() {
           <div className="text-center">
             <Link 
               href="/account" 
-              className="inline-block bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+              className="inline-flex items-center justify-center h-12 bg-green-600 text-white px-8 rounded-2xl hover:bg-green-700 transition-all duration-200 hover:scale-[1.02] font-semibold shadow-lg shadow-green-600/20 hover:shadow-xl hover:shadow-green-600/30"
             >
               Continue to Account
             </Link>
@@ -182,9 +184,9 @@ export default function EmailVerificationClient() {
   if (state === 'error' && error) {
     return (
       <div className="max-w-2xl mx-auto min-h-screen pt-10 p-5">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-8 space-y-6">
+        <div className="bg-linear-to-r from-red-50 to-rose-50 border-2 border-red-200 rounded-2xl p-8 space-y-6 shadow-lg">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-xl mb-4">
               <XCircle className="w-8 h-8 text-red-600" />
             </div>
             <h1 className="text-2xl font-bold text-red-900">Verification Failed</h1>
@@ -193,13 +195,15 @@ export default function EmailVerificationClient() {
 
           {/* Show different actions based on error type */}
           {(error.isTokenExpired || error.isTokenInvalid) && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex">
+            <div className="bg-linear-to-r from-yellow-50 to-amber-50 border-2 border-yellow-200 rounded-2xl p-4">
+              <div className="flex gap-3">
                 <div className="shrink-0">
-                  <RefreshCw className="h-5 w-5 text-yellow-400" />
+                  <div className="flex items-center justify-center w-10 h-10 bg-yellow-100 rounded-xl">
+                    <RefreshCw className="h-5 w-5 text-yellow-600" />
+                  </div>
                 </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800">
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-yellow-900">
                     {error.isTokenExpired ? "Token Expired" : "Invalid Token"}
                   </h3>
                   <p className="mt-1 text-sm text-yellow-700">
@@ -216,7 +220,7 @@ export default function EmailVerificationClient() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link 
               href="/login" 
-              className="inline-block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors text-center"
+              className="inline-flex items-center justify-center h-12 bg-red-600 text-white px-6 rounded-2xl hover:bg-red-700 transition-all duration-200 hover:scale-[1.02] font-semibold shadow-lg hover:shadow-xl"
             >
               Go to Login
             </Link>
@@ -225,7 +229,7 @@ export default function EmailVerificationClient() {
               <Button
                 onClick={handleResendVerification}
                 disabled={isResending}
-                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+                className="h-12 bg-muted text-foreground px-6 rounded-2xl hover:bg-muted/80 transition-all duration-200 hover:scale-[1.02] font-semibold border-2 border-border disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 {isResending ? (
                   <>

@@ -11,19 +11,25 @@ interface ProductActionsProps {
     disabled?: boolean;
     isCustomizable?: boolean;
     productSlug?: string;
+    selectedVariantId?: string;
 }
 
 export default function ProductActions({ 
     onAddToCart, 
     disabled, 
     isCustomizable = false,
-    productSlug 
+    productSlug,
+    selectedVariantId 
 }: ProductActionsProps) {
     const router = useRouter();
 
     const handleCustomize = () => {
-        if (productSlug) {
-            router.push(`/customization/${productSlug}`);
+        if (!selectedVariantId) {
+            alert("Please select a color and size first");
+            return;
+        }
+        if (productSlug && selectedVariantId) {
+            router.push(`/customization/${productSlug}?variantId=${selectedVariantId}`);
         }
     };
 

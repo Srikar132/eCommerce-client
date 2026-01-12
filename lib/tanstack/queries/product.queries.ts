@@ -62,10 +62,13 @@ export const useProducts = (params: FetchProductList) => {
 
 /**
  * Get single product by slug or ID
+ * Includes ALL variants with images, stock info, prices, SKUs, etc.
+ * No need for separate variants API call!
  * 
  * @example
  * ```tsx
  * const { data: product, isLoading } = useProduct('navy-blue-tshirt');
+ * // product.variants contains all color/size combinations with full details
  * ```
  */
 export const useProduct = (slugOrId: string) => {
@@ -73,23 +76,6 @@ export const useProduct = (slugOrId: string) => {
     queryKey: queryKeys.products.detail(slugOrId),
     queryFn: () => productApi.getProductBySlug(slugOrId),
     enabled: !!slugOrId, // Only fetch if slug/id is provided
-    staleTime: 1000 * 60 * 10, // 10 minutes
-  });
-};
-
-/**
- * Get product variants (colors, sizes, etc.)
- * 
- * @example
- * ```tsx
- * const { data: variants } = useProductVariants('navy-blue-tshirt');
- * ```
- */
-export const useProductVariants = (slug: string) => {
-  return useQuery({
-    queryKey: queryKeys.products.variants(slug),
-    queryFn: () => productApi.getProductVariants(slug),
-    enabled: !!slug,
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 };
@@ -108,23 +94,6 @@ export const useProductReviews = (slug: string, page = 0, size = 10, sort = 'cre
     queryFn: () => productApi.getProductReviews(slug, page, size, sort),
     enabled: !!slug,
     staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-};
-
-/**
- * Get designs compatible with a product
- * 
- * @example
- * ```tsx
- * const { data: designs } = useCompatibleDesigns('navy-blue-tshirt');
- * ```
- */
-export const useCompatibleDesigns = (slug: string, page = 0, size = 20) => {
-  return useQuery({
-    queryKey: queryKeys.products.designs(slug, { page, size }),
-    queryFn: () => productApi.getCompatibleDesigns(slug, page, size),
-    enabled: !!slug,
-    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 };
 

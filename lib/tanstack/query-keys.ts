@@ -144,9 +144,14 @@ export const queryKeys = {
     all: () => ['cart'] as const,
     
     /**
-     * User's cart
+     * User's cart (or guest cart)
      */
     current: () => ['cart', 'current'] as const,
+    
+    /**
+     * Cart summary (lightweight)
+     */
+    summary: () => ['cart', 'summary'] as const,
     
     /**
      * Cart item count
@@ -260,15 +265,37 @@ export const queryKeys = {
     all: () => ['customization'] as const,
     
     /**
-     * Customization options for a product
-     * @param productId - Product ID
+     * Single customization by ID
+     * @param customizationId - Customization ID
      */
-    options: (productId: string | number) => ['customization', 'options', productId] as const,
+    detail: (customizationId: string) => ['customization', 'detail', customizationId] as const,
     
     /**
-     * User's customizations
+     * User's all customizations (paginated)
+     * @param params - Pagination params
      */
-    userCustomizations: () => ['customization', 'user'] as const,
+    myDesigns: (params: { page?: number; size?: number }) => 
+      ['customization', 'my-designs', params] as const,
+    
+    /**
+     * User's customizations for a specific product
+     * @param productId - Product ID
+     */
+    byProduct: (productId: string) => ['customization', 'product', productId] as const,
+    
+    /**
+     * Guest customizations for a specific product
+     * @param productId - Product ID
+     * @param sessionId - Guest session ID
+     */
+    guestByProduct: (productId: string, sessionId: string) => 
+      ['customization', 'guest', productId, sessionId] as const,
+    
+    /**
+     * Latest customization for a product
+     * @param productId - Product ID
+     */
+    latest: (productId: string) => ['customization', 'latest', productId] as const,
   },
 } as const;
 

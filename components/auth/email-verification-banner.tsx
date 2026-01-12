@@ -68,27 +68,27 @@ export default function EmailVerificationBanner({
   };
 
   return (
-    <Alert className={`relative ${className}`}>
-      <AlertCircle className="h-4 w-4 text-amber-600" />
+    <Alert className={`relative border-2 border-primary/20 bg-linear-to-r from-primary/5 to-accent/5 backdrop-blur-sm ${className}`}>
+      <AlertCircle className="h-5 w-5 text-primary" />
       
       <button
         onClick={() => setDismissed(true)}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+        className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-primary/10 p-1"
         aria-label="Dismiss"
       >
         <X className="h-4 w-4" />
       </button>
 
-      <AlertTitle className="text-amber-800">
+      <AlertTitle className="text-foreground font-semibold text-base">
         Email Verification Required
       </AlertTitle>
       
-      <AlertDescription className="text-amber-700">
+      <AlertDescription className="text-muted-foreground">
         <div className="mt-2 space-y-3">
-          <p>
+          <p className="text-sm leading-relaxed">
             Please verify your email address to access all features. 
             Check your inbox at{" "}
-            <span className="font-medium">{user.email}</span>
+            <span className="font-semibold text-foreground">{user.email}</span>
           </p>
           
           <div className="flex flex-col sm:flex-row gap-2">
@@ -97,7 +97,7 @@ export default function EmailVerificationBanner({
               variant="outline"
               onClick={handleResendVerification}
               disabled={isResending}
-              className="border-amber-300 text-amber-800 hover:bg-amber-100"
+              className="border-2 border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200 font-medium rounded-xl"
             >
               {isResending ? (
                 <>

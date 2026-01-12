@@ -5,7 +5,7 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="min-h-screen p-5">
+    <main>
       {children}
     </main>
   );

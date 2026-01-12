@@ -312,110 +312,6 @@
   /* ============================================
      AUTHENTICATION PAGES
      ============================================ */
-  .auth-section {
-    @apply min-h-screen bg-white flex items-center justify-center p-4;
-  }
-
-  .auth-container {
-    @apply w-full max-w-xl;
-  }
-
-  .auth-header {
-    @apply text-center mb-8;
-  }
-
-  .auth-title {
-    @apply text-3xl font-normal tracking-wider text-gray-800 mb-2;
-  }
-
-  .auth-form {
-    @apply space-y-6;
-  }
-
-  .auth-input-group {
-    @apply space-y-2;
-  }
-
-  .auth-input-wrapper {
-    @apply relative;
-  }
-
-  .auth-input-wrapper .auth-input {
-    @apply h-12 border-gray-600 rounded-none bg-white;
-  }
-
-  .auth-input-wrapper .auth-input-error {
-    @apply h-12 border-red-500 rounded-none bg-white;
-  }
-
-  .auth-label-floating {
-    @apply absolute -top-2 left-3 bg-white px-1 text-xs text-gray-600;
-  }
-
-  .auth-password-toggle {
-    @apply absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer;
-  }
-
-  .auth-error-text {
-    @apply text-sm text-red-500;
-  }
-
-  .auth-success-alert {
-    @apply bg-green-50 border-green-200;
-  }
-
-  .auth-success-text {
-    @apply text-green-800;
-  }
-
-  .auth-submit-btn {
-    @apply w-full h-12 bg-black cursor-pointer text-white rounded-none hover:bg-gray-800 transition-colors;
-  }
-
-  /* Auth Divider */
-  .auth-divider {
-    @apply relative my-8;
-  }
-
-  .auth-divider-line {
-    @apply absolute inset-0 flex items-center;
-  }
-
-  .auth-divider-border {
-    @apply w-full border-t border-gray-300;
-  }
-
-  .auth-divider-text {
-    @apply relative flex justify-center text-sm;
-  }
-
-  .auth-divider-label {
-    @apply bg-white px-4 text-gray-500;
-  }
-
-  /* OAuth Buttons */
-  .auth-oauth-btn {
-    @apply w-full h-12 border-gray-300 rounded-none cursor-pointer hover:bg-gray-100 transition-colors;
-  }
-
-  .auth-oauth-icon-wrapper {
-    @apply w-8 h-8 mr-3 bg-gray-200 rounded flex items-center justify-center;
-  }
-
-  /* Auth Toggle Links */
-  .auth-toggle-wrapper {
-    @apply text-center text-sm text-gray-600 pt-4;
-  }
-
-  .auth-toggle-link {
-    @apply text-black underline cursor-pointer font-medium hover:no-underline;
-  }
-
-  /* Auth Footer */
-  .auth-footer {
-    @apply mt-12 text-center text-xs text-gray-400;
-  }
-
   /* ============================================
      PRODUCT DETAIL PAGE (PDP)
      ============================================ */
@@ -685,5 +581,16 @@
     75% {
       transform: rotate(15deg) scale(1.15);
     }
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 }

@@ -85,6 +85,9 @@ export const buildParams = (params: Record<string, any>) => {
   append("page", params.page);
   append("size", params.size);
   append("searchQuery", params.searchQuery);
+  append("categorySlug" , params.categorySlug);
+  append("q" , params.q);
+  append("isPremium" , params.isPremium);
 
   return searchParams.toString();
 };

@@ -112,11 +112,11 @@ const Navbar = () => {
 
 
                             {isHomePage && (
-                                <>
+                                <div className="hidden lg:flex items-center space-x-4">
                                     <Link href="/products" className="nav-link">Shop</Link>
                                     <Link href="/about" className="nav-link">About</Link>
                                     <Link href="/contact" className="nav-link">Contact</Link>
-                                </>
+                                </div>
                             )}
 
                             
