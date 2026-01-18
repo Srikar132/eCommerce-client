@@ -138,4 +138,38 @@ export const cartApi = {
         );
         return response.data;
     },
+
+    /**
+     * POST /api/v1/cart/sync
+     * Syncs local cart to backend on login/checkout
+     * 
+     * Used in:
+     * - Login flow - Sync guest's local cart to backend
+     * - Checkout flow - Sync cart before checkout
+     * 
+     * Accepts local cart items (including unsaved customizations)
+     * Backend will save customizations and merge items into user cart
+     * 
+     * @param items - Array of local cart items
+     * @returns Synced cart with all items
+     */
+    syncLocalCart: async (items: {
+        productId: string;
+        productVariantId: string;
+        customizationId?: string | null;
+        quantity: number;
+        customizationSummary?: string;
+        customizationData?: {
+            designId: string;
+            threadColorHex: string;
+            previewImageBase64: string;
+            designPositionJson: string;
+        };
+    }[]): Promise<Cart> => {
+        const response: AxiosResponse<Cart> = await apiClient.post(
+            "/api/v1/cart/sync",
+            { items }
+        );
+        return response.data;
+    },
 };

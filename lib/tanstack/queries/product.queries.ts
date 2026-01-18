@@ -71,14 +71,18 @@ export const useProducts = (params: FetchProductList) => {
  * // product.variants contains all color/size combinations with full details
  * ```
  */
-export const useProduct = (slugOrId: string) => {
+export const useProduct = (
+  slugOrId: string,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: queryKeys.products.detail(slugOrId),
     queryFn: () => productApi.getProductBySlug(slugOrId),
-    enabled: !!slugOrId, // Only fetch if slug/id is provided
+    enabled: options?.enabled ?? true,
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 };
+
 
 /**
  * Get product reviews

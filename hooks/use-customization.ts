@@ -1,284 +1,243 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useAuthStore } from "@/lib/store/auth-store";
 import {
-  useCustomization,
-  useProductCustomizations,
-  useGuestCustomizations,
-  useMyDesigns,
   useSaveCustomization,
   useDeleteCustomization,
+  useProductCustomizations,
 } from "@/lib/tanstack/queries/customization.queries";
 import { CustomizationRequest, UUID } from "@/types";
-import { toast } from "sonner";
 
 /**
- * useCustomizationManager Hook
+ * CLEAN CUSTOMIZATION MANAGER
  * 
- * Centralized hook for managing product customizations.
- * Automatically handles both authenticated users and guest sessions.
- * 
- * Features:
- * - Load customization by ID
- * - Load all customizations for a product
- * - Load all user's designs (My Designs page)
- * - Save/update customizations
- * - Delete customizations
- * - Guest session management
- * 
- * @example
- * ```tsx
- * const customization = useCustomizationManager(productId);
- * 
- * // Save a customization
- * await customization.save({
- *   productId,
- *   variantId,
- *   designId,
- *   threadColorHex: '#FF0000',
- *   previewImageUrl: 'https://...'
- * });
- * 
- * // Load product customizations
- * const designs = customization.productCustomizations;
- * ```
+ * Purpose:
+ * 1. Authenticated users can save customizations to backend
+ * 2. Load existing customizations for a product+design combination
+ * 3. Track current working customization state
+ * 4. No draft concept - everything happens in real-time
  */
-export const useCustomizationManager = (productId?: UUID) => {
+
+interface CurrentCustomizationState {
+  id: string | null;
+  designId: UUID;
+  variantId: UUID;
+  threadColorHex: string;
+  userMessage?: string;
+  previewImageUrl?: string;
+}
+
+export const useCustomizationManager = (productId?: UUID, designId?: UUID) => {
   const { user, isAuthenticated } = useAuthStore();
-  const [guestSessionId, setGuestSessionId] = useState<string | null>(null);
-
-  // Initialize guest session ID
-  useEffect(() => {
-    if (!isAuthenticated && typeof window !== "undefined") {
-      let sessionId = localStorage.getItem("guest-session-id");
-      
-      if (!sessionId) {
-        sessionId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem("guest-session-id", sessionId);
-      }
-      
-      setGuestSessionId(sessionId);
-    } else {
-      setGuestSessionId(null);
-    }
-  }, [isAuthenticated]);
-
-  // Queries
-  const productCustomizationsQuery = useProductCustomizations(productId!);
-  const guestCustomizationsQuery = useGuestCustomizations(
-    productId!,
-    guestSessionId!
-  );
-
-  // Mutations
+  
+  // Backend queries - fetch existing customizations for this product+design
+  const productCustomizationsQuery = useProductCustomizations(productId!, {
+    enabled: isAuthenticated && !!productId
+  });
+  
   const saveMutation = useSaveCustomization();
   const deleteMutation = useDeleteCustomization();
+  
+  // Track current working customization
+  const [currentState, setCurrentState] = useState<CurrentCustomizationState | null>(null);
 
   /**
-   * Get customizations for the current product
-   * Automatically uses authenticated or guest endpoint
+   * Get existing customizations for the current design
    */
-  const productCustomizations = isAuthenticated
-    ? productCustomizationsQuery.data ?? []
-    : guestCustomizationsQuery.data ?? [];
-
-  const isLoadingProductCustomizations = isAuthenticated
-    ? productCustomizationsQuery.isLoading
-    : guestCustomizationsQuery.isLoading;
+  const getExistingCustomizationsForDesign = useCallback(() => {
+    if (!designId || !productCustomizationsQuery.data) return [];
+    
+    return productCustomizationsQuery.data.filter(
+      (customization: any) => customization.design.id === designId
+    );
+  }, [designId, productCustomizationsQuery.data]);
 
   /**
-   * Save or update a customization
+   * Check if current state matches an existing saved customization
+   */
+  const findMatchingCustomization = useCallback(() => {
+    if (!currentState || !designId) return null;
+    
+    const existingCustomizations = getExistingCustomizationsForDesign();
+    
+    return existingCustomizations.find((customization: any) => 
+      customization.design.id === currentState.designId &&
+      customization.variant.id === currentState.variantId &&
+      customization.threadColorHex === currentState.threadColorHex &&
+      (customization.userMessage || '') === (currentState.userMessage || '')
+    );
+  }, [currentState, designId, getExistingCustomizationsForDesign]);
+
+  /**
+   * Initialize new customization state
+   */
+  const initializeNew = useCallback((data: {
+    designId: UUID;
+    variantId: UUID;
+    threadColorHex: string;
+    userMessage?: string;
+  }) => {
+    setCurrentState({
+      id: null,
+      designId: data.designId,
+      variantId: data.variantId,
+      threadColorHex: data.threadColorHex,
+      userMessage: data.userMessage,
+      previewImageUrl: undefined,
+    });
+  }, []);
+
+  /**
+   * Update current customization state
+   */
+  const updateCurrentState = useCallback((updates: Partial<Omit<CurrentCustomizationState, 'id'>>) => {
+    setCurrentState(prev => {
+      if (!prev) return null;
+      return { ...prev, ...updates };
+    });
+  }, []);
+
+  /**
+   * Load existing customization
+   */
+  const loadCustomization = useCallback((customization: any) => {
+    setCurrentState({
+      id: customization.id,
+      designId: customization.design.id,
+      variantId: customization.variant.id,
+      threadColorHex: customization.threadColorHex,
+      userMessage: customization.userMessage || '',
+      previewImageUrl: customization.previewImageUrl,
+    });
+  }, []);
+
+  /**
+   * Clear current customization
+   */
+  const clear = useCallback(() => {
+    setCurrentState(null);
+  }, []);
+
+  /**
+   * Save customization to backend (AUTHENTICATED USERS ONLY)
    */
   const save = useCallback(
-    async (data: Omit<CustomizationRequest, "sessionId">) => {
+    async (data: {
+      productId: UUID;
+      variantId: UUID;
+      designId: UUID;
+      threadColorHex: string;
+      userMessage?: string;
+      previewImageUrl: string;
+    }) => {
+      if (!isAuthenticated) {
+        throw new Error('Must be logged in to save customizations');
+      }
+
       try {
+        console.log('[Customization] Saving to backend...');
+        
         const request: CustomizationRequest = {
-          ...data,
-          sessionId: !isAuthenticated ? guestSessionId : undefined,
+          id: currentState?.id, // Include if updating existing
+          productId: data.productId,
+          variantId: data.variantId,
+          designId: data.designId,
+          threadColorHex: data.threadColorHex,
+          userMessage: data.userMessage,
+          previewImageUrl: data.previewImageUrl,
         };
 
         const result = await saveMutation.mutateAsync(request);
+        
+        // Update current state with saved ID
+        setCurrentState(prev => prev ? { ...prev, id: result.id } : null);
+        
+        console.log('[Customization] Saved successfully:', result);
+        
         return result;
       } catch (error) {
-        console.error("Failed to save customization:", error);
+        console.error("[Customization] Failed to save:", error);
         throw error;
       }
     },
-    [isAuthenticated, guestSessionId, saveMutation]
+    [isAuthenticated, saveMutation, currentState]
+  );
+
+  /**
+   * Create temporary customization for guest add-to-cart
+   */
+  const createTempForCart = useCallback(
+    async (data: {
+      productId: UUID;
+      variantId: UUID;
+      designId: UUID;
+      threadColorHex: string;
+      userMessage?: string;
+      previewImageUrl: string;
+    }) => {
+      if (isAuthenticated) {
+        throw new Error('Use save() for authenticated users');
+      }
+
+      // For guests, return data without ID
+      return {
+        ...data,
+        id: null,
+      };
+    },
+    [isAuthenticated]
   );
 
   /**
    * Delete a customization
    */
   const deleteCustomization = useCallback(
-    async (customizationId: string) => {
+    async (id: string) => {
+      if (!isAuthenticated) {
+        throw new Error('Must be logged in to delete customizations');
+      }
+
       try {
-        await deleteMutation.mutateAsync(customizationId);
+        await deleteMutation.mutateAsync(id);
+        
+        // Clear current state if deleting current customization
+        if (currentState?.id === id) {
+          setCurrentState(null);
+        }
       } catch (error) {
-        console.error("Failed to delete customization:", error);
+        console.error("[Customization] Failed to delete:", error);
         throw error;
       }
     },
-    [deleteMutation]
+    [isAuthenticated, deleteMutation, currentState]
   );
 
-  /**
-   * Refresh product customizations
-   */
-  const refresh = useCallback(() => {
-    if (isAuthenticated) {
-      productCustomizationsQuery.refetch();
-    } else {
-      guestCustomizationsQuery.refetch();
-    }
-  }, [isAuthenticated, productCustomizationsQuery, guestCustomizationsQuery]);
-
   return {
-    // Data
-    productCustomizations,
-    guestSessionId,
+    // Current state
+    currentState,
+    
+    // Existing customizations for this design
+    existingCustomizations: getExistingCustomizationsForDesign(),
+    matchingCustomization: findMatchingCustomization(),
+    
+    // User info
     isAuthenticated,
     userId: user?.id,
 
     // Loading states
-    isLoadingProductCustomizations,
+    isLoadingCustomizations: productCustomizationsQuery.isLoading,
     isSaving: saveMutation.isPending,
     isDeleting: deleteMutation.isPending,
 
     // Actions
+    initializeNew,
+    updateCurrentState,
+    loadCustomization,
+    clear,
     save,
+    createTempForCart,
     delete: deleteCustomization,
-    refresh,
-
-    // Raw queries (for advanced use)
-    queries: {
-      productCustomizations: productCustomizationsQuery,
-      guestCustomizations: guestCustomizationsQuery,
-    },
+    refresh: () => productCustomizationsQuery.refetch(),
   };
-};
-
-/**
- * useCustomizationDetail Hook
- * 
- * Hook for loading a single customization by ID
- * 
- * @example
- * ```tsx
- * const { customization, isLoading } = useCustomizationDetail('custom-123');
- * ```
- */
-export const useCustomizationDetail = (customizationId?: string) => {
-  const query = useCustomization(customizationId!);
-
-  return {
-    customization: query.data,
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
-    refetch: query.refetch,
-  };
-};
-
-/**
- * useMyCustomizations Hook
- * 
- * Hook for loading all user's customizations (My Designs page)
- * 
- * @example
- * ```tsx
- * const { designs, isLoading, page, setPage } = useMyCustomizations();
- * ```
- */
-export const useMyCustomizations = (initialPage = 0, initialSize = 12) => {
-  const { isAuthenticated } = useAuthStore();
-  const [page, setPage] = useState(initialPage);
-  const [size] = useState(initialSize);
-
-  const query = useMyDesigns({ page, size });
-
-  // Reset page when user logs out
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setPage(0);
-    }
-  }, [isAuthenticated]);
-
-  const designs = query.data?.content ?? [];
-  const totalPages = query.data?.totalPages ?? 0;
-  const totalElements = query.data?.totalElements ?? 0;
-
-  const nextPage = useCallback(() => {
-    if (query.data && !query.data.last) {
-      setPage((prev) => prev + 1);
-    }
-  }, [query.data]);
-
-  const previousPage = useCallback(() => {
-    if (query.data && !query.data.first) {
-      setPage((prev) => Math.max(0, prev - 1));
-    }
-  }, [query.data]);
-
-  const goToPage = useCallback((pageNumber: number) => {
-    setPage(pageNumber);
-  }, []);
-
-  return {
-    // Data
-    designs,
-    totalPages,
-    totalElements,
-    hasNext: query.data?.hasNext ?? false,
-    hasPrevious: query.data?.hasPrevious ?? false,
-    
-    // Pagination
-    page,
-    size,
-    nextPage,
-    previousPage,
-    goToPage,
-    setPage,
-
-    // Loading states
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
-
-    // Actions
-    refetch: query.refetch,
-  };
-};
-
-/**
- * useGuestSessionId Hook
- * 
- * Hook to get or create a guest session ID
- * 
- * @example
- * ```tsx
- * const sessionId = useGuestSessionId();
- * ```
- */
-export const useGuestSessionId = () => {
-  const { isAuthenticated } = useAuthStore();
-  const [sessionId, setSessionId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isAuthenticated && typeof window !== "undefined") {
-      let id = localStorage.getItem("guest-session-id");
-      
-      if (!id) {
-        id = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem("guest-session-id", id);
-      }
-      
-      setSessionId(id);
-    } else {
-      setSessionId(null);
-    }
-  }, [isAuthenticated]);
-
-  return sessionId;
 };

@@ -12,7 +12,7 @@ export default function ShopByCategories() {
             {/* Top Left Corner */}
             <div className="absolute top-8 left-4 sm:left-8 lg:left-12 w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 opacity-50 pointer-events-none z-10">
                 <Image
-                    src="/images/home/flower2.png"
+                    src="/images/home/flower2.webp"
                     alt=""
                     fill
                     className="object-contain select-none"
@@ -67,7 +67,7 @@ export default function ShopByCategories() {
             {/* Bottom Right */}
             <div className="absolute bottom-20 right-8 sm:right-16 lg:right-20 w-16 h-16 sm:w-24 sm:h-24 opacity-40 pointer-events-none z-10 hidden md:block">
                 <Image
-                    src="/images/home/flower2.png"
+                    src="/images/home/flower2.webp"
                     alt=""
                     fill
                     className="object-contain select-none"

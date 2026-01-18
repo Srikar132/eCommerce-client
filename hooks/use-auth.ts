@@ -17,8 +17,11 @@ export const useAuth = () => {
     setIsLoading(true);
     try {
       const response = await authApi.register(data);
+      
       // Tokens are in HTTP-only cookies, just store user
       setUser(response.user);
+      
+      console.log('[Auth] Registration successful:', response.user);
 
       toast.success("Registration Successful!", {
         description: `Verification email sent to ${data.email}. Please check your inbox.`,
@@ -30,6 +33,7 @@ export const useAuth = () => {
       const message =
         (error as any)?.response?.data?.message || "Registration failed";
       toast.error(message);
+      throw error; // Re-throw to let form handle it
     } finally {
       setIsLoading(false);
     }
@@ -39,13 +43,23 @@ export const useAuth = () => {
     setIsLoading(true);
     try {
       const response = await authApi.login(data);
+      
       // Tokens are in HTTP-only cookies, just store user
       setUser(response.user);
-      router.push("/");
+      
+      console.log('[Auth] Login successful, user stored:', response.user);
+      
+      // Wait for next tick to ensure Zustand store is fully updated
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      // Use replace instead of push to avoid back button issues
+      router.replace("/");
+      
       return response;
     } catch (error: any) {
       const message = error.response?.data?.message || "Login failed";
       toast.error(message);
+      throw error; // Re-throw to let form handle it
     } finally {
       setIsLoading(false);
     }
@@ -53,16 +67,27 @@ export const useAuth = () => {
 
   const logout = async () => {
     setIsLoading(true);
+    
     try {
-      // Call logout API
+      console.log('[Auth] Starting logout process...');
+      
+      // Call logout API and WAIT for it to complete
       await authApi.logout();
-
+      
+      console.log('[Auth] ✅ Backend logout successful');
+    } catch (error: any) {
+      console.error('[Auth] ❌ Backend logout failed:', error);
+      // Continue with client-side cleanup even if backend fails
+    }
+    
+    try {
       // Clear Zustand state
       clearUser();
 
       // Clear localStorage
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth-storage');
+        localStorage.removeItem('cart-storage');
         
         // Clear any other app-specific storage
         localStorage.removeItem('cart');
@@ -75,20 +100,16 @@ export const useAuth = () => {
       // Clear cookies as backup
       clearAuthCookies();
 
-      // Hard navigation to clear all client state
-      window.location.href = '/login';
-    } catch (error: any) {
-      console.error("Logout failed:", error);
-
-      // Force cleanup even on error
-      clearUser();
-      clearAuthCookies();
+      console.log('[Auth] ✅ Client-side cleanup complete');
       
-      if (typeof window !== 'undefined') {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = '/login';
-      }
+      // Hard navigation to clear all client state
+      // Using window.location ensures complete state reset
+      window.location.href = '/login';
+    } catch (cleanupError) {
+      console.error('[Auth] ❌ Cleanup failed:', cleanupError);
+      
+      // Force navigation even if cleanup fails
+      window.location.href = '/login';
     } finally {
       setIsLoading(false);
     }
@@ -96,10 +117,13 @@ export const useAuth = () => {
 
   const checkAuth = async () => {
     try {
+      console.log('[Auth] Checking current auth status...');
       const response = await authApi.getCurrentUser();
       setUser(response.user);
+      console.log('[Auth] ✅ Auth check successful:', response.user);
       return true;
     } catch (error) {
+      console.log('[Auth] ❌ Auth check failed, clearing user');
       clearUser();
       return false;
     }

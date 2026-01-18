@@ -50,11 +50,13 @@ export const useCustomization = (customizationId: string) => {
  * const { data: customizations } = useProductCustomizations(productId);
  * ```
  */
-export const useProductCustomizations = (productId: UUID) => {
+export const useProductCustomizations = (productId: UUID , options?: {
+  enabled?: boolean;
+}) => {
   return useQuery({
     queryKey: queryKeys.customization.byProduct(productId),
     queryFn: () => customizationApi.getProductCustomizations(productId),
-    enabled: !!productId,
+    enabled: !!productId && options?.enabled,
     staleTime: 1000 * 60 * 3, // 3 minutes
   });
 };

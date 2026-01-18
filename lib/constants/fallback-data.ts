@@ -21,21 +21,6 @@ export const FALLBACK_CATEGORIES = [
     name: "Kids",
     slug: "kids",
   },
-  {
-    id: "44444444-4444-4444-4444-444444444444",
-    name: "Home",
-    slug: "home",
-  },
-  {
-    id: "55555555-5555-5555-5555-555555555555",
-    name: "Beauty",
-    slug: "beauty",
-  },
-  {
-    id: "66666666-6666-6666-6666-666666666666",
-    name: "Studio",
-    slug: "studio",
-  },
 ];
 
 /**

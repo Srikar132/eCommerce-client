@@ -29,6 +29,22 @@ const processQueue = (error: Error | null) => {
   failedQueue = [];
 };
 
+// Endpoints that should NOT trigger token refresh
+const NO_REFRESH_ENDPOINTS = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/refresh',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+  '/auth/verify-email',
+  '/auth/resend-verification',
+];
+
+const shouldSkipRefresh = (url?: string): boolean => {
+  if (!url) return false;
+  return NO_REFRESH_ENDPOINTS.some(endpoint => url.includes(endpoint));
+};
+
 // Request interceptor (optional logging)
 apiClient.interceptors.request.use(
   (config) => {
@@ -59,7 +75,6 @@ apiClient.interceptors.response.use(
       return Promise.reject(new Error('Network error'));
     }
 
-
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
@@ -70,13 +85,15 @@ apiClient.interceptors.response.use(
       originalRequest &&
       !originalRequest._retry
     ) {
-      // Prevent refresh on auth endpoints
-      if (originalRequest.url?.includes('/auth/')) {
+      // Skip refresh for specific auth endpoints (login, register, etc.)
+      if (shouldSkipRefresh(originalRequest.url)) {
+        console.log('[API] Skipping refresh for:', originalRequest.url);
         return Promise.reject(error);
       }
 
       if (isRefreshing) {
         // Queue requests while refreshing
+        console.log('[API] Queueing request while refresh in progress:', originalRequest.url);
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -84,31 +101,57 @@ apiClient.interceptors.response.use(
           .catch((err) => Promise.reject(err));
       }
 
+      console.log('[API] Starting token refresh due to 401/403 on:', originalRequest.url);
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        // Call Next.js API route for refresh
-        await fetch('/api/auth/refresh-redirect?returnTo=/', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        // Call backend refresh endpoint directly
+        await apiClient.post('/api/v1/auth/refresh');
 
+        console.log('[API] ✅ Token refresh successful');
         processQueue(null);
+
+        // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
+        console.error('[API] ❌ Token refresh failed:', refreshError);
         processQueue(refreshError as Error);
 
         // Clear auth and redirect to login
         if (typeof window !== 'undefined') {
           // Clear client-side state
           localStorage.removeItem('auth-storage');
-          window.location.href = '/login';
+          sessionStorage.clear();
+
+          toast.error('Session Expired', {
+            description: 'Please log in again',
+          });
+
+          // ✅ FIX: Prevent redirect loop - only redirect if not already on auth pages
+          const currentPath = window.location.pathname;
+          const authPages = ['/login', '/register', '/forgot-password' , '/verify-email' , '/reset-password'];
+          const isOnAuthPage = authPages.some(page => currentPath.startsWith(page));
+
+          if (!isOnAuthPage) {
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 500);
+          }
         }
 
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
+      }
+    }
+
+    // Handle other errors
+    if (error.response?.status >= 500) {
+      if (typeof window !== 'undefined') {
+        toast.error('Server Error', {
+          description: 'Something went wrong. Please try again later.',
+        });
       }
     }
 

@@ -19,7 +19,7 @@ type Props = {
 };
 
 const PLACEHOLDER_IMAGE = '/images/error.png';
-const IMAGE_ROTATION_INTERVAL = 800;
+const IMAGE_ROTATION_INTERVAL = 1500;
 
 const ProductCardComponent = ({
     product,
@@ -75,9 +75,10 @@ const ProductCardComponent = ({
 
     // Memoize formatted price
     const formattedPrice = useMemo(
-        () => (product.basePrice / 100).toLocaleString('en-IN', {
+        () => (product.basePrice).toLocaleString('en-IN', {
             style: 'currency',
             currency: 'INR',
+            minimumFractionDigits: 2,
         }),
         [product.basePrice]
     );

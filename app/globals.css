@@ -195,11 +195,11 @@
   }
 
   #header nav .nav-btn {
-    @apply p-2 cursor-pointer bg-transparent;
+    @apply cursor-pointer bg-transparent hover:bg-gray-100/50 rounded-lg transition-colors;
   }
 
   #header nav .nav-link {
-    @apply  hover:underline transition-colors duration-200 text-lg font-medium capitalize tracking-wide;
+    @apply hover:underline transition-colors duration-200 font-medium capitalize tracking-wide;
   }
 
   /* ============================================
@@ -244,11 +244,11 @@
   }
 
   #deal-section .content .cards-wrapper {
-    @apply absolute top-0 left-0 w-full h-full flex items-center justify-between gap-20 lg:gap-[150px] pointer-events-none;
+    @apply absolute top-0 left-0 w-full h-full flex items-center justify-between gap-20 lg:gap-37.5 pointer-events-none;
   }
 
   #deal-section .content .cards-wrapper .card {
-    @apply bg-white w-[300px] lg:w-[400px] aspect-auto rounded-lg shadow-lg overflow-hidden flex flex-col z-10 will-change-transform p-5;
+    @apply bg-white w-75 lg:w-100 aspect-auto rounded-lg shadow-lg overflow-hidden flex flex-col z-10 will-change-transform p-5;
   }
 
   #deal-section .content .cards-wrapper .card .card-link {
@@ -256,6 +256,7 @@
   }
 
   #deal-section .content .cards-wrapper .card.left {
+    
     @apply translate-y-[150vh];
   }
 
@@ -432,7 +433,7 @@
   }
 
   .pdp-size-button {
-    @apply h-10 sm:h-12 w-[55px] border border-gray-300 text-xs sm:text-sm font-medium text-gray-900 hover:border-black transition-colors cursor-pointer;
+    @apply h-10 sm:h-12 w-13.75 border border-gray-300 text-xs sm:text-sm font-medium text-gray-900 hover:border-black transition-colors cursor-pointer;
   }
 
   .pdp-size-button-active {

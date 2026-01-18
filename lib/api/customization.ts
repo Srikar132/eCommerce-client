@@ -31,7 +31,7 @@ export const customizationApi = {
     },
 
     /**
-     * GET /api/v1/customization/{customizationId}
+     * GET /api/v1/customization/{id}
      * Retrieves a specific customization by ID
      * 
      * Used in:
@@ -39,11 +39,11 @@ export const customizationApi = {
      * - Order page - Display customization being ordered
      * - My Designs page - View design details
      * 
-     * @param customizationId - Unique customization identifier
+     * @param id - Unique customization identifier
      */
-    getCustomizationById: async (customizationId: string): Promise<Customization> => {
+    getCustomizationById: async (id: string): Promise<Customization> => {
         const response: AxiosResponse<Customization> = await apiClient.get(
-            `/api/v1/customization/${customizationId}`
+            `/api/v1/customization/${id}`
         );
         return response.data;
     },
@@ -100,50 +100,51 @@ export const customizationApi = {
     },
 
     /**
-     * DELETE /api/v1/customization/{customizationId}
+     * DELETE /api/v1/customization/{id}
      * Deletes a customization
      * 
      * Used in: "My Designs" page - Delete design button
      * 
-     * @param customizationId - Unique customization identifier
+     * @param id - Unique customization identifier
      */
-    deleteCustomization: async (customizationId: string): Promise<void> => {
-        await apiClient.delete(`/api/v1/customization/${customizationId}`);
+    deleteCustomization: async (id: string): Promise<void> => {
+        await apiClient.delete(`/api/v1/customization/${id}`);
     },
 
     /**
-     * POST /api/v1/customization/preview/upload (FAKE API for now)
-     * Uploads preview image to S3/CloudFront
+     * POST /api/v1/customization/upload-preview
+     * Uploads customization preview image to S3
      * 
-     * TODO: Replace with actual S3 upload implementation
+     * Used in: Customizer page - Before saving design
      * 
-     * @param blob - Image blob from Konva canvas
-     * @returns Preview image URL
+     * Frontend workflow:
+     * 1. User clicks "Save Design"
+     * 2. Generate preview image using Konva.toDataURL()
+     * 3. Convert to File/Blob
+     * 4. Upload using this endpoint → Get preview URL
+     * 5. Send preview URL + design data to /save endpoint
+     * 
+     * @param file - Image file from Konva canvas
+     * @returns Preview image URL (CDN or S3)
      */
-    uploadPreviewImage: async (blob: Blob): Promise<{ url: string }> => {
-        // FAKE implementation - returns a data URL
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const dataUrl = reader.result as string;
-                // In production, this would upload to S3 and return CloudFront URL
-                resolve({ url: "https://example.com/preview.png" });
-            };
-            reader.readAsDataURL(blob);
+    uploadPreviewImage: async (file: File): Promise<string> => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await apiClient.post<{
+            id: string;
+            fileName: string;
+            s3Url: string;
+            cdnUrl: string | null;
+            fileSize: number;
+            dimensions: string;
+        }>("/api/v1/customization/upload-preview", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
         });
-    },
 
-    /**
-     * DELETE /api/v1/customization/preview/{imageUrl} (FAKE API for now)
-     * Deletes preview image from S3/CloudFront
-     * 
-     * TODO: Replace with actual S3 delete implementation
-     * 
-     * @param imageUrl - URL of image to delete
-     */
-    deletePreviewImage: async (imageUrl: string): Promise<void> => {
-        // FAKE implementation - does nothing
-        console.log('Would delete image:', imageUrl);
-        return Promise.resolve();
+        // Return CDN URL if available, otherwise S3 URL
+        return response.data.cdnUrl || response.data.s3Url;
     },
 };

@@ -10,6 +10,7 @@ import { SearchInput } from '../search-input';
 import { CategoryNavigation } from './category-navigation';
 import { cn } from '@/lib/utils';
 import { is } from 'zod/v4/locales';
+import CartButton from '../cart/cart-button';
 
 const HERO_SECTION_HEIGHT = 1000;
 
@@ -63,21 +64,21 @@ const Navbar = () => {
         <>
             <nav
                 className={`${isHomePage
-                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-full max-w-[90vw] mx-auto my-7 py-2 shadow-lg border border-black/10`
+                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-none sm:rounded-full max-w-full sm:max-w-[95vw] lg:max-w-[90vw] mx-auto sm:my-4 lg:my-7 py-1 sm:py-2 shadow-lg border-0 sm:border border-black/10`
                     : 'sticky'
                     } ${shouldShowBackdrop
                         ? 'bg-white/50 backdrop-blur-md lg:shadow-sm'
                         : 'bg-white'
                     } w-full top-0 z-50 transition-all duration-300`}
             >
-                <div className="mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16 gap-4">
+                <div className="mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                    <div className="flex items-center justify-between h-12 sm:h-14 lg:h-16 gap-2 sm:gap-3 lg:gap-4">
                         {/* LEFT: Menu/Logo + Categories */}
-                        <div className='flex items-center space-x-2'>
+                        <div className='flex items-center space-x-1 sm:space-x-2'>
 
                             {/* Logo - Desktop Only */}
                             <Link href="/" className="hidden lg:flex items-center space-x-2">
-                                <div className="relative w-14 h-14" >
+                                <div className="relative w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" >
                                     <Image
                                         src="/images/logo.png"
                                         alt="Logo"
@@ -91,15 +92,16 @@ const Navbar = () => {
                             </Link>
 
                             <Button
-                                className={cn(`nav-btn lg:hidden!`)}
+                                className={cn(`nav-btn lg:hidden p-1.5 sm:p-2`)}
                                 aria-label="Toggle menu"
                                 onClick={() => isMobile ? setOpenMobile(!openMobile) : setOpen(!open)}
                             >
                                 <Image
                                     src={'/icons/menu_icon.png'}
                                     alt='menu'
-                                    height={15}
-                                    width={15}
+                                    height={16}
+                                    width={16}
+                                    className="sm:w-4 sm:h-4"
                                 />
                             </Button>
 
@@ -108,28 +110,28 @@ const Navbar = () => {
                         </div>
 
 
-                        <div className="flex items-center justify-end md:space-x-3 space-x-2 lg:space-x-4">
+                        <div className="flex items-center justify-end space-x-1 sm:space-x-2 md:space-x-3 lg:space-x-4">
 
 
                             {isHomePage && (
-                                <div className="hidden lg:flex items-center space-x-4">
-                                    <Link href="/products" className="nav-link">Shop</Link>
-                                    <Link href="/about" className="nav-link">About</Link>
-                                    <Link href="/contact" className="nav-link">Contact</Link>
+                                <div className="hidden lg:flex items-center space-x-3 xl:space-x-4">
+                                    <Link href="/products" className="nav-link text-sm lg:text-base xl:text-lg">Shop</Link>
+                                    <Link href="/about" className="nav-link text-sm lg:text-base xl:text-lg">About</Link>
+                                    <Link href="/contact" className="nav-link text-sm lg:text-base xl:text-lg">Contact</Link>
                                 </div>
                             )}
 
-                            
-                            <Link href={"/search"} className='lg:hidden'>
+                            <Link href="/search" className='lg:hidden'>
                                 <Button
-                                    className={`nav-btn`}
+                                    className={`nav-btn p-1.5 sm:p-2`}
                                     aria-label="Search"
                                 >
                                     <Image
                                         src={'/icons/search.svg'}
                                         alt='search'
-                                        height={24}
-                                        width={24}
+                                        height={18}
+                                        width={18}
+                                        className="sm:w-5 sm:h-5"
                                     />
                                 </Button>
                             </Link>
@@ -143,34 +145,25 @@ const Navbar = () => {
                                 </div>
                             )}
 
-                            <div className={`hidden sm:block border-l h-6 border-gray-600`}></div>
+                            <div className={`hidden sm:block border-l h-4 sm:h-5 lg:h-6 border-gray-600`}></div>
 
-                            <Link href={"/account"}>
+                            <Link href="/account">
                                 <Button
-                                    className={`hidden sm:block nav-btn `}
+                                    className={`hidden sm:block nav-btn p-1.5 sm:p-2`}
                                     aria-label="Account"
                                 >
                                     <Image
                                         src={'/icons/account.svg'}
                                         alt='profile'
-                                        height={24}
-                                        width={24}
+                                        height={18}
+                                        width={18}
+                                        className="sm:w-5 sm:h-5 lg:w-6 lg:h-6"
                                     />
                                 </Button>
                             </Link>
 
                             <Link href={"/cart"}>
-                                <Button
-                                    className={`nav-btn relative`}
-                                    aria-label="Shopping cart"
-                                >
-                                    <Image
-                                        src={'/icons/cart.svg'}
-                                        alt='cart'
-                                        height={24}
-                                        width={24}
-                                    />
-                                </Button>
+                                <CartButton/>
                             </Link>
                         </div>
                     </div>

@@ -28,15 +28,18 @@ import type {
  * - Cart page - Display cart contents
  * - Checkout page - Load items for checkout
  * 
+ * @param enabled - Whether the query should execute (default: true)
+ * 
  * @example
  * ```tsx
- * const { data: cart, isLoading } = useCart();
+ * const { data: cart, isLoading } = useCart(isAuthenticated);
  * ```
  */
-export const useCart = () => {
+export const useCart = (enabled: boolean = true) => {
   return useQuery<Cart>({
     queryKey: queryKeys.cart.current(),
     queryFn: () => cartApi.getCart(),
+    enabled, // Only fetch when enabled (i.e., user is authenticated)
     staleTime: 1000 * 30, // 30 seconds (cart changes frequently)
     gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
   });
@@ -96,14 +99,7 @@ export const useAddToCart = () => {
       await queryClient.cancelQueries({ queryKey: queryKeys.cart.all() });
     },
     onSuccess: (cart, variables) => {
-      // Show success message
-      toast.success("Added to cart!", {
-        description: `${variables.quantity} item${variables.quantity > 1 ? 's' : ''} added to your cart.`,
-        action: {
-          label: "View Cart",
-          onClick: () => window.location.href = "/cart",
-        },
-      });
+
 
       // Update cache with new cart data
       queryClient.setQueryData(queryKeys.cart.current(), cart);
@@ -163,7 +159,6 @@ export const useUpdateCartItem = () => {
         total: cart.total,
       });
 
-      toast.success("Cart updated");
     },
     onError: (error: any) => {
       toast.error("Failed to update cart", {
@@ -195,7 +190,6 @@ export const useRemoveCartItem = () => {
       await queryClient.cancelQueries({ queryKey: queryKeys.cart.all() });
     },
     onSuccess: (cart) => {
-      toast.success("Item removed from cart");
 
       // Update cache
       queryClient.setQueryData(queryKeys.cart.current(), cart);
@@ -235,7 +229,6 @@ export const useClearCart = () => {
   return useMutation<Cart, Error, void>({
     mutationFn: () => cartApi.clearCart(),
     onSuccess: (cart) => {
-      toast.success("Cart cleared");
 
       // Update cache with empty cart
       queryClient.setQueryData(queryKeys.cart.current(), cart);
@@ -295,6 +288,50 @@ export const useMergeGuestCart = () => {
     onError: (error: any) => {
       // Log error but don't show to user (background operation)
       console.error("Failed to merge guest cart:", error);
+    },
+  });
+};
+
+/**
+ * Sync local cart to backend (for guests logging in)
+ * 
+ * This syncs localStorage cart items to the backend
+ * Backend will save any unsaved customizations and merge items
+ * 
+ * @example
+ * ```tsx
+ * const syncCart = useSyncLocalCart();
+ * 
+ * await syncCart.mutateAsync(localCartItems);
+ * ```
+ */
+export const useSyncLocalCart = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<Cart, Error, any[]>({
+    mutationFn: (items) => cartApi.syncLocalCart(items),
+    onSuccess: (cart) => {
+      // Update cache
+      queryClient.setQueryData(queryKeys.cart.current(), cart);
+      
+      queryClient.setQueryData(queryKeys.cart.summary(), {
+        totalItems: cart.totalItems,
+        subtotal: cart.subtotal,
+        discountAmount: cart.discountAmount,
+        taxAmount: cart.taxAmount,
+        total: cart.total,
+      });
+
+      // Invalidate to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: queryKeys.cart.all() });
+      
+      console.log("[Cart] Local cart synced successfully");
+    },
+    onError: (error: any) => {
+      console.error("[Cart] Failed to sync local cart:", error);
+      toast.error("Failed to sync cart", {
+        description: "Your cart items may not have been saved. Please try again.",
+      });
     },
   });
 };

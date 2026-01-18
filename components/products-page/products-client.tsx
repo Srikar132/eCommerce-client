@@ -83,6 +83,7 @@ const ProductsClient = () => {
                     size="sm"
                     className="gap-2"
                     onClick={() => setIsFilterSidebarOpen(true)}
+                    suppressHydrationWarning
                 >
                     <SlidersHorizontal className="w-4 h-4" />
                     <span>Filter</span>

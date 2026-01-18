@@ -6,6 +6,7 @@ import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { productApi } from '@/lib/api/product';
+import { SearchDropdownSkeleton } from '@/components/ui/skeletons';
 
 interface SearchInputProps {
   placeholder?: string;
@@ -157,7 +158,16 @@ export function SearchInput({
       </div>
 
       {/* Suggestions Dropdown */}
-      {showDropdown && suggestions.length > 0 && (
+      {showDropdown && isLoading && (
+        <div 
+          ref={dropdownRef}
+          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl z-9999 max-h-80 overflow-y-auto border border-gray-100"
+        >
+          <SearchDropdownSkeleton />
+        </div>
+      )}
+
+      {showDropdown && !isLoading && suggestions.length > 0 && (
         <div 
           ref={dropdownRef}
           className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl z-9999 max-h-80 overflow-y-auto border border-gray-100"

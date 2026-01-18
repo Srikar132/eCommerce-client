@@ -14,6 +14,7 @@ import { isTokenExpired } from "@/lib/auth/utils";
 
 import { Toaster } from "sonner";
 import Footer from "@/components/footer";
+import { CartSyncProvider } from "@/providers/cart-provider";
 
 
 export const metadata = {
@@ -45,21 +46,23 @@ export default async function RootLayout({
   return (
     <PrefetchProvider>
       <AuthProvider initialUser={auth.user}>
-        <SidebarProvider defaultOpen={false}>
-          <div className="font-sans w-full no-scrollbar">
-            <AppSidebar />
+        <CartSyncProvider>
+          <SidebarProvider defaultOpen={false}>
+            <div className="font-sans w-full no-scrollbar">
+              <AppSidebar />
 
-            <header id="header">
-              <Navbar />
-              <EmailVerificationBanner className="mx-4 mb-4" />
-            </header>
+              <header id="header">
+                <Navbar />
+                <EmailVerificationBanner className="mx-4 mb-4" />
+              </header>
 
-            <main className="w-full relative">{children}</main>
+              <main className="w-full relative">{children}</main>
 
-            <Footer />
-            <Toaster position="top-right" className="z-50" />
-          </div>
-        </SidebarProvider>
+              <Footer />
+              <Toaster position="top-right" className="z-50" />
+            </div>
+          </SidebarProvider>
+        </CartSyncProvider>
       </AuthProvider>
     </PrefetchProvider>
   );

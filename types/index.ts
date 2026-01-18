@@ -444,9 +444,8 @@ export interface DesignCategory {
 // ============================
 
 export interface Customization {
-    customizationId: string;
+    id: string;
     userId?: UUID | null;
-    sessionId?: string | null;
     productId: UUID;
     variantId: UUID;
     designId: UUID;
@@ -459,18 +458,18 @@ export interface Customization {
 
 // Request type for saving customization
 export interface CustomizationRequest {
-    customizationId?: string | null; // Null/empty for new, provided for updates
-    sessionId?: string | null; // For guest users
+    id?: string | null; // Null/empty for new, provided for updates
     productId: UUID;
     variantId: UUID;
     designId: UUID;
     threadColorHex: string; // Format: #RRGGBB
+    userMessage?: string; // Optional user message
     previewImageUrl: string; // S3/CloudFront URL of generated preview
 }
 
 // Response type when saving customization
 export interface SaveCustomizationResponse {
-    customizationId: string;
+    id: string;
     previewImageUrl: string;
     createdAt: ISODateString;
     updatedAt: ISODateString;
@@ -502,10 +501,10 @@ export interface VariantSummary {
 
 export interface CustomizationSummary {
     id: UUID;
-    customizationId: string;
     variantId: UUID;
     designId: UUID;
     threadColorHex: string;
+    userMessage?: string;
     previewImageUrl: string;
 }
 
@@ -569,3 +568,92 @@ export interface AddToCartRequest {
 export interface UpdateCartItemRequest {
     quantity: number;
 }
+
+
+
+
+// ===================================
+// ORDER TYPES
+// ===================================
+
+export interface OrderItem {
+  id: UUID;
+
+  productVariant: ProductVariant; // or ProductVariantSummary
+  quantity: number;
+
+  unitPrice: number;   // BigDecimal -> number
+  totalPrice: number;
+
+  hasCustomization: boolean;
+  customizationSnapshot?: Record<string, any>; // JSONB
+
+  productionStatus: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+
+  createdAt: ISODateString;
+}
+
+
+export enum OrderStatus {
+    PENDING = "PAYMENT_PENDING",
+    CONFIRMED = "ORDER_CONFIRMED",
+    PROCESSING = "ORDER_PROCESSING",
+    SHIPPED = "ORDER_SHIPPED",
+    DELIVERED = "ORDER_DELIVERED",
+    CANCELLED = "ORDER_CANCELLED",
+    RETURN_REQUESTED = "RETURN_REQUESTED",
+    RETURNED = "RETURNED",
+    REFUNDED = "REFUNDED"
+}
+
+export enum PaymentStatus {
+    PENDING = "PAYMENT_PENDING",
+    PROCESSING = "PAYMENT_PROCESSING",
+    PAID = "PAYMENT_PAID",
+    FAILED = "PAYMENT_FAILED",
+    REFUNDED = "PAYMENT_REFUNDED",
+    PARTIALLY_REFUNDED = "PAYMENT_PARTIALLY_REFUNDED"
+};
+
+export interface Order {
+  id: UUID;
+
+  orderNumber: string;
+
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+
+  paymentMethod?: "card" | "upi" | "netbanking";
+
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  razorpaySignature?: string;
+
+  subtotal: number;
+  taxAmount: number;
+  shippingCost: number;
+  discountAmount: number;
+  totalAmount: number;
+
+  shippingAddress?: Address;
+  billingAddress?: Address;
+
+  trackingNumber?: string;
+  carrier?: string;
+  estimatedDeliveryDate?: ISODateString;
+  deliveredAt?: ISODateString;
+  cancelledAt?: ISODateString;
+
+  cancellationReason?: string;
+  returnRequestedAt?: ISODateString;
+  returnReason?: string;
+
+  notes?: string;
+
+  createdAt: ISODateString;
+  updatedAt: ISODateString;
+
+  orderItems: OrderItem[];
+}
+
+

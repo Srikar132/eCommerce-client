@@ -12,14 +12,16 @@ interface ProductActionsProps {
     isCustomizable?: boolean;
     productSlug?: string;
     selectedVariantId?: string;
+    isInCart?: boolean;
 }
 
-export default function ProductActions({ 
-    onAddToCart, 
-    disabled, 
+export default function ProductActions({
+    onAddToCart,
+    disabled,
     isCustomizable = false,
     productSlug,
-    selectedVariantId 
+    selectedVariantId,
+    isInCart
 }: ProductActionsProps) {
     const router = useRouter();
 
@@ -52,17 +54,29 @@ export default function ProductActions({
                     </span>
                 </Button>
             )}
-            
+
             {/* ADD TO CART BUTTON */}
-            <Button
-                onClick={onAddToCart}
-                disabled={disabled}
-                size="lg"
-                className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md hover:shadow-lg"
-            >
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                Add to Cart
-            </Button>
+            {isInCart ? (
+                <Button
+                    onClick={() => router.push("/cart")}
+                    variant="outline"
+                    size="lg"
+                    className="w-full h-12 text-base font-medium border-2 border-accent hover:bg-accent/10 transition-all duration-300"
+                >
+                    <ShoppingBag className="w-5 h-5 mr-2" />
+                    Go to Cart
+                </Button>
+            ) : (
+                <Button
+                    onClick={onAddToCart}
+                    disabled={disabled}
+                    size="lg"
+                    className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md hover:shadow-lg"
+                >
+                    <ShoppingBag className="w-5 h-5 mr-2" />
+                    Add to Cart
+                </Button>
+            )}
         </div>
     );
 }

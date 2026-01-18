@@ -5,6 +5,7 @@ import ProductCardComponent from './cards/product-card';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { ProductResponse } from '@/types';
 import Link from 'next/link';
+import { ProductGridSkeleton } from '@/components/ui/skeletons';
 
 interface SearchResultsProps {
     results: {
@@ -36,19 +37,7 @@ export default function ProductGrid({
     });
 
     if (isLoading && !results.items.length) {
-        return (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-                {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                        <div className="bg-gray-200 rounded-lg aspect-[2.6/3]"></div>
-                        <div className="mt-4 space-y-2">
-                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
+        return <ProductGridSkeleton count={8} />;
     }
 
     if (!results.items.length && !isLoading) {
@@ -92,7 +81,7 @@ export default function ProductGrid({
                         size="lg"
                         onClick={onLoadMore}
                         disabled={isFetchingNextPage}
-                        className="min-w-[200px]"
+                        className="min-w-50"
                     >
                         {isFetchingNextPage ? "Loading..." : "Load More Products"}
                     </Button>

@@ -1,5 +1,5 @@
 export const ROUTE_CONFIG = {
-  protected: ['/account', '/orders', '/wishlist', '/checkout', '/cart'],
+  protected: ['/account', '/orders', '/wishlist', '/checkout'],
   guestOnly: ['/login', '/register', '/sign-up'],
   admin: ['/admin'],
   public: ['/', '/products', '/about', '/contact', '/search', '/category', 

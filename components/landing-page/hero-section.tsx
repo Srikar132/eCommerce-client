@@ -77,7 +77,7 @@ const HeroSection = () => {
                     {/* Decorative Floral Elements */}
                     <div className="absolute top-1/4 left-[3%] sm:left-[5%] w-16 h-16 sm:w-28 sm:h-28 opacity-60 pointer-events-none">
                         <Image
-                            src="/images/home/flower2.png"
+                            src="/images/home/flower2.webp"
                             alt=""
                             fill
                             className="object-contain select-none"

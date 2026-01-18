@@ -12,74 +12,140 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
-  const { setUser, clearUser, isAuthenticated , user } = useAuthStore();
+  const { setUser, clearUser, isAuthenticated } = useAuthStore();
   const pathname = usePathname();
   const router = useRouter();
-  const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const hasHydratedRef = useRef(false);
 
-  
-  console.log('[AuthProvider] Current User:', user);
-
-  // Hydrate store with server data on mount
+  // ============================================
+  // PRIORITY 1: Hydrate store on mount (ONCE)
+  // ============================================
+  // auth-provider.tsx
   useEffect(() => {
+    // Prevent double hydration in strict mode
+    if (hasHydratedRef.current) return;
+    hasHydratedRef.current = true;
+
     if (initialUser) {
+      console.log('[AuthProvider] ✅ Hydrating store with server data:', initialUser);
       setUser(initialUser);
-
     } else {
-      clearUser();
-    }
-  }, [initialUser, setUser, clearUser]);
+      console.log('[AuthProvider] ℹ️ No initial user from server, using persisted state');
 
-  // Periodic auth check to catch token expiry
+      // ✅ FIX: Only check for refreshed auth if we have persisted state
+      const persistedState = localStorage.getItem('auth-storage');
+
+      if (persistedState) {
+        try {
+          const parsed = JSON.parse(persistedState);
+
+          // Only attempt to revalidate if store thinks user is authenticated
+          if (parsed?.state?.isAuthenticated) {
+            const checkForRefreshedAuth = async () => {
+              try {
+                const response = await authApi.getCurrentUser();
+                if (response.user) {
+                  console.log('[AuthProvider] 🔄 Found refreshed session, hydrating store');
+                  setUser(response.user);
+                }
+              } catch (error) {
+                // Session is invalid, clear persisted state
+                console.log('[AuthProvider] ℹ️ No active session found, clearing store');
+                clearUser();
+              }
+            };
+
+            checkForRefreshedAuth();
+          } else {
+            console.log('[AuthProvider] ℹ️ No authenticated user in persisted state');
+          }
+        } catch (error) {
+          console.error('[AuthProvider] Failed to parse persisted state');
+        }
+      }
+    }
+  }, []);
+
+  // ============================================
+  // PRIORITY 2: Smart revalidation on visibility change
+  // Only check auth when user returns after 10+ minutes
+  // ============================================
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const checkAuthStatus = async () => {
-      try {
-        const response = await authApi.getCurrentUser();
-        setUser(response.user);
-      } catch (error) {
-        console.log('[Auth] Session expired, clearing user');
-        clearUser();
-        
-        // Only redirect if on protected route
-        if (ROUTE_CONFIG.protected.some(route => 
-            pathname === route || pathname.startsWith(`${route}/`))) {
-          router.push('/login');
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        const lastCheck = sessionStorage.getItem('lastAuthCheck');
+        const now = Date.now();
+
+        // Only revalidate if 10+ minutes passed since last check
+        if (!lastCheck || now - parseInt(lastCheck) > 10 * 60 * 1000) {
+          console.log('[AuthProvider] 🔍 Revalidating auth after inactivity');
+
+          try {
+            const response = await authApi.getCurrentUser();
+            setUser(response.user);
+            sessionStorage.setItem('lastAuthCheck', now.toString());
+            console.log('[AuthProvider] ✅ Auth still valid');
+          } catch (error) {
+            console.log('[AuthProvider] ❌ Session expired, logging out');
+            clearUser();
+
+            // Only redirect if on protected route
+            if (ROUTE_CONFIG.protected.some(route =>
+              pathname === route || pathname.startsWith(`${route}/`))) {
+              router.push('/login');
+            }
+          }
         }
       }
     };
 
-    // Check auth every 5 minutes
-    checkIntervalRef.current = setInterval(checkAuthStatus, 5 * 60 * 1000);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      if (checkIntervalRef.current) {
-        clearInterval(checkIntervalRef.current);
-      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [isAuthenticated, pathname, router, setUser, clearUser]);
 
-  // Revalidate on route changes to protected routes
+  // ============================================
+  // PRIORITY 3: Revalidate only on sensitive routes
+  // Skip if already checked recently
+  // ============================================
   useEffect(() => {
     if (!isAuthenticated) return;
 
+    const sensitiveRoutes = ['/account', '/orders', '/checkout'];
+    const isSensitiveRoute = sensitiveRoutes.some(route =>
+      pathname.startsWith(route)
+    );
+
+    if (!isSensitiveRoute) return;
+
     const revalidateAuth = async () => {
+      const lastCheck = sessionStorage.getItem('lastAuthCheck');
+      const now = Date.now();
+
+      // Skip if checked within last 2 minutes
+      if (lastCheck && now - parseInt(lastCheck) < 2 * 60 * 1000) {
+        console.log('[AuthProvider] ⏭️ Skipping revalidation (recent check)');
+        return;
+      }
+
+      console.log('[AuthProvider] 🔐 Revalidating auth for sensitive route:', pathname);
+
       try {
         const response = await authApi.getCurrentUser();
         setUser(response.user);
+        sessionStorage.setItem('lastAuthCheck', now.toString());
       } catch (error) {
+        console.log('[AuthProvider] ❌ Auth failed on sensitive route');
         clearUser();
         router.push('/login');
       }
     };
 
-    // Revalidate when navigating to sensitive routes
-    if (pathname.startsWith('/account') || 
-        pathname.startsWith('/orders') || 
-        pathname.startsWith('/checkout')) {
-      revalidateAuth();
-    }
+    revalidateAuth();
   }, [pathname, isAuthenticated, setUser, clearUser, router]);
 
   return <>{children}</>;

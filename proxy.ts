@@ -56,6 +56,20 @@ export async function proxy(request: NextRequest) {
     console.log('[Middleware] User NOT authenticated');
   }
 
+  // ========================================
+  // PROACTIVE TOKEN REFRESH
+  // ========================================
+  // If we have a valid refresh token but no valid access token,
+  // refresh BEFORE checking routes (except for guest-only routes)
+  if (!isAuthenticated && refreshToken && !isTokenExpired(refreshToken) && !isGuestOnlyRoute) {
+    console.log('[Middleware] No access token but valid refresh token → proactive refresh');
+    
+    const refreshUrl = new URL('/api/auth/refresh-redirect', request.url);
+    refreshUrl.searchParams.set('returnTo', pathname);
+    
+    return NextResponse.redirect(refreshUrl);
+  }
+
   // Guest-only routes
   if (isGuestOnlyRoute) {
     console.log('[Middleware] Guest-only route');
@@ -65,11 +79,11 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
+    // For guest-only routes, if they have a refresh token, try to refresh and send home
     if (refreshToken && !isTokenExpired(refreshToken)) {
       console.log('[Middleware] Guest route but Refresh Token valid → attempting auto-login');
       
       const refreshUrl = new URL('/api/auth/refresh-redirect', request.url);
-      // IMPORTANT: After refresh, send them to Home ('/'), NOT back to '/login'
       refreshUrl.searchParams.set('returnTo', '/'); 
       
       return NextResponse.redirect(refreshUrl);
@@ -84,17 +98,7 @@ export async function proxy(request: NextRequest) {
     console.log('[Middleware] Protected/Admin route');
 
     if (!isAuthenticated) {
-      console.log('[Middleware] No valid access token');
-
-      if (refreshToken && !isTokenExpired(refreshToken)) {
-        console.log('[Middleware] Refresh token valid → redirecting to refresh');
-
-        const refreshUrl = new URL('/api/auth/refresh-redirect', request.url);
-        refreshUrl.searchParams.set('returnTo', pathname);
-        return NextResponse.redirect(refreshUrl);
-      }
-
-      console.log('[Middleware] No valid tokens → redirecting to /login');
+      console.log('[Middleware] No valid access token → redirecting to /login');
 
       const loginUrl = new URL('/login', request.url);
       const response = NextResponse.redirect(loginUrl);

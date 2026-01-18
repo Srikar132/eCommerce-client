@@ -36,7 +36,9 @@ export default function Layout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable} antialiased`}>
+      <body 
+        className={`${inter.variable} ${playfair.variable} antialiased`}
+      >
         <TanstackProvider>
           {children}
         </TanstackProvider>

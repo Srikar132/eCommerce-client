@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import LogoutButton from '../auth/logout-button';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/account' },
@@ -58,15 +59,7 @@ const Sidebar = ({ currentPath = '/account' }) => {
       <Separator className="my-2" />
 
       {/* Logout Button */}
-      <div className="p-2">
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-3 text-sm font-light text-destructive hover:text-destructive hover:bg-accent"
-        >
-          <LogOut size={18} className="shrink-0" />
-          <span className="flex-1 text-left">Log Out</span>
-        </Button>
-      </div>
+      <LogoutButton/>
     </div>
   );
 };

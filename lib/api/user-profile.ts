@@ -8,7 +8,8 @@ export const userProfileApi = {
      *  GET /api/v1/users/profile
      */
     getUserProfile: async () : Promise<UserProfile> => {
-        return  await apiClient.get('/api/v1/users/profile');
+        const res = await apiClient.get('/api/v1/users/profile');
+        return res.data;    
     },
 
     /**
@@ -16,7 +17,8 @@ export const userProfileApi = {
      *  PUT /api/v1/users/profile
      */
     updateUserProfile: async (data: UpdateProfileRequest) : Promise<UserProfile> => {
-        return await apiClient.put('/api/v1/users/profile', data);
+        const res = await apiClient.put('/api/v1/users/profile', data);
+        return res.data;
     },
 
     /**
@@ -24,7 +26,8 @@ export const userProfileApi = {
      *  GET /api/v1/users/addresses
      */
     getUserAddresses: async () : Promise<Address[]> => {
-        return  await apiClient.get('/api/v1/users/addresses');
+        const res =  await apiClient.get('/api/v1/users/addresses');
+        return res.data;
     },
 
 
@@ -33,7 +36,8 @@ export const userProfileApi = {
      *  POST /api/v1/users/addresses
      */
     addUserAddress: async (data: AddAddressRequest) : Promise<Address> => {
-        return  await apiClient.post('/api/v1/users/addresses', data);
+        const res = await apiClient.post('/api/v1/users/addresses', data);
+        return res.data;
     },
 
 
@@ -42,7 +46,8 @@ export const userProfileApi = {
      *  PUT /api/v1/users/addresses/{id}
      */
     updateUserAddress: async (id: string, data: UpdateAddressRequest) : Promise<Address> => {
-        return  await apiClient.put(`/api/v1/users/addresses/${id}`, data);
+        const res = await apiClient.put(`/api/v1/users/addresses/${id}`, data);
+        return res.data;
     },
 
     /**
@@ -50,7 +55,7 @@ export const userProfileApi = {
      *  DELETE /api/v1/users/addresses/{id}
      */
     deleteUserAddress: async (id: string) : Promise<void> => {
-        return  await apiClient.delete(`/api/v1/users/addresses/${id}`);
+        await apiClient.delete(`/api/v1/users/addresses/${id}`);
     }
 
 }

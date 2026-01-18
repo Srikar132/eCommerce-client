@@ -15,6 +15,8 @@ import VariantAvailabilityInfo from "@/components/product/variant-availability-i
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useVariantSelection } from "@/hooks/use-variant-selector";
+import { useCartManager } from "@/hooks/use-cart";
+import { ProductDetailSkeleton } from "@/components/ui/skeletons";
 
 interface ProductDetailClientProps {
     slug: string;
@@ -39,11 +41,20 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
         variants: product?.variants || []
     });
 
+    const cart = useCartManager();
+
     // Prepare features from product data
     const features = product ? [
         ...(product.material ? [{ id: 'material', text: product.material }] : []),
         ...(product.careInstructions ? [{ id: 'care', text: product.careInstructions }] : [])
     ] : [];
+
+    const inCart = product && selectedVariant
+        ? cart.isInCart({
+            productId: product.id,
+            variantId: selectedVariant.id,
+        })
+        : false;
 
     // Handle add to cart
     const handleAddToCart = () => {
@@ -75,15 +86,20 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
             sku: selectedVariant.sku,
             stockQuantity: selectedVariant.stockQuantity
         });
-        
-        alert(
-            `Added to cart!\n${product.name}\nColor: ${selectedVariant.color}\nSize: ${selectedVariant.size}\nPrice: ₹${finalPrice.toFixed(2)}`
-        );
+
+
+        cart.addItem({
+            productId: product.id,
+            productSlug : product.slug,
+            productVariantId: selectedVariant.id,
+            quantity: 1,
+        });
+
     };
 
     // Loading state
     if (isLoadingProduct) {
-        return <ProductDetailLoading />;
+        return <ProductDetailSkeleton />;
     }
 
     // Not found state
@@ -174,6 +190,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                                     isCustomizable={product.isCustomizable}
                                     productSlug={product.slug}
                                     selectedVariantId={selectedVariant?.id}
+                                    isInCart={inCart}
                                 />
                             </div>
 

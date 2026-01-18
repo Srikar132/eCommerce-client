@@ -108,7 +108,7 @@ export function useVariantSelection({
         if (!variants.length || !selectedColor || !product) {
             return [{
                 id: 'default',
-                url: '/placeholder-product.jpg',
+                url: '/images/error.png',
                 alt: product?.name || 'Product image'
             }];
         }
@@ -129,7 +129,7 @@ export function useVariantSelection({
 
         return [{
             id: 'default',
-            url: '/placeholder-product.jpg',
+            url: '/images/error.png',
             alt: product.name
         }];
     }, [variants, selectedColor, product]);
