@@ -13,7 +13,6 @@ import type {
   Cart,
   CartSummary,
   AddToCartRequest,
-  UpdateCartItemRequest,
   UUID,
 } from "@/types";
 

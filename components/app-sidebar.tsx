@@ -1,8 +1,9 @@
 "use client";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/components/ui/sidebar"
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, User, HelpCircle, Mail, ShoppingCart, Search, Home, MapPin } from "lucide-react";
+import { ChevronDown, User, Mail, ShoppingCart, Search, Home } from "lucide-react";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 export default function AppSidebar() {
   const { open, setOpen, isMobile, setOpenMobile } = useSidebar()
@@ -36,7 +37,6 @@ export default function AppSidebar() {
 
   return (
     <>
-
       {!isMobile && open && (
         <div
           className="fixed inset-0 backdrop-blur bg-black/50 z-9999 transition-opacity"
@@ -50,12 +50,13 @@ export default function AppSidebar() {
         <SidebarHeader className="border-b px-6 py-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">MENU</h2>
-            <button 
+            <Button 
+
               onClick={handleClose}
               className="text-2xl hover:opacity-70 transition-opacity"
             >
               ×
-            </button>
+            </Button>
           </div>
         </SidebarHeader>
 

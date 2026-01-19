@@ -1,22 +1,34 @@
-import { AddAddressRequest, Address, UpdateAddressRequest, UpdateProfileRequest, UserProfile } from "@/types";
-import { apiClient } from "./client"
+import {  Address, User } from "@/types";
+import { apiClient } from "./client";
+
+
+
+export interface UpdateProfileRequest {
+    username?: string;
+    phone?: string;
+}
+
+
+
+export interface AddAddressRequest {
+    addressType: string;
+    streetAddress: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    isDefault: boolean;
+}
+
 
 
 export const userProfileApi = {
-    /**
-     *  GET USER PROFIILE
-     *  GET /api/v1/users/profile
-     */
-    getUserProfile: async () : Promise<UserProfile> => {
-        const res = await apiClient.get('/api/v1/users/profile');
-        return res.data;    
-    },
 
     /**
      *  UPDATE USER PROFILE
      *  PUT /api/v1/users/profile
      */
-    updateUserProfile: async (data: UpdateProfileRequest) : Promise<UserProfile> => {
+    updateUserProfile: async (data: UpdateProfileRequest) : Promise<User> => {
         const res = await apiClient.put('/api/v1/users/profile', data);
         return res.data;
     },
@@ -30,7 +42,6 @@ export const userProfileApi = {
         return res.data;
     },
 
-
     /**
      *  ADD A NEW ADDRESS
      *  POST /api/v1/users/addresses
@@ -40,12 +51,11 @@ export const userProfileApi = {
         return res.data;
     },
 
-
     /**
      *  UPDATE AN ADDRESS
      *  PUT /api/v1/users/addresses/{id}
      */
-    updateUserAddress: async (id: string, data: UpdateAddressRequest) : Promise<Address> => {
+    updateUserAddress: async (id: string, data: AddAddressRequest) : Promise<Address> => {
         const res = await apiClient.put(`/api/v1/users/addresses/${id}`, data);
         return res.data;
     },
@@ -57,5 +67,5 @@ export const userProfileApi = {
     deleteUserAddress: async (id: string) : Promise<void> => {
         await apiClient.delete(`/api/v1/users/addresses/${id}`);
     }
+};
 
-}

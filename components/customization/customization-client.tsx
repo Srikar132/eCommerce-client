@@ -112,15 +112,15 @@ export default function CustomizationClient({ slug, variantId }: CustomizationCl
   // Find the selected variant
   const selectedVariant = product?.variants?.find(v => v.id === variantId);
 
-  // Safety checks
-  const hasValidVariant = variantId && selectedVariant;
   const hasVariants = product?.variants && product.variants.length > 0;
 
   // Get the variant image - ONLY show PREVIEW_BASE images for customization
   const previewBaseImages = selectedVariant?.images?.filter(img =>
-    img.imageRole === 'PREVIEW_BASE' || !img.imageRole // Fallback for images without role
+    img.imageRole === 'PREVIEW_BASE' || !img.imageRole
   );
+
   const variantImage = previewBaseImages?.[0]; // Use the first PREVIEW_BASE image
+
   const productImage = variantImage;
 
   const handleContinue = () => {
@@ -227,111 +227,190 @@ export default function CustomizationClient({ slug, variantId }: CustomizationCl
           {/* Left Column - Product Preview */}
           <div className="lg:col-span-2">
             <div className="lg:sticky lg:top-8 space-y-6">
-              {/* Header */}
-              <div className='flex items-center gap-3'>
+              {/* Header with Back Button */}
+              <div className='flex items-start gap-4'>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => router.back()}
-                  className="h-10 w-10 rounded-full hover:bg-accent transition-colors"
+                  className="h-12 w-12 rounded-full hover:bg-accent/80 transition-all duration-300 hover:scale-110 active:scale-95 shadow-sm border border-border/50"
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+                <div className="flex-1">
+                  <h1 className="text-3xl sm:text-4xl font-serif font-light text-foreground mb-2">
                     Customize Your Style
                   </h1>
-                  <p className="text-sm text-muted-foreground mt-0.5">Choose a design that speaks to you</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Choose a design that speaks to you and make it uniquely yours
+                  </p>
                 </div>
               </div>
 
-              {/* Product Card */}
-              <div className="relative w-full rounded-4xl overflow-hidden shadow-lg border-2 border-border/50 bg-linear-to-br from-card to-muted/20 group"
-                style={{ aspectRatio: '4.9999/5' }}>
-                {productImage && productImage.imageUrl ? (
-                  <Image
-                    src={productImage.imageUrl}
-                    alt={productImage.altText || `${product.name} - ${selectedVariant?.color}`}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    priority
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-br from-muted to-muted/50 gap-3">
-                    <ShoppingBag className="h-24 w-24 opacity-10 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">No Image Available</p>
+              {/* Product Card - Enhanced with decorative frame */}
+              <div className="relative">
+                {/* Decorative outer glow */}
+                <div className="absolute -inset-4 bg-linear-to-br from-primary/5 via-accent/10 to-primary/5 rounded-[3rem] blur-2xl opacity-60" />
+                
+                {/* Main product image container */}
+                <div className="relative bg-linear-to-br from-card via-background to-accent/5 rounded-[2.5rem] p-4 shadow-2xl border border-border/20">
+                  {/* Inner decorative border */}
+                  <div className="relative rounded-4xl overflow-hidden bg-linear-to-br from-secondary/30 to-accent/20 p-1.5">
+                    {/* Image container with rounded corners */}
+                    <div className="relative w-full rounded-[1.75rem] overflow-hidden bg-card shadow-lg group"
+                      style={{ aspectRatio: '4.9999/5' }}>
+                      {productImage && productImage.imageUrl ? (
+                        <>
+                          {/* Background blur effect */}
+                          <div className="absolute inset-0 bg-cover bg-center blur-3xl opacity-20 scale-110"
+                            style={{ backgroundImage: `url(${productImage.imageUrl})` }}
+                          />
+                          
+                          {/* Main image */}
+                          <div className="relative w-full h-full">
+                            <Image
+                              src={productImage.imageUrl}
+                              alt={productImage.altText || `${product.name} - ${selectedVariant?.color}`}
+                              fill
+                              className="object-cover transition-all duration-700 group-hover:scale-105"
+                              priority
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-br from-muted via-muted/80 to-muted/50 gap-4">
+                          <div className="p-8 rounded-full bg-card/90 backdrop-blur-md shadow-xl border-2 border-border/30">
+                            <ShoppingBag className="h-20 w-20 opacity-15 text-muted-foreground" />
+                          </div>
+                          <p className="text-sm text-muted-foreground font-medium">No Image Available</p>
+                        </div>
+                      )}
+
+                      {/* Elegant overlay gradient */}
+                      <div className="absolute inset-0 bg-linear-to-t from-black/15 via-transparent to-white/5 pointer-events-none" />
+                      
+                      {/* Corner decorative elements */}
+                      <div className="absolute top-3 left-3 w-8 h-8 border-l-2 border-t-2 border-primary/30 rounded-tl-xl" />
+                      <div className="absolute bottom-3 right-3 w-8 h-8 border-r-2 border-b-2 border-primary/30 rounded-br-xl" />
+                    </div>
                   </div>
-                )}
 
-                <div className="absolute inset-0 bg-linear-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
-
-                <Badge className="absolute top-5 right-5 bg-primary/90 backdrop-blur-md border-0 shadow-lg text-primary-foreground px-3 py-1.5 text-xs font-medium">
-                  <Sparkles className="h-3 w-3 mr-1.5" />
-                  CUSTOMIZABLE
-                </Badge>
+                  {/* Customizable Badge - Floating design */}
+                  <div className="absolute -top-2 -right-2 z-10">
+                    <Badge className="bg-linear-to-br from-primary to-primary/80 text-primary-foreground backdrop-blur-md border-2 border-background shadow-2xl px-4 py-2.5 text-xs font-bold tracking-wider hover:scale-110 transition-all duration-300 hover:shadow-primary/50">
+                      <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
+                      CUSTOMIZABLE
+                    </Badge>
+                  </div>
+                </div>
               </div>
 
-              {/* Product Info */}
-              <div className="space-y-3 px-1">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                  {product.name}
-                </h2>
+              {/* Product Info - Enhanced Card Design */}
+              <div className="rounded-3xl bg-linear-to-br from-card to-accent/5 border-2 border-border/40 shadow-lg p-6 space-y-4 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-start justify-between">
+                  <h2 className="text-2xl font-serif font-light tracking-tight text-foreground leading-tight pr-4">
+                    {product.name}
+                  </h2>
+                  {product.basePrice !== undefined && selectedVariant?.additionalPrice !== undefined && (
+                    <div className="flex flex-col items-end">
+                      <p className="text-xs text-muted-foreground font-medium mb-0.5">Price</p>
+                      <p className="text-2xl font-bold text-primary">
+                        ₹{(product.basePrice + selectedVariant.additionalPrice).toFixed(2)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
                 {selectedVariant ? (
-                  <div className="space-y-2">
-                    {/* Color */}
-                    {selectedVariant.color && (
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="h-4 w-4 rounded-full border-2 border-border shadow-sm"
-                          style={{ backgroundColor: selectedVariant.colorHex || '#ffffff' }}
-                          title={selectedVariant.color}
-                        />
-                        <p className="text-sm text-muted-foreground">
-                          Color: <span className="font-semibold text-foreground">{selectedVariant.color}</span>
-                        </p>
-                      </div>
-                    )}
+                  <div className="space-y-3 pt-2">
+                    {/* Color & Size - Side by Side */}
+                    <div className="flex items-center gap-4">
+                      {/* Color */}
+                      {selectedVariant.color && (
+                        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-secondary/50 border border-border/50 flex-1">
+                          <div
+                            className="h-6 w-6 rounded-full border-2 border-border shadow-md ring-2 ring-background transition-transform hover:scale-110"
+                            style={{ backgroundColor: selectedVariant.colorHex || '#ffffff' }}
+                            title={selectedVariant.color}
+                          />
+                          <div>
+                            <p className="text-xs text-muted-foreground font-medium">Color</p>
+                            <p className="text-sm font-semibold text-foreground capitalize">
+                              {selectedVariant.color}
+                            </p>
+                          </div>
+                        </div>
+                      )}
 
-                    {/* Size */}
-                    {selectedVariant.size && (
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm text-muted-foreground">
-                          Size: <span className="font-semibold text-foreground">{selectedVariant.size}</span>
-                        </p>
-                      </div>
-                    )}
+                      {/* Size */}
+                      {selectedVariant.size && (
+                        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-secondary/50 border border-border/50 flex-1">
+                          <div className="h-6 w-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <span className="text-xs font-bold text-primary">{selectedVariant.size}</span>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground font-medium">Size</p>
+                            <p className="text-sm font-semibold text-foreground uppercase">
+                              {selectedVariant.size}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
-                    {/* Stock Status */}
+                    {/* Stock Status - Enhanced with icons and colors */}
                     {selectedVariant.stockQuantity !== undefined && (
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm text-muted-foreground">
-                          Stock: <span className={cn(
-                            "font-semibold",
-                            selectedVariant.stockQuantity > 10 ? "text-green-600" :
-                              selectedVariant.stockQuantity > 0 ? "text-amber-600" :
-                                "text-red-600"
+                      <div className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-colors",
+                        selectedVariant.stockQuantity > 10 
+                          ? "bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800/30"
+                          : selectedVariant.stockQuantity > 0 
+                          ? "bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-800/30"
+                          : "bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800/30"
+                      )}>
+                        <div className={cn(
+                          "h-8 w-8 rounded-full flex items-center justify-center",
+                          selectedVariant.stockQuantity > 10 
+                            ? "bg-green-100 dark:bg-green-900/40"
+                            : selectedVariant.stockQuantity > 0 
+                            ? "bg-amber-100 dark:bg-amber-900/40"
+                            : "bg-red-100 dark:bg-red-900/40"
+                        )}>
+                          <div className={cn(
+                            "h-2 w-2 rounded-full",
+                            selectedVariant.stockQuantity > 10 
+                              ? "bg-green-600"
+                              : selectedVariant.stockQuantity > 0 
+                              ? "bg-amber-600"
+                              : "bg-red-600"
+                          )} />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground font-medium">Stock Status</p>
+                          <p className={cn(
+                            "text-sm font-semibold",
+                            selectedVariant.stockQuantity > 10 
+                              ? "text-green-700 dark:text-green-400"
+                              : selectedVariant.stockQuantity > 0 
+                              ? "text-amber-700 dark:text-amber-400"
+                              : "text-red-700 dark:text-red-400"
                           )}>
                             {selectedVariant.stockQuantity > 0
-                              ? `${selectedVariant.stockQuantity} available`
-                              : 'Out of stock'}
-                          </span>
-                        </p>
+                              ? `${selectedVariant.stockQuantity} Available`
+                              : 'Out of Stock'}
+                          </p>
+                        </div>
                       </div>
                     )}
 
-                    {/* Price */}
-                    {product.basePrice !== undefined && selectedVariant.additionalPrice !== undefined && (
-                      <div className="flex items-center gap-2 pt-1">
-                        <p className="text-sm text-muted-foreground">
-                          Price: <span className="font-semibold text-foreground text-base">
-                            ₹{(product.basePrice + selectedVariant.additionalPrice).toFixed(2)}
-                          </span>
-                        </p>
-                      </div>
-                    )}
+                    {/* Additional Info Badge */}
+                    <div className="pt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="h-1 w-1 rounded-full bg-primary/60" />
+                      <span>Customization adds unique value to your product</span>
+                    </div>
                   </div>
                 ) : (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground p-4 bg-muted/30 rounded-xl border border-border/50">
                     <p>No variant information available</p>
                   </div>
                 )}

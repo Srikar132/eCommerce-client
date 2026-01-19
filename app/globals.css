@@ -594,4 +594,354 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+
+  /* ============================================
+     SONNER TOAST CUSTOMIZATION - PREMIUM ROYAL EDITION
+     Sophisticated, elegant, and luxurious styling
+     ============================================ */
+  
+  /* Base toast styling - Royal Premium */
+  .toast-custom {
+    @apply rounded-3xl border-2 backdrop-blur-md;
+    padding: 1.25rem 1.5rem !important;
+    min-height: 4.5rem !important;
+    font-family: var(--font-inter);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+  }
+
+  /* Premium shimmer overlay effect */
+  .toast-custom::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      135deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.03) 45%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.03) 55%,
+      transparent 100%
+    );
+    animation: shimmer 3s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+
+  /* Subtle inner glow */
+  .toast-custom::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1.5rem;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* Title styling - Premium typography */
+  .toast-title {
+    @apply font-bold text-base mb-1.5;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Description styling - Refined text */
+  .toast-description {
+    @apply text-sm;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+    opacity: 0.85;
+    font-weight: 400;
+  }
+
+  /* Action button - Elegant with premium feel */
+  .toast-action {
+    @apply rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-300;
+    @apply bg-primary text-primary-foreground;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, var(--primary), oklch(from var(--primary) calc(l - 0.05) c h));
+  }
+
+  .toast-action:hover {
+    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Cancel button - Refined secondary style */
+  .toast-cancel {
+    @apply rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300;
+    @apply bg-muted/40 text-muted-foreground;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(4px);
+  }
+
+  .toast-cancel:hover {
+    @apply bg-muted/60;
+    transform: translateY(-1px);
+  }
+
+  /* Close button - Minimal and elegant */
+  .toast-close {
+    @apply transition-all duration-300;
+    opacity: 0.4;
+    border-radius: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .toast-close:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+    transform: rotate(90deg);
+  }
+
+  /* Success toast - Royal Rose with gold accents */
+  .toast-success {
+    background: linear-gradient(
+      135deg,
+      oklch(0.99 0.02 15) 0%,
+      oklch(0.97 0.03 15) 50%,
+      oklch(0.96 0.04 10) 100%
+    );
+    border: 2px solid;
+    border-image: linear-gradient(135deg, 
+      oklch(0.85 0.10 15),
+      oklch(0.80 0.12 20),
+      oklch(0.85 0.10 15)
+    ) 1;
+    color: oklch(0.30 0.05 15);
+  }
+  
+  .toast-success [data-icon] {
+    color: oklch(0.65 0.16 15);
+    filter: drop-shadow(0 0 8px oklch(0.75 0.12 15 / 0.3));
+    animation: icon-glow 2s ease-in-out infinite;
+  }
+
+  /* Error toast - Royal Coral with warm undertones */
+  .toast-error {
+    background: linear-gradient(
+      135deg,
+      oklch(0.98 0.03 25) 0%,
+      oklch(0.96 0.04 25) 50%,
+      oklch(0.94 0.05 22) 100%
+    );
+    border: 2px solid;
+    border-image: linear-gradient(135deg, 
+      oklch(0.75 0.16 25),
+      oklch(0.70 0.18 20),
+      oklch(0.75 0.16 25)
+    ) 1;
+    color: oklch(0.30 0.05 25);
+  }
+  
+  .toast-error [data-icon] {
+    color: oklch(0.62 0.18 25);
+    filter: drop-shadow(0 0 8px oklch(0.72 0.14 25 / 0.3));
+    animation: icon-pulse 2s ease-in-out infinite;
+  }
+
+  /* Warning toast - Royal Peach with golden shimmer */
+  .toast-warning {
+    background: linear-gradient(
+      135deg,
+      oklch(0.98 0.03 60) 0%,
+      oklch(0.96 0.04 60) 50%,
+      oklch(0.95 0.05 55) 100%
+    );
+    border: 2px solid;
+    border-image: linear-gradient(135deg, 
+      oklch(0.80 0.12 60),
+      oklch(0.75 0.14 55),
+      oklch(0.80 0.12 60)
+    ) 1;
+    color: oklch(0.30 0.05 40);
+  }
+  
+  .toast-warning [data-icon] {
+    color: oklch(0.68 0.14 60);
+    filter: drop-shadow(0 0 8px oklch(0.78 0.10 60 / 0.3));
+    animation: icon-glow 2s ease-in-out infinite;
+  }
+
+  /* Info toast - Royal Lavender with mystical glow */
+  .toast-info {
+    background: linear-gradient(
+      135deg,
+      oklch(0.98 0.02 280) 0%,
+      oklch(0.96 0.03 280) 50%,
+      oklch(0.95 0.04 275) 100%
+    );
+    border: 2px solid;
+    border-image: linear-gradient(135deg, 
+      oklch(0.80 0.10 280),
+      oklch(0.75 0.12 275),
+      oklch(0.80 0.10 280)
+    ) 1;
+    color: oklch(0.30 0.04 280);
+  }
+  
+  .toast-info [data-icon] {
+    color: oklch(0.65 0.12 280);
+    filter: drop-shadow(0 0 8px oklch(0.75 0.10 280 / 0.3));
+    animation: icon-glow 2s ease-in-out infinite;
+  }
+
+  /* Loading toast - Royal Cream with subtle warmth */
+  .toast-loading {
+    background: linear-gradient(
+      135deg,
+      oklch(0.99 0.01 95) 0%,
+      oklch(0.97 0.02 95) 50%,
+      oklch(0.96 0.03 90) 100%
+    );
+    border: 2px solid;
+    border-image: linear-gradient(135deg, 
+      oklch(0.88 0.04 95),
+      oklch(0.85 0.05 90),
+      oklch(0.88 0.04 95)
+    ) 1;
+    color: oklch(0.35 0.04 40);
+  }
+  
+  .toast-loading [data-icon] {
+    color: oklch(0.68 0.10 15);
+    filter: drop-shadow(0 0 8px oklch(0.75 0.08 15 / 0.3));
+  }
+
+  /* Icon animations for premium feel */
+  @keyframes icon-glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 6px currentColor);
+      opacity: 1;
+    }
+    50% {
+      filter: drop-shadow(0 0 12px currentColor);
+      opacity: 0.9;
+    }
+  }
+
+  @keyframes icon-pulse {
+    0%, 100% {
+      transform: scale(1);
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+    50% {
+      transform: scale(1.05);
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+  }
+
+  /* Toast enter animation - Elegant slide with fade */
+  @keyframes toast-slide-in {
+    from {
+      transform: translateX(calc(100% + 2rem)) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Toast exit animation - Graceful departure */
+  @keyframes toast-slide-out {
+    from {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(calc(100% + 2rem)) scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  [data-sonner-toast] {
+    animation: toast-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  [data-sonner-toast][data-removed="true"] {
+    animation: toast-slide-out 0.3s cubic-bezier(0.34, 0.8, 0.64, 1) forwards;
+  }
+
+  /* Progress bar styling - Elegant gradient */
+  [data-sonner-toast] [data-progress] {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(from var(--primary) l c h / 0.3) 20%,
+      oklch(from var(--primary) l c h / 0.6) 50%,
+      oklch(from var(--primary) l c h / 0.8) 80%,
+      var(--primary) 100%
+    );
+    height: 3px;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Animated shine on progress bar */
+  [data-sonner-toast] [data-progress]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
+    );
+    animation: progress-shine 2s infinite;
+  }
+
+  @keyframes progress-shine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(200%);
+    }
+  }
+
+  /* Hover effect - Refined elegance */
+  [data-sonner-toast]:hover {
+    transform: translateY(-2px) scale(1.01);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  [data-sonner-toast]:hover::before {
+    animation-duration: 2s;
+  }
+
+  /* Add premium spacing between toasts */
+  [data-sonner-toast] + [data-sonner-toast] {
+    margin-top: 0.75rem;
+  }
 }
+

@@ -6,9 +6,7 @@ import {
   MapPin, 
   User, 
   Shield, 
-  CreditCard, 
   MessageSquare,
-  LogOut,
   ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,12 +20,10 @@ const menuItems = [
   { icon: Heart, label: 'Wishlist', href: '/account/wishlist' },
   { icon: MapPin, label: 'Saved Addresses', href: '/account/saved-addresses' },
   { icon: User, label: 'Account Details', href: '/account/account-details' },
-  { icon: Shield, label: 'Security', href: '/account/security' },
-  { icon: CreditCard, label: 'Payments', href: '/account/payments' },
   { icon: MessageSquare, label: 'Contact Us', href: '/contact' },
 ];
 
-const Sidebar = ({ currentPath = '/account' }) => {
+const AccountSidebar = ({ currentPath = '/account' }) => {
   return (
     <div className="w-full bg-card rounded-lg border overflow-hidden">
       {/* Navigation Menu */}
@@ -64,4 +60,4 @@ const Sidebar = ({ currentPath = '/account' }) => {
   );
 };
 
-export default Sidebar;
+export default AccountSidebar;

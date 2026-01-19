@@ -13,9 +13,8 @@ type UUID = string;
 type Props = {
     product: ProductResponse;
     onMouseEnter?: () => void;
-    onAddToWishlist?: (id: UUID) => void;
-    onQuickView?: (product: ProductResponse) => void;
-    onAddToCart?: (id: UUID) => void;
+    onAddToWishlist?: () => void;
+    onAddToCart?: () => void;
 };
 
 const PLACEHOLDER_IMAGE = '/images/error.png';
@@ -25,7 +24,6 @@ const ProductCardComponent = ({
     product,
     onMouseEnter,
     onAddToWishlist,
-    onQuickView,
     onAddToCart
 }: Props) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -89,20 +87,16 @@ const ProductCardComponent = ({
     const handleWishlistClick = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        onAddToWishlist?.(product.id);
-    }, [onAddToWishlist, product.id]);
+        onAddToWishlist?.();
+    }, [onAddToWishlist]);
 
-    const handleQuickView = useCallback((e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onQuickView?.(product);
-    }, [onQuickView, product]);
+
 
     const handleAddToCart = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        onAddToCart?.(product.id);
-    }, [onAddToCart, product.id]);
+        onAddToCart?.();
+    }, [onAddToCart]);
 
     const handleMouseEnter = useCallback(() => {
         setIsHovering(true);
@@ -167,15 +161,7 @@ const ProductCardComponent = ({
                         >
                             <Heart size={18} />
                         </Button>
-                        <Button
-                            onClick={handleQuickView}
-                            size="icon"
-                            variant="secondary"
-                            className="rounded-full h-10 w-10 bg-white hover:bg-white hover:text-gray-900 shadow-md transition-colors"
-                            aria-label="Quick view"
-                        >
-                            <Eye size={18} />
-                        </Button>
+                       =
                     </div>
 
                     {/* Add to Cart CTA */}

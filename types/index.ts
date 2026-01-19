@@ -43,20 +43,8 @@ export interface User {
     updatedAt: string;
 }
 
-export interface UserProfile {
-    id: string;
-    email: string;
-    username: string;
-    phone?: string;
-    emailVerified: boolean;
-    addresses: Address[];
-    createdAt: string;
-}
 
-export interface UpdateProfileRequest {
-    username?: string;
-    phone?: string;
-}
+
 
 export interface Address {
     id: UUID;
@@ -70,17 +58,8 @@ export interface Address {
     createdAt: string;
 }
 
-export interface AddAddressRequest {
-    addressType: string;
-    streetAddress: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-    isDefault: boolean;
-}
 
-export type UpdateAddressRequest = AddAddressRequest;
+
 
 export interface LoginRequest {
     email: string;
@@ -577,20 +556,20 @@ export interface UpdateCartItemRequest {
 // ===================================
 
 export interface OrderItem {
-  id: UUID;
-
-  productVariant: ProductVariant; // or ProductVariantSummary
-  quantity: number;
-
-  unitPrice: number;   // BigDecimal -> number
-  totalPrice: number;
-
-  hasCustomization: boolean;
-  customizationSnapshot?: Record<string, any>; // JSONB
-
-  productionStatus: "PENDING" | "IN_PROGRESS" | "COMPLETED";
-
-  createdAt: ISODateString;
+    id: UUID;
+    productId: UUID;
+    productName: string;
+    productSlug: string;
+    variantId: UUID;
+    size: string;
+    color: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+    hasCustomization: boolean;
+    customizationSnapshot?: string | null;  // JSON string
+    productionStatus: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+    imageUrl?: string | null;
 }
 
 
@@ -642,8 +621,9 @@ export interface Order {
   carrier?: string;
   estimatedDeliveryDate?: ISODateString;
   deliveredAt?: ISODateString;
-  cancelledAt?: ISODateString;
 
+
+  cancelledAt?: ISODateString;
   cancellationReason?: string;
   returnRequestedAt?: ISODateString;
   returnReason?: string;
@@ -653,7 +633,7 @@ export interface Order {
   createdAt: ISODateString;
   updatedAt: ISODateString;
 
-  orderItems: OrderItem[];
+  items: OrderItem[];
 }
 
 

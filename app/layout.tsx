@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Playfair_Display , Inter  } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack";
+import Script from "next/script";
 
 
 
@@ -20,7 +21,7 @@ const inter = Inter({
 });
 
 
-export const metadata : Metadata = {
+export const metadata: Metadata = {
   title: {
     default: "THE NALA ARMOIRE — Bold Streetwear Fashion",
     template: "%s",
@@ -36,12 +37,18 @@ export default function Layout({
 }>) {
   return (
     <html lang="en">
-      <body 
+      <body
         className={`${inter.variable} ${playfair.variable} antialiased`}
       >
         <TanstackProvider>
           {children}
         </TanstackProvider>
+
+        <Script
+          id="razorpay-checkout-js"
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="beforeInteractive"
+        />
       </body>
     </html>
   );

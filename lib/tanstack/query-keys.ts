@@ -180,9 +180,15 @@ export const queryKeys = {
       params ? ['user', 'orders', params] as const : ['user', 'orders'] as const,
     
     /**
-     * User addresses
+     * User addresses (all addresses)
      */
     addresses: () => ['user', 'addresses'] as const,
+    
+    /**
+     * Single user address by ID
+     * @param id - Address ID
+     */
+    address: (id: string) => ['user', 'addresses', id] as const,
     
     /**
      * User payment methods
@@ -190,49 +196,8 @@ export const queryKeys = {
     paymentMethods: () => ['user', 'payment-methods'] as const,
   },
 
-  /**
-   * Checkout-related query keys
-   */
-  checkout: {
-    /**
-     * Base key for all checkout queries
-     */
-    all: () => ['checkout'] as const,
-    
-    /**
-     * Checkout session
-     */
-    session: () => ['checkout', 'session'] as const,
-    
-    /**
-     * Shipping options
-     */
-    shippingOptions: () => ['checkout', 'shipping-options'] as const,
-  },
 
-  /**
-   * Search-related query keys
-   */
-  search: {
-    /**
-     * Base key for all search queries
-     */
-    all: () => ['search'] as const,
-    
-    /**
-     * Search suggestions
-     * @param query - Search query
-     */
-    suggestions: (query: string) => ['search', 'suggestions', query] as const,
-    
-    /**
-     * Search results
-     * @param query - Search query
-     * @param filters - Additional filters
-     */
-    results: (query: string, filters?: Record<string, unknown>) => 
-      filters ? ['search', 'results', query, filters] as const : ['search', 'results', query] as const,
-  },
+
 
   /**
    * Brand-related query keys
@@ -293,10 +258,15 @@ export const queryKeys = {
     
     /**
      * Latest customization for a product
-     * @param productId - Product ID
+  T   * @param productId - Product ID
      */
     latest: (productId: string) => ['customization', 'latest', productId] as const,
   },
+
+
+  orders : {
+    my : (page : number, size : number) => ['orders','my', { page, size }] as const
+  }
 } as const;
 
 /**

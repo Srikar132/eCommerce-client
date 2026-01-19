@@ -5,6 +5,8 @@ interface JWTPayload {
   roles?: string[];
   authorities?: string[];
   emailVerified?: boolean;
+  username?: string;
+  phone?: string;
   exp?: number;
   iat?: number;
 }

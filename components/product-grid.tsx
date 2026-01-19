@@ -6,6 +6,10 @@ import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { ProductResponse } from '@/types';
 import Link from 'next/link';
 import { ProductGridSkeleton } from '@/components/ui/skeletons';
+import { useCartManager, createItemIdentifier } from '@/hooks/use-cart';
+import { useAuthStore } from '@/lib/store/auth-store';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface SearchResultsProps {
     results: {
@@ -35,6 +39,78 @@ export default function ProductGrid({
         fetchNextPage: onLoadMore || (() => { }),
         rootMargin: "400px"
     });
+
+    const cart = useCartManager();
+    const { isAuthenticated } = useAuthStore();
+    const router = useRouter();
+
+    /**
+     * Handle adding product to cart
+     * Checks if item is already in cart before adding
+     */
+    const handleAddToCart = (product: ProductResponse) => {
+        // Check if product has variants
+        if (!product.variants || product.variants.length === 0) {
+            toast.error("This product is currently unavailable");
+            return;
+        }
+
+        const firstVariant = product.variants[0];
+
+        // Check if already in cart
+        const itemIdentifier = {
+            productId: product.id,
+            variantId: firstVariant.id,
+            customizationId: null,
+        };
+
+        if (cart.isInCart(itemIdentifier)) {
+            toast.info("Already in cart", {
+                description: "This item is already in your cart",
+                action: {
+                    label: "View Cart",
+                    onClick: () => router.push("/cart"),
+                },
+            });
+            return;
+        }
+
+        // Add to cart
+        cart.addItem({
+            productId: product.id,
+            productVariantId: firstVariant.id,
+            productSlug: product.slug,
+            customizationId: null,
+            quantity: 1,
+            customizationSummary: null
+        });
+    };
+
+    /**
+     * Handle adding product to wishlist
+     * Requires authentication
+     */
+    const handleAddToWishlist = (productId: string) => {
+        if (!isAuthenticated) {
+            toast.error("Login Required", {
+                description: "Please log in to add items to your wishlist",
+                action: {
+                    label: "Log In",
+                    onClick: () => router.push(`/login?redirect=/products`),
+                },
+            });
+            return;
+        }
+
+        // TODO: Implement wishlist mutation when backend is ready
+        toast.success("Added to wishlist!", {
+            description: "Item saved to your wishlist",
+            action: {
+                label: "View Wishlist",
+                onClick: () => router.push("/account/wishlist"),
+            },
+        });
+    };
 
     if (isLoading && !results.items.length) {
         return <ProductGridSkeleton count={8} />;
@@ -69,6 +145,8 @@ export default function ProductGrid({
                     <ProductCardComponent
                         key={product.id}
                         product={product}
+                        onAddToCart={() => handleAddToCart(product)}
+                        onAddToWishlist={() => handleAddToWishlist(product.id)}
                     />
                 ))}
             </div>

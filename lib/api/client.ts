@@ -3,6 +3,15 @@ import { toast } from "sonner";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
+/**
+ * ⚠️ CLIENT-SIDE API CLIENT ONLY
+ * 
+ * This client is for browser/client-side requests only.
+ * For Server Components, use `server-client.ts` instead to properly forward cookies.
+ * 
+ * Why? Server-side requests don't have automatic cookie access.
+ * Using this client in Server Components will cause 401 errors.
+ */
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -31,13 +40,13 @@ const processQueue = (error: Error | null) => {
 
 // Endpoints that should NOT trigger token refresh
 const NO_REFRESH_ENDPOINTS = [
-  '/auth/login',
-  '/auth/register',
-  '/auth/refresh',
-  '/auth/forgot-password',
-  '/auth/reset-password',
-  '/auth/verify-email',
-  '/auth/resend-verification',
+  '/api/v1/auth/login',
+  '/api/v1/auth/register',
+  '/api/v1/auth/refresh',
+  '/api/v1/auth/forgot-password',
+  '/api/v1/auth/reset-password',
+  '/api/v1/auth/verify-email',
+  '/api/v1/auth/resend-verification',
 ];
 
 const shouldSkipRefresh = (url?: string): boolean => {

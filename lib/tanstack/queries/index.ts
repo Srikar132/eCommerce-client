@@ -1,23 +1,9 @@
-/**
- * Queries Index
- * 
- * Central export point for all TanStack Query hooks.
- * Import queries from this file in your components.
- * 
- * @example
- * ```tsx
- * import { useInfiniteProducts, useRootCategories } from '@/lib/tanstack/queries';
- * ```
- */
-
 // Product queries
 export {
   useInfiniteProducts,
   useProducts,
   useProduct,
-  useProductVariants,
   useProductReviews,
-  useCompatibleDesigns,
   useAddProductReview,
   useFlatProducts,
   useProductCount,
@@ -32,3 +18,9 @@ export {
   useCategory,
   usePrefetchCategoryChildren,
 } from './category.queries';
+
+// Order queries
+export {
+  useInfiniteOrders,
+  useMyRecentOrders
+} from './orders.queries';

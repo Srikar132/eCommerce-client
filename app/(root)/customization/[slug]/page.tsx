@@ -1,9 +1,9 @@
 import CustomizationClient from "@/components/customization/customization-client";
 
-export default async function CustomizationPage({ 
+export default async function CustomizationPage({
     params,
-    searchParams 
-}: { 
+    searchParams
+}: {
     params: { slug: string };
     searchParams: { variantId?: string };
 }) {

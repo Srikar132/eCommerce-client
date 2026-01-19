@@ -12,7 +12,7 @@ import { PrefetchProvider } from "@/providers/prefetch-provider";
 import { getServerAuth } from "@/lib/auth/server";
 import { isTokenExpired } from "@/lib/auth/utils";
 
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/footer";
 import { CartSyncProvider } from "@/providers/cart-provider";
 
@@ -59,7 +59,13 @@ export default async function RootLayout({
               <main className="w-full relative">{children}</main>
 
               <Footer />
-              <Toaster position="top-right" className="z-50" />
+              <Toaster 
+                position="top-right" 
+                expand={false}
+                richColors={false}
+                closeButton
+                duration={4000}
+              />
             </div>
           </SidebarProvider>
         </CartSyncProvider>

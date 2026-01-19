@@ -25,7 +25,7 @@ import { useProduct } from "@/lib/tanstack/queries/product.queries";
 
 const SHIPPING_THRESHOLD = 999;
 const SHIPPING_COST = 99;
-const GST_RATE = 0.18;
+const GST_RATE = 0.1;
 
 // ============================================================================
 // CART ITEM COMPONENT
@@ -81,6 +81,8 @@ function CartItemRow({
       const variant = productData?.variants?.find(
         (v) => v.id === cartItem.variant?.id
       );
+
+      console.log(variant);
 
       // Determine which image to show
       let imageUrl = "/image/error.png";

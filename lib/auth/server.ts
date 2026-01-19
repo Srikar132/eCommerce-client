@@ -7,6 +7,8 @@ interface ServerAuth {
     email?: string;
     role?: string;
     emailVerified?: boolean;
+    username? : string;
+    phone? : string;
   } | null;
   isAuthenticated: boolean;
   token?: string;
@@ -37,6 +39,8 @@ export async function getServerAuth(): Promise<ServerAuth> {
       email: payload.email,
       role: payload.role,
       emailVerified: payload.emailVerified,
+      username: payload.username,
+      phone: payload.phone,
     },
     isAuthenticated: true,
     token: accessToken,
