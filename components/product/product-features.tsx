@@ -2,8 +2,12 @@
 "use client";
 
 import React from "react";
-import { ProductFeature } from "@/lib/types";
 import { Check } from "lucide-react";
+
+interface ProductFeature {
+    id: string;
+    text: string;
+}
 
 interface ProductFeaturesProps {
     features: ProductFeature[];

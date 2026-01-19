@@ -1,8 +1,15 @@
 
 import React from 'react';
 import Image from 'next/image';
-import {BestsellerCardProps} from "@/lib/types";
 
+
+export interface BestsellerCardProps {
+  imageUrl: string;
+  brand: string;
+  name: string;
+  price: number;
+  colors?: string[];
+}
 
 const BestsellerCard: React.FC<BestsellerCardProps> = ({
   imageUrl,

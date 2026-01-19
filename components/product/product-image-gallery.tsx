@@ -2,11 +2,16 @@
 
 import  { useState } from "react";
 import Image from "next/image";
-import { ProductImage } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import ImageZoomModal from "./image-zoom-modal";
 import { Button } from "../ui/button";
 
+
+interface ProductImage {
+    id: string;
+    url: string;
+    alt: string;
+}
 
 interface ProductImageGalleryProps {
     images: ProductImage[];
