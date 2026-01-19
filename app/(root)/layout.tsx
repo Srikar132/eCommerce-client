@@ -13,7 +13,7 @@ import { getServerAuth } from "@/lib/auth/server";
 import { isTokenExpired } from "@/lib/auth/utils";
 
 import { Toaster } from "@/components/ui/sonner";
-import Footer from "@/components/footer";
+import Footer from "@/components/Footer";
 import { CartSyncProvider } from "@/providers/cart-provider";
 
 
