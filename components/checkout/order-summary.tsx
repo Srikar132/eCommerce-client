@@ -35,10 +35,6 @@ function CartItemDisplay({ item, isAuthenticated }: CartItemDisplayProps) {
     const cartItem = item as CartItem;
     const variant = cartItem.variant;
 
-    // Get image URL - use customization preview or variant primary image
-    const imageUrl = cartItem.customization?.previewImageUrl 
-      || variant.primaryImageUrl 
-      || "/image/error.png";
 
     // Calculate prices
     const designPrice = designData?.designPrice || 0;
@@ -51,7 +47,7 @@ function CartItemDisplay({ item, isAuthenticated }: CartItemDisplayProps) {
       <div className="flex gap-3">
         <div className="relative w-16 h-16 bg-muted/30 rounded-lg overflow-hidden shrink-0 border border-border/30">
           <Image
-            src={imageUrl}
+            src={variant.primaryImageUrl || '/image/error.png'}
             alt={cartItem.product.name}
             fill
             className="object-cover"
@@ -98,10 +94,7 @@ function CartItemDisplay({ item, isAuthenticated }: CartItemDisplayProps) {
     );
   }
 
-  // Get image URL - use stored data
-  const imageUrl = localItem.customizationData?.previewImageBase64
-    ? `data:image/png;base64,${localItem.customizationData.previewImageBase64}`
-    : localItem.variantImageUrl || "/image/error.png";
+
 
   // Calculate prices from stored data
   const designPrice = localItem.customizationData?.designPrice || 0;
@@ -112,7 +105,7 @@ function CartItemDisplay({ item, isAuthenticated }: CartItemDisplayProps) {
     <div className="flex gap-3">
       <div className="relative w-16 h-16 bg-muted/30 rounded-lg overflow-hidden shrink-0 border border-border/30">
         <Image
-          src={imageUrl}
+          src={localItem.variantImageUrl || "/image/error.png"}
           alt={localItem.productName}
           fill
           className="object-cover"

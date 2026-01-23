@@ -9,7 +9,7 @@ import { User } from "@/types";
 
 interface AuthProviderProps {
   children: React.ReactNode;
-  initialUser?: User;
+  initialUser: User | null;
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {

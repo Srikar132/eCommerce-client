@@ -37,9 +37,7 @@ export function CartSyncProvider({ children }: { children: React.ReactNode }) {
       const itemsToSync = localCart.items.map((item) => ({
         productId: item.productId,
         productVariantId: item.variantId,
-        customizationId: item.customizationId || null,
         quantity: item.quantity,
-        customizationSummary: item.customizationSummary,
         customizationData: item.customizationData,
       }));
 

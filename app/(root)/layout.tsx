@@ -15,6 +15,7 @@ import { isTokenExpired } from "@/lib/auth/utils";
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Footer";
 import { CartSyncProvider } from "@/providers/cart-provider";
+import { User } from "@/types";
 
 
 export const metadata = {
@@ -45,7 +46,7 @@ export default async function RootLayout({
 
   return (
     <PrefetchProvider>
-      <AuthProvider initialUser={auth.user}>
+      <AuthProvider initialUser={auth.user as User | null}>
         <CartSyncProvider>
           <SidebarProvider defaultOpen={false}>
             <div className="font-sans w-full no-scrollbar">

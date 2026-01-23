@@ -11,7 +11,6 @@ import { queryKeys } from "../query-keys";
 import { toast } from "sonner";
 import type {
   Cart,
-  CartSummary,
   AddToCartRequest,
   UUID,
 } from "@/types";
@@ -44,28 +43,6 @@ export const useCart = (enabled: boolean = true) => {
   });
 };
 
-/**
- * Get cart summary (lightweight version for header/badges)
- * 
- * Used in:
- * - Header navigation - Show cart count and total
- * - Mini cart dropdown - Quick preview
- * - Mobile menu - Cart badge
- * 
- * @example
- * ```tsx
- * const { data: summary } = useCartSummary();
- * // summary.totalItems, summary.total, etc.
- * ```
- */
-export const useCartSummary = () => {
-  return useQuery<CartSummary>({
-    queryKey: queryKeys.cart.summary(),
-    queryFn: () => cartApi.getCartSummary(),
-    staleTime: 1000 * 30, // 30 seconds
-    gcTime: 1000 * 60 * 5,
-  });
-};
 
 // ============================================================================
 // MUTATION HOOKS
@@ -253,45 +230,6 @@ export const useClearCart = () => {
   });
 };
 
-/**
- * Merge guest cart into user cart after login
- * 
- * This should be called automatically after login/registration
- * 
- * @example
- * ```tsx
- * const mergeCart = useMergeGuestCart();
- * 
- * // Call after login
- * await mergeCart.mutateAsync();
- * ```
- */
-export const useMergeGuestCart = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation<Cart, Error, void>({
-    mutationFn: () => cartApi.mergeGuestCart(),
-    onSuccess: (cart) => {
-      // Silently update cache (no toast needed, happens in background)
-      queryClient.setQueryData(queryKeys.cart.current(), cart);
-      
-      queryClient.setQueryData(queryKeys.cart.summary(), {
-        totalItems: cart.totalItems,
-        subtotal: cart.subtotal,
-        discountAmount: cart.discountAmount,
-        taxAmount: cart.taxAmount,
-        total: cart.total,
-      });
-
-      // Invalidate to ensure fresh data
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart.all() });
-    },
-    onError: (error: any) => {
-      // Log error but don't show to user (background operation)
-      console.error("Failed to merge guest cart:", error);
-    },
-  });
-};
 
 /**
  * Sync local cart to backend (for guests logging in)

@@ -22,7 +22,6 @@ export {
 // Cart queries
 export {
   useCart,
-  useCartSummary,
   useAddToCart,
   useUpdateCartItem,
   useRemoveCartItem,
