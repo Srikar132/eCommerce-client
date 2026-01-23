@@ -1,6 +1,8 @@
+
 import { Suspense } from 'react';
 import CheckoutClient from '@/components/checkout/checkout-client';
 import { CheckoutPageSkeleton } from '@/components/ui/skeletons';
+
 
 export const metadata = {
   title: 'Checkout - THE NALA ARMOIRE',
@@ -8,11 +10,22 @@ export const metadata = {
 };
 
 export default function CheckoutPage() {
+
+
+
+
   return (
-    <main className="min-h-screen bg-gray-50">
-      <Suspense fallback={<CheckoutPageSkeleton />}>
-        <CheckoutClient />
-      </Suspense>
+    <main className="min-h-screen bg-background">
+      <div className="relative">
+        {/* Subtle gradient overlay for depth */}
+        <div className="absolute inset-0 bg-linear-to-b from-muted/20 via-transparent to-transparent pointer-events-none" />
+        
+        <div className="relative">
+          <Suspense fallback={<CheckoutPageSkeleton />}>
+            <CheckoutClient />
+          </Suspense>
+        </div>
+      </div>
     </main>
   );
 }

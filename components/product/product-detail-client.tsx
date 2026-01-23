@@ -1,6 +1,6 @@
 "use client";
 
-import { useProduct } from "@/lib/tanstack/queries/product.queries";
+import { useProduct, useProductVariants } from "@/lib/tanstack/queries/product.queries";
 import ProductImageGallery from "@/components/product/product-image-gallery";
 import ProductInfo from "@/components/product/product-info";
 import ProductActions from "@/components/product/product-actions";
@@ -24,7 +24,12 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ slug }: ProductDetailClientProps) {
     const { data: product, isLoading: isLoadingProduct } = useProduct(slug);
-    
+    const { data: variants, isLoading: isLoadingVariants } = useProductVariants(slug, {
+        enabled: !!slug
+    });
+
+    const isLoading = isLoadingProduct || isLoadingVariants;
+
     // Use the variant selection hook for all variant logic
     const {
         selectedColor,
@@ -38,10 +43,8 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
         setSize
     } = useVariantSelection({
         product,
-        variants: product?.variants || []
-    });
-
-    const cart = useCartManager();
+        variants: variants || []
+    }); const cart = useCartManager();
 
     // Prepare features from product data
     const features = product ? [
@@ -73,39 +76,33 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
             return;
         }
 
-        // Log cart addition (replace with actual cart logic)
-        console.log("Added to cart:", {
-            productId: product.id,
-            productName: product.name,
-            variantId: selectedVariant.id,
-            color: selectedVariant.color,
-            size: selectedVariant.size,
-            basePrice: product.basePrice,
-            additionalPrice: selectedVariant.additionalPrice,
-            finalPrice: finalPrice,
-            sku: selectedVariant.sku,
-            stockQuantity: selectedVariant.stockQuantity
-        });
-
+        // Get the primary image from the selected variant
+        const primaryImage = selectedVariant.images?.find(img => img.isPrimary);
+        const variantImageUrl = primaryImage?.imageUrl || product.imageUrl || "/placeholder.png";
 
         cart.addItem({
             productId: product.id,
-            productSlug : product.slug,
+            productSlug: product.slug,
+            productName: product.name,
             productVariantId: selectedVariant.id,
+            variantSize: selectedVariant.size,
+            variantColor: selectedVariant.color,
+            variantImageUrl: variantImageUrl,
+            basePrice: product.basePrice,
+            variantPrice: selectedVariant.additionalPrice,
             quantity: 1,
         });
-
     };
 
     // Loading state
-    if (isLoadingProduct) {
+    if (isLoading) {
         return <ProductDetailSkeleton />;
     }
 
     // Not found state
-    if (!product || !colorGroups.length) {
+    if (!product || !variants || !colorGroups.length) {
         return (
-            <ProductNotFound 
+            <ProductNotFound
                 productSlug={slug}
                 message="The product you're looking for doesn't exist or is currently unavailable."
             />
@@ -116,7 +113,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
         <div className="min-h-screen bg-background overflow-x-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-                    
+
                     {/* Image Gallery Section */}
                     <div className="order-1 w-full">
                         <div className="rounded-xl border border-border/30 overflow-hidden bg-card">
@@ -127,7 +124,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                     {/* Product Details Section */}
                     <ScrollArea className="order-2 w-full h-full">
                         <div className="space-y-4 pr-4">
-                            
+
                             {/* Product Info & Price */}
                             <div className="pb-4">
                                 <ProductInfo
@@ -136,7 +133,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                                     price={finalPrice}
                                     currency="INR"
                                 />
-                                
+
                                 <div className="mt-4">
                                     <PriceDisplay
                                         basePrice={product.basePrice}
@@ -147,11 +144,11 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                                         showBreakdown={true}
                                     />
                                 </div>
-                                
+
                                 {/* Stock Status */}
                                 {selectedVariant && (
                                     <div className="mt-3">
-                                        <StockStatus 
+                                        <StockStatus
                                             stockQuantity={selectedVariant.stockQuantity}
                                             showIcon={true}
                                         />
@@ -172,9 +169,9 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                             />
 
                             {/* Variant Availability Info */}
-                            {product.variants && (
+                            {variants && (
                                 <VariantAvailabilityInfo
-                                    variants={product.variants}
+                                    variants={variants}
                                     selectedColor={selectedColor}
                                     selectedSize={selectedSize}
                                 />

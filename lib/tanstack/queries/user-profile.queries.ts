@@ -34,7 +34,7 @@ export const useUpdateUserProfile = () => {
 
     return useMutation<User, Error, UpdateProfileRequest>({
         mutationFn: userProfileApi.updateUserProfile,
-        onSuccess: (data) => {
+        onSuccess: () => {
             toast.success("Profile updated successfully");
             
             // Invalidate user-related queries if needed

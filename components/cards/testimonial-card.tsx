@@ -37,7 +37,7 @@ export default function TestimonialCard({
 
         {/* Testimonial Text */}
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic">
-          "{text}"
+          &ldquo;{text}&rdquo;
         </p>
 
         {/* Author Info */}

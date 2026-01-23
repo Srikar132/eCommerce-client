@@ -266,7 +266,29 @@ export const queryKeys = {
 
   orders : {
     my : (page : number, size : number) => ['orders','my', { page, size }] as const
-  }
+  },
+
+  /**
+   * Wishlist-related query keys
+   */
+  wishlist: {
+    /**
+     * Base key for all wishlist queries
+     */
+    all: () => ['wishlist'] as const,
+    
+    /**
+     * Check if product is in wishlist
+     * @param productId - Product ID
+     */
+    check: (productId: string | undefined) => 
+      productId ? ['wishlist', 'check', productId] as const : ['wishlist', 'check'] as const,
+    
+    /**
+     * Wishlist item count
+     */
+    count: () => ['wishlist', 'count'] as const,
+  },
 } as const;
 
 /**

@@ -38,6 +38,7 @@ export async function proxy(request: NextRequest) {
   });
 
   let isAuthenticated = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let userInfo: any = null;
 
   // Validate access token

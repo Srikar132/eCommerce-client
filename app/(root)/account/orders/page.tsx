@@ -6,6 +6,7 @@ import RecentOrderCard from "@/components/cards/recent-order-card";
 import { Card } from "@/components/ui/card";
 import { Package, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function OrdersPage() {
     const {
@@ -17,6 +18,8 @@ export default function OrdersPage() {
         hasNextPage,
         isFetchingNextPage,
     } = useInfiniteOrders({ page: 0, size: 10 });
+
+    console.log(data);
 
     const sentinelRef = useInfiniteScroll({
         hasNextPage: hasNextPage ?? false,
@@ -99,7 +102,7 @@ export default function OrdersPage() {
                                 You haven&apos;t placed any orders yet. Start shopping to see your orders here.
                             </p>
                             <Button asChild>
-                                <a href="/products">Browse Products</a>
+                                <Link href="/products">Browse Products</Link>
                             </Button>
                         </div>
                     </Card>

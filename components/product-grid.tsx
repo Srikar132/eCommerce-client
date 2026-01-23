@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { ProductGridSkeleton } from '@/components/ui/skeletons';
 import { useCartManager, createItemIdentifier } from '@/hooks/use-cart';
 import { useAuthStore } from '@/lib/store/auth-store';
+import { useCheckWishlist, useToggleWishlist } from '@/lib/tanstack/queries/wishlist.queries';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -40,57 +41,15 @@ export default function ProductGrid({
         rootMargin: "400px"
     });
 
-    const cart = useCartManager();
     const { isAuthenticated } = useAuthStore();
     const router = useRouter();
+    const toggleWishlist = useToggleWishlist();
 
     /**
-     * Handle adding product to cart
-     * Checks if item is already in cart before adding
+     * Handle toggling product in/out of wishlist
+     * Requires authentication and checks current wishlist status
      */
-    const handleAddToCart = (product: ProductResponse) => {
-        // Check if product has variants
-        if (!product.variants || product.variants.length === 0) {
-            toast.error("This product is currently unavailable");
-            return;
-        }
-
-        const firstVariant = product.variants[0];
-
-        // Check if already in cart
-        const itemIdentifier = {
-            productId: product.id,
-            variantId: firstVariant.id,
-            customizationId: null,
-        };
-
-        if (cart.isInCart(itemIdentifier)) {
-            toast.info("Already in cart", {
-                description: "This item is already in your cart",
-                action: {
-                    label: "View Cart",
-                    onClick: () => router.push("/cart"),
-                },
-            });
-            return;
-        }
-
-        // Add to cart
-        cart.addItem({
-            productId: product.id,
-            productVariantId: firstVariant.id,
-            productSlug: product.slug,
-            customizationId: null,
-            quantity: 1,
-            customizationSummary: null
-        });
-    };
-
-    /**
-     * Handle adding product to wishlist
-     * Requires authentication
-     */
-    const handleAddToWishlist = (productId: string) => {
+    const handleToggleWishlist = (productId: string, isCurrentlyWishlisted: boolean) => {
         if (!isAuthenticated) {
             toast.error("Login Required", {
                 description: "Please log in to add items to your wishlist",
@@ -102,13 +61,10 @@ export default function ProductGrid({
             return;
         }
 
-        // TODO: Implement wishlist mutation when backend is ready
-        toast.success("Added to wishlist!", {
-            description: "Item saved to your wishlist",
-            action: {
-                label: "View Wishlist",
-                onClick: () => router.push("/account/wishlist"),
-            },
+        // Toggle wishlist using mutation
+        toggleWishlist.mutate({
+            productId,
+            isCurrentlyInWishlist: isCurrentlyWishlisted,
         });
     };
 
@@ -142,11 +98,11 @@ export default function ProductGrid({
             {/* Products Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
                 {results.items.map((product) => (
-                    <ProductCardComponent
+                    <ProductCardWithWishlist 
                         key={product.id}
                         product={product}
-                        onAddToCart={() => handleAddToCart(product)}
-                        onAddToWishlist={() => handleAddToWishlist(product.id)}
+                        onToggleWishlist={handleToggleWishlist}
+                        isAuthenticated={isAuthenticated}
                     />
                 ))}
             </div>
@@ -176,5 +132,30 @@ export default function ProductGrid({
             {/* Intersection Observer Sentinel for Auto-Load */}
             <div ref={sentinelRef} className="h-px" />
         </div>
+    );
+}
+
+/**
+ * Wrapper component that checks wishlist status for each product
+ */
+function ProductCardWithWishlist({ 
+    product, 
+    onToggleWishlist,
+    isAuthenticated 
+}: { 
+    product: ProductResponse;
+    onToggleWishlist: (productId: string, isWishlisted: boolean) => void;
+    isAuthenticated: boolean;
+}) {
+    // Check if this product is in the wishlist
+    const { data: wishlistCheck } = useCheckWishlist(product.id, isAuthenticated);
+    const isWishlisted = wishlistCheck?.inWishlist ?? false;
+
+    return (
+        <ProductCardComponent
+            product={product}
+            onAddToWishlist={() => onToggleWishlist(product.id, isWishlisted)}
+            isWishlisted={isWishlisted}
+        />
     );
 }

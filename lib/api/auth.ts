@@ -1,6 +1,9 @@
-import { LoginRequest, AuthResponse, RegisterRequest } from "@/types";
+import { User , LoginRequest , AuthResponse , RegisterRequest } from "@/types";
 import { apiClient } from "./client";
 import { AxiosResponse } from "axios";
+
+
+
 
 export const authApi = {
   login: async (data: LoginRequest): Promise<AuthResponse> => {

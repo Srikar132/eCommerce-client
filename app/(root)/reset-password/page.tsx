@@ -61,9 +61,9 @@ export default function ResetPasswordPage() {
       toast.success("Password reset successful!", {
         description: "You can now login with your new password",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message =
-        error?.response?.data?.message || "Failed to reset password";
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to reset password";
       toast.error(message);
       
       // If token is invalid or expired, redirect to forgot password

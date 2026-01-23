@@ -14,10 +14,30 @@ import type { AddToCartRequest, UUID } from "@/types";
 import { toast } from "sonner";
 
 /**
- * UPDATED: Now requires productSlug for guest users
+ * Extended request for adding items to cart
+ * Includes additional data needed for guest cart storage
  */
 export interface AddToCartRequestExtended extends AddToCartRequest {
-  productSlug: string;  // Required for local cart to fetch product data later
+  // Product info
+  productSlug: string;
+  productName: string;
+  
+  // Variant info  
+  variantSize: string;
+  variantColor: string;
+  variantImageUrl: string;
+  
+  // Pricing
+  basePrice: number;
+  variantPrice: number;
+  
+  // Customization (optional)
+  customizationData?: {
+    designId: UUID;
+    designPrice: number;
+    threadColorHex: string;
+    additionalNotes?: string;
+  };
 }
 
 /**
@@ -69,11 +89,16 @@ export function useCartManager() {
       } else {
         localCartManager.addItem({
           productId: request.productId,
-          productSlug: request.productSlug,  // ADDED: Store slug
+          productSlug: request.productSlug,
+          productName: request.productName,
           variantId: request.productVariantId!,
+          variantSize: request.variantSize,
+          variantColor: request.variantColor,
+          variantImageUrl: request.variantImageUrl,
+          basePrice: request.basePrice,
+          variantPrice: request.variantPrice,
           quantity: request.quantity,
-          customizationId: request.customizationId || undefined,
-          customizationSummary: request.customizationSummary || null,
+          customizationData: request.customizationData,
         });
         
         toast.success("Added to cart!", {
@@ -108,7 +133,6 @@ export function useCartManager() {
         localCartManager.updateItem(
           itemIdentifier.productId,
           itemIdentifier.variantId,
-          itemIdentifier.customizationId,
           quantity,
           itemIdentifier.designId,
           itemIdentifier.threadColorHex
@@ -127,6 +151,7 @@ export function useCartManager() {
       const currentQty = getItemQuantity(itemIdentifier);
       await updateQuantity(itemIdentifier, currentQty + 1);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateQuantity]
   );
 
@@ -143,6 +168,7 @@ export function useCartManager() {
         await updateQuantity(itemIdentifier, currentQty - 1);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateQuantity]
   );
 
@@ -158,7 +184,6 @@ export function useCartManager() {
         localCartManager.removeItem(
           itemIdentifier.productId,
           itemIdentifier.variantId,
-          itemIdentifier.customizationId,
           itemIdentifier.designId,
           itemIdentifier.threadColorHex
         );
@@ -207,9 +232,9 @@ export function useCartManager() {
             
             const designMatch = customization.designId === itemIdentifier.designId;
             const threadColorMatch = customization.threadColorHex === itemIdentifier.threadColorHex;
-            const messageMatch = (customization.userMessage || '') === (itemIdentifier.userMessage || '');
+
             
-            return productMatch && variantMatch && designMatch && threadColorMatch && messageMatch;
+            return productMatch && variantMatch && designMatch && threadColorMatch;
           }
           
           // For non-customized items, just check product and variant
@@ -221,7 +246,6 @@ export function useCartManager() {
         return localCartManager.hasItem(
           itemIdentifier.productId,
           itemIdentifier.variantId,
-          itemIdentifier.customizationId,
           itemIdentifier.designId,
           itemIdentifier.threadColorHex
         );
@@ -239,9 +263,20 @@ export function useCartManager() {
         const item = backendCart.data?.items.find(item => {
           const productMatch = item.product.id === itemIdentifier.productId;
           const variantMatch = item.variant?.id === itemIdentifier.variantId;
-          const customizationMatch = itemIdentifier.customizationId
-            ? item.customization?.id === itemIdentifier.customizationId
-            : !item.customization;
+          
+          // For customized items, match by properties (design, threadColor)
+          if (itemIdentifier.designId && itemIdentifier.threadColorHex) {
+            const customization = item.customization;
+            if (!customization) return false;
+            
+            const designMatch = customization.designId === itemIdentifier.designId;
+            const threadColorMatch = customization.threadColorHex === itemIdentifier.threadColorHex;
+            
+            return productMatch && variantMatch && designMatch && threadColorMatch;
+          }
+          
+          // For non-customized items, just check product and variant
+          const customizationMatch = !item.customization;
           
           return productMatch && variantMatch && customizationMatch;
         });
@@ -251,7 +286,6 @@ export function useCartManager() {
         return localCartManager.getItemQuantity(
           itemIdentifier.productId,
           itemIdentifier.variantId,
-          itemIdentifier.customizationId,
           itemIdentifier.designId,
           itemIdentifier.threadColorHex
         );
@@ -298,20 +332,22 @@ export interface CartItemIdentifier {
   itemId?: UUID;
   productId: UUID;
   variantId: UUID;
-  customizationId?: UUID | null;
   designId?: UUID;
   threadColorHex?: string;
-  userMessage?: string;
+  additionalNotes?: string;
 }
 
-export function createItemIdentifier(item: any): CartItemIdentifier {
+export function createItemIdentifier(item: Record<string, unknown>): CartItemIdentifier {
+  const product = item.product as { id: UUID };
+  const variant = item.variant as { id: UUID };
+  const customization = item.customization as { designId?: UUID; threadColorHex?: string; additionalNotes?: string } | undefined;
+  
   return {
-    itemId: item.id,
-    productId: item.product.id,
-    variantId: item.variant.id,
-    customizationId: item.customization?.id,
-    designId: item.customization?.designId,
-    threadColorHex: item.customization?.threadColorHex,
-    userMessage: item.customization?.userMessage,
+    itemId: item.id as UUID,
+    productId: product.id,
+    variantId: variant.id,
+    designId: customization?.designId,
+    threadColorHex: customization?.threadColorHex,
+    additionalNotes: customization?.additionalNotes,
   };
 }

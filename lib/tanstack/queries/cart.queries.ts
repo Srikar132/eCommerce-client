@@ -115,6 +115,7 @@ export const useAddToCart = () => {
       // Invalidate to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.all() });
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       toast.error("Failed to add to cart", {
         description: error?.response?.data?.message || "Please try again.",
@@ -159,6 +160,7 @@ export const useUpdateCartItem = () => {
       });
 
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       toast.error("Failed to update cart", {
         description: error?.response?.data?.message || "Please try again.",

@@ -30,8 +30,9 @@ export const useAuth = () => {
 
       return response;
     } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       const message =
-        (error as any)?.response?.data?.message || "Registration failed";
+        err?.response?.data?.message || "Registration failed";
       toast.error(message);
       throw error; // Re-throw to let form handle it
     } finally {
@@ -56,8 +57,9 @@ export const useAuth = () => {
       router.replace("/");
       
       return response;
-    } catch (error: any) {
-      const message = error.response?.data?.message || "Login failed";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err.response?.data?.message || "Login failed";
       toast.error(message);
       throw error; // Re-throw to let form handle it
     } finally {
@@ -75,7 +77,7 @@ export const useAuth = () => {
       await authApi.logout();
       
       console.log('[Auth] ✅ Backend logout successful');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[Auth] ❌ Backend logout failed:', error);
       // Continue with client-side cleanup even if backend fails
     }
@@ -122,7 +124,7 @@ export const useAuth = () => {
       setUser(response.user);
       console.log('[Auth] ✅ Auth check successful:', response.user);
       return true;
-    } catch (error) {
+    } catch {
       console.log('[Auth] ❌ Auth check failed, clearing user');
       clearUser();
       return false;
@@ -137,8 +139,9 @@ export const useAuth = () => {
         description: "You can now login to your account.",
       });
       return response;
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Email verification failed";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err?.response?.data?.message || "Email verification failed";
       toast.error(message);
       throw error;
     } finally {
@@ -154,8 +157,9 @@ export const useAuth = () => {
         description: `Check your inbox at ${email}`,
       });
       return response;
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Failed to send reset email";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err?.response?.data?.message || "Failed to send reset email";
       toast.error(message);
       throw error;
     } finally {
@@ -171,8 +175,9 @@ export const useAuth = () => {
         description: "You can now login with your new password.",
       });
       return response;
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Failed to reset password";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err?.response?.data?.message || "Failed to reset password";
       toast.error(message);
       throw error;
     } finally {
@@ -188,8 +193,9 @@ export const useAuth = () => {
         description: `Check your inbox at ${email}`,
       });
       return response;
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Failed to send verification email";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err?.response?.data?.message || "Failed to send verification email";
       toast.error(message);
       throw error;
     } finally {

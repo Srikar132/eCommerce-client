@@ -39,9 +39,9 @@ export default function ResendVerificationPage() {
       toast.success("Verification email sent!", {
         description: `Check your inbox at ${data.email}`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message =
-        error?.response?.data?.message || "Failed to send verification email";
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to send verification email";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -61,7 +61,7 @@ export default function ResendVerificationPage() {
                 Verification email sent!
               </h2>
               <p className="mt-2 text-sm text-gray-600">
-                We've sent a new verification email to{" "}
+                We&apos;ve sent a new verification email to{" "}
                 <span className="font-medium text-gray-900">{sentEmail}</span>
               </p>
             </div>
@@ -118,7 +118,7 @@ export default function ResendVerificationPage() {
               Resend verification email
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Enter your email address and we'll send you a new verification link.
+              Enter your email address and we&apos;ll send you a new verification link.
             </p>
           </div>
 

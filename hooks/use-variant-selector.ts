@@ -81,6 +81,7 @@ export function useVariantSelection({
         if (colorGroups.length > 0 && !selectedColor) {
             setSelectedColor(colorGroups[0].color);
         }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     }, [colorGroups, selectedColor]);
 
     // Find selected variant

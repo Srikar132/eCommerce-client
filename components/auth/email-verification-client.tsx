@@ -24,7 +24,7 @@ export default function EmailVerificationClient() {
   const [state, setState] = useState<VerificationState>('verifying');
   const [error, setError] = useState<VerificationError | null>(null);
   const [isResending, setIsResending] = useState(false);
-  const [userEmail, setUserEmail] = useState<string>('');
+  const [userEmail] = useState<string>('');
 
   useEffect(() => {
     // If no token, show invalid token state
@@ -54,9 +54,10 @@ export default function EmailVerificationClient() {
         router.push('/login');
       }, 3000);
       
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || 
-                          error?.message || 
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
+      const errorMessage = err?.response?.data?.message || 
+                          err?.message || 
                           'An unexpected error occurred during email verification.';
       
       const isTokenExpired = errorMessage.toLowerCase().includes('expired');
@@ -84,8 +85,9 @@ export default function EmailVerificationClient() {
       toast.success("New verification email sent!", {
         description: `Check your inbox at ${userEmail}`,
       });
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Failed to send verification email";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err?.response?.data?.message || "Failed to send verification email";
       toast.error(message);
     } finally {
       setIsResending(false);

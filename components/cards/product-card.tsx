@@ -7,79 +7,24 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ProductResponse } from '@/types';
+import { formatCurrency } from '@/lib/utils';
 
-type UUID = string;
 
 type Props = {
     product: ProductResponse;
     onMouseEnter?: () => void;
     onAddToWishlist?: () => void;
-    onAddToCart?: () => void;
+    isWishlisted?: boolean;
 };
 
 const PLACEHOLDER_IMAGE = '/images/error.png';
-const IMAGE_ROTATION_INTERVAL = 1500;
 
 const ProductCardComponent = ({
     product,
-    onMouseEnter,
     onAddToWishlist,
-    onAddToCart
+    isWishlisted = false,
 }: Props) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [isHovering, setIsHovering] = useState(false);
 
-    // Memoize images array to prevent recalculation
-    const images = useMemo(() => {
-        if (!product.variants?.length) {
-            return [PLACEHOLDER_IMAGE];
-        }
-
-        const uniqueImages = new Set<string>();
-        
-        product.variants.forEach(variant => {
-            if (!variant.images?.length) return;
-
-            // Sort and add images in one pass
-            const sortedImages = [...variant.images].sort((a, b) => 
-                a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
-            );
-            
-            sortedImages.forEach(img => uniqueImages.add(img.imageUrl));
-        });
-        
-        return uniqueImages.size > 0 ? Array.from(uniqueImages) : [PLACEHOLDER_IMAGE];
-    }, [product.variants]);
-
-    const hasMultipleImages = images.length > 1;
-
-    // Auto-rotate images on hover
-    useEffect(() => {
-        if (!isHovering || !hasMultipleImages) return;
-
-        const interval = setInterval(() => {
-            setCurrentImageIndex(prev => (prev + 1) % images.length);
-        }, IMAGE_ROTATION_INTERVAL);
-
-        return () => clearInterval(interval);
-    }, [isHovering, hasMultipleImages, images.length]);
-
-    // Reset to first image when not hovering
-    useEffect(() => {
-        if (!isHovering) {
-            setCurrentImageIndex(0);
-        }
-    }, [isHovering]);
-
-    // Memoize formatted price
-    const formattedPrice = useMemo(
-        () => (product.basePrice).toLocaleString('en-IN', {
-            style: 'currency',
-            currency: 'INR',
-            minimumFractionDigits: 2,
-        }),
-        [product.basePrice]
-    );
 
     const badge = product.isCustomizable ? 'Customizable' : undefined;
 
@@ -92,25 +37,8 @@ const ProductCardComponent = ({
 
 
 
-    const handleAddToCart = useCallback((e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onAddToCart?.();
-    }, [onAddToCart]);
-
-    const handleMouseEnter = useCallback(() => {
-        setIsHovering(true);
-        onMouseEnter?.();
-    }, [onMouseEnter]);
-
-    const handleMouseLeave = useCallback(() => {
-        setIsHovering(false);
-    }, []);
-
     return (
         <Link 
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
             href={`/products/${product.slug}`} 
             className="block"
         >
@@ -118,7 +46,7 @@ const ProductCardComponent = ({
                 {/* Image Container with rounded outline */}
                 <div className="relative aspect-[2.9/3] overflow-hidden rounded-3xl m-2 shadow-2xl bg-gray-100">
                     <Image
-                        src={images[currentImageIndex]}
+                        src={product.imageUrl || PLACEHOLDER_IMAGE}
                         alt={"/images/loo.png"}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -126,7 +54,6 @@ const ProductCardComponent = ({
                         priority={false}
                     />
 
-                    {images[currentImageIndex]}
 
                     {badge && (
                         <Badge className="absolute top-3 left-3 bg-white text-black hover:bg-white border-0 shadow-md uppercase tracking-wide text-xs">
@@ -134,21 +61,6 @@ const ProductCardComponent = ({
                         </Badge>
                     )}
 
-                    {/* Image indicators - show only if multiple images */}
-                    {hasMultipleImages && (
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            {images.map((_, index) => (
-                                <div
-                                    key={index}
-                                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                                        index === currentImageIndex 
-                                            ? 'w-6 bg-white' 
-                                            : 'w-1.5 bg-white/50'
-                                    }`}
-                                />
-                            ))}
-                        </div>
-                    )}
 
                     {/* Hover CTAs */}
                     <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -156,18 +68,21 @@ const ProductCardComponent = ({
                             onClick={handleWishlistClick}
                             size="icon"
                             variant="secondary"
-                            className="rounded-full h-10 w-10 bg-white hover:bg-white hover:text-red-500 shadow-md transition-colors"
-                            aria-label="Add to wishlist"
+                            className={`rounded-full h-10 w-10 bg-white hover:bg-white shadow-md transition-colors ${
+                                isWishlisted 
+                                    ? 'text-red-500 hover:text-red-600' 
+                                    : 'hover:text-red-500'
+                            }`}
+                            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                         >
-                            <Heart size={18} />
+                            <Heart size={18} className={isWishlisted ? 'fill-red-500' : ''} />
                         </Button>
                        =
                     </div>
 
                     {/* Add to Cart CTA */}
-                    <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 cursor-pointer">
                         <Button
-                            onClick={handleAddToCart}
                             className="w-full rounded-none bg-black text-white py-6 text-sm font-medium uppercase tracking-wide hover:bg-gray-900 flex items-center justify-center gap-2"
                         >
                             <ShoppingCart size={16} />
@@ -186,7 +101,7 @@ const ProductCardComponent = ({
                     </h3>
 
                     <p className="text-sm font-medium text-gray-900 pt-1">
-                        {formattedPrice}
+                        {formatCurrency(product.basePrice)}
                     </p>
                 </CardContent>
             </Card>

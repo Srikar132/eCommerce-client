@@ -1,22 +1,25 @@
-import { useCartManager } from "@/hooks/use-cart";
-import { Button } from "../ui/button";
-import Image from "next/image";
+"use client";
 
-const CartButton = () => {
-  const { itemCount } = useCartManager();
+import { useWishlistCount } from "@/lib/tanstack/queries/wishlist.queries";
+import { useAuthStore } from "@/lib/store/auth-store";
+import { Button } from "../ui/button";
+import { Heart } from "lucide-react";
+
+const WishlistButton = () => {
+  const { isAuthenticated } = useAuthStore();
+  const { data: wishlistCount } = useWishlistCount(isAuthenticated);
+  
+  const itemCount = wishlistCount?.count ?? 0;
 
   return (
     <Button
       className="nav-btn relative p-1.5 sm:p-2"
-      aria-label="Shopping cart"
+      aria-label="Wishlist"
       suppressHydrationWarning
     >
-      <Image
-        src="/icons/cart.svg"
-        alt="cart"
-        height={18}
-        width={18}
-        className="sm:w-5 sm:h-5 lg:w-6 lg:h-6"
+      <Heart 
+        className="w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-foreground" 
+        strokeWidth={2}
       />
 
       {itemCount > 0 && (
@@ -39,4 +42,4 @@ const CartButton = () => {
   );
 };
 
-export default CartButton;
+export default WishlistButton;

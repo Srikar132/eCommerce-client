@@ -5,7 +5,6 @@ import {
   Heart, 
   MapPin, 
   User, 
-  Shield, 
   MessageSquare,
   ChevronRight
 } from 'lucide-react';

@@ -47,9 +47,44 @@ export const formatPrice = (price: number): string => {
     return `INR ${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
+/**
+ * Format currency using the Indian Rupee format
+ * @param amount - The amount to format
+ * @returns Formatted currency string (e.g., "₹1,234.56")
+ */
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+  }).format(amount);
+};
+
+/**
+ * Format date to a readable string
+ * @param dateString - ISO date string
+ * @param options - Intl.DateTimeFormatOptions
+ * @returns Formatted date string
+ */
+export const formatDate = (
+  dateString: string,
+  options?: Intl.DateTimeFormatOptions
+): string => {
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    ...options,
+  };
+  return new Date(dateString).toLocaleDateString('en-IN', defaultOptions);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildParams = (params: Record<string, any>) => {
   const searchParams = new URLSearchParams();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const append = (key: string, value: any) => {
     if (value === undefined || value === null || value === "") return;
     if (typeof value === 'boolean' && value === false) return;
@@ -97,3 +132,19 @@ export function normalizeArray(value: string | string[] | undefined): string[] |
   if (!value) return undefined;
   return Array.isArray(value) ? value : [value];
 }
+
+
+ export const parseCustomizationSnapshot = (snapshot: string | null | undefined) => {
+    if (!snapshot) return null;
+    try {
+      return JSON.parse(snapshot) as {
+        designId?: string;
+        previewUrl?: string;
+        threadColor?: string;
+        additionalNotes?: string;
+      };
+    } catch (error) {
+      console.error('Failed to parse customization snapshot:', error);
+      return null;
+    }
+  };

@@ -62,7 +62,13 @@ export async function GET(request: NextRequest) {
       const [name, value] = nameValue.split('=');
 
       if (name && value) {
-        const options: any = {
+        const options: {
+          httpOnly: boolean;
+          path: string;
+          sameSite: 'lax';
+          secure: boolean;
+          maxAge?: number;
+        } = {
           httpOnly: true,
           path: '/',
           sameSite: 'lax' as const,

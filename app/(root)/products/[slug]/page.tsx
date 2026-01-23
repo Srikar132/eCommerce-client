@@ -21,12 +21,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             queryKey: queryKeys.products.detail(slug),
             queryFn: () => productApi.getProductBySlug(slug),
             staleTime: 1000 * 60 * 10, // 10 minutes
-        })
-        // queryClient.prefetchQuery({
-        //     queryKey: queryKeys.products.reviews(slug, { page: 0, size: 10, sort: 'createdAt,desc' }),
-        //     queryFn: () => productApi.getProductReviews(slug, 0, 10, 'createdAt,desc'),
-        //     staleTime: 1000 * 60 * 5, // 5 minutes
-        // }),
+        }),
+        queryClient.prefetchQuery({
+            queryKey: queryKeys.products.variants(slug),
+            queryFn: () => productApi.getProductVariants(slug),
+            staleTime: 1000 * 60 * 5, // 5 minutes
+        }),
     ]);
 
     return (

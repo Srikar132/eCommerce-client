@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Address } from "@/types";
 import { AddressCard } from "@/components/cards/address-card";
 import { Button } from "@/components/ui/button";
-import { EarOff, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   useUserAddresses,
   useDeleteUserAddress,
@@ -122,7 +121,7 @@ const AddressSection = () => {
       {!canAddMore && (
         <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-900/20 rounded-lg p-4">
           <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            You've reached the maximum number of saved addresses ({MAX_ADDRESSES}).
+            You&apos;ve reached the maximum number of saved addresses ({MAX_ADDRESSES}).
             Please delete an existing address to add a new one.
           </p>
         </div>

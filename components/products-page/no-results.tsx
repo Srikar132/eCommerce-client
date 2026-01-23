@@ -65,7 +65,7 @@ export function NoResults({
           <Search className="w-6 h-6 text-primary" />
         </div>
         <h2 className="text-3xl font-serif font-light text-foreground mb-3">
-          We couldn't find any matches!
+          We couldn&apos;t find any matches!
         </h2>
         <p className="text-muted-foreground text-base leading-relaxed">
           Please check the spelling or try searching something else

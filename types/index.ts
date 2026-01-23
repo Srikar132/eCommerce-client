@@ -59,8 +59,6 @@ export interface Address {
 }
 
 
-
-
 export interface LoginRequest {
     email: string;
     password: string;
@@ -77,6 +75,7 @@ export interface AuthResponse {
     message: string;
     user: User;
 }
+
 
 // ================================================
 // TYPES FOR PRODUCT CATALOG AND MANAGEMENT
@@ -201,7 +200,7 @@ export type ProductResponse =
         reviewCount?: number;
         
         // Variants now include their specific images
-        variants?: ProductVariant[];
+        imageUrl: string;
     };
 
 
@@ -331,10 +330,9 @@ export interface CategoryBreadcrumb {
 // ================================================
 
 /**
- * Full product details with all related information
- * Used when fetching a single product by slug
+ * DTO returned from /api/v1/products/{slug}/variants endpoint
  */
-export type ProductDetail = ProductResponse
+export type ProductVariantDTO = ProductVariant;
 
 /**
  * Response containing paginated product reviews
@@ -386,20 +384,17 @@ export interface Design {
     slug: string;
     
     description?: string;
-    imageUrl: string;                       // Main design image
-    thumbnailUrl?: string;
+    designImageUrl: string; // Actual design image URL
+    thumbnailUrl: string; // Showcase thumbnail URL
+
+    category: DesignCategory;
     
-    category: DesignCategory;              // Design category name (e.g., "Animals", "Nature")
-    categoryId?: UUID;             // Design category ID
-    categoryName?: string;         // Design category name
-    categorySlug?: string;         // Design category slug
-    
-    tags: string[];                // Array of tags for filtering
+    tags: string[];
     
     isActive: boolean;
-    isPremium: boolean;            // Whether this is a premium design
-    downloadCount?: number;        // Number of times design has been downloaded
-    
+
+    designPrice: number;
+
     createdAt: ISODateString;
     updatedAt?: ISODateString;
 }
@@ -429,31 +424,12 @@ export interface Customization {
     variantId: UUID;
     designId: UUID;
     threadColorHex: string;
-    previewImageUrl: string;
-    isCompleted: boolean;
+    additionalNotes?: string;
     createdAt: ISODateString;
     updatedAt: ISODateString;
 }
 
-// Request type for saving customization
-export interface CustomizationRequest {
-    id?: string | null; // Null/empty for new, provided for updates
-    productId: UUID;
-    variantId: UUID;
-    designId: UUID;
-    threadColorHex: string; // Format: #RRGGBB
-    userMessage?: string; // Optional user message
-    previewImageUrl: string; // S3/CloudFront URL of generated preview
-}
 
-// Response type when saving customization
-export interface SaveCustomizationResponse {
-    id: string;
-    previewImageUrl: string;
-    createdAt: ISODateString;
-    updatedAt: ISODateString;
-    isUpdate: boolean;
-}
 
 
 // ============================
@@ -468,7 +444,6 @@ export interface ProductSummary {
     name: string;
     slug: string;
     sku: string;
-    imageUrl?: string;
 }
 
 export interface VariantSummary {
@@ -476,6 +451,7 @@ export interface VariantSummary {
     size: string;
     color: string;
     sku: string;
+    primaryImageUrl?: string;  // The main image for this variant
 }
 
 export interface CustomizationSummary {
@@ -483,8 +459,7 @@ export interface CustomizationSummary {
     variantId: UUID;
     designId: UUID;
     threadColorHex: string;
-    userMessage?: string;
-    previewImageUrl: string;
+    additionalNotes?: string;
 }
 
 /**
@@ -493,13 +468,11 @@ export interface CustomizationSummary {
 export interface CartItem {
     id: UUID;
     product: ProductSummary;
-    variant?: VariantSummary | null;
+    variant: VariantSummary;  // Make required, not optional
     customization?: CustomizationSummary | null;
     quantity: number;
     unitPrice: number;
-    customizationPrice?: number;
     itemTotal: number;
-    customizationSummary?: string | null;
     addedAt: ISODateString;
 }
 
@@ -512,47 +485,13 @@ export interface Cart {
     totalItems: number;
     subtotal: number;
     discountAmount?: number;
-    taxAmount?: number;
+    taxAmount: number;
+    shippingCost: number;
     total: number;
     createdAt: ISODateString;
     updatedAt: ISODateString;
 }
 
-/**
- * Cart summary for quick display (header, etc.)
- */
-export interface CartSummary {
-    totalItems: number;
-    subtotal: number;
-    discountAmount?: number;
-    taxAmount?: number;
-    total: number;
-    couponCode?: string | null;
-}
-
-/**
- * Request to add item to cart
- */
-export interface AddToCartRequest {
-    productId: UUID;
-    productVariantId?: UUID | null;
-    customizationId?: UUID | null;
-    quantity: number;
-    customizationSummary?: string | null;
-}
-
-/**
- * Request to update cart item quantity
- */
-export interface UpdateCartItemRequest {
-    quantity: number;
-}
-
-
-
-
-// ===================================
-// ORDER TYPES
 // ===================================
 
 export interface OrderItem {
@@ -574,24 +513,24 @@ export interface OrderItem {
 
 
 export enum OrderStatus {
-    PENDING = "PAYMENT_PENDING",
-    CONFIRMED = "ORDER_CONFIRMED",
-    PROCESSING = "ORDER_PROCESSING",
-    SHIPPED = "ORDER_SHIPPED",
-    DELIVERED = "ORDER_DELIVERED",
-    CANCELLED = "ORDER_CANCELLED",
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    PROCESSING = "PROCESSING",
+    SHIPPED = "SHIPPED",
+    DELIVERED = "DELIVERED",
+    CANCELLED = "CANCELLED",
     RETURN_REQUESTED = "RETURN_REQUESTED",
     RETURNED = "RETURNED",
     REFUNDED = "REFUNDED"
 }
 
 export enum PaymentStatus {
-    PENDING = "PAYMENT_PENDING",
-    PROCESSING = "PAYMENT_PROCESSING",
-    PAID = "PAYMENT_PAID",
-    FAILED = "PAYMENT_FAILED",
-    REFUNDED = "PAYMENT_REFUNDED",
-    PARTIALLY_REFUNDED = "PAYMENT_PARTIALLY_REFUNDED"
+    PENDING = "PENDING",
+    PROCESSING = "PROCESSING",
+    PAID = "PAID",
+    FAILED = "FAILED",
+    REFUNDED = "REFUNDED",
+    PARTIALLY_REFUNDED = "PARTIALLY_REFUNDED"
 };
 
 export interface Order {
@@ -635,5 +574,31 @@ export interface Order {
 
   items: OrderItem[];
 }
+
+// ============================
+// REQUEST TYPES
+// ============================
+
+/**
+ * Request to add item to cart
+ */
+export interface AddToCartRequest {
+    productId: UUID;
+    productVariantId?: UUID | null;
+    quantity: number;
+    additionalNotes?: string;
+    customizationData?: CustomizationData | null;
+}
+
+/**
+ * Inline customization data for cart items
+ */
+export interface CustomizationData {
+    designId: UUID;
+    threadColorHex: string; // Format: #RRGGBB
+    additionalNotes?: string;
+}
+
+
 
 

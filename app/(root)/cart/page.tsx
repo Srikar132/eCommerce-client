@@ -7,7 +7,7 @@ import { Loader2, ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Tru
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { CartPageSkeleton } from "@/components/ui/skeletons";
 import {
   AlertDialog,
@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { CartItem } from "@/types";
 import type { LocalCartItem } from "@/lib/utils/local-cart";
-import { useProduct } from "@/lib/tanstack/queries/product.queries";
 
 const SHIPPING_THRESHOLD = 999;
 const SHIPPING_COST = 99;
@@ -30,20 +29,6 @@ const GST_RATE = 0.1;
 // ============================================================================
 // CART ITEM COMPONENT
 // ============================================================================
-
-interface CartItemDisplayData {
-  productName: string;
-  productSlug: string;
-  variantColor: string;
-  variantSize: string;
-  imageUrl: string;
-  unitPrice: number;
-  quantity: number;
-  itemTotal: number;
-  hasCustomization: boolean;
-  customizationSummary?: string | null;
-  customizationImageUrl?: string;
-}
 
 function CartItemRow({
   item,
@@ -62,118 +47,136 @@ function CartItemRow({
   isUpdating: boolean;
   isRemoving: boolean;
 }) {
+  console.log("Rendering CartItemRow for item:", item);
+  // Authenticated user cart item0
+  if (isAuthenticated) {
+    const cartItem = item as CartItem;
+    
+    // Use variant image (no more preview images)
+    const imageUrl = cartItem.variant?.primaryImageUrl || "/placeholder.png";
 
-  // Extract product slug for fetching
-  const productSlug = isAuthenticated
-    ? (item as CartItem).product.slug
-    : (item as LocalCartItem).productSlug || null;
-
-  // Fetch product data (we need this for images and details)
-  const { data: productData, isLoading: isLoadingProduct } = useProduct(
-    productSlug || "",
-    { enabled: !!productSlug }
-  );
-
-  // Process item data
-  const displayData = useMemo((): CartItemDisplayData | null => {
-    if (isAuthenticated) {
-      const cartItem = item as CartItem;
-      const variant = productData?.variants?.find(
-        (v) => v.id === cartItem.variant?.id
-      );
-
-      console.log(variant);
-
-      // Determine which image to show
-      let imageUrl = "/image/error.png";
-      
-      if (cartItem.customization) {
-        // Show customization preview (S3 URL for authenticated users)
-        imageUrl = cartItem.customization.previewImageUrl;
-      } else if (variant?.images && variant.images.length > 0) {
-        // Show variant's primary image or first image
-        const primaryImage = variant.images.find((img) => img.isPrimary);
-        imageUrl = primaryImage?.imageUrl || variant.images[0].imageUrl;
-      }
-
-      return {
-        productName: cartItem.product.name,
-        productSlug: cartItem.product.slug,
-        variantColor: cartItem.variant?.color || "N/A",
-        variantSize: cartItem.variant?.size || "N/A",
-        imageUrl,
-        unitPrice: cartItem.unitPrice + (cartItem.customizationPrice || 0),
-        quantity: cartItem.quantity,
-        itemTotal: cartItem.itemTotal,
-        hasCustomization: !!cartItem.customization,
-        customizationSummary: cartItem.customizationSummary,
-        customizationImageUrl: cartItem.customization?.previewImageUrl,
-      };
-    } else {
-      // Guest user - local cart item
-      const localItem = item as LocalCartItem;
-      
-      // Find the variant from fetched product data
-      const variant = productData?.variants?.find(
-        (v) => v.id === localItem.variantId
-      );
-
-      // Determine which image to show
-      let imageUrl = "/image/error.png";
-      
-      if (localItem.customizationData?.previewImageBase64) {
-        // Show customization preview (base64 for guests)
-        imageUrl = `${localItem.customizationData.previewImageBase64}`;
-      } else if (variant?.images && variant.images.length > 0) {
-        // Show variant's primary image or first image
-        const primaryImage = variant.images.find((img) => img.isPrimary);
-        imageUrl = primaryImage?.imageUrl || variant.images[0].imageUrl;
-      }
-
-      // Calculate prices if we have product data
-      const basePrice = productData?.basePrice || 0;
-      const variantPrice = variant?.additionalPrice || 0;
-      const unitPrice = basePrice + variantPrice;
-      const itemTotal = unitPrice * localItem.quantity;
-      
-      return {
-        productName: productData?.name || "Loading...",
-        productSlug: localItem.productSlug || "",
-        variantColor: variant?.color || "N/A",
-        variantSize: variant?.size || "N/A",
-        imageUrl,
-        unitPrice,
-        quantity: localItem.quantity,
-        itemTotal,
-        hasCustomization: !!localItem.customizationData || !!localItem.customizationId,
-        customizationSummary: localItem.customizationSummary,
-        customizationImageUrl: localItem.customizationData?.previewImageBase64
-          ? `data:image/png;base64,${localItem.customizationData.previewImageBase64}`
-          : undefined,
-      };
-    }
-  }, [item, isAuthenticated, productData]);
-
-  if (!displayData || (isAuthenticated && isLoadingProduct)) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex gap-4 py-6">
+        {/* Product Image */}
+        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
+          <Image
+            src={imageUrl}
+            alt={cartItem.product.name}
+            fill
+            className="object-cover"
+            sizes="96px"
+          />
+          {cartItem.customization && (
+            <div className="absolute right-1 top-1 rounded-full bg-purple-600 px-1.5 py-0.5 text-[10px] font-medium text-white">
+              Custom
+            </div>
+          )}
+        </div>
+
+        {/* Product Details */}
+        <div className="flex flex-1 flex-col">
+          {/* Title & Remove */}
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <Link
+                href={`/products/${cartItem.product.slug}`}
+                className="font-medium hover:underline"
+              >
+                {cartItem.product.name}
+              </Link>
+              <p className="text-sm text-muted-foreground">
+                {cartItem.variant?.color || "N/A"} • {cartItem.variant?.size || "N/A"}
+              </p>
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onRemove}
+              disabled={isRemoving}
+              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            >
+              {isRemoving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+
+          {/* Customization Info */}
+          {cartItem.customization && (
+            <div className="mt-2 rounded-md bg-purple-50 px-2 py-1.5 text-xs text-purple-700">
+              🎨 Custom Design Applied
+            </div>
+          )}
+
+          {/* Price & Quantity */}
+          <div className="mt-auto flex items-end justify-between gap-4">
+            {/* Quantity Controls */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={onDecrement}
+                disabled={isUpdating}
+                className="h-8 w-8"
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+              <span className="w-8 text-center text-sm font-medium">
+                {cartItem.quantity}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={onIncrement}
+                disabled={isUpdating}
+                className="h-8 w-8"
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
+
+            {/* Price */}
+            <div className="text-right">
+              <div className="font-semibold">
+                ₹{cartItem.itemTotal.toFixed(2)}
+              </div>
+              {cartItem.quantity > 1 && (
+                <div className="text-xs text-muted-foreground">
+                  ₹{cartItem.unitPrice.toFixed(2)} each
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
+
+  // Guest cart item
+  const localItem = item as LocalCartItem;
+  
+  // Use variant image (no more preview images)
+  const imageUrl = localItem.variantImageUrl || "/placeholder.png";
+  
+  const designPrice = localItem.customizationData?.designPrice || 0;
+  const unitPrice = localItem.basePrice + localItem.variantPrice + designPrice;
+  const itemTotal = unitPrice * localItem.quantity;
 
   return (
     <div className="flex gap-4 py-6">
       {/* Product Image */}
       <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
         <Image
-          src={displayData.imageUrl}
-          alt={displayData.productName}
+          src={imageUrl}
+          alt={localItem.productName}
           fill
           className="object-cover"
           sizes="96px"
         />
-        {displayData.hasCustomization && (
+        {localItem.customizationData && (
           <div className="absolute right-1 top-1 rounded-full bg-purple-600 px-1.5 py-0.5 text-[10px] font-medium text-white">
             Custom
           </div>
@@ -185,18 +188,18 @@ function CartItemRow({
         {/* Title & Remove */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            {displayData.productSlug ? (
+            {localItem.productSlug ? (
               <Link
-                href={`/products/${displayData.productSlug}`}
+                href={`/products/${localItem.productSlug}`}
                 className="font-medium hover:underline"
               >
-                {displayData.productName}
+                {localItem.productName}
               </Link>
             ) : (
-              <div className="font-medium">{displayData.productName}</div>
+              <div className="font-medium">{localItem.productName}</div>
             )}
             <p className="text-sm text-muted-foreground">
-              {displayData.variantColor} • {displayData.variantSize}
+              {localItem.variantColor} • {localItem.variantSize}
             </p>
           </div>
 
@@ -216,9 +219,12 @@ function CartItemRow({
         </div>
 
         {/* Customization Info */}
-        {displayData.hasCustomization && displayData.customizationSummary && (
+        {localItem.customizationData && (
           <div className="mt-2 rounded-md bg-purple-50 px-2 py-1.5 text-xs text-purple-700">
-            🎨 {displayData.customizationSummary}
+            🎨 Custom Design Applied
+            {designPrice > 0 && (
+              <span className="ml-2">(+₹{designPrice.toFixed(2)})</span>
+            )}
           </div>
         )}
 
@@ -236,7 +242,7 @@ function CartItemRow({
               <Minus className="h-3 w-3" />
             </Button>
             <span className="w-8 text-center text-sm font-medium">
-              {displayData.quantity}
+              {localItem.quantity}
             </span>
             <Button
               variant="outline"
@@ -252,11 +258,11 @@ function CartItemRow({
           {/* Price */}
           <div className="text-right">
             <div className="font-semibold">
-              ₹{displayData.itemTotal.toFixed(2)}
+              ₹{itemTotal.toFixed(2)}
             </div>
-            {displayData.quantity > 1 && (
+            {localItem.quantity > 1 && (
               <div className="text-xs text-muted-foreground">
-                ₹{displayData.unitPrice.toFixed(2)} each
+                ₹{unitPrice.toFixed(2)} each
               </div>
             )}
           </div>
@@ -279,37 +285,46 @@ export default function CartPage() {
   } | null>(null);
 
   // Calculate totals
-  const { subtotal, shippingCost, tax, total, savingsNeeded } = useMemo(() => {
-    // For guests, we need to calculate from individual items
+  const calculateTotals = () => {
     // For authenticated users, use the cart total from the server
-    const sub = cart.isAuthenticated
-      ? cart.items.reduce((sum, item) => sum + (item as CartItem).itemTotal, 0)
-      : 0; // Guest subtotal calculated below
+    if (cart.isAuthenticated) {
+      const sub = cart.items.reduce((sum, item) => sum + (item as CartItem).itemTotal, 0);
+      const shipping = sub >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+      const taxAmount = sub * GST_RATE;
+      const savings = Math.max(0, SHIPPING_THRESHOLD - sub);
 
-    // For guests, calculate subtotal from displayed items
-    // Note: This is a temporary calculation - actual prices will be determined at checkout
-    const guestSubtotal = !cart.isAuthenticated
-      ? cart.items.reduce((sum, item) => {
-          const localItem = item as LocalCartItem;
-          // This is an estimate - we'll show "Calculated at checkout" for final totals
-          return sum;
-        }, 0)
-      : 0;
+      return {
+        subtotal: sub,
+        shippingCost: shipping,
+        tax: taxAmount,
+        total: cart.total,
+        savingsNeeded: savings,
+      };
+    }
 
-    const finalSubtotal = cart.isAuthenticated ? sub : guestSubtotal;
-    const shipping = finalSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-    const taxAmount = finalSubtotal * GST_RATE;
-    const totalAmount = cart.isAuthenticated ? cart.total : finalSubtotal + shipping + taxAmount;
-    const savings = Math.max(0, SHIPPING_THRESHOLD - finalSubtotal);
+    // For guests, calculate from local items
+    const guestSubtotal = cart.items.reduce((sum, item) => {
+      const localItem = item as LocalCartItem;
+      const designPrice = localItem.customizationData?.designPrice || 0;
+      const unitPrice = localItem.basePrice + localItem.variantPrice + designPrice;
+      return sum + (unitPrice * localItem.quantity);
+    }, 0);
+
+    const shipping = guestSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+    const taxAmount = guestSubtotal * GST_RATE;
+    const totalAmount = guestSubtotal + shipping + taxAmount;
+    const savings = Math.max(0, SHIPPING_THRESHOLD - guestSubtotal);
 
     return {
-      subtotal: finalSubtotal,
+      subtotal: guestSubtotal,
       shippingCost: shipping,
       tax: taxAmount,
       total: totalAmount,
       savingsNeeded: savings,
     };
-  }, [cart.items, cart.isAuthenticated, cart.total]);
+  };
+
+  const { subtotal, shippingCost, tax, total, savingsNeeded } = calculateTotals();
 
   const createItemIdentifier = (item: CartItem | LocalCartItem): CartItemIdentifier => {
     if (cart.isAuthenticated) {
@@ -318,16 +333,18 @@ export default function CartPage() {
         itemId: cartItem.id,
         productId: cartItem.product.id,
         variantId: cartItem.variant?.id || "",
-        customizationId: cartItem.customization?.id,
+        designId: cartItem.customization?.designId,
+        threadColorHex: cartItem.customization?.threadColorHex,
+        additionalNotes: cartItem.customization?.additionalNotes,
       };
     } else {
       const localItem = item as LocalCartItem;
       return {
         productId: localItem.productId,
         variantId: localItem.variantId,
-        customizationId: localItem.customizationId || undefined,
         designId: localItem.customizationData?.designId,
         threadColorHex: localItem.customizationData?.threadColorHex,
+        additionalNotes: localItem.customizationData?.additionalNotes,
       };
     }
   };
@@ -350,7 +367,7 @@ export default function CartPage() {
         <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground" />
         <h2 className="mt-6 text-2xl font-bold">Your cart is empty</h2>
         <p className="mt-2 text-muted-foreground">
-          Looks like you haven't added anything to your cart yet. Start shopping to fill it up!
+          Looks like you haven&apos;t added anything to your cart yet. Start shopping to fill it up!
         </p>
         <Button
           onClick={() => router.push("/products")}

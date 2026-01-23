@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { dehydrate, HydrationBoundary, QueryClientProvider } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/tanstack/query-client";
 import { categoryApi } from "@/lib/api/category";
 import { FALLBACK_CATEGORIES } from "@/lib/constants/fallback-data";

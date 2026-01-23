@@ -5,10 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { authApi } from "@/lib/api/auth";
 import { ROUTE_CONFIG } from "@/lib/auth/middleware-config";
+import { User } from "@/types";
 
 interface AuthProviderProps {
   children: React.ReactNode;
-  initialUser?: any;
+  initialUser?: User;
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
@@ -48,7 +49,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
                   console.log('[AuthProvider] 🔄 Found refreshed session, hydrating store');
                   setUser(response.user);
                 }
-              } catch (error) {
+              } catch {
                 // Session is invalid, clear persisted state
                 console.log('[AuthProvider] ℹ️ No active session found, clearing store');
                 clearUser();
@@ -59,11 +60,12 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
           } else {
             console.log('[AuthProvider] ℹ️ No authenticated user in persisted state');
           }
-        } catch (error) {
+        } catch {
           console.error('[AuthProvider] Failed to parse persisted state');
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ============================================
@@ -87,7 +89,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
             setUser(response.user);
             sessionStorage.setItem('lastAuthCheck', now.toString());
             console.log('[AuthProvider] ✅ Auth still valid');
-          } catch (error) {
+          } catch {
             console.log('[AuthProvider] ❌ Session expired, logging out');
             clearUser();
 
@@ -138,7 +140,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
         const response = await authApi.getCurrentUser();
         setUser(response.user);
         sessionStorage.setItem('lastAuthCheck', now.toString());
-      } catch (error) {
+      } catch {
         console.log('[AuthProvider] ❌ Auth failed on sensitive route');
         clearUser();
         router.push('/login');

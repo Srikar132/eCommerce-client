@@ -1,12 +1,13 @@
 import { 
     FetchProductList, 
     ProductSearchResponse, 
-    ProductDetail,
     ProductReviewsResponse,
     AddReviewRequest,
     AddReviewResponse,
     PagedResponse,
-    Design
+    Design,
+    ProductVariant,
+    ProductResponse
 } from "@/types";
 import { apiClient } from "./client";
 import { AxiosResponse } from "axios";
@@ -81,25 +82,25 @@ export const productApi = {
      * 
      * @param slug - Product slug identifier
      */
-    getProductBySlug: async (slug: string): Promise<ProductDetail> => {
-        const { data } = await apiClient.get<ProductDetail>(
+    getProductBySlug: async (slug: string): Promise<ProductResponse> => {
+        const { data } = await apiClient.get<ProductResponse>(
             `/api/v1/products/${slug}`
         );
         return data;
     },
 
-    // /**
-    //  * GET /api/v1/products/{slug}/variants
-    //  * Get all variants for a specific product
-    //  * 
-    //  * @param slug - Product slug identifier
-    //  */
-    // getProductVariants: async (slug: string): Promise<ProductVariant[]> => {
-    //     const { data } = await apiClient.get<ProductVariant[]>(
-    //         `/api/v1/products/${slug}/variants`
-    //     );
-    //     return data;
-    // },
+    /**
+     * GET /api/v1/products/{slug}/variants
+     * Get all variants for a specific product
+     * 
+     * @param slug - Product slug identifier
+     */
+    getProductVariants: async (slug: string): Promise<ProductVariant[]> => {
+        const { data } = await apiClient.get<ProductVariant[]>(
+            `/api/v1/products/${slug}/variants`
+        );
+        return data;
+    },
 
     /**
      * GET /api/v1/products/{slug}/reviews

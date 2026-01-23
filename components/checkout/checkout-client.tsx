@@ -1,125 +1,61 @@
 'use client';
 
-import { useState } from 'react';
 import CheckoutHeader from './checkout-header';
-import DeliverySection from './delivery-section';
-import PaymentSection from './payment-section';
 import OrderSummary from './order-summary';
+import AddressSelection from './address-selection';
+import PaymentSection from './payment-section';
+import useCheckout from '@/hooks/use-checkout';
 
-interface CheckoutData {
-  email: string;
-  delivery: {
-    country: string;
-    firstName: string;
-    lastName: string;
-    address: string;
-    apartment: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-  payment: {
-    method: 'credit-card' | 'paypal';
-    cardNumber: string;
-    expiryDate: string;
-    securityCode: string;
-    nameOnCard: string;
-    useSameAddress: boolean;
-  };
-  billing: {
-    country: string;
-    firstName: string;
-    lastName: string;
-    address: string;
-    apartment: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-}
 
 export default function CheckoutClient() {
-  const [checkoutData, setCheckoutData] = useState<CheckoutData>({
-    email: '',
-    delivery: {
-      country: 'United States',
-      firstName: '',
-      lastName: '',
-      address: '',
-      apartment: '',
-      city: '',
-      state: '',
-      zipCode: '',
-    },
-    payment: {
-      method: 'credit-card',
-      cardNumber: '',
-      expiryDate: '',
-      securityCode: '',
-      nameOnCard: '',
-      useSameAddress: true,
-    },
-    billing: {
-      country: 'United States',
-      firstName: '',
-      lastName: '',
-      address: '',
-      apartment: '',
-      city: '',
-      state: '',
-      zipCode: '',
-    },
-  });
 
-  const [currentStep, setCurrentStep] = useState<'delivery' | 'payment'>('delivery');
 
-  const updateCheckoutData = (section: string, data: any) => {
-    if (section === 'email') {
-      setCheckoutData(prev => ({
-        ...prev,
-        email: data
-      }));
-    } else {
-      setCheckoutData(prev => {
-        const currentSection = prev[section as keyof CheckoutData];
-        return {
-          ...prev,
-          [section]: typeof currentSection === 'object' ? { ...currentSection, ...data } : data
-        };
-      });
-    }
-  };
 
-  const handlePayNow = async () => {
-    // Handle payment processing
-    console.log('Processing payment...', checkoutData);
-  };
+  const {
+    selectedShippingAddress,
+    setSelectedShippingAddress,
+    addresses,
+    loadingAddresses,
+    addressesError,
+    handleCheckout,
+    isProcessing,
+    error,
+    isCheckingOut,
+    isVerifyingPayment
+  } = useCheckout();
+
+
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <CheckoutHeader />
         
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 mt-8">
           {/* Left Column - Forms */}
-          <div className="lg:col-span-2 space-y-4">
-            <DeliverySection
-              data={checkoutData}
-              updateData={updateCheckoutData}
-              onNext={() => setCurrentStep('payment')}
-              isActive={currentStep === 'delivery'}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Address Selection */}
+            <AddressSelection
+              addresses={addresses}
+              selectedAddress={selectedShippingAddress}
+              onSelectAddress={setSelectedShippingAddress}
+              isLoading={loadingAddresses}
+              isError={addressesError}
             />
-            
+
+            {/* Payment Section */}
             <PaymentSection
-              data={checkoutData}
-              updateData={updateCheckoutData}
-              onPayNow={handlePayNow}
-              isActive={currentStep === 'payment'}
+              onCheckout={handleCheckout}
+              isProcessing={isProcessing}
+              isCheckingOut={isCheckingOut}
+              isVerifyingPayment={isVerifyingPayment}
+              error={error}
+              disabled={!selectedShippingAddress || loadingAddresses}
             />
           </div>
 
-          {/* Right Column - Order Summary */}
-          <div className="lg:sticky lg:top-6 lg:self-start">
+          {/* Right Column - Order Summary (Sticky) */}
+          <div className="lg:sticky lg:top-8 lg:self-start">
             <OrderSummary />
           </div>
         </div>

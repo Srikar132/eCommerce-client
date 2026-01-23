@@ -1,5 +1,4 @@
 import HomeClient from "@/components/home-client";
-import { getServerAuth } from "@/lib/auth/server";
 
 
 export default   function Home() {

@@ -11,6 +11,7 @@ import { CategoryNavigation } from './category-navigation';
 import { cn } from '@/lib/utils';
 import { is } from 'zod/v4/locales';
 import CartButton from '../cart/cart-button';
+import WishlistButton from './wishlist-button';
 
 const HERO_SECTION_HEIGHT = 1000;
 
@@ -160,6 +161,10 @@ const Navbar = () => {
                                         className="sm:w-5 sm:h-5 lg:w-6 lg:h-6"
                                     />
                                 </Button>
+                            </Link>
+
+                            <Link href="/account/wishlist">
+                                <WishlistButton />
                             </Link>
 
                             <Link href={"/cart"}>

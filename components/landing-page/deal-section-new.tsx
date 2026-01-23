@@ -126,7 +126,7 @@ export default function DealSection() {
           
           {/* Subtitle */}
           <p className="text-xl sm:text-2xl md:text-3xl lg:text-5xl max-w-4xl font-light uppercase text-muted-foreground tracking-wide mb-8">
-            Enjoy up to <span className="font-semibold text-primary">50% OFF</span> on today's hottest picks!
+            Enjoy up to <span className="font-semibold text-primary">50% OFF</span> on today&apos;s hottest picks!
           </p>
 
           {/* CTA Button */}

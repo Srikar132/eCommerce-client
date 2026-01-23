@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useProduct } from '@/lib/tanstack/queries/product.queries';
+import { useProduct, useProductVariants } from '@/lib/tanstack/queries/product.queries';
 import { useInfiniteDesigns, useFlatDesigns, useDesignCount, useDesignCategories } from '@/lib/tanstack/queries/design.queries';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,7 @@ export default function CustomizationClient({ slug, variantId }: CustomizationCl
   const selectedCategory = searchParams.get('tab') || 'all';
 
   const { data: product, isLoading: isProductLoading } = useProduct(slug);
+  const { data: variants, isLoading: isVariantsLoading } = useProductVariants(slug, { enabled: !!slug });
   const { data: categories, isLoading: isCategoriesLoading } = useDesignCategories();
 
   // Helper function to build URL with query params
@@ -109,13 +110,13 @@ export default function CustomizationClient({ slug, variantId }: CustomizationCl
     rootMargin: '400px'
   });
 
-  // Find the selected variant
-  const selectedVariant = product?.variants?.find(v => v.id === variantId);
+  // Find the selected variant from the variants array
+  const selectedVariant = variants?.find((v) => v.id === variantId);
 
-  const hasVariants = product?.variants && product.variants.length > 0;
+  const hasVariants = variants && variants.length > 0;
 
   // Get the variant image - ONLY show PREVIEW_BASE images for customization
-  const previewBaseImages = selectedVariant?.images?.filter(img =>
+  const previewBaseImages = selectedVariant?.images?.filter((img) =>
     img.imageRole === 'PREVIEW_BASE' || !img.imageRole
   );
 
@@ -144,7 +145,7 @@ export default function CustomizationClient({ slug, variantId }: CustomizationCl
     router.push(`/customization-studio/${slug}/${selectedDesignId}?variantId=${variantId}`);
   };
 
-  if (isProductLoading) {
+  if (isProductLoading || isVariantsLoading) {
     return <LoadingSkeleton />;
   }
 
@@ -155,7 +156,7 @@ export default function CustomizationClient({ slug, variantId }: CustomizationCl
           <ShoppingBag className="h-16 w-16 mx-auto opacity-30 text-muted-foreground" />
           <h2 className="text-2xl font-semibold text-foreground">Product Not Found</h2>
           <p className="text-muted-foreground">
-            The product you're looking for doesn't exist or has been removed.
+            The product you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <Button onClick={() => router.push('/products')} size="lg" className="rounded-full">
             Browse Products
@@ -173,7 +174,7 @@ export default function CustomizationClient({ slug, variantId }: CustomizationCl
           <ShoppingBag className="h-16 w-16 mx-auto opacity-30 text-muted-foreground" />
           <h2 className="text-2xl font-semibold text-foreground">No Variants Available</h2>
           <p className="text-muted-foreground">
-            This product doesn't have any variants available for customization.
+            This product doesn&apos;t have any variants available for customization.
           </p>
           <Button onClick={() => router.push(`/products/${slug}`)} size="lg" className="rounded-full">
             Back to Product
@@ -616,9 +617,9 @@ function DesignCard({ design, isSelected, onSelect }: DesignCardProps) {
       )}
     >
       <div className="relative aspect-[1.3/1] bg-card overflow-hidden">
-        {design.imageUrl ? (
+        {design.thumbnailUrl ? (
           <Image
-            src={design.imageUrl}
+            src={design.thumbnailUrl}
             alt={design.name}
             fill
             className={cn(
@@ -645,21 +646,7 @@ function DesignCard({ design, isSelected, onSelect }: DesignCardProps) {
           </div>
         )}
 
-        {/* Premium Badge */}
-        {design.isPremium && (
-          <Badge className="absolute top-3 left-3 bg-amber-500 hover:bg-amber-600 text-white text-xs border-0 shadow-lg font-medium px-2.5 py-1">
-            <Sparkles className="h-3 w-3 mr-1" />
-            Premium
-          </Badge>
-        )}
 
-        {/* Download Count */}
-        {design.downloadCount !== undefined && design.downloadCount > 0 && !isSelected && (
-          <Badge variant="secondary" className="absolute bottom-3 right-3 bg-card/95 backdrop-blur-md text-xs border border-border/50 shadow-sm font-medium">
-            <Download className="h-3 w-3 mr-1" />
-            {design.downloadCount}
-          </Badge>
-        )}
       </div>
 
       <div className={cn(

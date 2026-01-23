@@ -13,9 +13,7 @@ import { queryKeys  } from "../query-keys";
 import type { 
   FetchProductList, 
   ProductSearchResponse, 
-  ProductDetail,
   AddReviewRequest,
-  AddReviewResponse
 } from "@/types";
 
 // ============================================================================
@@ -78,6 +76,27 @@ export const useProduct = (
   return useQuery({
     queryKey: queryKeys.products.detail(slugOrId),
     queryFn: () => productApi.getProductBySlug(slugOrId),
+    enabled: options?.enabled ?? true,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+};
+
+/**
+ * Get product variants separately
+ * Use this when you only need variant data without full product details
+ * 
+ * @example
+ * ```tsx
+ * const { data: variants, isLoading } = useProductVariants('navy-blue-tshirt');
+ * ```
+ */
+export const useProductVariants = (
+  slug: string,
+  options?: { enabled?: boolean }
+) => {
+  return useQuery({
+    queryKey: queryKeys.products.variants(slug),
+    queryFn: () => productApi.getProductVariants(slug),
     enabled: options?.enabled ?? true,
     staleTime: 1000 * 60 * 10, // 10 minutes
   });

@@ -1,5 +1,4 @@
 import type { ProductVariant } from "@/types";
-import type { ColorGroup, SizeOption } from "@/hooks/use-variant-selector";
 
 /**
  * Check if a variant is in stock

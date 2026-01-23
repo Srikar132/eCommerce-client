@@ -58,8 +58,9 @@ export default function EmailVerificationBanner({
       toast.success("Verification email sent!", {
         description: `Check your inbox at ${user.email}`,
       });
-    } catch (error: any) {
-      const message = error?.response?.data?.message || 
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err?.response?.data?.message || 
         "Failed to send verification email";
       toast.error(message);
     } finally {

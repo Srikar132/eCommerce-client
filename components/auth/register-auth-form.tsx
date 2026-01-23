@@ -87,7 +87,7 @@ export default function RegisterAuthForm() {
                 Verify Your Email
               </h3>
               <p className="text-sm text-muted-foreground">
-                We've sent a verification link to{" "}
+                We&apos;ve sent a verification link to{" "}
                 <span className="font-semibold text-primary">{userEmail}</span>
               </p>
               <p className="text-sm text-muted-foreground">
@@ -99,7 +99,7 @@ export default function RegisterAuthForm() {
 
           <div className="pt-2 space-y-3 border-t border-border/50">
             <p className="text-sm font-semibold text-foreground">
-              Didn't receive the email?
+              Didn&apos;t receive the email?
             </p>
             <ul className="text-sm text-muted-foreground space-y-2">
               <li className="flex items-center gap-2">
@@ -125,8 +125,8 @@ export default function RegisterAuthForm() {
                 toast.success("Verification email sent!", {
                   description: `A new verification link has been sent to ${userEmail}`,
                 });
-              } catch (error: any) {
-                const message = error?.response?.data?.message || "Failed to resend verification email";
+              } catch (error: unknown) {
+                const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to resend verification email";
                 toast.error(message);
               } finally {
                 setIsResending(false);

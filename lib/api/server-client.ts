@@ -65,6 +65,7 @@ export async function serverGet<T>(url: string): Promise<T> {
 /**
  * Make an authenticated POST request from server component
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function serverPost<T>(url: string, data?: any): Promise<T> {
   try {
     const client = await getServerApiClient();
@@ -87,6 +88,7 @@ export async function serverPost<T>(url: string, data?: any): Promise<T> {
 /**
  * Make an authenticated PUT request from server component
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function serverPut<T>(url: string, data?: any): Promise<T> {
   try {
     const client = await getServerApiClient();

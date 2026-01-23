@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { SlidersHorizontal, Heart, Star, Shirt, Palette } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -121,6 +119,15 @@ const BrandsAndDesigns: React.FC = () => {
     : activeFilter === 'brands' 
     ? brands.map(b => ({...b, type: 'brand' as const}))
     : designs.map(d => ({...d, type: 'design' as const}));
+
+  // Generate stable random ratings for each item
+  const itemRatings = useMemo(() => {
+    const allItems = [...brands, ...designs];
+    return allItems.reduce((acc, item) => {
+      acc[item.id] = Math.floor(Math.random() * 10);
+      return acc;
+    }, {} as Record<string, number>);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -258,7 +265,7 @@ const BrandsAndDesigns: React.FC = () => {
                     
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">4.{Math.floor(Math.random() * 10)}</span>
+                      <span className="font-medium">4.{itemRatings[item.id] || 5}</span>
                     </div>
                   </div>
                 </div>

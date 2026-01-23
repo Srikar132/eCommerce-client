@@ -48,6 +48,7 @@ export function SearchInput({
       setSuggestions([]);
       setShowDropdown(false);
     }
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   }, [debouncedQuery, showSuggestions]);
 
   // Handle click outside to close dropdown
@@ -126,7 +127,7 @@ export function SearchInput({
     <div ref={containerRef} className={`relative ${className}`}>
       <div className="relative flex items-center">
         <div className="absolute left-4 flex items-center pointer-events-none z-10">
-          <Search className="w-5 h-5 " strokeWidth={2} />
+          <Search className="w-5 h-5 text-muted-foreground" strokeWidth={2} />
         </div>
         
         <input
@@ -138,13 +139,14 @@ export function SearchInput({
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          className="w-full h-11 pl-12 pr-12  border-none rounded text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-0 focus:bg-white transition-all duration-200"
+          className="w-full h-11 pl-12 pr-12 bg-card border border-border rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 focus:bg-card transition-all duration-300 shadow-sm hover:shadow-md"
         />
         
         {query && !isLoading && (
           <button
             onClick={clearSearch}
-            className="absolute right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors z-10"
+            className="absolute right-4 flex items-center text-muted-foreground hover:text-foreground transition-colors z-10"
+            aria-label="Clear search"
           >
             <X className="w-5 h-5" strokeWidth={2} />
           </button>
@@ -152,7 +154,7 @@ export function SearchInput({
 
         {isLoading && (
           <div className="absolute right-4 flex items-center z-10">
-            <div className="w-4 h-4 border-2 border-gray-300 border-t-pink-500 rounded-full animate-spin"></div>
+            <div className="w-4 h-4 border-2 border-accent border-t-primary rounded-full animate-spin"></div>
           </div>
         )}
       </div>
@@ -161,7 +163,7 @@ export function SearchInput({
       {showDropdown && isLoading && (
         <div 
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl z-9999 max-h-80 overflow-y-auto border border-gray-100"
+          className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl shadow-xl z-9999 max-h-80 overflow-y-auto border border-border"
         >
           <SearchDropdownSkeleton />
         </div>
@@ -170,7 +172,7 @@ export function SearchInput({
       {showDropdown && !isLoading && suggestions.length > 0 && (
         <div 
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl z-9999 max-h-80 overflow-y-auto border border-gray-100"
+          className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl shadow-xl z-9999 max-h-80 overflow-y-auto border border-border"
           onMouseDown={(e) => e.preventDefault()} // Prevent blur when clicking
         >
           {suggestions.map((suggestion, index) => (
@@ -182,10 +184,10 @@ export function SearchInput({
                 e.stopPropagation();
                 handleSuggestionClick(suggestion);
               }}
-              className="w-full px-5 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3 border-b border-gray-50 last:border-b-0 group focus:outline-none focus:bg-gray-50"
+              className="w-full px-5 py-3 text-left hover:bg-accent/50 transition-all duration-200 flex items-center gap-3 border-b border-border/50 last:border-b-0 group focus:outline-none focus:bg-accent/50 first:rounded-t-2xl last:rounded-b-2xl"
             >
-              <Search className="w-4 h-4 text-gray-400 group-hover:text-black transition-colors shrink-0" strokeWidth={2} />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{suggestion}</span>
+              <Search className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" strokeWidth={2} />
+              <span className="text-sm text-foreground group-hover:text-primary transition-colors">{suggestion}</span>
             </button>
           ))}
         </div>

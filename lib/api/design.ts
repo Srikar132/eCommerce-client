@@ -108,7 +108,7 @@ export const designsApi = {
         console.log('Fetching all design categories');
 
         const { data } = await apiClient.get<DesignCategory[]>(
-            `/api/v1/design-categories`
+            `/api/v1/designs/categories`
         );
 
         console.log('Design categories fetched:', data);

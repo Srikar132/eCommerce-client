@@ -1,12 +1,45 @@
-import { 
-    Cart, 
-    CartSummary,
-    AddToCartRequest, 
-    UpdateCartItemRequest,
-    UUID
+import {
+    Cart,
+    UUID,
+    AddToCartRequest
 } from "@/types";
 import { apiClient } from "./client";
 import { AxiosResponse } from "axios";
+
+
+export interface SyncCartRequest {
+    productId: string;
+    productVariantId: string;
+    quantity: number;
+    customizationData?: {
+        designId: string;
+        threadColorHex: string;
+        additionalNotes?: string;
+    };
+}
+
+/**
+ * Cart summary for quick display (header, etc.)
+ */
+export interface CartSummaryResponse {
+    totalItems: number;
+    subtotal: number;
+    discountAmount?: number;
+    taxAmount?: number;
+    total: number;
+    couponCode?: string | null;
+}
+
+/**
+ * Request to update cart item quantity
+ */
+export interface UpdateCartItemRequest {
+    quantity: number;
+}
+
+
+
+
 
 export const cartApi = {
     /**
@@ -112,32 +145,13 @@ export const cartApi = {
      * 
      * @returns Cart summary with item count and totals
      */
-    getCartSummary: async (): Promise<CartSummary> => {
-        const response: AxiosResponse<CartSummary> = await apiClient.get(
+    getCartSummary: async (): Promise<CartSummaryResponse> => {
+        const response: AxiosResponse<CartSummaryResponse> = await apiClient.get(
             "/api/v1/cart/summary"
         );
         return response.data;
     },
 
-    /**
-     * POST /api/v1/cart/merge
-     * Merges guest cart into user cart after login
-     * 
-     * Used in:
-     * - Login flow - Automatically merge guest cart after authentication
-     * - Registration flow - Merge cart after new user signs up
-     * 
-     * This is called automatically after login to preserve items
-     * added to cart before user authenticated
-     * 
-     * @returns Merged cart with items from both guest and user carts
-     */
-    mergeGuestCart: async (): Promise<Cart> => {
-        const response: AxiosResponse<Cart> = await apiClient.post(
-            "/api/v1/cart/merge"
-        );
-        return response.data;
-    },
 
     /**
      * POST /api/v1/cart/sync
@@ -153,19 +167,7 @@ export const cartApi = {
      * @param items - Array of local cart items
      * @returns Synced cart with all items
      */
-    syncLocalCart: async (items: {
-        productId: string;
-        productVariantId: string;
-        customizationId?: string | null;
-        quantity: number;
-        customizationSummary?: string;
-        customizationData?: {
-            designId: string;
-            threadColorHex: string;
-            previewImageBase64: string;
-            designPositionJson: string;
-        };
-    }[]): Promise<Cart> => {
+    syncLocalCart: async (items: SyncCartRequest[]): Promise<Cart> => {
         const response: AxiosResponse<Cart> = await apiClient.post(
             "/api/v1/cart/sync",
             { items }

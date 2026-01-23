@@ -12,18 +12,22 @@ import type { UUID } from "@/types";
 
 export interface LocalCartItem {
   productId: UUID;
-  productSlug: string;  // ADDED: For fetching product data
+  productSlug: string;
+  productName: string;
   variantId: UUID;
+  variantSize: string;
+  variantColor: string;
+  variantImageUrl: string;  // Store at cart-add time
+  basePrice: number;
+  variantPrice: number;
   quantity: number;
-  customizationId?: UUID | null;
-  customizationSummary: string | null;
   
-  // For unsaved customizations (guests)
+  // For customizations - inline data (no separate saving)
   customizationData?: {
     designId: UUID;
+    designPrice: number;
     threadColorHex: string;
-    previewImageBase64: string;  // Base64 for guests
-    designPositionJson: string;
+    additionalNotes?: string;
   };
 }
 
@@ -40,14 +44,11 @@ const CART_STORAGE_KEY = "guest_cart";
 const generateItemKey = (
   productId: UUID,
   variantId: UUID,
-  customizationId?: UUID | null,
   designId?: UUID,
   threadColorHex?: string
 ): string => {
-  if (customizationId) {
-    return `${productId}_${variantId}_${customizationId}`;
-  } else if (designId && threadColorHex) {
-    return `${productId}_${variantId}_guest_${designId}_${threadColorHex}`;
+  if (designId && threadColorHex) {
+    return `${productId}_${variantId}_custom_${designId}_${threadColorHex}`;
   } else {
     return `${productId}_${variantId}_base`;
   }
@@ -61,15 +62,12 @@ const isSameItem = (item1: LocalCartItem, item2: LocalCartItem): boolean => {
     return false;
   }
 
-  if (item1.customizationId && item2.customizationId) {
-    return item1.customizationId === item2.customizationId;
-  }
-
-  if (!item1.customizationData && !item2.customizationData && 
-      !item1.customizationId && !item2.customizationId) {
+  // Both have no customization
+  if (!item1.customizationData && !item2.customizationData) {
     return true;
   }
 
+  // Both have customization - compare design and color
   if (item1.customizationData && item2.customizationData) {
     return (
       item1.customizationData.designId === item2.customizationData.designId &&
@@ -136,7 +134,6 @@ export const localCartManager = {
   updateItem(
     productId: UUID,
     variantId: UUID,
-    customizationId: UUID | null | undefined,
     quantity: number,
     designId?: UUID,
     threadColorHex?: string
@@ -148,15 +145,13 @@ export const localCartManager = {
         return false;
       }
 
-      if (customizationId) {
-        return item.customizationId === customizationId;
-      } else if (designId && threadColorHex) {
+      if (designId && threadColorHex) {
         return (
           item.customizationData?.designId === designId &&
           item.customizationData?.threadColorHex === threadColorHex
         );
       } else {
-        return !item.customizationData && !item.customizationId;
+        return !item.customizationData;
       }
     });
 
@@ -173,7 +168,6 @@ export const localCartManager = {
   removeItem(
     productId: UUID,
     variantId: UUID,
-    customizationId: UUID | null | undefined,
     designId?: UUID,
     threadColorHex?: string
   ): void {
@@ -184,15 +178,13 @@ export const localCartManager = {
         return true;
       }
 
-      if (customizationId) {
-        return item.customizationId !== customizationId;
-      } else if (designId && threadColorHex) {
+      if (designId && threadColorHex) {
         return !(
           item.customizationData?.designId === designId &&
           item.customizationData?.threadColorHex === threadColorHex
         );
       } else {
-        return !!(item.customizationData || item.customizationId);
+        return !!item.customizationData;
       }
     });
 
@@ -215,7 +207,6 @@ export const localCartManager = {
   hasItem(
     productId: UUID,
     variantId: UUID,
-    customizationId?: UUID | null,
     designId?: UUID,
     threadColorHex?: string
   ): boolean {
@@ -226,10 +217,6 @@ export const localCartManager = {
         return false;
       }
 
-      if (customizationId) {
-        return item.customizationId === customizationId;
-      }
-
       if (designId && threadColorHex) {
         return (
           item.customizationData?.designId === designId &&
@@ -237,14 +224,13 @@ export const localCartManager = {
         );
       }
 
-      return !item.customizationData && !item.customizationId;
+      return !item.customizationData;
     });
   },
 
   getItemQuantity(
     productId: UUID,
     variantId: UUID,
-    customizationId?: UUID | null,
     designId?: UUID,
     threadColorHex?: string
   ): number {
@@ -255,15 +241,13 @@ export const localCartManager = {
         return false;
       }
 
-      if (customizationId) {
-        return item.customizationId === customizationId;
-      } else if (designId && threadColorHex) {
+      if (designId && threadColorHex) {
         return (
           item.customizationData?.designId === designId &&
           item.customizationData?.threadColorHex === threadColorHex
         );
       } else {
-        return !item.customizationData && !item.customizationId;
+        return !item.customizationData;
       }
     });
 
