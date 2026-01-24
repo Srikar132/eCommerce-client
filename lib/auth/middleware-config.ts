@@ -1,9 +1,64 @@
 export const ROUTE_CONFIG = {
-  protected: ['/account', '/orders', '/wishlist', '/checkout'],
-  guestOnly: ['/login', '/register', '/sign-up'],
+  // Routes that REQUIRE authentication
+  protected: [
+    '/account', 
+    '/checkout', 
+    '/orders',
+    '/customization-studio'
+  ],
+  
+  // Routes that REQUIRE being logged OUT (redirect to home if authenticated)
+  guestOnly: [
+    '/login', 
+    '/register', 
+    '/forgot-password',
+    '/reset-password',
+    '/verify-email',
+    '/resend-verification'
+  ],
+  
+  // Admin-only routes
   admin: ['/admin'],
-  public: ['/', '/products', '/about', '/contact', '/category', '/customization', '/product'],
+  
+  // Public routes (accessible to everyone, optional auth)
+  public: [
+    '/', 
+    '/products', 
+    '/about', 
+    '/contact', 
+    '/category',
+    '/customization',
+    '/cart'
+  ],
 } as const;
+
+/**
+ * Check if a route requires authentication
+ */
+export function isProtectedRoute(pathname: string): boolean {
+  return isRouteMatch(pathname, ROUTE_CONFIG.protected);
+}
+
+/**
+ * Check if a route is guest-only (must be logged out)
+ */
+export function isGuestOnlyRoute(pathname: string): boolean {
+  return isRouteMatch(pathname, ROUTE_CONFIG.guestOnly);
+}
+
+/**
+ * Check if a route is public (accessible to all)
+ */
+export function isPublicRoute(pathname: string): boolean {
+  return isRouteMatch(pathname, ROUTE_CONFIG.public);
+}
+
+/**
+ * Check if a route is admin-only
+ */
+export function isAdminRoute(pathname: string): boolean {
+  return isRouteMatch(pathname, ROUTE_CONFIG.admin);
+}
 
 export function isRouteMatch(pathname: string, routes: readonly string[]): boolean {
   return routes.some((route) => {

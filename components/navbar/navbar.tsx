@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect} from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useSidebar } from '../ui/sidebar';
@@ -9,9 +9,9 @@ import Link from 'next/link';
 import { SearchInput } from '../search-input';
 import { CategoryNavigation } from './category-navigation';
 import { cn } from '@/lib/utils';
-import { is } from 'zod/v4/locales';
 import CartButton from '../cart/cart-button';
 import WishlistButton from './wishlist-button';
+import { User, Menu } from 'lucide-react';
 
 const HERO_SECTION_HEIGHT = 1000;
 
@@ -97,12 +97,9 @@ const Navbar = () => {
                                 aria-label="Toggle menu"
                                 onClick={() => isMobile ? setOpenMobile(!openMobile) : setOpen(!open)}
                             >
-                                <Image
-                                    src={'/icons/menu_icon.png'}
-                                    alt='menu'
-                                    height={16}
-                                    width={16}
-                                    className="sm:w-4 sm:h-4"
+                                <Menu 
+                                    className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-foreground" 
+                                    strokeWidth={2}
                                 />
                             </Button>
 
@@ -122,21 +119,6 @@ const Navbar = () => {
                                 </div>
                             )}
 
-                            <Link href="/search" className='lg:hidden'>
-                                <Button
-                                    className={`nav-btn p-1.5 sm:p-2`}
-                                    aria-label="Search"
-                                >
-                                    <Image
-                                        src={'/icons/search.svg'}
-                                        alt='search'
-                                        height={18}
-                                        width={18}
-                                        className="sm:w-5 sm:h-5"
-                                    />
-                                </Button>
-                            </Link>
-
                             {!isHomePage && (
                                 <div className="min-w-xl max-lg:hidden w-full">
                                     <SearchInput
@@ -153,12 +135,9 @@ const Navbar = () => {
                                     className={`hidden sm:block nav-btn p-1.5 sm:p-2`}
                                     aria-label="Account"
                                 >
-                                    <Image
-                                        src={'/icons/account.svg'}
-                                        alt='profile'
-                                        height={18}
-                                        width={18}
-                                        className="sm:w-5 sm:h-5 lg:w-6 lg:h-6"
+                                    <User 
+                                        className="w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-foreground" 
+                                        strokeWidth={2}
                                     />
                                 </Button>
                             </Link>

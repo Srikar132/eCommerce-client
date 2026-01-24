@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack";
+import { AuthProvider } from "@/providers/auth-provider";
 import Script from "next/script";
 
 
@@ -40,9 +41,11 @@ export default function Layout({
       <body
         className={`${inter.variable} ${playfair.variable} antialiased`}
       >
-        <TanstackProvider>
-          {children}
-        </TanstackProvider>
+        <AuthProvider>
+          <TanstackProvider>
+            {children}
+          </TanstackProvider>
+        </AuthProvider>
 
         <Script
           id="razorpay-checkout-js"

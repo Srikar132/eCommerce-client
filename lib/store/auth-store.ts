@@ -1,45 +1,68 @@
-import { User } from '@/types';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { User } from '@/types';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  
-  setUser: (user: User) => void;
-  clearUser: () => void;
-  updateUser: (user: Partial<User>) => void;
+  isLoading: boolean;
+  isInitialized: boolean;
 }
 
-// Only store NON-SENSITIVE user data
-export const useAuthStore = create<AuthState>()(
+interface AuthActions {
+  setUser: (user: User | null) => void;
+  setLoading: (loading: boolean) => void;
+  setInitialized: (initialized: boolean) => void;
+  logout: () => void;
+  reset: () => void;
+}
+
+type AuthStore = AuthState & AuthActions;
+
+const initialState: AuthState = {
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  isInitialized: false,
+};
+
+/**
+ * Enhanced Auth Store
+ * 
+ * - Persists user data to localStorage
+ * - HTTP-only cookies handle actual authentication
+ * - Store caches user data for UI performance
+ * - Automatic state management
+ */
+export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
-      user: null,
-      isAuthenticated: false,
+      ...initialState,
 
-      setUser: (user) => {
+      setUser: (user) =>
         set({
           user,
-          isAuthenticated: true,
-        });
-      },
+          isAuthenticated: !!user,
+          isLoading: false,
+          isInitialized: true,
+        }),
 
-      clearUser: () => {
+      setLoading: (loading) => set({ isLoading: loading }),
+
+      setInitialized: (initialized) => set({ isInitialized: initialized }),
+
+      logout: () =>
         set({
           user: null,
           isAuthenticated: false,
-        });
-      },
+          isLoading: false,
+        }),
 
-      updateUser: (userData) =>
-        set((state) => ({
-          user: state.user ? { ...state.user, ...userData } : null,
-        })),
+      reset: () => set(initialState),
     }),
     {
       name: 'auth-storage',
-      // Only persist user info, NOT tokens
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,

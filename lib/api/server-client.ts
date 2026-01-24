@@ -34,10 +34,47 @@ export async function getServerApiClient() {
       "Content-Type": "application/json",
       Cookie: cookieHeader,
     },
-    // Don't use withCredentials on server (it's for browsers)
     withCredentials: false,
   });
 }
+
+/**
+ * Server-side Auth API
+ */
+export const serverAuthApi = {
+  /**
+   * Get current authenticated user (server-side)
+   */
+  getCurrentUser: async () => {
+    try {
+      const client = await getServerApiClient();
+      const response = await client.get('/api/v1/auth/me');
+      return response.data;
+    } catch (error) {
+      console.error('[ServerAuth] Get current user failed:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Verify if user is authenticated (server-side)
+   */
+  isAuthenticated: async (): Promise<boolean> => {
+    const data = await serverAuthApi.getCurrentUser();
+    return !!data?.user;
+  },
+
+  /**
+   * Get user or return null
+   */
+  requireAuth: async () => {
+    const data = await serverAuthApi.getCurrentUser();
+    if (!data?.user) {
+      return null;
+    }
+    return data.user;
+  },
+};
 
 /**
  * Make an authenticated GET request from server component

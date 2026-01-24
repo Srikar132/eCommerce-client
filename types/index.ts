@@ -3,8 +3,6 @@
 // COMMON TYPES USED ACROSS THE APPLICATION
 // ================================================
 
-import { unique } from "next/dist/build/utils";
-import { nullable } from "zod/v3";
 
 export type UUID = string;
 export type ISODateString = string;
@@ -32,16 +30,25 @@ export interface PagedResponse<T> {
 // TYPES FOR USER AUTHENTICATION AND MANAGEMENT
 // ================================================
 
+export type UserRole = 'CUSTOMER' | 'ADMIN';
+
 export interface User {
     id: string;
-    email: string;
-    username: string;
-    phone?: string;
-    role: string;
+    phone: string;
+    countryCode: string;
+    phoneVerified: boolean;
+    phoneVerifiedAt?: string;
+    email?: string;
     emailVerified: boolean;
+    username?: string;
+    role: UserRole;
+    isActive: boolean;
     createdAt: string;
     updatedAt: string;
+    failedLoginAttempts: number;
+    lockedUntil?: string;
 }
+
 
 
 
@@ -58,22 +65,32 @@ export interface Address {
     createdAt: string;
 }
 
-
-export interface LoginRequest {
-    email: string;
-    password: string;
+// Phone OTP Authentication Types
+export interface SendOtpRequest {
+    phone: string;
+    countryCode?: string;
 }
 
-export interface RegisterRequest {
-    email: string;
-    password: string;
-    username: string;
-    phone?: string;
+export interface SendOtpResponse {
+    success: boolean;
+    message: string;
+    expiresIn: number;
+    maskedPhone: string;
+}
+
+export interface VerifyOtpRequest {
+    phone: string;
+    otp: string;
 }
 
 export interface AuthResponse {
-    message: string;
     user: User;
+    message?: string;
+}
+
+export interface MessageResponse {
+    message: string;
+    success: boolean;
 }
 
 
@@ -142,16 +159,15 @@ export interface ProductVariant {
 }
 
 export interface Review {
-    id: UUID;
-
-    user: User;
-    rating: number; // 1–5
-
-    title?: string;
-    comment?: string;
-
-    isVerifiedPurchase: boolean;
-    createdAt: ISODateString;
+    id : string;
+    userId : string;
+    userName : string;
+    productId : string;
+    rating : number;
+    title : string;
+    comment : string;
+    isVerifiedPurchase : boolean;
+    createdAt : string;
 }
 
 
@@ -337,12 +353,7 @@ export type ProductVariantDTO = ProductVariant;
 /**
  * Response containing paginated product reviews
  */
-export interface ProductReviewsResponse {
-    reviews: PagedResponse<Review>;
-    averageRating: number;
-    ratingDistribution: RatingDistribution;
-}
-
+export type ProductReviewsResponse = PagedResponse<Review>;
 /**
  * Rating distribution breakdown (1-5 stars)
  */
@@ -359,9 +370,8 @@ export interface RatingDistribution {
  */
 export interface AddReviewRequest {
     rating: number;              // 1-5 stars
-    title: string;               // Review title/headline
+    title?: string;              // Review title/headline (optional)
     comment: string;             // Review text content
-    wouldRecommend: boolean;     // Whether user would recommend the product
 }
 
 /**

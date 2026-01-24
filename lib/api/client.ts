@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { toast } from "sonner";
+import { isProtectedRoute, isPublicRoute } from "@/lib/auth/middleware-config";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -38,21 +39,8 @@ const processQueue = (error: Error | null) => {
   failedQueue = [];
 };
 
-// Endpoints that should NOT trigger token refresh
-const NO_REFRESH_ENDPOINTS = [
-  '/api/v1/auth/login',
-  '/api/v1/auth/register',
-  '/api/v1/auth/refresh',
-  '/api/v1/auth/forgot-password',
-  '/api/v1/auth/reset-password',
-  '/api/v1/auth/verify-email',
-  '/api/v1/auth/resend-verification',
-];
 
-const shouldSkipRefresh = (url?: string): boolean => {
-  if (!url) return false;
-  return NO_REFRESH_ENDPOINTS.some(endpoint => url.includes(endpoint));
-};
+
 
 // Request interceptor (optional logging)
 apiClient.interceptors.request.use(
@@ -94,9 +82,12 @@ apiClient.interceptors.response.use(
       originalRequest &&
       !originalRequest._retry
     ) {
-      // Skip refresh for specific auth endpoints (login, register, etc.)
-      if (shouldSkipRefresh(originalRequest.url)) {
-        console.log('[API] Skipping refresh for:', originalRequest.url);
+
+      if (
+        originalRequest.url?.includes('/auth/send-otp') ||
+        originalRequest.url?.includes('/auth/verify-otp') ||
+        originalRequest.url?.includes('/auth/refresh')
+      ) {
         return Promise.reject(error);
       }
 
@@ -116,7 +107,13 @@ apiClient.interceptors.response.use(
 
       try {
         // Call backend refresh endpoint directly
-        await apiClient.post('/api/v1/auth/refresh');
+        await axios.post(
+          `${API_BASE_URL}/api/v1/auth/refresh`,
+          {},
+          {
+            withCredentials: true, // Sends refreshToken cookie
+          }
+        );
 
         console.log('[API] ✅ Token refresh successful');
         processQueue(null);
@@ -127,25 +124,28 @@ apiClient.interceptors.response.use(
         console.error('[API] ❌ Token refresh failed:', refreshError);
         processQueue(refreshError as Error);
 
-        // Clear auth and redirect to login
+        // Clear auth state
         if (typeof window !== 'undefined') {
+          const currentPath = window.location.pathname;
+          
           // Clear client-side state
           localStorage.removeItem('auth-storage');
           sessionStorage.clear();
 
-          toast.error('Session Expired', {
-            description: 'Please log in again',
-          });
+          // Only redirect on protected routes
+          // For public routes, just clear state silently (user can continue browsing)
+          if (isProtectedRoute(currentPath)) {
+            toast.error('Session Expired', {
+              description: 'Please log in again',
+            });
 
-          // ✅ FIX: Prevent redirect loop - only redirect if not already on auth pages
-          const currentPath = window.location.pathname;
-          const authPages = ['/login', '/register', '/forgot-password' , '/verify-email' , '/reset-password'];
-          const isOnAuthPage = authPages.some(page => currentPath.startsWith(page));
-
-          if (!isOnAuthPage) {
+            // Redirect to login
             setTimeout(() => {
-              window.location.href = '/login';
+              window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
             }, 500);
+          } else {
+            // On public/guest routes, just log - no toast, no redirect
+            console.log('[API] Session expired on public route - cleared auth state');
           }
         }
 

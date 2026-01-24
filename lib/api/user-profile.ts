@@ -5,7 +5,7 @@ import { apiClient } from "./client";
 
 export interface UpdateProfileRequest {
     username?: string;
-    phone?: string;
+    email?: string;
 }
 
 

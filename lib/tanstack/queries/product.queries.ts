@@ -104,17 +104,23 @@ export const useProductVariants = (
 
 
 /**
- * Get product reviews
+ * Get product reviews with infinite scroll
  * 
  * @example
  * ```tsx
- * const { data: reviews } = useProductReviews('navy-blue-tshirt');
+ * const { data, fetchNextPage, hasNextPage } = useProductReviews('navy-blue-tshirt');
  * ```
  */
-export const useProductReviews = (slug: string, page = 0, size = 10, sort = 'createdAt,desc') => {
-  return useQuery({
-    queryKey: queryKeys.products.reviews(slug, { page, size, sort }),
-    queryFn: () => productApi.getProductReviews(slug, page, size, sort),
+export const useProductReviews = (slug: string, params?: { size?: number; sort?: string }) => {
+  const { size = 10, sort = 'createdAt,desc' } = params || {};
+
+  return useInfiniteQuery({
+    queryKey: queryKeys.products.reviews(slug, { page: 0, size, sort }),
+    queryFn: ({ pageParam = 0 }) => 
+      productApi.getProductReviews(slug, pageParam, size, sort),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => 
+      lastPage.last ? undefined : lastPage.page + 1,
     enabled: !!slug,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });

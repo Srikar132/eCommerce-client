@@ -12,6 +12,7 @@ import VariantSelector from "@/components/product/variant-selector";
 import PriceDisplay from "@/components/product/price-display";
 import StockStatus from "@/components/product/stock-status";
 import VariantAvailabilityInfo from "@/components/product/variant-availability-info";
+import ProductReviewsSection from "@/components/product/product-reviews-section";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useVariantSelection } from "@/hooks/use-variant-selector";
@@ -212,6 +213,15 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                             </div>
                         </div>
                     </ScrollArea>
+                </div>
+
+                {/* Reviews Section - Full Width Below Product Details */}
+                <div className="mt-12">
+                    <ProductReviewsSection
+                        productSlug={slug}
+                        averageRating={product?.averageRating}
+                        reviewCount={product?.reviewCount}
+                    />
                 </div>
             </div>
         </div>

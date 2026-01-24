@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Save, X } from "lucide-react";
 import { useUpdateUserProfile } from "@/lib/tanstack/queries/user-profile.queries";
-import { useAuthStore } from "@/lib/store/auth-store";
+import { useAuth } from "@/hooks/use-auth";
 import { User } from "@/types";
 import { useState } from "react";
 
@@ -29,14 +29,15 @@ const accountDetailsSchema = z.object({
     .regex(
       /^[a-zA-Z0-9_-]+$/,
       "Username can only contain letters, numbers, underscores, and hyphens"
-    ),
-  phone: z
-    .string()
+    )
     .optional()
-    .refine(
-      (val) => !val || /^\+?[1-9]\d{1,14}$/.test(val),
-      "Please enter a valid phone number"
-    ),
+    .or(z.literal("")),
+  email: z
+    .string()
+    .email("Please enter a valid email address")
+    .max(100, "Email must not exceed 100 characters")
+    .optional()
+    .or(z.literal("")),
 });
 
 type AccountDetailsFormValues = z.infer<typeof accountDetailsSchema>;
@@ -48,21 +49,21 @@ interface EditAccountDetailsFormProps {
 export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const updateProfileMutation = useUpdateUserProfile();
-  const updateUserInStore = useAuthStore((state) => state.updateUser);
+  const { refreshUser } = useAuth();
 
   const form = useForm<AccountDetailsFormValues>({
     resolver: zodResolver(accountDetailsSchema),
     defaultValues: {
       username: user.username || "",
-      phone: user.phone || "",
+      email: user.email || "",
     },
   });
 
   const onSubmit = async (data: AccountDetailsFormValues) => {
     updateProfileMutation.mutate(data, {
-      onSuccess: (updatedUser) => {
-        // Update the user in the auth store
-        updateUserInStore(updatedUser);
+      onSuccess: async () => {
+        // Refresh the user data in the auth store
+        await refreshUser();
         setIsEditing(false);
         form.reset(data); // Reset form with new values
       },
@@ -72,12 +73,13 @@ export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) =>
   const handleCancel = () => {
     form.reset({
       username: user.username || "",
-      phone: user.phone || "",
+      email: user.email || "",
     });
     setIsEditing(false);
   };
 
   const isDirty = form.formState.isDirty;
+  const isProfileIncomplete = !user.username || !user.email;
 
   return (
     <Card>
@@ -94,18 +96,34 @@ export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) =>
             </Button>
           )}
         </div>
+        {isProfileIncomplete && !isEditing && (
+          <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
+              ⚠️ Complete Your Profile
+            </p>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+              {!user.username && !user.email && "Please add your username and email to complete your profile."}
+              {!user.username && user.email && "Please add your username to complete your profile."}
+              {user.username && !user.email && "Please add your email to complete your profile."}
+            </p>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email (Read-only) */}
+            {/* Phone (Read-only) */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                Email
+                Phone Number
               </label>
               <div className="flex items-center gap-2">
-                <Input value={user.email} disabled className="bg-muted" />
-                {user.emailVerified ? (
+                <Input 
+                  value={user.phone ? `${user.phone}` : 'Not provided'} 
+                  disabled 
+                  className="bg-muted" 
+                />
+                {user.phoneVerified ? (
                   <span className="text-xs text-green-600 font-medium whitespace-nowrap">
                     ✓ Verified
                   </span>
@@ -116,7 +134,7 @@ export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) =>
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                Email cannot be changed
+                Phone number cannot be changed
               </p>
             </div>
 
@@ -126,11 +144,14 @@ export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) =>
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel className={!user.username ? "text-amber-700 dark:text-amber-400" : ""}>
+                    Username {!user.username && <span className="text-red-500">*</span>}
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter your username"
+                      placeholder={user.username ? "Enter your username" : "⚠️ Please set your username"}
                       disabled={!isEditing || updateProfileMutation.isPending}
+                      className={!user.username && !isEditing ? "border-amber-300 dark:border-amber-700" : ""}
                       {...field}
                     />
                   </FormControl>
@@ -142,22 +163,42 @@ export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) =>
               )}
             />
 
-            {/* Phone */}
+            {/* Email */}
             <FormField
               control={form.control}
-              name="phone"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
+                  <FormLabel className={!user.email ? "text-amber-700 dark:text-amber-400" : ""}>
+                    Email {!user.email && <span className="text-red-500">*</span>}
+                  </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter your phone number"
-                      disabled={!isEditing || updateProfileMutation.isPending}
-                      {...field}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder={user.email ? "Enter your email" : "⚠️ Please set your email"}
+                        disabled={!isEditing || updateProfileMutation.isPending}
+                        className={!user.email && !isEditing ? "border-amber-300 dark:border-amber-700 flex-1" : "flex-1"}
+                        type="email"
+                        {...field}
+                      />
+                      {user.email && (
+                        user.emailVerified ? (
+                          <span className="text-xs text-green-600 font-medium whitespace-nowrap">
+                            ✓ Verified
+                          </span>
+                        ) : (
+                          <span className="text-xs text-amber-600 font-medium whitespace-nowrap">
+                            Not Verified
+                          </span>
+                        )
+                      )}
+                    </div>
                   </FormControl>
                   <FormDescription>
-                    Optional - Used for order updates and delivery
+                    {user.email 
+                      ? "Used for order confirmations and notifications" 
+                      : "Required for receiving order updates and important notifications"
+                    }
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

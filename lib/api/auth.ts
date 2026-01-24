@@ -1,27 +1,46 @@
-import { User , LoginRequest , AuthResponse , RegisterRequest } from "@/types";
+import { 
+  User, 
+  SendOtpRequest, 
+  SendOtpResponse,
+  VerifyOtpRequest,
+  AuthResponse,
+  MessageResponse
+} from "@/types";
 import { apiClient } from "./client";
 import { AxiosResponse } from "axios";
 
-
-
-
+/**
+ * Phone OTP Based Authentication API
+ */
 export const authApi = {
-  login: async (data: LoginRequest): Promise<AuthResponse> => {
-    const response: AxiosResponse<AuthResponse> = await apiClient.post(
-      "/api/v1/auth/login",
+  /**
+   * Step 1: Send OTP to phone number
+   * POST /api/v1/auth/send-otp
+   */
+  sendOtp: async (data: SendOtpRequest): Promise<SendOtpResponse> => {
+    const response: AxiosResponse<SendOtpResponse> = await apiClient.post(
+      "/api/v1/auth/send-otp",
       data
     );
     return response.data;
   },
 
-  register: async (data: RegisterRequest): Promise<AuthResponse> => {
+  /**
+   * Step 2: Verify OTP and login/register user
+   * POST /api/v1/auth/verify-otp
+   */
+  verifyOtp: async (data: VerifyOtpRequest): Promise<AuthResponse> => {
     const response: AxiosResponse<AuthResponse> = await apiClient.post(
-      "/api/v1/auth/register",
+      "/api/v1/auth/verify-otp",
       data
     );
     return response.data;
   },
 
+  /**
+   * Refresh access token using refresh token from cookie
+   * POST /api/v1/auth/refresh
+   */
   refreshToken: async (): Promise<AuthResponse> => {
     const response: AxiosResponse<AuthResponse> = await apiClient.post(
       "/api/v1/auth/refresh"
@@ -29,14 +48,21 @@ export const authApi = {
     return response.data;
   },
 
-  logout: async (): Promise<void> => {
-    // Use local API route that handles both backend logout and cookie clearing
-    await apiClient.post("/api/v1/auth/logout");
-
-    
+  /**
+   * Logout current user
+   * POST /api/v1/auth/logout
+   */
+  logout: async (): Promise<MessageResponse> => {
+    const response: AxiosResponse<MessageResponse> = await apiClient.post(
+      "/api/v1/auth/logout"
+    );
+    return response.data;
   },
 
-  // Get current user (verify session)
+  /**
+   * Get current authenticated user
+   * GET /api/v1/auth/me
+   */
   getCurrentUser: async (): Promise<AuthResponse> => {
     const response: AxiosResponse<AuthResponse> = await apiClient.get(
       "/api/v1/auth/me"
@@ -44,36 +70,13 @@ export const authApi = {
     return response.data;
   },
 
-  verifyEmail: async (token: string): Promise<{ message: string }> => {
-    const response: AxiosResponse<{ message: string }> = await apiClient.get(
-      `/api/v1/auth/verify-email?token=${token}`
-    );
-    return response.data;
-  },
-
-  forgotPassword: async (email: string): Promise<{ message: string }> => {
-    const response: AxiosResponse<{ message: string }> = await apiClient.post(
-      "/api/v1/auth/forgot-password",
-      { email }
-    );
-    return response.data;
-  },
-
-  resetPassword: async (
-    token: string,
-    newPassword: string
-  ): Promise<{ message: string }> => {
-    const response: AxiosResponse<{ message: string }> = await apiClient.post(
-      "/api/v1/auth/reset-password",
-      { token, newPassword }
-    );
-    return response.data;
-  },
-
-  resendVerification: async (email: string): Promise<{ message: string }> => {
-    const response: AxiosResponse<{ message: string }> = await apiClient.post(
-      "/api/v1/auth/resend-verification",
-      { email }
+  /**
+   * Health check endpoint
+   * GET /api/v1/auth/health
+   */
+  health: async (): Promise<MessageResponse> => {
+    const response: AxiosResponse<MessageResponse> = await apiClient.get(
+      "/api/v1/auth/health"
     );
     return response.data;
   },

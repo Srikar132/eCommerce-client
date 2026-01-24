@@ -80,6 +80,49 @@ export const formatDate = (
   return new Date(dateString).toLocaleDateString('en-IN', defaultOptions);
 };
 
+/**
+ * Format phone number for display
+ * @param phone - Phone number (e.g., "+919876543210")
+ * @returns Formatted phone string (e.g., "+91 98765 43210")
+ */
+export const formatPhone = (phone: string): string => {
+  if (!phone) return '';
+  
+  // Remove all non-digit characters except +
+  const cleaned = phone.replace(/[^\d+]/g, '');
+  
+  // Format Indian numbers: +91 XXXXX XXXXX
+  if (cleaned.startsWith('+91') && cleaned.length === 13) {
+    return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 8)} ${cleaned.slice(8)}`;
+  }
+  
+  // Generic format for other numbers
+  return cleaned;
+};
+
+/**
+ * Mask phone number for security (show last 4 digits)
+ * @param phone - Phone number
+ * @returns Masked phone (e.g., "+91****3210")
+ */
+export const maskPhone = (phone: string): string => {
+  if (!phone || phone.length < 4) return '****';
+  const countryCode = phone.match(/^\+\d{1,3}/)?.[0] || '';
+  const lastFour = phone.slice(-4);
+  return `${countryCode}****${lastFour}`;
+};
+
+/**
+ * Validate phone number format
+ * @param phone - Phone number to validate
+ * @returns boolean indicating if phone is valid
+ */
+export const isValidPhone = (phone: string): boolean => {
+  // International format: +[country code][number] (E.164 format)
+  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+  return phoneRegex.test(phone);
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildParams = (params: Record<string, any>) => {
   const searchParams = new URLSearchParams();

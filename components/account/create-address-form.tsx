@@ -28,7 +28,7 @@ import { useAddUserAddress } from "@/lib/tanstack/queries/user-profile.queries";
 
 const addressFormSchema = z.object({
   addressType: z.enum(["HOME", "WORK", "OTHER"], {
-    error: "Please select an address type",
+    message: "Please select an address type",
   }),
   streetAddress: z.string().min(5, "Street address must be at least 5 characters"),
   city: z.string().min(2, "City name must be at least 2 characters"),

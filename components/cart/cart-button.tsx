@@ -1,6 +1,6 @@
 import { useCartManager } from "@/hooks/use-cart";
 import { Button } from "../ui/button";
-import Image from "next/image";
+import { ShoppingCart } from "lucide-react";
 
 const CartButton = () => {
   const { itemCount } = useCartManager();
@@ -11,12 +11,9 @@ const CartButton = () => {
       aria-label="Shopping cart"
       suppressHydrationWarning
     >
-      <Image
-        src="/icons/cart.svg"
-        alt="cart"
-        height={18}
-        width={18}
-        className="sm:w-5 sm:h-5 lg:w-6 lg:h-6"
+      <ShoppingCart 
+        className="w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-foreground" 
+        strokeWidth={2}
       />
 
       {itemCount > 0 && (

@@ -1,14 +1,14 @@
+"use client";
 import AccountSidebarWrapper from "@/components/account/account-sidebar-wrapper";
 import Header from "@/components/header";
-import { getServerAuth } from "@/lib/auth/server";
+import { useAuth } from "@/hooks/use-auth";
 
 
-export default async function AccountLayout({ children }: {
+export default function AccountLayout({ children }: {
     children: React.ReactNode
 }) {
 
-    const auth = await getServerAuth();
-    const user = auth.user;
+    const { user } = useAuth();
 
     return (
         <div className="min-h-screen bg-background">
