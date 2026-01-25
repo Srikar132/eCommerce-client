@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect} from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useSidebar } from '../ui/sidebar';
@@ -11,19 +11,22 @@ import { CategoryNavigation } from './category-navigation';
 import { cn } from '@/lib/utils';
 import CartButton from '../cart/cart-button';
 import WishlistButton from './wishlist-button';
-import { User, Menu } from 'lucide-react';
+import { User, Menu, ShoppingCart, Heart } from 'lucide-react';
+import { CategoryTree } from '@/lib/api/category';
 
 const HERO_SECTION_HEIGHT = 1000;
 
+interface NavbarProps {
+    categoryTree: CategoryTree[]; // ✅ Receive complete tree from server
+}
 
-const Navbar = () => {
+const Navbar = ({ categoryTree }: NavbarProps) => {
     const pathname = usePathname();
     const { setOpen, open, isMobile, setOpenMobile, openMobile } = useSidebar();
 
     // Scroll state
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
-    // const [isAtTop, setIsAtTop] = useState(true);
     const [isPastHero, setIsPastHero] = useState(false);
 
     const isHomePage = pathname === '/';
@@ -104,7 +107,8 @@ const Navbar = () => {
                             </Button>
 
                             {/* Category Navigation - Desktop Only */}
-                            {<CategoryNavigation />}
+                            {/* ✅ Pass complete tree - navigation is instant! */}
+                            <CategoryNavigation categoryTree={categoryTree} />
                         </div>
 
 
@@ -142,13 +146,25 @@ const Navbar = () => {
                                 </Button>
                             </Link>
 
-                            <Link href="/account/wishlist">
-                                <WishlistButton />
-                            </Link>
+                            {/* Wrap dynamic cart/wishlist in Suspense for SSR compatibility */}
+                            <Suspense fallback={
+                                <>
+                                    <Button className="nav-btn p-1.5 sm:p-2" aria-label="Wishlist">
+                                        <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-foreground" strokeWidth={2} />
+                                    </Button>
+                                    <Button className="nav-btn p-1.5 sm:p-2" aria-label="Cart">
+                                        <ShoppingCart className="w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-foreground" strokeWidth={2} />
+                                    </Button>
+                                </>
+                            }>
+                                <Link href="/account/wishlist">
+                                    <WishlistButton />
+                                </Link>
 
-                            <Link href={"/cart"}>
-                                <CartButton/>
-                            </Link>
+                                <Link href={"/cart"}>
+                                    <CartButton/>
+                                </Link>
+                            </Suspense>
                         </div>
                     </div>
                 </div>

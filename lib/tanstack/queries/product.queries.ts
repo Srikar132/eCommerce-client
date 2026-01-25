@@ -71,12 +71,13 @@ export const useProducts = (params: FetchProductList) => {
  */
 export const useProduct = (
   slugOrId: string,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean; initialData?: Awaited<ReturnType<typeof productApi.getProductBySlug>> }
 ) => {
   return useQuery({
     queryKey: queryKeys.products.detail(slugOrId),
     queryFn: () => productApi.getProductBySlug(slugOrId),
     enabled: options?.enabled ?? true,
+    initialData: options?.initialData,
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 };
@@ -92,12 +93,13 @@ export const useProduct = (
  */
 export const useProductVariants = (
   slug: string,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean , initialData?: Awaited<ReturnType<typeof productApi.getProductVariants>> }
 ) => {
   return useQuery({
     queryKey: queryKeys.products.variants(slug),
     queryFn: () => productApi.getProductVariants(slug),
     enabled: options?.enabled ?? true,
+    initialData: options?.initialData,
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 };

@@ -1,7 +1,48 @@
-import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query";
 import { productApi } from "@/lib/api/product";
-import { queryKeys } from "@/lib/tanstack/query-keys";
 import ProductDetailClient from "@/components/product/product-detail-client";
+import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import ProductReviewsSection from "@/components/product/product-reviews-section";
+import { Suspense } from "react";
+import { ReviewsSkeleton } from "@/components/product/reviews-skeleton";
+import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
+import { getQueryClient } from "@/lib/tanstack/query-client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
+export async function generateMetadata({
+    params
+}: {
+    params: { slug: string }
+}): Promise<Metadata> {
+    const { slug } = await params;
+
+    try {
+        const product = await productApi.getProductBySlug(slug);
+
+        return {
+            title: `${product.name} | THE NALA ARMOIRE`,
+            description: product.description?.slice(0, 160),
+            openGraph: {
+                title: product.name,
+                description: product.description,
+                images: [product.imageUrl],
+                type: 'website',
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title: product.name,
+                description: product.description,
+                images: [product.imageUrl],
+            },
+        };
+    } catch (error) {
+        return {
+            title: 'Product Not Found',
+        };
+    }
+}
+
+
 
 interface ProductPageProps {
     params: {
@@ -9,30 +50,54 @@ interface ProductPageProps {
     };
 }
 
-export default async function ProductDetailPage({ params }: ProductPageProps) {
-    const { slug } = await  params;
+async function ProductDetailContent({ params }: ProductPageProps) {
 
-    // Create a new QueryClient instance for this request
-    const queryClient = new QueryClient();
+    try {
+        const { slug } = await params;
 
-    // Prefetch product data, variants, and reviews in parallel
-    await Promise.all([
-        queryClient.prefetchQuery({
-            queryKey: queryKeys.products.detail(slug),
-            queryFn: () => productApi.getProductBySlug(slug),
-            staleTime: 1000 * 60 * 10, // 10 minutes
-        }),
-        queryClient.prefetchQuery({
-            queryKey: queryKeys.products.variants(slug),
-            queryFn: () => productApi.getProductVariants(slug),
-            staleTime: 1000 * 60 * 5, // 5 minutes
-        }),
-    ]);
+        const queryClient = getQueryClient();
 
-    return (
-        <HydrationBoundary state={dehydrate(queryClient)}>
-            <ProductDetailClient slug={slug} />
-        </HydrationBoundary>
-    );
+        // Prefetch product data on server
+        await Promise.all([
+            queryClient.prefetchQuery({
+                queryKey: ['product', slug],
+                queryFn: () => productApi.getProductBySlug(slug),
+            }),
+            queryClient.prefetchQuery({
+                queryKey: ['product-variants', slug],
+                queryFn: () => productApi.getProductVariants(slug),
+            }),
+        ]);
+
+        return (
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <div className="min-h-screen bg-background overflow-x-hidden">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+                        <ProductDetailClient slug={slug} />
+
+                        {/* Reviews Section - Now a Server Component with its own prefetching */}
+                        <Suspense fallback={<ReviewsSkeleton />}>
+                            <div className="mt-12">
+                                <ProductReviewsSection productSlug={slug} />
+                            </div>
+                        </Suspense>
+
+                        {/* PRODUCT RECOMMENDATIONS */}
+                    </div>
+                </div>
+            </HydrationBoundary>
+        );
+    } catch (error) {
+        notFound();
+    }
+
 }
 
+export default async function ProductDetailPage({ params }: ProductPageProps) {
+
+    return (
+        <Suspense fallback={<PageLoadingSkeleton />}>
+            <ProductDetailContent params={params} />
+        </Suspense>
+    )
+}

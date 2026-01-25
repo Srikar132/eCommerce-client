@@ -263,11 +263,8 @@ export const useSyncLocalCart = () => {
 
       // Invalidate to ensure fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.all() });
-      
-      console.log("[Cart] Local cart synced successfully");
     },
     onError: (error: any) => {
-      console.error("[Cart] Failed to sync local cart:", error);
       toast.error("Failed to sync cart", {
         description: "Your cart items may not have been saved. Please try again.",
       });

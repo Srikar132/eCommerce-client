@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 // Sample brands data
 const brands = [
-  { 
+  {
     id: 'nike', 
     name: 'Nike', 
     image: '/home/section2/sec1-col-1.webp', 

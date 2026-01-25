@@ -10,15 +10,6 @@ export {
   useProductFacets,
 } from './product.queries';
 
-// Category queries
-export {
-  useRootCategories,
-  useCategoryChildren,
-  useCategories,
-  useCategory,
-  usePrefetchCategoryChildren,
-} from './category.queries';
-
 // Cart queries
 export {
   useCart,

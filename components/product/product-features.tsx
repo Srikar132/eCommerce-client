@@ -2,7 +2,6 @@
 "use client";
 
 import React from "react";
-import { Check } from "lucide-react";
 
 interface ProductFeature {
     id: string;
@@ -17,18 +16,16 @@ export default function ProductFeatures({ features }: ProductFeaturesProps) {
     if (!features || features.length === 0) return null;
 
     return (
-        <div className="space-y-3">
-            <h3 className="text-base font-semibold text-foreground">Key Features</h3>
-            <ul className="space-y-2">
+        <div>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100 mb-6">Key Features</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                 {features.map((feature) => (
-                    <li key={feature.id} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                        <span className="text-sm text-muted-foreground leading-relaxed">
-                            {feature.text}
-                        </span>
-                    </li>
+                    <div key={feature.id} className="flex items-start gap-3">
+                        <span className="material-icons-outlined text-primary text-lg">check_circle_outline</span>
+                        <span className="text-sm text-slate-600 dark:text-slate-400">{feature.text}</span>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 }

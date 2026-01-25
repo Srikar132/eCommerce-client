@@ -4,17 +4,11 @@ export const ROUTE_CONFIG = {
     '/account', 
     '/checkout', 
     '/orders',
-    '/customization-studio'
   ],
   
   // Routes that REQUIRE being logged OUT (redirect to home if authenticated)
   guestOnly: [
     '/login', 
-    '/register', 
-    '/forgot-password',
-    '/reset-password',
-    '/verify-email',
-    '/resend-verification'
   ],
   
   // Admin-only routes
@@ -28,7 +22,8 @@ export const ROUTE_CONFIG = {
     '/contact', 
     '/category',
     '/customization',
-    '/cart'
+    '/cart',
+    '/customization-studio',
   ],
 } as const;
 

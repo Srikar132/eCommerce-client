@@ -31,8 +31,7 @@ export function CartSyncProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      isSyncingRef.current = true; // Lock sync
-      console.log("[CartSync] Syncing", localCart.items.length, "items to backend");
+      isSyncingRef.current = true;
 
       const itemsToSync = localCart.items.map((item) => ({
         productId: item.productId,
@@ -44,16 +43,14 @@ export function CartSyncProvider({ children }: { children: React.ReactNode }) {
       try {
         await syncCartMutation.mutateAsync(itemsToSync);
         
-        // Clear local cart after successful sync
         localCartManager.clear();
         hasSyncedRef.current = true;
         
         toast.success("Your cart has been synced!");
       } catch (error) {
-        console.error("[CartSync] Failed:", error);
         toast.error("Failed to sync cart. Items saved locally.");
       } finally {
-        isSyncingRef.current = false; // Unlock sync
+        isSyncingRef.current = false;
       }
     };
 

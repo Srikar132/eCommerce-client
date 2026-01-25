@@ -2,8 +2,6 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { ShoppingBag, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface ProductActionsProps {
@@ -36,47 +34,27 @@ export default function ProductActions({
     };
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-4 pt-4">
             {/* CUSTOMIZATION BUTTON */}
             {isCustomizable && (
-                <Button
+                <button
                     onClick={handleCustomize}
-                    variant="outline"
-                    size="lg"
-                    className="w-full h-12 text-base font-medium group relative overflow-hidden border-2 border-accent hover:bg-accent/10 transition-all duration-300"
+                    className="w-full py-5 bg-primary hover:bg-opacity-90 text-white font-semibold rounded-2xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-primary/25"
                 >
-                    <Sparkles className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
-                    <span>Customize Your Design</span>
-                    <span className="ml-auto flex gap-0.5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                        <span>›</span>
-                        <span>›</span>
-                        <span>›</span>
-                    </span>
-                </Button>
+                    <span className="material-icons-outlined">auto_awesome</span>
+                    Personalize with Embroidery
+                </button>
             )}
 
-            {/* ADD TO CART BUTTON */}
-            {isInCart ? (
-                <Button
-                    onClick={() => router.push("/cart")}
-                    variant="outline"
-                    size="lg"
-                    className="w-full h-12 text-base font-medium border-2 border-accent hover:bg-accent/10 transition-all duration-300"
-                >
-                    <ShoppingBag className="w-5 h-5 mr-2" />
-                    Go to Cart
-                </Button>
-            ) : (
-                <Button
-                    onClick={onAddToCart}
-                    disabled={disabled}
-                    size="lg"
-                    className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md hover:shadow-lg"
-                >
-                    <ShoppingBag className="w-5 h-5 mr-2" />
-                    Add to Cart
-                </Button>
-            )}
+            {/* ADD TO CART / GO TO CART BUTTON */}
+            <button
+                onClick={isInCart ? () => router.push("/cart") : onAddToCart}
+                disabled={!isInCart && disabled}
+                className="w-full py-5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-semibold rounded-2xl flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <span className="material-icons-outlined">shopping_bag</span>
+                {isInCart ? 'View Cart' : 'Buy Plain Base'}
+            </button>
         </div>
     );
 }

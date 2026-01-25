@@ -1,14 +1,9 @@
-
-
-
 import { 
     Design,
     DesignCategory,
     PagedResponse
 } from "@/types";
 import { apiClient } from "./client";
-import { AxiosResponse } from "axios";
-import { buildParams } from "../utils";
 
 /**
  * Design API Interface
@@ -29,6 +24,10 @@ export interface FetchDesignList {
     sortDir?: 'ASC' | 'DESC';
 }
 
+/**
+ * Design API - Uses apiClient (axios) for all requests
+ * Works seamlessly with TanStack Query
+ */
 export const designsApi = {
     /**
      * GET /api/v1/designs
@@ -56,34 +55,24 @@ export const designsApi = {
         sortBy = 'createdAt',
         sortDir = 'DESC'
     }: FetchDesignList): Promise<PagedResponse<Design>> => {
-
-        console.log('Fetching designs with params:', { filters, page, size, sortBy, sortDir });
-
-        const params = {
-            page,
-            size,
+        const params: Record<string, string> = {
+            page: page.toString(),
+            size: size.toString(),
             sortBy,
             sortDir,
-            ...filters, // Spread filters directly (categorySlug, q, isPremium)
         };
 
-        const queryString = buildParams(params);
-        console.log('Query string:', queryString);
-        console.log('Full URL:', `/api/v1/designs?${queryString}`);
-        
-        const res: AxiosResponse<PagedResponse<Design>> = await apiClient.get(
-            `/api/v1/designs?${queryString}`
-        );
+        if (filters?.categorySlug) params.categorySlug = filters.categorySlug;
+        if (filters?.q) params.q = filters.q;
+        if (filters?.isPremium !== undefined) params.isPremium = filters.isPremium.toString();
 
-        console.log('API Response:', res.data);
-        console.log(`Fetched ${res.data.content.length} designs out of ${res.data.totalElements} total`);
-
-        return res.data;
+        const { data } = await apiClient.get<PagedResponse<Design>>('/api/v1/designs', { params });
+        return data;
     },
 
     /**
      * GET /api/v1/designs/{id}
-     * Get single design by ID with full details (PostgreSQL)
+     * Get single design by ID with full details
      * 
      * @param id - Design UUID
      * 
@@ -91,27 +80,16 @@ export const designsApi = {
      * - getDesignById('123e4567-e89b-12d3-a456-426614174000')
      */
     getDesignById: async (id: string): Promise<Design> => {
-        console.log('Fetching design by ID:', id);
-        
-        const { data } = await apiClient.get<Design>(
-            `/api/v1/designs/${id}`
-        );
-
-        console.log('Design fetched:', data);
+        const { data } = await apiClient.get<Design>(`/api/v1/designs/${id}`);
         return data;
     },
 
     /**
+     * GET /api/v1/designs/categories
      * Get all design categories
      */
     getAllDesignCategories: async (): Promise<DesignCategory[]> => {
-        console.log('Fetching all design categories');
-
-        const { data } = await apiClient.get<DesignCategory[]>(
-            `/api/v1/designs/categories`
-        );
-
-        console.log('Design categories fetched:', data);
+        const { data } = await apiClient.get<DesignCategory[]>('/api/v1/designs/categories');
         return data;
     }
 };

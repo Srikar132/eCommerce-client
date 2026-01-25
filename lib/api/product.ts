@@ -4,17 +4,16 @@ import {
     ProductReviewsResponse,
     AddReviewRequest,
     AddReviewResponse,
-    PagedResponse,
-    Design,
     ProductVariant,
     ProductResponse
 } from "@/types";
-import { apiClient } from "./client";
-import { AxiosResponse } from "axios";
 import { buildParams } from "../utils";
+import { apiClient } from "./client";
 
-
-
+/**
+ * Product API - Uses apiClient (axios) for all requests
+ * Works seamlessly with TanStack Query
+ */
 export const productApi = {
     /**
      * GET /api/v1/products
@@ -37,28 +36,18 @@ export const productApi = {
         size = 24,
         sort = 'createdAt,desc'
     }: FetchProductList): Promise<ProductSearchResponse> => {
-
-        console.log('Fetching products with params:', { filters });
-
         const params = {
             page,
             size,
             sort,
-            ...filters, // Spread filters directly
+            ...filters,
         };
 
         const queryString = buildParams(params);
-        console.log('Query string:', queryString);
-        console.log('Full URL:', `/api/v1/products?${queryString}`);
-        
-        const res: AxiosResponse<ProductSearchResponse> = await apiClient.get(
+        const { data } = await apiClient.get<ProductSearchResponse>(
             `/api/v1/products?${queryString}`
         );
-
-        // console.log('API Response:', res.data);
-        // console.log(`Fetched ${res.data.products.content.length} products`);
-
-        return res.data;
+        return data;
     },
 
     /**
@@ -69,10 +58,9 @@ export const productApi = {
      * @param limit - Maximum number of suggestions (default: 5)
      */
     fetchAutocomplete: async (query: string, limit: number = 5): Promise<string[]> => {
-        const { data } = await apiClient.get<string[]>(
-            `/api/v1/products/autocomplete`,
-            { params: { query, limit } }
-        );
+        const { data } = await apiClient.get<string[]>('/api/v1/products/autocomplete', {
+            params: { query, limit }
+        });
         return data;
     },
 
@@ -83,9 +71,7 @@ export const productApi = {
      * @param slug - Product slug identifier
      */
     getProductBySlug: async (slug: string): Promise<ProductResponse> => {
-        const { data } = await apiClient.get<ProductResponse>(
-            `/api/v1/products/${slug}`
-        );
+        const { data } = await apiClient.get<ProductResponse>(`/api/v1/products/${slug}`);
         return data;
     },
 
@@ -96,9 +82,7 @@ export const productApi = {
      * @param slug - Product slug identifier
      */
     getProductVariants: async (slug: string): Promise<ProductVariant[]> => {
-        const { data } = await apiClient.get<ProductVariant[]>(
-            `/api/v1/products/${slug}/variants`
-        );
+        const { data } = await apiClient.get<ProductVariant[]>(`/api/v1/products/${slug}/variants`);
         return data;
     },
 
@@ -140,27 +124,6 @@ export const productApi = {
             reviewData
         );
         return data;
-    },
-
-    /**
-     * GET /api/v1/products/{slug}/designs
-     * Get designs compatible with a specific product
-     * 
-     * @param slug - Product slug identifier
-     * @param page - Page number (default: 0)
-     * @param size - Items per page (default: 20)
-     */
-    getCompatibleDesigns: async (
-        slug: string,
-        page: number = 0,
-        size: number = 20
-    ): Promise<PagedResponse<Design>> => {
-        const { data } = await apiClient.get<PagedResponse<Design>>(
-            `/api/v1/products/${slug}/designs`,
-            { params: { page, size } }
-        );
-        return data;
-    },
-
+    }
 
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { SlidersHorizontal } from "lucide-react";
@@ -9,19 +8,26 @@ import ProductGrid from "../product-grid";
 import FilterSidebar from "../filter-sidebar";
 import NoResults from "./no-results";
 import { useInfiniteProducts, useFlatProducts, useProductCount, useProductFacets } from "@/lib/tanstack/queries";
-import { parseSearchParams, formatFiltersForSidebar, countActiveFilters } from "@/utils/filter-utils";
+import { formatFiltersForSidebar, countActiveFilters } from "@/utils/filter-utils";
 import ErrorCard from "../cards/error-card";
 
+interface ProductsClientProps {
+  initialFilters: Record<string, any>;
+  initialPage: number;
+  initialSize: number;
+  initialSort: string;
+}
 
-const ProductsClient = () => {
-    const searchParams = useSearchParams();
+const ProductsClient = ({ initialFilters, initialPage, initialSize, initialSort }: ProductsClientProps) => {
     const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false);
 
-    // Parse query params from URL 
-    const queryParams = useMemo(
-        () => parseSearchParams(searchParams),
-        [searchParams]
-    );
+    // Build query params from server-provided data (no parsing needed!)
+    const queryParams = {
+      filters: initialFilters,
+      page: initialPage,
+      size: initialSize,
+      sort: initialSort,
+    };
 
     // Fetch products with infinite scroll
     const {
@@ -41,14 +47,14 @@ const ProductsClient = () => {
 
     // Format filters for sidebar - clean conversion
     const currentFilters = useMemo(
-        () => formatFiltersForSidebar(queryParams.filters),
-        [queryParams.filters]
+        () => formatFiltersForSidebar(initialFilters),
+        [initialFilters]
     );
 
     // Count active filters for badge
     const activeFilterCount = useMemo(
-        () => countActiveFilters(queryParams.filters),
-        [queryParams.filters]
+        () => countActiveFilters(initialFilters),
+        [initialFilters]
     );
 
 

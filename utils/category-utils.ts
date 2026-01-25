@@ -6,8 +6,6 @@ import { CategoryResponse as Category, CategoryNavItem, MegaMenuSection } from '
  * Converts API response to a more navigation-friendly structure
  */
 export const transformToNavItem = (category: Category): CategoryNavItem => {
-  console.log('[CategoryUtils] Transforming category to nav item:', category.slug);
-
   return {
     id: category.id,
     name: category.name,
@@ -25,10 +23,7 @@ export const transformToNavItem = (category: Category): CategoryNavItem => {
 export const transformToMegaMenuSections = (
   category: Category
 ): MegaMenuSection[] => {
-  console.log('[CategoryUtils] Transforming to mega menu sections:', category.slug);
-
   if (!category.subCategories || category.subCategories.length === 0) {
-    console.log('[CategoryUtils] No subcategories found');
     return [];
   }
 
@@ -52,12 +47,9 @@ export const findCategoryBySlug = (
   categories: Category[],
   slug: string
 ): Category | null => {
-  console.log('[CategoryUtils] Finding category by slug:', slug);
-
   for (const category of categories) {
     // Check current category
     if (category.slug === slug) {
-      console.log('[CategoryUtils] Category found:', category);
       return category;
     }
 
@@ -68,7 +60,6 @@ export const findCategoryBySlug = (
     }
   }
 
-  console.log('[CategoryUtils] Category not found for slug:', slug);
   return null;
 };
 
@@ -80,8 +71,6 @@ export const buildCategoryBreadcrumb = (
   categories: Category[],
   targetSlug: string
 ): { name: string; slug: string; href: string }[] => {
-  console.log('[CategoryUtils] Building breadcrumb for:', targetSlug);
-
   const breadcrumb: { name: string; slug: string; href: string }[] = [];
 
   const findPath = (
@@ -114,7 +103,6 @@ export const buildCategoryBreadcrumb = (
   };
 
   findPath(categories, targetSlug);
-  console.log('[CategoryUtils] Breadcrumb built:', breadcrumb);
   return breadcrumb;
 };
 
@@ -123,8 +111,6 @@ export const buildCategoryBreadcrumb = (
  * Useful for filtering or displaying only end-level categories
  */
 export const getLeafCategories = (categories: Category[]): Category[] => {
-  console.log('[CategoryUtils] Getting leaf categories');
-
   const leaves: Category[] = [];
 
   const traverse = (cats: Category[]) => {
@@ -138,7 +124,6 @@ export const getLeafCategories = (categories: Category[]): Category[] => {
   };
 
   traverse(categories);
-  console.log('[CategoryUtils] Found', leaves.length, 'leaf categories');
   return leaves;
 };
 
@@ -169,8 +154,6 @@ export const getCategoryDepth = (
  * Useful for search or listing all categories
  */
 export const flattenCategories = (categories: Category[]): Category[] => {
-  console.log('[CategoryUtils] Flattening category tree');
-
   const flattened: Category[] = [];
 
   const traverse = (cats: Category[]) => {
@@ -183,6 +166,5 @@ export const flattenCategories = (categories: Category[]): Category[] => {
   };
 
   traverse(categories);
-  console.log('[CategoryUtils] Flattened to', flattened.length, 'categories');
   return flattened;
 };

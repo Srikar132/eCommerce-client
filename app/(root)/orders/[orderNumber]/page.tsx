@@ -1,9 +1,7 @@
-
-
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useOrderDetails, useCancelOrder, useRequestReturn } from '@/lib/tanstack/queries/orders.queries';
 import { OrderStatus, PaymentStatus } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -769,4 +767,15 @@ const OrderPage = () => {
   );
 };
 
-export default OrderPage;
+// Wrapper component with Suspense
+export default function OrderPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <Skeleton className="h-96 w-full" />
+      </div>
+    }>
+      <OrderPage />
+    </Suspense>
+  );
+}

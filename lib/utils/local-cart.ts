@@ -81,7 +81,8 @@ const isSameItem = (item1: LocalCartItem, item2: LocalCartItem): boolean => {
 export const localCartManager = {
   getCart(): LocalCart {
     if (typeof window === "undefined") {
-      return { items: [], lastModified: new Date().toISOString() };
+      // ✅ Use static date for SSR to avoid prerendering issues
+      return { items: [], lastModified: "1970-01-01T00:00:00.000Z" };
     }
 
     try {
@@ -92,7 +93,6 @@ export const localCartManager = {
 
       return JSON.parse(stored);
     } catch (error) {
-      console.error("[LocalCart] Failed to parse cart:", error);
       return { items: [], lastModified: new Date().toISOString() };
     }
   },
@@ -103,29 +103,20 @@ export const localCartManager = {
     try {
       cart.lastModified = new Date().toISOString();
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-      console.log("[LocalCart] Saved:", cart.items.length, "items");
     } catch (error) {
-      console.error("[LocalCart] Failed to save cart:", error);
+      // Silently fail
     }
   },
 
   addItem(item: LocalCartItem): void {
     const cart = this.getCart();
 
-    console.log("[LocalCart] Adding item:", {
-      productSlug: item.productSlug,
-      designId: item.customizationData?.designId,
-      threadColor: item.customizationData?.threadColorHex,
-    });
-
     const existingIndex = cart.items.findIndex((i) => isSameItem(i, item));
 
     if (existingIndex >= 0) {
       cart.items[existingIndex].quantity += item.quantity;
-      console.log("[LocalCart] Updated quantity:", cart.items[existingIndex].quantity);
     } else {
       cart.items.push(item);
-      console.log("[LocalCart] Added new item");
     }
 
     this.saveCart(cart);

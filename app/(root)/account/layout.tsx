@@ -1,7 +1,9 @@
 "use client";
+import { Suspense } from "react";
 import AccountSidebarWrapper from "@/components/account/account-sidebar-wrapper";
 import Header from "@/components/header";
 import { useAuth } from "@/hooks/use-auth";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 export default function AccountLayout({ children }: {
@@ -21,12 +23,16 @@ export default function AccountLayout({ children }: {
                 <div className="flex flex-col lg:flex-row gap-6 items-start">
                     {/* Sidebar - sticky on desktop */}
                     <aside className="w-full lg:w-64 lg:sticky lg:top-6 shrink-0 lg:self-start">
-                        <AccountSidebarWrapper />
+                        <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+                            <AccountSidebarWrapper />
+                        </Suspense>
                     </aside>
 
                     {/* Main Content */}
                     <main className="flex-1 min-w-0 w-full">
-                        {children}
+                        <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+                            {children}
+                        </Suspense>
                     </main>
                 </div>
             </div>

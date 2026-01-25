@@ -28,9 +28,79 @@ export interface QueryParams {
 }
 
 /**
- * Parse search params into structured query parameters
+ * Parse server component search params into structured query parameters
+ * Use this in Server Components (app router pages)
  */
-export function parseSearchParams(searchParams: ReadonlyURLSearchParams): QueryParams {
+export function parseSearchParams(params: Record<string, string | string[] | undefined>): QueryParams {
+  const filters: ProductFiltersRecord = {};
+
+  // Parse array/string filters
+  if (params.category) {
+    filters.category = Array.isArray(params.category)
+      ? params.category
+      : [params.category];
+  }
+
+  if (params.brand) {
+    filters.brand = Array.isArray(params.brand)
+      ? params.brand
+      : [params.brand];
+  }
+
+  if (params.productSize) {
+    filters.productSize = Array.isArray(params.productSize)
+      ? params.productSize
+      : [params.productSize];
+  }
+
+  if (params.color) {
+    filters.color = Array.isArray(params.color)
+      ? params.color
+      : [params.color];
+  }
+
+  // Parse number filters
+  if (params.minPrice) {
+    filters.minPrice = Number(params.minPrice);
+  }
+
+  if (params.maxPrice) {
+    filters.maxPrice = Number(params.maxPrice);
+  }
+
+  // Parse boolean filters
+  if (params.customizable === 'true') {
+    filters.customizable = true;
+  }
+
+  // Parse search query
+  if (params.searchQuery) {
+    filters.searchQuery = params.searchQuery;
+  }
+
+  // Parse pagination - page (0-based)
+  const page = typeof params.page === 'string'
+    ? Math.max(0, parseInt(params.page) - 1)  // Convert 1-based URL to 0-based
+    : 0;
+
+  // Parse size
+  const size = typeof params.size === 'string'
+    ? parseInt(params.size)
+    : 24;
+
+  // Parse sort
+  const sort = typeof params.sort === 'string'
+    ? params.sort
+    : 'createdAt,desc';
+
+  return { filters, page, size, sort };
+}
+
+/**
+ * Parse client-side URLSearchParams into structured query parameters
+ * Use this in Client Components with useSearchParams()
+ */
+export function parseURLSearchParams(searchParams: ReadonlyURLSearchParams): QueryParams {
   const filters: ProductFiltersRecord = {};
 
   // Helper to get param (handles single and multiple values)

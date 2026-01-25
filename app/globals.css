@@ -596,6 +596,29 @@
   }
 
   /* ============================================
+     THREAD TEXTURE - Embroidery Theme
+     ============================================ */
+  .thread-texture {
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.05) 0px,
+      rgba(0, 0, 0, 0.05) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  }
+
+  .dark .thread-texture {
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  }
+
+  /* ============================================
      SONNER TOAST CUSTOMIZATION - PREMIUM ROYAL EDITION
      Sophisticated, elegant, and luxurious styling
      ============================================ */
@@ -942,6 +965,26 @@
   /* Add premium spacing between toasts */
   [data-sonner-toast] + [data-sonner-toast] {
     margin-top: 0.75rem;
+  }
+
+  /* ============================================
+     PRODUCT IMAGE GALLERY
+     ============================================ */
+  .image-container:hover .zoom-overlay {
+    opacity: 1;
+  }
+
+  .zoom-overlay {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  /* ============================================
+     DESIGN CARD HOVER EFFECT
+     ============================================ */
+  .design-card:hover .add-btn {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

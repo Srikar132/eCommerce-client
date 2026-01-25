@@ -39,19 +39,9 @@ const processQueue = (error: Error | null) => {
   failedQueue = [];
 };
 
-
-
-
-// Request interceptor (optional logging)
+// Request interceptor
 apiClient.interceptors.request.use(
-  (config) => {
-    // Only log in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[API]', config.method?.toUpperCase(), config.url);
-    }
-
-    return config;
-  },
+  (config) => config,
   (error) => Promise.reject(error)
 );
 
@@ -61,14 +51,11 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
 
     if (!error.response) {
-      console.error('[API] Network error:', error.message);
-
       if (typeof window !== 'undefined') {
         toast.error('Network Error', {
           description: 'Please check your internet connection',
         });
       }
-
       return Promise.reject(new Error('Network error'));
     }
 
@@ -92,8 +79,6 @@ apiClient.interceptors.response.use(
       }
 
       if (isRefreshing) {
-        // Queue requests while refreshing
-        console.log('[API] Queueing request while refresh in progress:', originalRequest.url);
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -101,51 +86,37 @@ apiClient.interceptors.response.use(
           .catch((err) => Promise.reject(err));
       }
 
-      console.log('[API] Starting token refresh due to 401/403 on:', originalRequest.url);
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        // Call backend refresh endpoint directly
         await axios.post(
           `${API_BASE_URL}/api/v1/auth/refresh`,
           {},
           {
-            withCredentials: true, // Sends refreshToken cookie
+            withCredentials: true,
           }
         );
 
-        console.log('[API] ✅ Token refresh successful');
         processQueue(null);
-
-        // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
-        console.error('[API] ❌ Token refresh failed:', refreshError);
         processQueue(refreshError as Error);
 
-        // Clear auth state
         if (typeof window !== 'undefined') {
           const currentPath = window.location.pathname;
           
-          // Clear client-side state
           localStorage.removeItem('auth-storage');
           sessionStorage.clear();
 
-          // Only redirect on protected routes
-          // For public routes, just clear state silently (user can continue browsing)
           if (isProtectedRoute(currentPath)) {
             toast.error('Session Expired', {
               description: 'Please log in again',
             });
 
-            // Redirect to login
             setTimeout(() => {
               window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
             }, 500);
-          } else {
-            // On public/guest routes, just log - no toast, no redirect
-            console.log('[API] Session expired on public route - cleared auth state');
           }
         }
 

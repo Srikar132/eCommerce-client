@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { designsApi } from '@/lib/api/design';
 import type { Design, PagedResponse } from '@/types';
+import { initial } from 'lodash';
 
 /**
  * Infinite query hook for fetching designs with pagination
@@ -15,7 +16,9 @@ export function useInfiniteDesigns(
     q?: string;
     isPremium?: boolean;
   },
-  pageSize: number = 20
+  pageSize: number = 20, options?: {
+    initialData: Awaited<ReturnType<typeof designsApi.getDesigns>>
+  }
 ) {
   return useInfiniteQuery({
     queryKey: ['designs', 'infinite', filters, pageSize],
@@ -31,6 +34,12 @@ export function useInfiniteDesigns(
       if (lastPage.last) return undefined;
       return lastPage.page + 1;
     },
+    initialData: options?.initialData
+      ? {
+          pages: [options.initialData],
+          pageParams: [0],
+        }
+      : undefined,
     initialPageParam: 0,
   });
 }
@@ -55,10 +64,13 @@ export function useDesign(id: string) {
  *
  * Ex : floral-patterns , vintage-patterns....
  */
-export function useDesignCategories() {
+export function useDesignCategories(options? : {
+  initialData?: Awaited<ReturnType<typeof designsApi.getAllDesignCategories>>
+}) {
   return useQuery({
     queryKey: ['design', 'categories'],
     queryFn: () => designsApi.getAllDesignCategories(),
+    initialData: options?.initialData,
   });
 }
 

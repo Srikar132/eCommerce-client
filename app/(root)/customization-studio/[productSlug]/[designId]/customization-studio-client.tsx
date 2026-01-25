@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useProduct, useProductVariants } from "@/lib/tanstack/queries/product.queries";
 import { useDesign } from "@/lib/tanstack/queries/design.queries";
 import { useCartManager } from "@/hooks/use-cart";
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { Loader2, ShoppingCart, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 interface CustomizationStudioClientProps {
   productSlug: string;
@@ -25,13 +25,12 @@ interface CustomizationStudioClientProps {
 }
 
 const THREAD_COLORS = [
-  { name: "White", hex: "#FFFFFF" },
-  { name: "Beige", hex: "#F5E6D3" },
-  { name: "Rose", hex: "#FFB6C1" },
-  { name: "Sky", hex: "#87CEEB" },
-  { name: "Lavender", hex: "#DDA0DD" },
-  { name: "Slate", hex: "#708090" },
-  { name: "Black", hex: "#000000" },
+  { name: "Champagne Cream", hex: "#F5E6D3" },
+  { name: "Rose", hex: "#FFB7B2" },
+  { name: "Sky", hex: "#B2E2F2" },
+  { name: "Lavender", hex: "#D8B4E2" },
+  { name: "Slate", hex: "#7D8C9C" },
+  { name: "Black", hex: "#1A1A1A" },
 ];
 
 export default function CustomizationStudioClient({
@@ -53,24 +52,15 @@ export default function CustomizationStudioClient({
   const [selectedThreadColor, setSelectedThreadColor] = useState(THREAD_COLORS[0].hex);
   const [userMessage, setUserMessage] = useState("");
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-
-  // Dialog states
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
-  // Find selected variant from variants array
+  // Find selected variant
   const selectedVariant = variants?.find((v) => v.id === variantId);
 
-  // Get the first variant image for display
+  // Get variant image
   const variantImageUrl = selectedVariant?.images?.[0]?.imageUrl;
 
-  // ============================================================================
-  // CART STATE CHECKING
-  // ============================================================================
-
-  /**
-   * Check if this exact customization is in cart
-   * Uses property matching (design + variant + threadColor + message)
-   */
+  // Check if in cart
   const isItemInCart = product && selectedVariant && design
     ? cart.isInCart({
         productId: product.id,
@@ -81,10 +71,7 @@ export default function CustomizationStudioClient({
       })
     : false;
 
-  // ============================================================================
-  // ADD TO CART - SIMPLIFIED
-  // ============================================================================
-
+  // Add to cart handler
   const handleAddToCart = async () => {
     if (!product || !selectedVariant || !design) {
       toast.error("Missing required data");
@@ -94,7 +81,6 @@ export default function CustomizationStudioClient({
     setIsAddingToCart(true);
 
     try {
-      // Add to cart with inline customization data
       await cart.addItem({
         productId: product.id,
         productVariantId: selectedVariant.id,
@@ -123,196 +109,215 @@ export default function CustomizationStudioClient({
     }
   };
 
-  // ============================================================================
-  // LOADING STATE
-  // ============================================================================
-
+  // Loading state
   if (productLoading || designLoading || variantsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-foreground" />
+      <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!product || !design || !selectedVariant) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Product or design not found</p>
+      <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark">
+        <p className="text-slate-500">Product or design not found</p>
       </div>
     );
   }
 
-  // Calculate total price
+  // Calculate total
   const totalPrice = product.basePrice + (selectedVariant.additionalPrice || 0) + design.designPrice;
   const selectedThreadColorName = THREAD_COLORS.find(c => c.hex === selectedThreadColor)?.name || "Custom";
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
       {/* Header */}
-      <header className="border-b bg-background">
-        <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-slate-200/60 dark:border-slate-800 /80 dark:bg-black/40 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-foreground hover:text-foreground/80 transition-colors group"
+            className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-medium">Back</span>
+            <ArrowLeft className="w-5 h-5" />
+            Back
           </button>
-
-          <h1 className="text-lg font-semibold hidden md:block">{product.name}</h1>
-
-          <div className="w-20" /> {/* Spacer for centering */}
+          <div className="hidden md:block italic font-display text-lg text-slate-600 dark:text-slate-400">
+            {product.name}
+          </div>
+          <div className="w-20" />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container max-w-6xl mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Left: Images Preview */}
-          <div className="space-y-6">
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Left: Preview Images */}
+          <div className="lg:col-span-7 space-y-10">
+            {/* Title Section */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Customize Your Design</h2>
-              <p className="text-muted-foreground">
-                Preview your customization with the selected design and thread color
+              <h1 className="text-4xl font-display italic text-slate-800 dark:text-slate-200">
+                Customize Your Design
+              </h1>
+              <p className="text-slate-500 dark:text-slate-400 max-w-lg">
+                Preview your customization with the selected design and thread color. Our artisans hand-finish every piece.
               </p>
             </div>
 
-            {/* Product Variant Image */}
-            <div className="rounded-lg border bg-muted/20 p-6 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-border" />
-                <span className="text-sm font-medium text-muted-foreground">Base Product</span>
-                <div className="h-px flex-1 bg-border" />
-              </div>
-              
-              {variantImageUrl && (
-                <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                  <img
-                    src={variantImageUrl}
-                    alt={`${product.name} - ${selectedVariant.color}`}
-                    className="w-full h-full object-cover"
-                  />
+            {/* Images Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Base Product */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-xs font-semibold tracking-widest uppercase text-slate-400 dark:text-slate-500">
+                    Base Product
+                  </span>
                 </div>
-              )}
-              
-              <div className="text-center">
-                <p className="font-medium">{selectedVariant.color}</p>
-                <p className="text-sm text-muted-foreground">Size: {selectedVariant.size}</p>
-              </div>
-            </div>
-
-            {/* Design Image */}
-            <div className="rounded-lg border bg-muted/20 p-6 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-border" />
-                <span className="text-sm font-medium text-muted-foreground">Selected Design</span>
-                <div className="h-px flex-1 bg-border" />
-              </div>
-
-              {design.designImageUrl && (
-                <div className="relative aspect-square max-w-md mx-auto rounded-lg overflow-hidden bg-white">
-                  <img
-                    src={design.designImageUrl}
-                    alt={design.name}
-                    className="w-full h-full object-contain p-8"
-                  />
+                <div className="aspect-4/5 rounded-xl overflow-hidden  dark:bg-card-dark border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md relative">
+                  {variantImageUrl ? (
+                    <Image
+                      src={variantImageUrl}
+                      alt={`${product.name} - ${selectedVariant.color}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                      <span className="material-icons-outlined text-6xl">checkroom</span>
+                    </div>
+                  )}
                 </div>
-              )}
+                <div className="text-center">
+                  <p className="font-medium text-slate-800 dark:text-slate-200">
+                    {selectedVariant.color}
+                  </p>
+                  <p className="text-sm text-slate-500">Size: {selectedVariant.size}</p>
+                </div>
+              </div>
 
-              <div className="text-center">
-                <p className="font-medium">{design.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  Thread Color: {selectedThreadColorName}
-                </p>
+              {/* Selected Design */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-xs font-semibold tracking-widest uppercase text-slate-400 dark:text-slate-500">
+                    Selected Embroidery
+                  </span>
+                </div>
+                <div className="aspect-4/5 rounded-xl overflow-hidden  dark:bg-card-dark border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md group relative">
+                  {design.designImageUrl ? (
+                    <Image
+                      src={design.designImageUrl}
+                      alt={design.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                      <span className="material-icons-outlined text-6xl">palette</span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors"></div>
+                </div>
+                <div className="text-center">
+                  <p className="font-medium text-slate-800 dark:text-slate-200">
+                    {design.name}
+                  </p>
+                  <p className="text-sm text-slate-500">Category: {design.category?.name}</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right: Customization Form */}
-          <div className="space-y-6">
-            <div className="rounded-lg border bg-card p-6 space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Customization Options</h3>
-                <p className="text-sm text-muted-foreground">
-                  Choose your thread color and add a personal message
-                </p>
-              </div>
+          {/* Right: Customization Options */}
+          <div className="lg:col-span-5">
+            <div className=" dark:bg-card-dark rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none sticky top-28">
+              {/* Header */}
+              <h2 className="text-2xl font-display italic mb-1 text-slate-800 dark:text-slate-200">
+                Customization Options
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
+                Choose your thread color and add a personal message for our craftsmen.
+              </p>
 
               {/* Thread Color Selection */}
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Thread Color</Label>
-                <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
+              <div className="mb-10">
+                <div className="flex justify-between items-end mb-4">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    Thread Color
+                  </label>
+                  <span className="text-xs text-primary font-medium">
+                    Selected: {selectedThreadColorName}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-3">
                   {THREAD_COLORS.map((color) => (
                     <button
                       key={color.hex}
                       onClick={() => setSelectedThreadColor(color.hex)}
-                      className={`relative aspect-square rounded-lg border-2 transition-all hover:scale-105 ${
+                      className={`w-10 h-10 rounded-full p-0.5 ring-2 ring-transparent ring-offset-2 dark:ring-offset-card-dark transition-all hover:scale-110 ${
                         selectedThreadColor === color.hex
-                          ? "border-foreground ring-2 ring-foreground ring-offset-2"
-                          : "border-border hover:border-foreground/50"
+                          ? "border-2 border-primary ring-primary/30"
+                          : "border border-slate-200 dark:border-slate-700"
                       }`}
                       title={color.name}
                     >
                       <div
-                        className="w-full h-full rounded-md"
+                        className="w-full h-full rounded-full shadow-inner flex items-center justify-center thread-texture"
                         style={{ backgroundColor: color.hex }}
-                      />
-                      {selectedThreadColor === color.hex && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <CheckCircle2 className="w-6 h-6 text-foreground drop-shadow-lg" />
-                        </div>
-                      )}
+                      >
+                        {selectedThreadColor === color.hex && (
+                          <span className="material-icons-outlined text-sm text-slate-700">
+                            check
+                          </span>
+                        )}
+                      </div>
                     </button>
                   ))}
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Selected: <span className="font-medium">{selectedThreadColorName}</span>
-                </p>
               </div>
 
-              {/* User Message */}
-              <div className="space-y-3">
-                <Label htmlFor="message" className="text-base font-medium">
-                  Personal Message <span className="text-muted-foreground font-normal">(Optional)</span>
-                </Label>
+              {/* Message */}
+              <div className="mb-10">
+                <div className="flex justify-between mb-4">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    Message for the Artisan{" "}
+                    <span className="text-slate-400 font-normal">(Optional)</span>
+                  </label>
+                  <span className="text-[10px] text-slate-400 uppercase tracking-widest">
+                    {userMessage.length} / 200
+                  </span>
+                </div>
                 <Textarea
-                  id="message"
                   value={userMessage}
                   onChange={(e) => setUserMessage(e.target.value)}
-                  placeholder="Add a personal message to be embroidered..."
-                  className="min-h-25 resize-none"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border-none focus:ring-1 focus:ring-primary rounded-xl p-4 text-sm min-h-30 placeholder:text-slate-400 transition-all resize-none"
+                  placeholder="Add a personal touch or specific placement notes for the artisan to consider while embroidering..."
                   maxLength={200}
                 />
-                <div className="flex justify-between text-sm">
-                  <p className="text-muted-foreground">
-                    Your message will be embroidered with care
-                  </p>
-                  <p className="text-muted-foreground">
-                    {userMessage.length}/200
-                  </p>
-                </div>
               </div>
 
               {/* Price Summary */}
-              <div className="border-t pt-4 space-y-2">
+              <div className="space-y-3 mb-8 pt-6 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Base Price</span>
-                  <span>₹{product.basePrice}</span>
+                  <span className="text-slate-500">Base Product Price</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                    ₹{product.basePrice}.00
+                  </span>
                 </div>
-                {selectedVariant.additionalPrice > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Variant</span>
-                    <span>₹{selectedVariant.additionalPrice}</span>
-                  </div>
-                )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Design</span>
-                  <span>₹{design.designPrice}</span>
+                  <span className="text-slate-500">Custom Embroidery</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                    ₹{design.designPrice}.00
+                  </span>
                 </div>
-                <div className="flex justify-between text-base font-semibold pt-2 border-t">
-                  <span>Total</span>
-                  <span>₹{totalPrice}</span>
+                <div className="flex justify-between text-lg pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <span className="font-display italic font-bold text-slate-800 dark:text-slate-200">
+                    Total Amount
+                  </span>
+                  <span className="font-bold text-slate-900 dark:text-white">
+                    ₹{totalPrice}.00
+                  </span>
                 </div>
               </div>
 
@@ -320,30 +325,28 @@ export default function CustomizationStudioClient({
               <Button
                 onClick={isItemInCart ? () => router.push("/cart") : handleAddToCart}
                 disabled={!isItemInCart && (isAddingToCart || cart.isAdding)}
-                className="w-full h-12 text-base gap-2"
-                size="lg"
-                variant={isItemInCart ? "outline" : "default"}
+                className="w-full bg-primary hover:bg-[#D47981] text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] shadow-lg shadow-primary/20 h-auto"
               >
                 {isItemInCart ? (
                   <>
                     <CheckCircle2 className="w-5 h-5" />
-                    Already in Cart - View Cart
+                    Already in Bag - View Cart
                   </>
                 ) : isAddingToCart || cart.isAdding ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Adding to Cart...
+                    Adding to Bag...
                   </>
                 ) : (
                   <>
                     <ShoppingCart className="w-5 h-5" />
-                    Add to Cart - ₹{totalPrice}
+                    Add to Bag — ₹{totalPrice}
                   </>
                 )}
               </Button>
 
-              <p className="text-xs text-center text-muted-foreground">
-                Free shipping on orders above ₹999 • Embroidery included
+              <p className="text-[11px] text-center text-slate-400 mt-6 uppercase tracking-wider">
+                Free express shipping on all custom orders above ₹999
               </p>
             </div>
           </div>
@@ -397,3 +400,4 @@ export default function CustomizationStudioClient({
     </div>
   );
 }
+

@@ -38,6 +38,9 @@ export default function Layout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" rel="stylesheet" />
+      </head>
       <body
         className={`${inter.variable} ${playfair.variable} antialiased`}
       >

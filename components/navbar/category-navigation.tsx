@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FALLBACK_CATEGORIES } from "@/lib/constants/fallback-data";
-import { useRootCategories, useCategoryChildren } from "@/lib/tanstack/queries";
+import { CategoryTree } from "@/lib/api/category";
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -14,21 +13,21 @@ import { cn } from "@/lib/utils";
 
 interface CategoryNavigationProps {
     className?: string;
+    categoryTree: CategoryTree[]; // ✅ Complete data from server
 }
 
-export function CategoryNavigation({ className }: CategoryNavigationProps) {
-    const { data: rootCategories = FALLBACK_CATEGORIES } = useRootCategories();
-
+export function CategoryNavigation({ className, categoryTree }: CategoryNavigationProps) {
     return (
         <NavigationMenu viewport={false} className={cn("hidden xl:flex", className)}>
             <NavigationMenuList>
-                {rootCategories.map((category) => (
+                {categoryTree.map((category) => (
                     <NavigationMenuItem key={category.id}>
                         <NavigationMenuTrigger className="bg-transparent!">
                             {category.name}
                         </NavigationMenuTrigger>
                         
-                        <CategoryMegaMenu categorySlug={category.slug} />
+                        {/* ✅ Data is already here - instant mega menu! */}
+                        <CategoryMegaMenu children={category.children} />
                     </NavigationMenuItem>
                 ))}
             </NavigationMenuList>
@@ -36,10 +35,8 @@ export function CategoryNavigation({ className }: CategoryNavigationProps) {
     );
 }
 
-function CategoryMegaMenu({ categorySlug }: { categorySlug: string }) {
-    const { data: subCategories = [] } = useCategoryChildren(categorySlug);
-
-    if (!subCategories || subCategories.length === 0) {
+function CategoryMegaMenu({ children }: { children: any[] }) {
+    if (!children || children.length === 0) {
         return null;
     }
 
@@ -47,7 +44,7 @@ function CategoryMegaMenu({ categorySlug }: { categorySlug: string }) {
         <NavigationMenuContent>
             <div className="w-[900px] p-4 z-50">
                 <div className="grid grid-cols-5 gap-x-8">
-                    {subCategories.map((subCategory) => {
+                    {children.map((subCategory) => {
                         const hasSubCategories = subCategory.subCategories && subCategory.subCategories.length > 0;
                         
                         return (
@@ -61,7 +58,7 @@ function CategoryMegaMenu({ categorySlug }: { categorySlug: string }) {
 
                                 {hasSubCategories && (
                                     <ul className="space-y-1.5 mt-2.5">
-                                        {subCategory?.subCategories?.map((item) => (
+                                        {subCategory.subCategories.map((item: any) => (
                                             <li key={item.id}>
                                                 <Link
                                                     href={`/products?category=${item.slug}`}

@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import ImageZoomModal from "./image-zoom-modal";
-import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 
 interface ProductImage {
     id: string;
@@ -22,10 +21,10 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
 
     if (!images || images.length === 0) {
         return (
-            <div className="w-full p-3 sm:p-4">
-                <div className="relative w-full rounded-xl overflow-hidden" style={{ paddingBottom: '125%' }}>
-                    <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                        <div className="text-muted-foreground text-center">
+            <div className="w-full">
+                <div className="relative w-full" style={{ paddingBottom: '125%' }}>
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800">
+                        <div className="text-slate-400 text-center">
                             <p className="text-lg">No images available</p>
                         </div>
                     </div>
@@ -34,98 +33,82 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
         );
     }
 
-    const handlePrevious = () => {
-        setSelectedImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-    };
-
-    const handleNext = () => {
-        setSelectedImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    };
-
     return (
         <div className="w-full">
-            <div className="flex flex-col gap-3 p-3 sm:p-4">
-                {/* Main Image Container with 4:5 Aspect Ratio for better proportion */}
-                <div className="relative w-full rounded-xl overflow-hidden bg-muted group" style={{ paddingBottom: '125%' }}>
-                    {/* Main Image */}
-                    <div className="absolute inset-0">
-                        <Image
-                            src={images[selectedImageIndex].url}
-                            alt={images[selectedImageIndex].alt}
-                            fill
-                            className="object-contain transition-transform duration-300 group-hover:scale-105"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
-                            priority={selectedImageIndex === 0}
-                            quality={85}
-                        />
-                    </div>
+            {/* Main Image Container */}
+            <div className="relative w-full group max-h-[700px] h-[700px] overflow-hidden rounded-lg">
+                <Image
+                    src={images[selectedImageIndex].url}
+                    alt={images[selectedImageIndex].alt}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"
+                    priority={selectedImageIndex === 0}
+                    quality={90}
+                />
 
-                    {/* Zoom Button Overlay */}
-                    <button
-                        onClick={() => setIsZoomOpen(true)}
-                        className="absolute top-2 right-2 p-2 bg-background/90 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background hover:scale-110 shadow-md z-10"
-                        aria-label="Zoom image"
-                    >
-                        <ZoomIn className="h-4 w-4 text-foreground" />
-                    </button>
-
-                    {/* Navigation Arrows (only show if more than 1 image) */}
-                    {images.length > 1 && (
-                        <>
-                            <button
-                                onClick={handlePrevious}
-                                className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-background/90 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background hover:scale-110 shadow-md z-10"
-                                aria-label="Previous image"
-                            >
-                                <ChevronLeft className="h-4 w-4 text-foreground" />
-                            </button>
-                            <button
-                                onClick={handleNext}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-background/90 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background hover:scale-110 shadow-md z-10"
-                                aria-label="Next image"
-                            >
-                                <ChevronRight className="h-4 w-4 text-foreground" />
-                            </button>
-                        </>
-                    )}
-
-                    {/* Image Counter */}
-                    {images.length > 1 && (
-                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-background/90 backdrop-blur-sm rounded-lg text-xs font-medium text-foreground shadow-md">
-                            {selectedImageIndex + 1} / {images.length}
-                        </div>
-                    )}
-                </div>
-
-                {/* Thumbnail Grid */}
+                {/* Image Indicator Dots */}
                 {images.length > 1 && (
-                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                        {images.map((image, index) => (
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                        {images.map((_, index) => (
                             <button
-                                key={image.id}
+                                key={index}
                                 onClick={() => setSelectedImageIndex(index)}
                                 className={cn(
-                                    "relative w-full rounded-md overflow-hidden border-2 transition-all duration-200",
+                                    "w-2 h-2 rounded-full transition-all",
                                     selectedImageIndex === index
-                                        ? "border-primary ring-2 ring-primary/20 scale-105"
-                                        : "border-border hover:border-primary/50 hover:scale-105"
+                                        ? "bg-primary"
+                                        : "bg-slate-300 dark:bg-slate-700"
                                 )}
-                                style={{ paddingBottom: '125%' }}
-                            >
-                                <div className="absolute inset-0">
-                                    <Image
-                                        src={image.url}
-                                        alt={image.alt}
-                                        fill
-                                        className="object-contain"
-                                        sizes="80px"
-                                    />
-                                </div>
-                            </button>
+                                aria-label={`View image ${index + 1}`}
+                            />
                         ))}
                     </div>
                 )}
+
+                {/* Zoom Overlay */}
+                <div 
+                    onClick={() => setIsZoomOpen(true)}
+                    className="zoom-overlay opacity-0 absolute inset-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center bg-black/5 cursor-pointer group-hover:pointer-events-auto group-hover:opacity-100 z-10"
+                >
+                    <div className="bg-white/80 dark:bg-black/80 backdrop-blur p-4 rounded-full">
+                        <span className="material-icons-outlined text-slate-900 dark:text-white">zoom_in</span>
+                    </div>
+                </div>
             </div>
+
+            {/* Thumbnail Grid */}
+            {images.length > 1 && (
+                <div className="grid grid-cols-4 gap-4 mt-6">
+                    {images.slice(0, 4).map((image, index) => (
+                        <button
+                            key={image.id}
+                            onClick={() => setSelectedImageIndex(index)}
+                            className={cn(
+                                "aspect-square rounded-xl overflow-hidden transition-all cursor-pointer",
+                                selectedImageIndex === index
+                                    ? "border-2 border-primary"
+                                    : "border border-slate-100 dark:border-slate-800 hover:border-primary"
+                            )}
+                        >
+                            <div className="relative w-full h-full">
+                                <Image
+                                    src={image.url}
+                                    alt={image.alt}
+                                    fill
+                                    className="object-cover"
+                                    sizes="100px"
+                                />
+                                {index === 3 && images.length > 4 && (
+                                    <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300 bg-white/50 dark:bg-black/50">
+                                        +{images.length - 4} More
+                                    </div>
+                                )}
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {/* Zoom Modal */}
             {isZoomOpen && (
