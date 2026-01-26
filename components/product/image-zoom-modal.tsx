@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
 interface ImageZoomModalProps {
   image: {
     id: string;
-    url: string;
+    url: string | null;
     alt: string;
   };
   onClose: () => void;
@@ -31,7 +31,7 @@ const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
         <div className="relative w-full h-[90vh] flex items-center justify-center p-8">
           <div className="relative w-full h-full">
             <Image
-              src={image.url}
+              src={image.url!}
               alt={image.alt}
               fill
               className="object-contain"

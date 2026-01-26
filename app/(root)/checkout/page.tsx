@@ -1,7 +1,7 @@
 
 import { Suspense } from 'react';
 import CheckoutClient from '@/components/checkout/checkout-client';
-import { CheckoutPageSkeleton } from '@/components/ui/skeletons';
+import { CheckoutSkeleton } from '@/components/ui/skeletons';
 
 
 export const metadata = {
@@ -21,7 +21,7 @@ export default function CheckoutPage() {
         <div className="absolute inset-0 bg-linear-to-b from-muted/20 via-transparent to-transparent pointer-events-none" />
         
         <div className="relative">
-          <Suspense fallback={<CheckoutPageSkeleton />}>
+          <Suspense fallback={<CheckoutSkeleton />}>
             <CheckoutClient />
           </Suspense>
         </div>

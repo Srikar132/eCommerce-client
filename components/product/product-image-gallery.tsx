@@ -7,7 +7,7 @@ import ImageZoomModal from "./image-zoom-modal";
 
 interface ProductImage {
     id: string;
-    url: string;
+    url: string | null;
     alt: string;
 }
 
@@ -89,7 +89,7 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
             {/* Thumbnail Grid */}
             {images.length > 1 && (
                 <div className="grid grid-cols-4 gap-4 mt-6">
-                    {images.slice(0, 4).map((image, index) => (
+                    {images.filter(image => image.url).slice(0, 4).map((image, index) => (
                         <button
                             key={image.id}
                             onClick={() => setSelectedImageIndex(index)}
@@ -102,7 +102,7 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                         >
                             <div className="relative w-full h-full">
                                 <Image
-                                    src={image.url}
+                                    src={image.url!}
                                     alt={image.alt}
                                     fill
                                     className="object-cover"
@@ -120,7 +120,7 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
             )}
 
             {/* Zoom Modal */}
-            {isZoomOpen && (
+            {isZoomOpen && images[selectedImageIndex]?.url && (
                 <ImageZoomModal
                     image={images[selectedImageIndex]}
                     onClose={() => setIsZoomOpen(false)}
