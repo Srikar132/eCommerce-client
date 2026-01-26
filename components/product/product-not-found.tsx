@@ -100,53 +100,6 @@ export function ProductNotFound({
           </div>
         </div>
 
-        {/* Quick Links Card */}
-        <Card className="border-border bg-card shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <h3 className="font-serif font-light text-lg text-foreground">
-                Discover Something Beautiful
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Link
-                href="/products?category=new-arrivals"
-                className="group p-4 border border-border rounded-lg bg-background hover:bg-accent hover:border-primary/30 transition-all duration-300"
-              >
-                <p className="font-medium text-foreground group-hover:text-primary transition-colors">
-                  New Arrivals
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Latest collection
-                </p>
-              </Link>
-              <Link
-                href="/products?category=best-sellers"
-                className="group p-4 border border-border rounded-lg bg-background hover:bg-accent hover:border-primary/30 transition-all duration-300"
-              >
-                <p className="font-medium text-foreground group-hover:text-primary transition-colors">
-                  Best Sellers
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Popular items
-                </p>
-              </Link>
-              <Link
-                href="/products?category=featured"
-                className="group p-4 border border-border rounded-lg bg-background hover:bg-accent hover:border-primary/30 transition-all duration-300"
-              >
-                <p className="font-medium text-foreground group-hover:text-primary transition-colors">
-                  Featured
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Curated picks
-                </p>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Help Text */}
         <div className="text-center mt-12 text-sm text-muted-foreground">
           <p>

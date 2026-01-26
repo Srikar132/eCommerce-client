@@ -130,7 +130,7 @@ const OrderPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Skeleton className="h-10 w-48 mb-8" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
@@ -216,7 +216,7 @@ const OrderPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back button */}
         <Button
           variant="ghost"

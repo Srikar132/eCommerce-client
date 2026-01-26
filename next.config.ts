@@ -3,8 +3,18 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
 
+  // Enable component caching for better performance
   cacheComponents: true,
 
+  // Optimize build performance and reduce memory usage
+  experimental: {
+    // Reduce memory usage during development
+    memoryBasedWorkersCount: true,
+    // Enable webpack build worker for better performance
+    webpackBuildWorker: true,
+  },
+
+  // Image optimization
   images: {
     remotePatterns: [
       {
@@ -26,6 +36,11 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+
+  // Reduce bundle size
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 };
 

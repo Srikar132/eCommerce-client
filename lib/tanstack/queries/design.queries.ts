@@ -14,7 +14,6 @@ export function useInfiniteDesigns(
   filters?: {
     categorySlug?: string;
     q?: string;
-    isPremium?: boolean;
   },
   pageSize: number = 20, options?: {
     initialData: Awaited<ReturnType<typeof designsApi.getDesigns>>

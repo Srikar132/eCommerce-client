@@ -21,7 +21,7 @@ export default function HomePremiumProductCard({
   className
 }: PremiumProductCardProps) {
   return (
-    <Card className={`w-full min-w-[280px] overflow-hidden rounded-3xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white group ${className}`}>
+    <Card className={`w-full min-w-70 overflow-hidden rounded-3xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white group ${className}`}>
       {/* Compact Image Container */}
       <div className="relative h-48 overflow-hidden rounded-3xl m-2 shadow-2xl ">
         

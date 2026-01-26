@@ -7,20 +7,16 @@ import { useSidebar } from '../ui/sidebar';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { SearchInput } from '../search-input';
-import { CategoryNavigation } from './category-navigation';
 import { cn } from '@/lib/utils';
 import CartButton from '../cart/cart-button';
 import WishlistButton from './wishlist-button';
-import { User, Menu, ShoppingCart, Heart } from 'lucide-react';
-import { CategoryTree } from '@/lib/api/category';
+import { CollectionsDropdown } from './collections-dropdown';
+import { User2, Menu, ShoppingBag, Heart, Search } from 'lucide-react';
 
 const HERO_SECTION_HEIGHT = 1000;
 
-interface NavbarProps {
-    categoryTree: CategoryTree[]; // ✅ Receive complete tree from server
-}
 
-const Navbar = ({ categoryTree }: NavbarProps) => {
+const Navbar = () => {
     const pathname = usePathname();
     const { setOpen, open, isMobile, setOpenMobile, openMobile } = useSidebar();
 
@@ -45,10 +41,6 @@ const Navbar = ({ categoryTree }: NavbarProps) => {
                 setIsVisible(true);
             }
 
-            // const newIsAtTop = currentScrollY <= 10;
-            // if (newIsAtTop !== isAtTop) {
-            //     setIsAtTop(newIsAtTop);
-            // }
 
             const newIsPastHero = currentScrollY > HERO_SECTION_HEIGHT;
             if (newIsPastHero !== isPastHero) {
@@ -68,92 +60,107 @@ const Navbar = ({ categoryTree }: NavbarProps) => {
         <>
             <nav
                 className={`${isHomePage
-                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-none sm:rounded-full max-w-full sm:max-w-[95vw] lg:max-w-[90vw] mx-auto sm:my-4 lg:my-7 py-1 sm:py-2 shadow-lg border-0 sm:border border-black/10`
+                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-none sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] mx-auto sm:my-5 lg:my-6 shadow-md border border-rose-100/20`
                     : 'sticky'
                     } ${shouldShowBackdrop
-                        ? 'bg-white/50 backdrop-blur-md lg:shadow-sm'
-                        : 'bg-white'
-                    } w-full top-0 z-50 transition-all duration-300`}
+                        ? 'bg-background/80 backdrop-blur-xl'
+                        : 'bg-background/60 backdrop-blur-md'
+                    } w-full top-0 z-50 transition-all duration-500 ease-in-out`}
             >
-                <div className="mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
-                    <div className="flex items-center justify-between h-12 sm:h-14 lg:h-16 gap-2 sm:gap-3 lg:gap-4">
-                        {/* LEFT: Menu/Logo + Categories */}
-                        <div className='flex items-center space-x-1 sm:space-x-2'>
+                <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+                    <div className="flex items-center justify-between h-14 sm:h-16 lg:h-18 gap-3 sm:gap-4 lg:gap-6">
+                        {/* LEFT: Logo + Collections */}
+                        <div className='flex items-center space-x-4 sm:space-x-6 lg:space-x-8'>
 
-                            {/* Logo - Desktop Only */}
-                            <Link href="/" className="hidden lg:flex items-center space-x-2">
-                                <div className="relative w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" >
-                                    <Image
-                                        src="/images/logo.png"
-                                        alt="Logo"
-                                        fill
-                                        className={`object-cover `}
-                                        priority
-                                    />
-
-                                </div>
-
-                            </Link>
-
+                            {/* Mobile Menu Button */}
                             <Button
-                                className={cn(`nav-btn lg:hidden p-1.5 sm:p-2`)}
+                                className={cn(`lg:hidden p-2 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent`)}
                                 aria-label="Toggle menu"
                                 onClick={() => isMobile ? setOpenMobile(!openMobile) : setOpen(!open)}
                             >
-                                <Menu 
-                                    className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-foreground" 
-                                    strokeWidth={2}
+                                <Menu
+                                    className="w-5 h-5 text-foreground"
+                                    strokeWidth={1.5}
                                 />
                             </Button>
 
-                            {/* Category Navigation - Desktop Only */}
-                            {/* ✅ Pass complete tree - navigation is instant! */}
-                            <CategoryNavigation categoryTree={categoryTree} />
-                        </div>
-
-
-                        <div className="flex items-center justify-end space-x-1 sm:space-x-2 md:space-x-3 lg:space-x-4">
-
-
-                            {isHomePage && (
-                                <div className="hidden lg:flex items-center space-x-3 xl:space-x-4">
-                                    <Link href="/products" className="nav-link text-sm lg:text-base xl:text-lg">Shop</Link>
-                                    <Link href="/about" className="nav-link text-sm lg:text-base xl:text-lg">About</Link>
-                                    <Link href="/contact" className="nav-link text-sm lg:text-base xl:text-lg">Contact</Link>
-                                </div>
-                            )}
-
-                            {!isHomePage && (
-                                <div className="min-w-xl max-lg:hidden w-full">
-                                    <SearchInput
-                                        className="w-full"
-                                        placeholder="Search for products, brands, categories..."
+                            {/* Logo */}
+                            <Link href="/" className="flex items-center space-x-2 group">
+                                <div className="relative w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 transition-transform duration-300 group-hover:scale-105">
+                                    <Image
+                                        src="/images/logo.webp"
+                                        alt="The Nala Armoire"
+                                        fill
+                                        className="object-cover"
+                                        priority
                                     />
                                 </div>
-                            )}
+                                <div className="hidden xl:block">
+                                    <p className="text-xs font-light tracking-[0.2em] uppercase text-foreground">The Nala Armoire</p>
+                                    <p className="text-[10px] italic text-foreground/70 -mt-0.5">where beauty roars</p>
+                                </div>
+                            </Link>
 
-                            <div className={`hidden sm:block border-l h-4 sm:h-5 lg:h-6 border-gray-600`}></div>
+                            {/* Collections Dropdown - Desktop Only */}
+                            <div className="hidden lg:block">
+                                <CollectionsDropdown />
+                            </div>
+                            
+                        </div>
 
+                        {/* CENTER: Navigation Links - Desktop Only */}
+                        {isHomePage && (
+                            <div className="hidden lg:flex items-center space-x-8">
+                                <Link href="/products" className="text-sm font-light tracking-wide text-foreground hover:text-primary transition-colors">
+                                    Shop
+                                </Link>
+                                <Link href="/about" className="text-sm font-light tracking-wide text-foreground hover:text-primary transition-colors">
+                                    About
+                                </Link>
+                                <Link href="/contact" className="text-sm font-light tracking-wide text-foreground hover:text-primary transition-colors">
+                                    Contact
+                                </Link>
+                            </div>
+                        )}
+
+                        {/* Search Bar - Non-Home Pages */}
+                        {!isHomePage && (
+                            <div className="hidden lg:block flex-1 max-w-xl">
+                                <SearchInput
+                                    className="w-full"
+                                    placeholder="Search products, collections..."
+                                />
+                            </div>
+                        )}
+
+                        {/* RIGHT: Icons */}
+                        <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
+
+
+                            {/* Divider */}
+                            <div className="hidden sm:block h-6 w-px bg-rose-200/50"></div>
+
+                            {/* Account */}
                             <Link href="/account">
                                 <Button
-                                    className={`hidden sm:block nav-btn p-1.5 sm:p-2`}
+                                    className="hidden sm:flex p-2 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
                                     aria-label="Account"
                                 >
-                                    <User 
-                                        className="w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-foreground" 
-                                        strokeWidth={2}
+                                    <User2 
+                                        className="w-5 h-5 text-foreground" 
+                                        strokeWidth={1.5}
                                     />
                                 </Button>
                             </Link>
 
-                            {/* Wrap dynamic cart/wishlist in Suspense for SSR compatibility */}
+                            {/* Wishlist & Cart with Suspense */}
                             <Suspense fallback={
                                 <>
-                                    <Button className="nav-btn p-1.5 sm:p-2" aria-label="Wishlist">
-                                        <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-foreground" strokeWidth={2} />
+                                    <Button className="p-2 hover:bg-primary rounded-full transition-colors border-0 bg-transparent" aria-label="Wishlist">
+                                        <Heart className="w-5 h-5 text-foreground" strokeWidth={1.5} />
                                     </Button>
-                                    <Button className="nav-btn p-1.5 sm:p-2" aria-label="Cart">
-                                        <ShoppingCart className="w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-foreground" strokeWidth={2} />
+                                    <Button className="p-2 hover:bg-primary rounded-full transition-colors border-0 bg-transparent" aria-label="Cart">
+                                        <ShoppingBag className="w-5 h-5 text-foreground" strokeWidth={1.5} />
                                     </Button>
                                 </>
                             }>
@@ -161,8 +168,8 @@ const Navbar = ({ categoryTree }: NavbarProps) => {
                                     <WishlistButton />
                                 </Link>
 
-                                <Link href={"/cart"}>
-                                    <CartButton/>
+                                <Link href="/cart">
+                                    <CartButton />
                                 </Link>
                             </Suspense>
                         </div>

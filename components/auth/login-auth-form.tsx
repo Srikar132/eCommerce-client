@@ -6,7 +6,6 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
     Form,
-    FormControl,
     FormField,
     FormItem,
     FormLabel,
@@ -14,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
-import { Phone, Loader2, ArrowRight, Sparkles, ShieldCheck, KeyRound } from "lucide-react";
+import { Phone, Loader2, ArrowRight, ShieldCheck, KeyRound, Sparkles } from "lucide-react";
 
 type Step = 'phone' | 'otp';
 
@@ -129,8 +128,8 @@ export default function LoginAuthForm() {
                             name="fullPhone"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-semibold text-foreground flex items-center gap-2">
-                                        <Phone className="h-4 w-4 text-primary" />
+                                    <FormLabel className="text-sm font-medium text-foreground tracking-wide flex items-center gap-2">
+                                        <Phone className="h-4 w-4 text-primary" strokeWidth={1.5} />
                                         Phone Number
                                     </FormLabel>
                                     <Input
@@ -142,12 +141,12 @@ export default function LoginAuthForm() {
                                         onChange={(e) => handlePhoneChange(e, field)}
                                         onBlur={field.onBlur}
                                         maxLength={16}
-                                        className="h-12 rounded-2xl border-2 transition-all duration-200 border-border bg-background focus-visible:border-primary focus-visible:ring-primary/20 pl-4 pr-4 text-base placeholder:text-muted-foreground"
+                                        className="h-12 rounded-xl border border-input transition-all duration-200 bg-background focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 pl-4 pr-4 text-base placeholder:text-muted-foreground hover:border-ring/50"
                                     />
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        Enter country code followed by phone number (e.g., +919876543210)
+                                    <p className="text-xs text-muted-foreground mt-1.5 tracking-wide">
+                                        Enter with country code (e.g., +919876543210)
                                     </p>
-                                    <FormMessage className="text-sm font-medium animate-in slide-in-from-top-1 duration-200" />
+                                    <FormMessage className="text-sm font-medium text-destructive animate-in slide-in-from-top-1 duration-200" />
                                 </FormItem>
                             )}
                         />
@@ -156,18 +155,18 @@ export default function LoginAuthForm() {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl font-semibold text-base shadow-lg shadow-primary/20 transition-all duration-200 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group"
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group tracking-wide"
                         >
                             {isLoading ? (
                                 <>
-                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" strokeWidth={1.5} />
                                     Sending OTP...
                                 </>
                             ) : (
                                 <>
-                                    <Sparkles className="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" />
-                                    Send OTP
-                                    <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                                    <Sparkles className="w-4 h-4 mr-2 transition-transform group-hover:rotate-12" strokeWidth={1.5} />
+                                    Send Verification Code
+                                    <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
                                 </>
                             )}
                         </Button>
@@ -177,14 +176,14 @@ export default function LoginAuthForm() {
                 <Form {...otpForm}>
                     <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="space-y-6">
                         {/* OTP Info */}
-                        <div className="text-center space-y-2 pb-4">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
-                                <ShieldCheck className="h-8 w-8 text-primary" />
+                        <div className="text-center space-y-3 pb-4">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/50 mb-2">
+                                <ShieldCheck className="h-8 w-8 text-primary" strokeWidth={1.5} />
                             </div>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-muted-foreground tracking-wide">
                                 We've sent a verification code to
                             </p>
-                            <p className="text-base font-semibold text-foreground">
+                            <p className="text-base font-medium text-foreground tracking-wide">
                                 {maskedPhone}
                             </p>
                         </div>
@@ -195,12 +194,12 @@ export default function LoginAuthForm() {
                             name="otp"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-semibold text-foreground flex items-center gap-2">
-                                        <KeyRound className="h-4 w-4 text-primary" />
-                                        One-Time Password
+                                    <FormLabel className="text-sm font-medium text-foreground tracking-wide flex items-center gap-2">
+                                        <KeyRound className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                                        Verification Code
                                     </FormLabel>
                                     <Input
-                                        placeholder="Enter 6-digit OTP"
+                                        placeholder="000000"
                                         value={field.value}
                                         name={field.name}
                                         ref={field.ref}
@@ -213,9 +212,9 @@ export default function LoginAuthForm() {
                                         type="text"
                                         inputMode="numeric"
                                         autoComplete="one-time-code"
-                                        className="h-12 rounded-2xl border-2 transition-all duration-200 border-border bg-background focus-visible:border-primary focus-visible:ring-primary/20 pl-4 pr-4 text-base text-center tracking-widest font-semibold placeholder:text-muted-foreground placeholder:tracking-normal placeholder:font-normal"
+                                        className="h-14 rounded-xl border border-input transition-all duration-200 bg-background focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 text-2xl text-center tracking-[0.5em] font-medium placeholder:text-muted-foreground/50 placeholder:tracking-[0.5em] hover:border-ring/50"
                                     />
-                                    <FormMessage className="text-sm font-medium animate-in slide-in-from-top-1 duration-200" />
+                                    <FormMessage className="text-sm font-medium text-destructive animate-in slide-in-from-top-1 duration-200" />
                                 </FormItem>
                             )}
                         />
@@ -229,18 +228,18 @@ export default function LoginAuthForm() {
                                     otpForm.reset();
                                 }}
                                 disabled={isLoading}
-                                className="font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group disabled:opacity-50"
+                                className="font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group disabled:opacity-50 tracking-wide"
                             >
-                                <ArrowRight className="h-3 w-3 rotate-180 transition-transform group-hover:-translate-x-0.5" />
+                                <ArrowRight className="h-3 w-3 rotate-180 transition-transform group-hover:-translate-x-0.5" strokeWidth={1.5} />
                                 Change number
                             </button>
                             <button
                                 type="button"
                                 onClick={handleResendOtp}
                                 disabled={isLoading}
-                                className="font-medium text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+                                className="font-medium text-primary hover:text-primary/80 transition-colors disabled:opacity-50 tracking-wide"
                             >
-                                Resend OTP
+                                Resend Code
                             </button>
                         </div>
 
@@ -248,18 +247,18 @@ export default function LoginAuthForm() {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl font-semibold text-base shadow-lg shadow-primary/20 transition-all duration-200 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group"
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group tracking-wide"
                         >
                             {isLoading ? (
                                 <>
-                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" strokeWidth={1.5} />
                                     Verifying...
                                 </>
                             ) : (
                                 <>
-                                    <Sparkles className="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" />
-                                    Verify & Login
-                                    <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                                    <Sparkles className="w-4 h-4 mr-2 transition-transform group-hover:rotate-12" strokeWidth={1.5} />
+                                    Verify & Continue
+                                    <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
                                 </>
                             )}
                         </Button>

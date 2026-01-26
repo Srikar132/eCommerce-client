@@ -2,12 +2,10 @@
 
 import { useState, useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import type { Design } from "@/types";
 import DesignCard from "@/components/cards/design-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DesignsLoadingSkeleton } from "@/components/ui/skeletons/customization-skeleton";
 import BottomActionBar from "@/components/customization/bottom-action-bar";
 import { useInfiniteDesigns, useFlatDesigns, useDesignCount, useDesignCategories } from "@/lib/tanstack/queries/design.queries";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
@@ -30,12 +28,11 @@ export default function DesignSelectionClient({
   const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null);
 
   // Fetch categories using prefetched data
-  const { data: categories, isLoading: isCategoriesLoading } = useDesignCategories();
+  const { data: categories } = useDesignCategories();
 
   // Use React Query with prefetched data from server
   const {
     data: designsData,
-    isLoading: isDesignsLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -142,7 +139,7 @@ export default function DesignSelectionClient({
           </form>
 
           {/* Category Tabs */}
-          <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             <button
               onClick={() => handleCategoryChange('all')}
               disabled={isPending}
@@ -178,9 +175,7 @@ export default function DesignSelectionClient({
           </div>
         </div>
 
-        {isDesignsLoading ? (
-          <DesignsLoadingSkeleton />
-        ) : designs.length === 0 ? (
+        {designs.length === 0 ? (
           <div className="flex items-center justify-center p-16 border-2 border-dashed rounded-3xl border-stone-200 dark:border-slate-700 bg-stone-50/50 dark:bg-slate-800/50">
             <div className="text-center max-w-sm">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-5">

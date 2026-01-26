@@ -1,20 +1,29 @@
 import { Card } from "../ui/card";
+import { Sparkles } from "lucide-react";
 
 
 const AuthLayout = ({ children , title , mode }: { children: React.ReactNode , title: string , mode: "login" | "register" }) => {
     return (
-         <div className="min-h-screen bg-linear-to-br from-background via-card to-background flex items-center justify-center p-4 relative overflow-hidden">
+         <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Decorative Background Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-10 left-10 w-72 h-72 bg-accent/30 rounded-full blur-3xl" />
+                <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl" />
+            </div>
+
             {/* Auth Card */}
             <div className="w-full max-w-md relative z-10">
-                <Card className="rounded-3xl shadow-2xl shadow-primary/5 p-8 sm:p-10">
+                <Card className="backdrop-blur-sm p-8 sm:p-10 border-border/50">
                     {/* Header with Icon */}
-                    <header className="text-center mb-8 space-y-4">
-                       
-                        <h1 className="text-3xl sm:text-4xl font-bold text-primary">
+                    <header className="text-center mb-8 space-y-3">
+                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-accent/50 mb-2">
+                            <Sparkles className="h-7 w-7 text-primary" strokeWidth={1.5} />
+                        </div>
+                        <h1 className="text-3xl sm:text-4xl font-serif italic font-light text-foreground tracking-wide">
                             {title}
                         </h1>
-                        <p className="text-sm text-muted-foreground">
-                            {mode === "login" ? "Welcome back! Please enter your details." : "Create your account to get started."}
+                        <p className="text-sm text-muted-foreground tracking-wide">
+                            {mode === "login" ? "Welcome back to The Nala Armoire" : "Join our handcrafted community"}
                         </p>
                     </header>
 
@@ -22,37 +31,16 @@ const AuthLayout = ({ children , title , mode }: { children: React.ReactNode , t
                     {children}
 
                     {/* Footer */}
-                    <footer className="mt-8 pt-6 border-t border-border/50">
-                        <p className="text-center text-sm text-muted-foreground">
-                            {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
-                            {mode === "login" ? (
-                                <a 
-                                    href="/register" 
-                                    className="font-semibold text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1 group"
-                                >
-                                    Sign Up
-                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                    </svg>
-                                </a>
-                            ) : (
-                                <a 
-                                    href="/login" 
-                                    className="font-semibold text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1 group"
-                                >
-                                    Login
-                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                    </svg>
-                                </a>
-                            )}
+                    <footer className="mt-8 pt-6 border-t border-border/30">
+                        <p className="text-center text-xs text-muted-foreground tracking-wide">
+                            Handcrafted with love, secured with care
                         </p>
                     </footer>
                 </Card>
 
                 {/* Bottom Tagline */}
-                <p className="text-center mt-6 text-xs text-muted-foreground/60">
-                    Secure authentication powered by modern encryption
+                <p className="text-center mt-6 text-xs text-muted-foreground/80 tracking-widest uppercase">
+                    The Nala Armoire
                 </p>
             </div>
         </div>

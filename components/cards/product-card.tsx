@@ -42,9 +42,9 @@ const ProductCardComponent = ({
             href={`/products/${product.slug}`} 
             className="block"
         >
-            <Card className="overflow-hidden rounded-3xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white group">
+            <Card className="overflow-hidden  border-0  transition-all duration-300 bg-white group">
                 {/* Image Container with rounded outline */}
-                <div className="relative aspect-[2.9/3] overflow-hidden rounded-3xl m-2 shadow-2xl bg-gray-100">
+                <div className="relative aspect-[2.9/3] overflow-hidden m-2 bg-gray-100">
                     <Image
                         src={product.imageUrl || PLACEHOLDER_IMAGE}
                         alt={"/images/loo.png"}

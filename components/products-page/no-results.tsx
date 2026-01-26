@@ -24,7 +24,7 @@ export function NoResults({
     'Puma Shoes',
     'Fastrack Watches'
   ],
-  imageSrc = '/images/no-results.png'
+  imageSrc = '/images/no-results.webp'
 }: NoResultsProps) {
 
 
@@ -45,12 +45,12 @@ export function NoResults({
       {/* Hanger Image */}
       <div className="flex justify-center mb-8">
         <div className="relative">
-          <div className="relative w-48 h-32">
+          <div className="relative w-48 h-48">
             <Image
               src={imageSrc}
               alt="No results"
               fill
-              className="object-contain opacity-90"
+              className="object-contain scale-150"
               priority
             />
           </div>

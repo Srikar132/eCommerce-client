@@ -49,7 +49,7 @@ export function WishlistCard({ item }: WishlistCardProps) {
 
   return (
     <Link href={`/products/${item.productSlug}`} className="block">
-      <Card className="overflow-hidden rounded-3xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card group">
+      <Card className="overflow-hidden border-0 hover:shadow-xl bg-card group">
         {/* Image Container */}
         <div className="relative aspect-[2.9/3] overflow-hidden rounded-3xl m-2 shadow-2xl bg-accent/20">
           {item.primaryImageUrl && !imageError ? (

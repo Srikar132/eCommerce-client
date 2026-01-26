@@ -24,7 +24,7 @@ export interface VariantSelectionState {
     colorGroups: ColorGroup[];
     availableSizes: SizeOption[];
     finalPrice: number;
-    galleryImages: { id: string; url: string; alt: string }[];
+    galleryImages: { id: string; url: string | null; alt: string }[];
 }
 
 export interface VariantSelectionActions {
@@ -109,7 +109,7 @@ export function useVariantSelection({
         if (!variants.length || !selectedColor || !product) {
             return [{
                 id: 'default',
-                url: '/images/error.png',
+                url: null,
                 alt: product?.name || 'Product image'
             }];
         }
@@ -130,7 +130,7 @@ export function useVariantSelection({
 
         return [{
             id: 'default',
-            url: '/images/error.png',
+            url: null,
             alt: product.name
         }];
     }, [variants, selectedColor, product]);

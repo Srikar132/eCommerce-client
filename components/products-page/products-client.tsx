@@ -7,6 +7,7 @@ import SortDropdown from "../sort-dropdown";
 import ProductGrid from "../product-grid";
 import FilterSidebar from "../filter-sidebar";
 import NoResults from "./no-results";
+import { SearchInput } from "../search-input";
 import { useInfiniteProducts, useFlatProducts, useProductCount, useProductFacets } from "@/lib/tanstack/queries";
 import { formatFiltersForSidebar, countActiveFilters } from "@/utils/filter-utils";
 import ErrorCard from "../cards/error-card";
@@ -77,13 +78,22 @@ const ProductsClient = ({ initialFilters, initialPage, initialSize, initialSort 
         <section className="category-section">
             {/* Loading indicator for filter changes */}
             {isLoading && (
-                <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-white shadow-lg rounded-full p-3">
+                <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-background shadow-lg rounded-full p-3">
                     <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
                 </div>
             )}
 
+            {/* Mobile Search Bar - Only on small screens */}
+            <div className="lg:hidden sticky top-0 z-30 bg-background border-b px-4 py-3 shadow-sm">
+                <SearchInput 
+                    placeholder="Search products..."
+                    showSuggestions={true}
+                    className="w-full"
+                />
+            </div>
+
             {/* Mobile Filter Header - Only on small screens */}
-            <div className="sticky top-0 z-10 bg-white grid grid-cols-2 border-b lg:hidden py-2">
+            <div className="sticky top-18 z-20 bg-white grid grid-cols-2 border-b lg:hidden py-2">
                 <Button
                     variant="outline"
                     size="sm"
@@ -118,7 +128,7 @@ const ProductsClient = ({ initialFilters, initialPage, initialSize, initialSort 
                 {/* Main Content */}
                 <div className="flex-1 min-w-0">
                     {/* Desktop Header */}
-                    <header className="hidden lg:flex z-10 bg-white sticky top-0 items-center justify-between mb-6  border-b px-4 py-4">
+                    <header className="hidden lg:flex z-10 bg-background sticky top-0 items-center justify-between mb-6  border-b px-4 py-4">
                         <div className="flex items-center gap-4">
                             <span className="text-sm text-muted-foreground">
                                 {/* Convert to showing some out of total */}

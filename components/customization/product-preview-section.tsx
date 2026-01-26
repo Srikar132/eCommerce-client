@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useProduct, useProductVariants } from "@/lib/tanstack/queries/product.queries";
 import { Loader2 } from "lucide-react";
+import ErrorCard from "@/components/cards/error-card";
+import Link from "next/link";
 
 interface ProductPreviewSectionProps {
   slug: string;
@@ -15,8 +17,8 @@ export default function ProductPreviewSection({
   variantId
 }: ProductPreviewSectionProps) {
   // Fetch data using hooks with prefetched data from server
-  const { data: product, isLoading: productLoading } = useProduct(slug);
-  const { data: variants, isLoading: variantsLoading } = useProductVariants(slug);
+  const { data: product, isLoading: productLoading, error: productError } = useProduct(slug);
+  const { data: variants, isLoading: variantsLoading, error: variantsError } = useProductVariants(slug);
 
   // Loading state
   if (productLoading || variantsLoading) {
@@ -29,14 +31,82 @@ export default function ProductPreviewSection({
     );
   }
 
-  if (!product || !variants) {
-    return null;
+  // Error handling
+  if (productError) {
+    return (
+      <ErrorCard
+        title="Failed to Load Product"
+        message="There was an error loading the product. Please try again later."
+      />
+    );
+  }
+
+  if (variantsError) {
+    return (
+      <ErrorCard
+        title="Failed to Load Variants"
+        message="There was an error loading product variants. Please try again later."
+      />
+    );
+  }
+
+  // Data validation
+  if (!product) {
+    return (
+      <ErrorCard
+        title="Product Not Found"
+        message="The product you're looking for doesn't exist or has been removed."
+      />
+    );
+  }
+
+  if (!variants || variants.length === 0) {
+    return (
+      <ErrorCard
+        title="No Variants Available"
+        message="This product doesn't have any variants available for customization."
+      />
+    );
+  }
+
+  if (!variantId) {
+    return (
+      <ErrorCard
+        title="Select a Variant First"
+        message={
+          <div className="space-y-2">
+            <p>Please select a color and size from the product page before customizing.</p>
+            <Link
+              href={`/products/${slug}`}
+              className="inline-block mt-2 text-primary hover:underline font-medium"
+            >
+              Go to Product Page →
+            </Link>
+          </div>
+        }
+      />
+    );
   }
 
   const selectedVariant = variants.find((v) => v.id === variantId);
 
   if (!selectedVariant) {
-    return null;
+    return (
+      <ErrorCard
+        title="Variant Not Found"
+        message={
+          <div className="space-y-2">
+            <p>The selected variant is not available or out of stock. Please select another variant.</p>
+            <Link
+              href={`/products/${slug}`}
+              className="inline-block mt-2 text-primary hover:underline font-medium"
+            >
+              Go to Product Page →
+            </Link>
+          </div>
+        }
+      />
+    );
   }
 
   const totalPrice = product.basePrice + (selectedVariant.additionalPrice || 0);

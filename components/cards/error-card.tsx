@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { RefreshCcw } from "lucide-react";
+import { ReactNode } from "react";
 
 interface ErrorCardProps {
     title?: string;
-    message?: string;
+    message?: string | ReactNode;
     onRetry?: () => void;
 }
 

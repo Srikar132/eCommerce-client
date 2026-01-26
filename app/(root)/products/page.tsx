@@ -41,7 +41,7 @@ async function ProductsContent({ searchParams }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="container mx-auto p-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <ProductsClient 
           initialFilters={filters}
           initialPage={page}
@@ -60,6 +60,5 @@ const ProductsPage = async ({ searchParams }: Props) => {
     </Suspense>
   );
 };
-
 
 export default ProductsPage;

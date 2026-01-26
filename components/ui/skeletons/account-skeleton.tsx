@@ -2,7 +2,8 @@ import { Skeleton } from "../skeleton";
 
 export function AccountPageSkeleton() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Skeleton className="mb-8 h-10 w-48" />
       
       <div className="grid gap-8 lg:grid-cols-4">
@@ -42,6 +43,7 @@ export function AccountPageSkeleton() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

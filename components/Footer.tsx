@@ -139,44 +139,6 @@ const Footer: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Payment Methods */}
-                        <div className="flex gap-3 flex-wrap justify-center">
-                            <div className="w-14 h-9 bg-card border border-border rounded-lg overflow-hidden relative shadow-sm">
-                                <Image
-                                    src="/home/footer/pay-1.jpg"
-                                    alt="Visa"
-                                    fill
-                                    className="object-contain p-1"
-                                />
-                            </div>
-
-                            <div className="w-14 h-9 bg-card border border-border rounded-lg overflow-hidden relative shadow-sm">
-                                <Image
-                                    src="/home/footer/pay-2.png"
-                                    alt="Mastercard"
-                                    fill
-                                    className="object-contain p-1"
-                                />
-                            </div>
-
-                            <div className="w-14 h-9 bg-card border border-border rounded-lg overflow-hidden relative shadow-sm">
-                                <Image
-                                    src="/home/footer/pay-3.jpg"
-                                    alt="American Express"
-                                    fill
-                                    className="object-contain p-1"
-                                />
-                            </div>
-
-                            <div className="w-14 h-9 bg-card border border-border rounded-lg overflow-hidden relative shadow-sm">
-                                <Image
-                                    src="/home/footer/pay-4.png"
-                                    alt="PayPal"
-                                    fill
-                                    className="object-contain p-1"
-                                />
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -4,17 +4,18 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000, // 1 minute - Reduced from 5 minutes for fresher data
-        gcTime: 5 * 60 * 1000, // 5 minutes - Reduced from 10 minutes to prevent memory buildup
+        staleTime: 60 * 1000, // 1 minute
+        gcTime: 10 * 60 * 1000, // 10 minutes - Increased to reduce memory churn
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         refetchOnMount: false,
         retry: 1,
       },
       dehydrate: {
+        // Only dehydrate successful queries to reduce server memory
         shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) ||
-          query.state.status === 'pending',
+          defaultShouldDehydrateQuery(query) &&
+          query.state.status === 'success',
       },
     },
   });

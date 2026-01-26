@@ -11,6 +11,12 @@ import StudioContentClient from "@/components/customization-studio/studio-conten
 import ErrorCard from "@/components/cards/error-card";
 import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 
+// Add metadata
+export const metadata = {
+  title: "Customization Studio | Armoire",
+  description: "Customize your product with our design studio",
+};
+
 
 
 interface PageProps {

@@ -1,45 +1,8 @@
-import { BestsellerCardProps } from "@/components/cards/best-seller";
-//account
 
-export const items: BestsellerCardProps[] = [
-    {
-        imageUrl: "/home/section2/sec1-col-1.webp",
-        brand: "Nike",
-        name: "Air Max 270",
-        price: 150,
-        colors: ["#000000", "#FFFFFF", "#FF0000"]
-    },
-    {
-        imageUrl: "/home/section2/sec1-col-2.webp",
-        brand: "Adidas",
-        name: "Ultraboost 21",
-        price: 180,
-        colors: ["#000000", "#00FF00", "#0000FF"]
-    },
-    {
-        imageUrl: "/home/section2/sec1-col-3.webp",
-        brand: "Puma",
-        name: "RS-X3",
-        price: 120,
-        colors: ["#FFFF00", "#FF00FF", "#00FFFF"]
-    },
-    {
-        imageUrl: "/home/section2/sec1-col-4.webp",
-        brand: "Reebok",
-        name: "Nano X1",
-        price: 130,
-        colors: ["#C0C0C0", "#808080", "#800000"]
-    },
-    {
-        imageUrl: "/home/section2/sec2-col-2.webp",
-        brand: "New Balance",
-        name: "Fresh Foam 1080v11",
+export const instagramURI = process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com/the-nala-armoire";
 
-        price: 160,
 
-        colors: ["#008000", "#000080", "#FFA500"]
-    }
-];
+
 
 export const features = [
     {
@@ -68,19 +31,19 @@ export const categories = [
     {
         id: 1,
         title: "MEN",
-        image: "/home/section2/sec1-col-1.webp",
+        image: "/images/home/men-category.webp",
         url : "/products?category=men"
     },
     {
         id: 2,
         title: "WOMEN",
-        image: "/home/section2/sec1-col-2.webp",
+        image: "/images/home/women-category.webp",
         url : "/products?category=women"
     },
     {
         id: 3,
         title: "KIDS",
-        image: "/home/section2/sec1-col-3.webp",
+        image: "/images/home/kids-category.webp",
         url : "/products?category=kids"
     },
 ];
@@ -192,4 +155,66 @@ export const MEASUREMENT_DESCRIPTIONS: SizeGuideMeasurement[] = [
         label: "Outseam:",
         description: "Measured from the waist to the bottom of the leg.",
     },
+];
+
+// Art of Creation Steps
+export const creationSteps = [
+    {
+        number: 1,
+        title: "Select Base",
+        description:
+            "Choose from our curated collection of premium linen and organic cotton shirts, jackets, or trousers.",
+    },
+    {
+        number: 2,
+        title: "Choose Embroidery",
+        description:
+            "Select from our library of botanical, minimalist, or abstract patterns, or upload your own custom design.",
+    },
+    {
+        number: 3,
+        title: "We Stitch & Ship",
+        description:
+            "Our master artisans hand-stitch your design with meticulous care before sending it directly to your door.",
+    },
+];
+
+
+export const sliderImage = [
+    { id: 1, image: "/images/home/slide-image1.webp", alt: "Fashion post 1" },
+    { id: 2, image: "/images/home/slide-image2.webp", alt: "Fashion post 2" },
+    { id: 3, image: "/images/home/slide-image3.webp", alt: "Fashion post 3" },
+    { id: 4, image: "/images/home/slide-image4.webp", alt: "Fashion post 4" },
+];
+
+
+
+
+export const collections = [
+  {
+    title: "ALL COLLECTIONS",
+    href: "/products",
+    description: "Versatile styles for everyone",
+  },
+  {
+    title: "WOMEN'S COLLECTION",
+    href: "/products?category=women",
+    description: "Elegant designs for modern women",
+  },
+  {
+    title: "MEN'S COLLECTION",
+    href: "/products?category=men",
+    description: "Refined style for distinguished men",
+  },
+  {
+    title: "KIDS & BABY",
+    href: "/products?category=kids",
+    description: "Comfortable clothing for little ones",
+  },
+  {
+    title: "LIMITED EDITION STITCHES",
+    href: "/products?featured=limited-edition",
+    description: "Exclusive handcrafted pieces",
+    special: true,
+  },
 ];

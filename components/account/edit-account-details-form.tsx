@@ -20,6 +20,7 @@ import { useUpdateUserProfile } from "@/lib/tanstack/queries/user-profile.querie
 import { useAuth } from "@/hooks/use-auth";
 import { User } from "@/types";
 import { useState } from "react";
+import ErrorCard from "../cards/error-card";
 
 const accountDetailsSchema = z.object({
   username: z
@@ -46,7 +47,8 @@ interface EditAccountDetailsFormProps {
   user: User;
 }
 
-export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) => {
+export const EditAccountDetailsForm = () => {
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const updateProfileMutation = useUpdateUserProfile();
   const { refreshUser } = useAuth();
@@ -54,8 +56,8 @@ export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) =>
   const form = useForm<AccountDetailsFormValues>({
     resolver: zodResolver(accountDetailsSchema),
     defaultValues: {
-      username: user.username || "",
-      email: user.email || "",
+      username: user?.username || "",
+      email: user?.email || "",
     },
   });
 
@@ -72,14 +74,22 @@ export const EditAccountDetailsForm = ({ user }: EditAccountDetailsFormProps) =>
 
   const handleCancel = () => {
     form.reset({
-      username: user.username || "",
-      email: user.email || "",
+      username: user?.username || "",
+      email: user?.email || "",
     });
     setIsEditing(false);
   };
 
   const isDirty = form.formState.isDirty;
-  const isProfileIncomplete = !user.username || !user.email;
+  const isProfileIncomplete = !user?.username || !user?.email;
+
+
+  if(!user) {
+    return <ErrorCard
+        title="User Not Found"
+        message="We couldn't find your account details. Please try again later."
+      />;
+  }
 
   return (
     <Card>

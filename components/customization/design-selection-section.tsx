@@ -19,31 +19,26 @@ export default async function DesignSelectionSection({
   const queryClient = getQueryClient();
 
   // Prefetch designs and categories on server
+  const filters = {
+    categorySlug: selectedCategory === 'all' ? undefined : selectedCategory,
+    q: searchQuery || undefined,
+  };
+  const pageSize = 20;
+
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: ['designs', {
-        filters: {
-          categorySlug: selectedCategory === 'all' ? undefined : selectedCategory,
-          q: searchQuery || undefined,
-        },
-        page: 0,
-        size: 20,
-        sortBy: 'createdAt',
-        sortDir: 'DESC',
-      }],
-      queryFn: () => designsApi.getDesigns({
-        filters: {
-          categorySlug: selectedCategory === 'all' ? undefined : selectedCategory,
-          q: searchQuery || undefined,
-        },
-        page: 0,
-        size: 20,
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ['designs', 'infinite', filters, pageSize],
+      queryFn: ({ pageParam = 0 }) => designsApi.getDesigns({
+        filters,
+        page: pageParam,
+        size: pageSize,
         sortBy: 'createdAt',
         sortDir: 'DESC',
       }),
+      initialPageParam: 0,
     }),
     queryClient.prefetchQuery({
-      queryKey: ['design-categories'],
+      queryKey: ['design', 'categories'],
       queryFn: () => designsApi.getAllDesignCategories(),
     }),
   ]);

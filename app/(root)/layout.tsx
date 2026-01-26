@@ -1,13 +1,13 @@
 // app/layout.tsx
 import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
+import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
+import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Footer";
 import { CartSyncProvider } from "@/providers/cart-provider";
 import TanstackProvider from "@/providers/tanstack";
-import { getCategoryTreeServer } from "@/lib/api/category";
-import { FALLBACK_CATEGORY_TREE } from "@/lib/constants/fallback-data";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -28,11 +28,14 @@ export default async function RootLayout({
                 <AppSidebar />
 
                 <header id="header">
-                  {/* ✅ Wrap in Suspense to prevent blocking */}
-                  <Suspense fallback={<div className="h-16 bg-background" />}>
-                    <NavbarWithData />
+                  <Suspense fallback={<NavbarSkeleton />}>
+                    <Navbar />
                   </Suspense>
                 </header>
+
+                <Suspense fallback={<></>}>
+                  <BreadcrumbNavigation />
+                </Suspense>
 
                 <main className="w-full relative">{children}</main>
 
@@ -51,16 +54,3 @@ export default async function RootLayout({
   );
 }
 
-// Separate async component for navbar data fetching
-async function NavbarWithData() {
-  let categoryTree = FALLBACK_CATEGORY_TREE;
-  
-  try {
-    categoryTree = await getCategoryTreeServer();
-  } catch (error) {
-    console.error("Failed to fetch category tree:", error);
-    // Falls back to static data
-  }
-
-  return <Navbar categoryTree={categoryTree} />;
-}

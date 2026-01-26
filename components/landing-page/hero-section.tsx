@@ -38,10 +38,10 @@ const HeroSection = () => {
             </div>
 
             {/* Soft Pink Gradient Blob - Top Left */}
-            <div className="absolute -top-40 -left-30 w-[500px] h-[100px] sm:w-[700px] sm:h-[250px] bg-pink-400/70 rounded-full blur-[120px] z-10" />
+            {/* <div className="absolute -top-40 -left-30 w-[500px] h-[100px] sm:w-[700px] sm:h-[250px] bg-pink-400/70 rounded-full blur-[120px] z-10" />
             
-            {/* Soft Blue Gradient Blob - Top Right */}
-            <div className="absolute -top-40 right-1/3  w-[500px] h-[100px] sm:w-[700px] sm:h-[250px] bg-blue-300/70 rounded-full blur-[100px] z-10" />
+            
+            <div className="absolute -top-40 right-1/3  w-[500px] h-[100px] sm:w-[700px] sm:h-[250px] bg-blue-300/70 rounded-full blur-[100px] z-10" /> */}
 
             {/* Content Container */}
             <div className="relative min-h-[600px] sm:min-h-[700px] md:min-h-[750px] z-20 flex items-center justify-center py-20 sm:py-24 md:py-28">

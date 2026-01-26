@@ -1,49 +1,80 @@
-
-
 "use client";
 
+import { useState, useEffect } from "react";
 import { testimonials } from "@/constants";
-import TestimonialCard from "@/components/cards/testimonial-card";
+import { Quote } from "lucide-react";
 
 const Testimonials = () => {
-    return (
-        <section className="relative w-full py-16 sm:py-20 md:py-24 lg:py-28 bg-background overflow-hidden">
-            
-            {/* Section Header */}
-            <div className="relative text-center mb-12 sm:mb-16 px-4 space-y-3">
-                <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
-                    What Our Customers Say
-                </p>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
-                    Loved by Many
-                </h2>
-                <p className="text-sm sm:text-base md:text-lg text-muted-foreground italic max-w-2xl mx-auto">
-                    Join thousands of happy customers who trust us for quality and style
-                </p>
-            </div>
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-            {/* Testimonials Grid */}
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 max-w-7xl mx-auto relative z-10">
-                    {testimonials.map((testimonial) => (
-                        <TestimonialCard
-                            key={testimonial.id}
-                            name={testimonial.name}
-                            
-                            role={testimonial.role}
-                            avatar={testimonial.avatar}
-                            rating={testimonial.rating}
-                            text={testimonial.text}
-                        />
-                    ))}
+  // Auto-play: change testimonial every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="relative flex items-center justify-center w-full py-16 md:py-24  overflow-hidden">
+      <div className="max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Quote Icon */}
+        <div className="flex justify-center mb-8">
+          <Quote className="w-12 h-12 md:w-16 md:h-16 text-rose-300 fill-rose-300" />
+        </div>
+
+        {/* Testimonial Slider */}
+        <div className="relative min-h-75 flex items-center justify-center">
+          {testimonials.map((testimonial, index) => (
+            <div
+              key={testimonial.id}
+              className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                index === currentIndex
+                  ? "opacity-100 translate-x-0"
+                  : index < currentIndex
+                  ? "opacity-0 -translate-x-full"
+                  : "opacity-0 translate-x-full"
+              }`}
+            >
+              <div className="text-center space-y-8 px-4">
+                {/* Testimonial Text */}
+                <p className="text-xl md:text-2xl lg:text-3xl font-serif italic text-gray-800 leading-relaxed max-w-3xl mx-auto">
+                  &ldquo;{testimonial.text}&rdquo;
+                </p>
+
+                {/* Author Info */}
+                <div className="space-y-1">
+                  <h4 className="text-base md:text-lg font-medium text-gray-900">
+                    {testimonial.name}
+                  </h4>
+                  <p className="text-xs md:text-sm text-gray-500 tracking-widest uppercase">
+                    Verified Customer
+                  </p>
                 </div>
+              </div>
             </div>
+          ))}
+        </div>
 
-            {/* Decorative Gradient Blobs */}
-            <div className="absolute top-20 left-0 w-[300px] h-[300px] bg-accent/10 rounded-full blur-[100px] pointer-events-none z-0" />
-            <div className="absolute bottom-20 right-0 w-[350px] h-[350px] bg-primary/10 rounded-full blur-[120px] pointer-events-none z-0" />
-        </section>
-    );
+        {/* Dot Navigation */}
+        <div className="flex justify-center gap-2 mt-12">
+          {testimonials.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentIndex
+                  ? "bg-rose-400 w-8"
+                  : "bg-gray-300 hover:bg-gray-400"
+              }`}
+              aria-label={`Go to testimonial ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </section> 
+  );
 };
 
 export default Testimonials;

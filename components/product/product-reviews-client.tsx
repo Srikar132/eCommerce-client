@@ -22,7 +22,8 @@ export default function ProductReviewsClient({ productSlug }: ProductReviewsClie
         fetchNextPage, 
         hasNextPage, 
         isFetchingNextPage,
-        isLoading 
+        isLoading ,
+        error
     } = useProductReviews(productSlug, { size: 10 });
     
     const { ref, inView } = useInView();
@@ -43,6 +44,12 @@ export default function ProductReviewsClient({ productSlug }: ProductReviewsClie
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
         );
+    }
+
+    if(error) {
+        return <div className="flex justify-center items-center py-12">
+            <p className="text-muted-foreground">Error loading reviews</p>
+        </div>;
     }
 
     return (

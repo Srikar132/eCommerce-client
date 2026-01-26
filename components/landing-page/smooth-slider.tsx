@@ -2,22 +2,15 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { instagramURI, sliderImage } from '@/constants';
 
-const posts = [
-    { id: 1, image: "/home/section11/image1.png", alt: "Fashion post 1" },
-    { id: 2, image: "/home/section11/image8.png", alt: "Fashion post 2" },
-    { id: 3, image: "/home/section11/image7.png", alt: "Fashion post 3" },
-    { id: 4, image: "/home/section11/image4.png", alt: "Fashion post 4" },
-    { id: 5, image: "/home/section11/image5.png", alt: "Fashion post 5" },
-    { id: 6, image: "/home/section11/image6.png", alt: "Fashion post 6" },
-];
 
 const SmoothSlider = () => {
     const [isPaused, setIsPaused] = useState(false);
 
     // Duplicate posts for seamless loop
-    const duplicatedPosts = [...posts, ...posts];
+    const duplicatedPosts = [...sliderImage, ...sliderImage];
 
     return (
         <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
@@ -67,7 +60,7 @@ const SmoothSlider = () => {
             {/* Follow Button */}
             <div className="text-center mt-12">
                 <Link
-                    href="https://instagram.com/the-nala-armoire"
+                    href={instagramURI}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full text-sm sm:text-base font-medium uppercase tracking-wide hover:opacity-90 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
@@ -84,8 +77,8 @@ const SmoothSlider = () => {
             </div>
 
             {/* Decorative Gradient Blobs */}
-            <div className="absolute top-10 left-0 w-[300px] h-[300px] bg-accent/10 rounded-full blur-[100px] pointer-events-none z-0" />
-            <div className="absolute bottom-10 right-0 w-[350px] h-[350px] bg-primary/10 rounded-full blur-[120px] pointer-events-none z-0" />
+            <div className="absolute top-10 left-0 w-75 h-75 bg-accent/10 rounded-full blur-[100px] pointer-events-none z-0" />
+            <div className="absolute bottom-10 right-0 w-87.5 h-75 bg-primary/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
             <style jsx>{`
                 @keyframes marquee {

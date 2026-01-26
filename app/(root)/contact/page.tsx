@@ -20,8 +20,8 @@ export default function ContactPage() {
 
       {/* Main Content */}
       <section className="py-12 lg:py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
             
             {/* Contact Form */}
             <div className="lg:col-span-3 order-2 lg:order-1">

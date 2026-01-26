@@ -19,7 +19,7 @@ export default function ShowCaseSection() {
           sizes="100vw"
         />
         {/* Subtle overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/5" />
+        {/* <div className="absolute inset-0 bg-black/5" /> */}
       </div>
 
       {/* WAVE CUT AT BOTTOM */}
@@ -38,7 +38,7 @@ export default function ShowCaseSection() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="relative z-20 container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center min-h-[80vh]">
           
           {/* LEFT SIDE*/}
@@ -49,7 +49,7 @@ export default function ShowCaseSection() {
             {/* First Card */}
             <div className="transform hover:scale-105 transition-all duration-500 -rotate-3 hover:rotate-0">
               <HomePremiumProductCard
-                image="/home/section2/sec1-col-1.webp"
+                image="/images/home/showcase-design1.webp"
                 title="Rose Pink Embellished"
                 price={49.99}
                 imageAlt="Premium embellished bag"
@@ -59,7 +59,7 @@ export default function ShowCaseSection() {
             {/* Second Card */}
             <div className="transform hover:scale-105 transition-all duration-500 rotate-6 hover:rotate-0 lg:mr-12">
               <HomePremiumProductCard
-                image="/home/section2/sec1-col-2.webp"
+                image="/images/home/showcase-design2.webp"
                 title="Elegant Pearl Design"
                 price={54.99}
                 imageAlt="Elegant pearl design bag"

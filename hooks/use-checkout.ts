@@ -15,8 +15,8 @@ declare global {
 
 // Store configuration - move to env or constants file
 const STORE_CONFIG = {
-  name: process.env.NEXT_PUBLIC_STORE_NAME || 'Armoire',
-  logo: process.env.NEXT_PUBLIC_STORE_LOGO || '/logo.png',
+  name: process.env.NEXT_PUBLIC_STORE_NAME || 'The Nala Armoire',
+  logo: process.env.NEXT_PUBLIC_STORE_LOGO || '/logo.webp',
   primaryColor: process.env.NEXT_PUBLIC_THEME_COLOR || '#3399cc',
 };
 

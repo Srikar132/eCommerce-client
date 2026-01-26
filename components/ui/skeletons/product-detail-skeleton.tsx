@@ -2,8 +2,9 @@ import { Skeleton } from "../skeleton";
 
 export function ProductDetailSkeleton() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid gap-8 lg:grid-cols-2">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid gap-8 lg:grid-cols-2">
         {/* Image gallery skeleton */}
         <div className="space-y-4">
           {/* Main image */}
@@ -79,6 +80,7 @@ export function ProductDetailSkeleton() {
             <Skeleton className="h-4 w-3/4" />
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

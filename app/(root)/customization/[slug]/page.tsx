@@ -12,7 +12,7 @@ import Link from "next/link";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ variantId?: string; search?: string; tab?: string }>;
+  searchParams: Promise<{ variantId: string; search?: string; tab?: string }>;
 }
 
 
@@ -27,7 +27,7 @@ async function CustomizationContent({ params, searchParams }: PageProps) {
 
   const queryClient = getQueryClient();
 
-  // Prefetch product and variants data
+  // Prefetch product and variants data for client-side hydration
   await Promise.all([
     queryClient.prefetchQuery({
       queryKey: ['product', slug],
@@ -39,61 +39,12 @@ async function CustomizationContent({ params, searchParams }: PageProps) {
     }),
   ]);
 
-  // Get product and variants from cache for validation
-  const product = queryClient.getQueryData(['product', slug]) as any;
-  const variants = queryClient.getQueryData(['productVariants', slug]) as any[];
-
-  // Validation checks
-  if (!product) {
-    return (
-      <ErrorCard
-        title="Product Not Found"
-        message="The product you're looking for doesn't exist or has been removed."
-      />
-    );
-  }
-
-  if (!variants || variants.length === 0) {
-    return (
-      <ErrorCard
-        title="No Variants Available"
-        message="This product doesn't have any variants available for customization."
-      />
-    );
-  }
-
-  if (!variantId) {
-    return (
-      <ErrorCard
-        title="Select a Variant First"
-        message="Please select a color and size from the product page before customizing."
-      />
-    );
-  }
-
-  const selectedVariant = variants.find((v) => v.id === variantId);
-
-  if (!selectedVariant) {
-    return (
-      <ErrorCard
-        title="Variant Not Found"
-        message="The selected variant is not available or out of stock. Please select another variant."
-      />
-    );
-  }
-
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="min-h-screen flex flex-col bg-background-light dark:bg-background-dark">
         <main className="max-w-7xl mx-auto px-6 py-8 pb-32">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <Link
-              href={`/products/${slug}`}
-              className="w-10 h-10 rounded-full border border-stone-200 dark:border-slate-700 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 transition-all"
-            >
-              <span className="material-icons-outlined">arrow_back</span>
-            </Link>
             <div>
               <h1 className="text-3xl font-display italic font-semibold">Customize Your Style</h1>
               <p className="text-slate-500 dark:text-slate-400 text-sm">Step 2: Choose your embroidery design</p>

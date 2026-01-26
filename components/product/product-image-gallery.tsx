@@ -36,16 +36,23 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
     return (
         <div className="w-full">
             {/* Main Image Container */}
-            <div className="relative w-full group max-h-[700px] h-[700px] overflow-hidden rounded-lg">
-                <Image
-                    src={images[selectedImageIndex].url}
-                    alt={images[selectedImageIndex].alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"
-                    priority={selectedImageIndex === 0}
-                    quality={90}
-                />
+            <div className="relative w-full group max-h-175 h-175 overflow-hidden rounded-lg">
+
+                {!!images[selectedImageIndex]?.url ? (
+                    <Image
+                        src={images[selectedImageIndex].url}
+                        alt={images[selectedImageIndex].alt}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                ) : (
+                    <Image
+                        src="/images/image-not-found.webp"
+                        alt="Image not found"
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                )}
 
                 {/* Image Indicator Dots */}
                 {images.length > 1 && (
@@ -67,14 +74,16 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                 )}
 
                 {/* Zoom Overlay */}
-                <div 
-                    onClick={() => setIsZoomOpen(true)}
-                    className="zoom-overlay opacity-0 absolute inset-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center bg-black/5 cursor-pointer group-hover:pointer-events-auto group-hover:opacity-100 z-10"
-                >
-                    <div className="bg-white/80 dark:bg-black/80 backdrop-blur p-4 rounded-full">
-                        <span className="material-icons-outlined text-slate-900 dark:text-white">zoom_in</span>
+                {!!images[selectedImageIndex]?.url && (
+                    <div
+                        onClick={() => setIsZoomOpen(true)}
+                        className="zoom-overlay opacity-0 absolute inset-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center bg-black/5 cursor-pointer group-hover:pointer-events-auto group-hover:opacity-100 z-10"
+                    >
+                        <div className="bg-white/80 dark:bg-black/80 backdrop-blur p-4 rounded-full">
+                            <span className="material-icons-outlined text-slate-900 dark:text-white">zoom_in</span>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Thumbnail Grid */}

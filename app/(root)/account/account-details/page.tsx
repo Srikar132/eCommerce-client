@@ -1,21 +1,13 @@
 
 
-"use client";
 
 import { EditAccountDetailsForm } from "@/components/account/edit-account-details-form";
 import { useAuthStore } from "@/lib/store/auth-store";
-import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
 
 export default function AccountDetailsPage() {
-  const user = useAuthStore((state) => state.user);
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-100">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+
 
   return (
     <div className=" mx-auto space-y-6">
@@ -27,8 +19,10 @@ export default function AccountDetailsPage() {
         </p>
       </div>
 
-      {/* Form */}
-      <EditAccountDetailsForm user={user} />
+
+      <Suspense fallback={<div>Loading...</div>}>
+        <EditAccountDetailsForm  />
+      </Suspense>
     </div>
   );
 }
