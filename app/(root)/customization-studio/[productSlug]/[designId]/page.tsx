@@ -55,22 +55,9 @@ async function CustomizationStudioContent({ params, searchParams }: PageProps) {
     }),
   ]);
 
-  // Get product from cache for validation and header
-  const product = queryClient.getQueryData(["product", productSlug]) as any;
-
-  if (!product) {
-    return (
-      <ErrorCard
-        title="Product Not Found"
-        message="The product you're looking for doesn't exist or has been removed."
-      />
-    );
-  }
-
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
-        <StudioHeader productSlug={productSlug} productName={product.name} variantId={variantId} />
         <StudioContentClient
           productSlug={productSlug}
           designId={designId}
