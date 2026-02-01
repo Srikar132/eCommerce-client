@@ -3,53 +3,53 @@ import Link from "next/link";
 
 const HeroSection = () => {
     return (
-        <section id="hero-section" className="relative w-full overflow-hidden select-none">
-            {/* Cloud Images at Top */}
-            <div className="absolute -top-10 left-[5%] w-[200px] h-[120px] sm:w-[300px] sm:h-[180px] z-10 opacity-70 pointer-events-none">
+        <section id="hero-section" className="relative w-full overflow-hidden select-none bg-linear-to-b from-background via-background/95 to-background max-sm:max-h-[80vh]">
+            {/* Cloud Images at Top - Fixed positioning to prevent overlap with navbar */}
+            <div className="absolute top-4 sm:top-8 md:top-12 left-[5%] w-30 h-20 sm:w-45 sm:h-30 md:w-50 md:h-33.75 z-10 opacity-70 pointer-events-none">
                 <Image
                     src="/images/home/cloud.webp"
                     alt=""
-                    fill
-                    className="object-contain select-none"
+                    width={200}
+                    height={135}
+                    className="object-contain select-none w-full h-full"
+                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
                     draggable={false}
                     priority
-                />
-            </div>
-            
-            <div className="absolute -top-5 right-[10%] w-[150px] h-[100px] sm:w-[250px] sm:h-[150px] z-10 opacity-60 pointer-events-none">
-                <Image
-                    src="/images/home/cloud.webp"
-                    alt=""
-                    fill
-                    className="object-contain select-none"
-                    draggable={false}
-                    priority
-                />
-            </div>
-            
-            <div className="absolute top-20 left-[40%] w-[120px] h-20 sm:w-[200px] sm:h-[120px] z-10 opacity-50 hidden sm:block pointer-events-none">
-                <Image
-                    src="/images/home/cloud.webp"
-                    alt=""
-                    fill
-                    className="object-contain select-none"
-                    draggable={false}
                 />
             </div>
 
-            {/* Soft Pink Gradient Blob - Top Left */}
-            {/* <div className="absolute -top-40 -left-30 w-[500px] h-[100px] sm:w-[700px] sm:h-[250px] bg-pink-400/70 rounded-full blur-[120px] z-10" />
-            
-            
-            <div className="absolute -top-40 right-1/3  w-[500px] h-[100px] sm:w-[700px] sm:h-[250px] bg-blue-300/70 rounded-full blur-[100px] z-10" /> */}
+            <div className="absolute top-8 sm:top-12 md:top-16 right-[10%] w-30 h-20 sm:w-45 sm:h-30 md:w-50 md:h-33.75 z-10 opacity-60 pointer-events-none">
+                <Image
+                    src="/images/home/cloud.webp"
+                    alt=""
+                    width={170}
+                    height={113}
+                    className="object-contain select-none w-full h-full"
+                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                    draggable={false}
+                    priority
+                />
+            </div>
+
+            <div className="absolute top-24 sm:top-32 md:top-40 left-[35%] sm:left-[40%] w-30 h-20 sm:w-45 sm:h-30 md:w-50 md:h-33.75 z-10 opacity-50 hidden sm:block pointer-events-none">
+                <Image
+                    src="/images/home/cloud.webp"
+                    alt=""
+                    width={140}
+                    height={93}
+                    className="object-contain select-none w-full h-full"
+                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                    draggable={false}
+                />
+            </div>
 
             {/* Content Container */}
-            <div className="relative min-h-[600px] sm:min-h-[700px] md:min-h-[750px] z-20 flex items-center justify-center py-20 sm:py-24 md:py-28">
-                <div className="text-center  px-4 sm:px-6 max-w-4xl mx-auto mt-20">
+            <div className="relative min-h-150 sm:min-h-175 md:min-h-187.5 z-20 flex items-center justify-center py-16 sm:py-20 md:py-24 px-4">
+                <div className="text-center max-w-4xl mx-auto w-full">
 
                     {/* Brand Name */}
-                    <div className="space-y-2">
-                        <h2 className="text-lg sm:text-xl md:text-2xl font-light tracking-[0.3em] uppercase text-gray-700">
+                    <div className="space-y-2 mb-6 sm:mb-8">
+                        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-light tracking-[0.3em] uppercase text-gray-700">
                             The Nala Armoire
                         </h2>
                         <p className="text-xs sm:text-sm md:text-base font-light italic text-gray-600 tracking-wide">
@@ -58,7 +58,7 @@ const HeroSection = () => {
                     </div>
 
                     {/* Main Heading */}
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium italic tracking-tight leading-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium italic tracking-tight leading-tight mb-8 sm:mb-10">
                         Discover Handmade
                         <br />
                         Craftsmanship
@@ -74,53 +74,68 @@ const HeroSection = () => {
                         </Link>
                     </div>
 
-                    {/* Decorative Floral Elements */}
-                    <div className="absolute top-1/4 left-[3%] sm:left-[5%] w-16 h-16 sm:w-28 sm:h-28 opacity-60 pointer-events-none">
+                    {/* Decorative Floral Elements - Better responsive positioning */}
+                    {/* Top Left Flower */}
+                    <div className="absolute top-[15%] sm:top-[20%] left-[2%] sm:left-[5%] md:left-[8%] w-12 h-12 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 opacity-90 pointer-events-none">
                         <Image
                             src="/images/home/flower2.webp"
                             alt=""
-                            fill
-                            className="object-contain select-none"
+                            width={112}
+                            height={112}
+                            className="object-contain select-none w-full h-full"
+                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
                             draggable={false}
-                        />
+                        />  
                     </div>
                     
-                    <div className="absolute -bottom-22 sm:-bottom-10 right-0 w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44  pointer-events-none">
+                    {/* Bottom Right Flower */}
+                    <div className="absolute bottom-[5%] sm:bottom-[8%] right-[2%] sm:right-[5%] w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 pointer-events-none opacity-80">
                         <Image
                             src="/images/home/flower3.webp"
                             alt=""
-                            fill
-                            className="object-cover select-none scale-150"
+                            width={144}
+                            height={144}
+                            className="object-contain select-none w-full h-full"
+                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
                             draggable={false}
                         />
                     </div>
 
-                    <div className="absolute bottom-40 sm:bottom-50 right-[3%] sm:right-[10%] w-20 h-20 sm:w-32 sm:h-32 md:w-44 md:h-44 pointer-events-none">
+                    {/* Middle Right Flower */}
+                    <div className="absolute top-[50%] sm:top-[55%] right-[5%] sm:right-[8%] md:right-[12%] w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 pointer-events-none opacity-90">
                         <Image
                             src="/images/home/flower6.webp"
                             alt=""
-                            fill
-                            className="object-cover select-none scale-150"
+                            width={128}
+                            height={128}
+                            className="object-contain select-none w-full h-full"
+                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
                             draggable={false}
                         />
                     </div>
                     
-                    <div className="absolute bottom-1/4 left-[3%] sm:left-[10%] w-20 h-20 sm:w-32 sm:h-32 md:w-44 md:h-44 scale-110  pointer-events-none">
+                    {/* Middle Left Flower */}
+                    <div className="absolute top-[55%] sm:top-[60%] left-[3%] sm:left-[8%] md:left-[12%] w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 pointer-events-none opacity-90">
                         <Image
                             src="/images/home/flower4.webp"
                             alt=""
-                            fill
-                            className="object-contain select-none scale-150"
+                            width={128}
+                            height={128}
+                            className="object-contain select-none w-full h-full"
+                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
                             draggable={false}
                         />
                     </div>
 
-                    <div className="absolute bottom-0 left-[3%] sm:left-[5%] w-20 h-20 sm:w-32 sm:h-32 md:w-44 md:h-44 scale-125  pointer-events-none">
+                    {/* Bottom Left Flower */}
+                    <div className="absolute bottom-[10%] sm:bottom-[12%] left-[2%] sm:left-[5%] md:left-[8%] w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 pointer-events-none opacity-75">
                         <Image
                             src="/images/home/flower5.webp"
                             alt=""
-                            fill
-                            className="object-contain select-none scale-150"
+                            width={112}
+                            height={112}
+                            className="object-contain select-none w-full h-full"
+                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
                             draggable={false}
                         />
                     </div>
@@ -128,7 +143,7 @@ const HeroSection = () => {
             </div>
 
             {/* Subtle gradient overlay for better text readability */}
-            <div className="absolute inset-0 bg-linear-to-b from-background/95 via-background/85 to-background/95 z-1 pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-b from-background/90 via-transparent to-background/90 z-1 pointer-events-none" />
         </section>
     );
 };

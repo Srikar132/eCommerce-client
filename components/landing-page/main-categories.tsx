@@ -108,9 +108,6 @@ export default function ShopByCategories() {
 
             </div>
 
-            {/* Soft Gradient Blobs for Ambiance */}
-            <div className="absolute top-20 left-0 w-[300px] h-[300px] bg-pink-200/20 rounded-full blur-[100px] pointer-events-none z-0" />
-            <div className="absolute bottom-20 right-0 w-[350px] h-[350px] bg-blue-200/15 rounded-full blur-[120px] pointer-events-none z-0" />
         </section>
     );
 }

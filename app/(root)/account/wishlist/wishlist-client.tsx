@@ -43,7 +43,7 @@ export default function WishlistClient() {
       <div className="container max-w-7xl mx-auto px-4 py-8 lg:py-12">
         
         {/* Header with Gradient Card */}
-        <Card className="mb-8 overflow-hidden border-border bg-linear-to-br from-card via-accent/5 to-primary/5 shadow-lg rounded-3xl">
+        <Card className="mb-8 overflow-hidden ">
           <CardContent className="p-6 lg:p-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
               <div className="flex items-center gap-4">

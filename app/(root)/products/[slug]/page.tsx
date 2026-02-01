@@ -5,9 +5,11 @@ import { Metadata } from "next";
 import ProductReviewsSection from "@/components/product/product-reviews-section";
 import { Suspense } from "react";
 import { ReviewsSkeleton } from "@/components/product/reviews-skeleton";
+import { RecommendationsSkeleton } from "@/components/product/recommendations-skeleton";
 import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import { getQueryClient } from "@/lib/tanstack/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import ProductRecommendations from "@/components/product/product-recommendations";
 
 export async function generateMetadata({
     params
@@ -75,14 +77,21 @@ async function ProductDetailContent({ params }: ProductPageProps) {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
                         <ProductDetailClient slug={slug} />
 
-                        {/* Reviews Section - Now a Server Component with its own prefetching */}
+                        {/* Reviews Section - Server Component with its own prefetching */}
                         <Suspense fallback={<ReviewsSkeleton />}>
                             <div className="mt-12">
                                 <ProductReviewsSection productSlug={slug} />
                             </div>
                         </Suspense>
 
-                        {/* PRODUCT RECOMMENDATIONS */}
+                        {/* Product Recommendations - Server Component */}
+                        <Suspense fallback={<RecommendationsSkeleton />}>
+                            <ProductRecommendations 
+                                excludeProductSlug={slug}
+                                limit={6}
+                                title="You May Also Like"
+                            />
+                        </Suspense>
                     </div>
                 </div>
             </HydrationBoundary>

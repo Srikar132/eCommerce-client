@@ -4,6 +4,8 @@ import "./globals.css";
 import TanstackProvider from "@/providers/tanstack";
 import { AuthProvider } from "@/providers/auth-provider";
 import Script from "next/script";
+import { CartSyncProvider } from "@/providers/cart-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 
 
@@ -46,8 +48,12 @@ export default function Layout({
       >
         <AuthProvider>
           <TanstackProvider>
-            {children}
-          </TanstackProvider>
+              <CartSyncProvider>
+                <SidebarProvider defaultOpen={false}>
+                  {children}
+                </SidebarProvider>
+              </CartSyncProvider>
+            </TanstackProvider>
         </AuthProvider>
 
         <Script

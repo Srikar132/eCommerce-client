@@ -8,6 +8,7 @@ import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton
 import { getQueryClient } from "@/lib/tanstack/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import Link from "next/link";
+import ProductRecommendations from "@/components/product/product-recommendations";
 
 
 interface PageProps {
@@ -44,12 +45,12 @@ async function CustomizationContent({ params, searchParams }: PageProps) {
       <div className="min-h-screen flex flex-col bg-background-light dark:bg-background-dark">
         <main className="max-w-7xl mx-auto px-6 py-8 pb-32">
           {/* Header */}
-          <div className="flex items-center gap-4 mb-8">
+          {/* <div className="flex items-center gap-4 mb-8">
             <div>
               <h1 className="text-3xl font-display italic font-semibold">Customize Your Style</h1>
               <p className="text-slate-500 dark:text-slate-400 text-sm">Step 2: Choose your embroidery design</p>
             </div>
-          </div>
+          </div> */}
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column - Product Preview */}
@@ -70,7 +71,19 @@ async function CustomizationContent({ params, searchParams }: PageProps) {
               />
             </Suspense>
           </div>
+          
+          <Suspense >
+            <ProductRecommendations
+              limit={5}
+              title="Recommended For You"
+              excludeProductSlug={slug}
+              category=""
+            />
+          </Suspense>
         </main>
+
+
+
       </div>
     </HydrationBoundary>
   );

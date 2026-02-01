@@ -60,12 +60,12 @@ const Navbar = () => {
         <>
             <nav
                 className={`${isHomePage
-                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-none sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] mx-auto sm:my-5 lg:my-6 shadow-md border border-rose-100/20`
+                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-none  sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] left-1/2 -translate-x-1/2  sm:my-5 lg:my-6 shadow-md border border-rose-100/20`
                     : 'sticky'
                     } ${shouldShowBackdrop
                         ? 'bg-background/80 backdrop-blur-xl'
                         : 'bg-background/60 backdrop-blur-md'
-                    } w-full top-0 z-50 transition-all duration-500 ease-in-out`}
+                    } w-full top-0 z-50 transition-all duration-500 ease-in-out `}
             >
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
                     <div className="flex items-center justify-between h-14 sm:h-16 lg:h-18 gap-3 sm:gap-4 lg:gap-6">

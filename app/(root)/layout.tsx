@@ -3,11 +3,8 @@ import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
 import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
 import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Footer";
-import { CartSyncProvider } from "@/providers/cart-provider";
-import TanstackProvider from "@/providers/tanstack";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -21,36 +18,31 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-      <TanstackProvider>
-          <CartSyncProvider>
-            <SidebarProvider defaultOpen={false}>
-              <div className="font-sans w-full no-scrollbar">
-                <AppSidebar />
 
-                <header id="header">
-                  <Suspense fallback={<NavbarSkeleton />}>
-                    <Navbar />
-                  </Suspense>
-                </header>
+    <div className="w-full no-scrollbar">
+      <AppSidebar />
 
-                <Suspense fallback={<></>}>
-                  <BreadcrumbNavigation />
-                </Suspense>
+      <header id="header">
+        <Suspense fallback={<NavbarSkeleton />}>
+          <Navbar />
+        </Suspense>
+      </header>
 
-                <main className="w-full relative">{children}</main>
+      <Suspense fallback={<></>}>
+        <BreadcrumbNavigation />
+      </Suspense>
 
-                <Footer />
-                <Toaster 
-                  position="top-right" 
-                  expand={false}
-                  richColors={false}
-                  closeButton
-                  duration={4000}
-                />
-              </div>
-            </SidebarProvider>
-          </CartSyncProvider>
-      </TanstackProvider>
+      <main className="w-full relative">{children}</main>
+
+      <Footer />
+      <Toaster
+        position="top-right"
+        expand={false}
+        richColors={false}
+        closeButton
+        duration={4000}
+      />
+    </div>
   );
 }
 

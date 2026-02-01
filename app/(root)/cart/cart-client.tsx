@@ -1,6 +1,6 @@
 "use client";
 
-import { useCartManager, CartItemIdentifier } from "@/hooks/use-cart";
+import { useCartManager } from "@/hooks/use-cart";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Truck, RotateCcw } from "lucide-react";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { CartItem } from "@/types";
 import type { LocalCartItem } from "@/lib/utils/local-cart";
+import type { CartItemIdentifier } from "@/hooks/use-cart";
 
 const SHIPPING_THRESHOLD = 999;
 const SHIPPING_COST = 99;
@@ -51,7 +52,7 @@ function CartItemRow({
   if (isAuthenticated) {
     const cartItem = item as CartItem;
     
-    const imageUrl = cartItem.variant?.primaryImageUrl || "/placeholder.png";
+    const imageUrl = cartItem.variant?.primaryImageUrl || "/images/image-not-found.webp";
 
     return (
       <div className="flex gap-4 py-6">
@@ -148,7 +149,7 @@ function CartItemRow({
 
   // Guest cart item
   const localItem = item as LocalCartItem;
-  const imageUrl = localItem.variantImageUrl || "/placeholder.png";
+  const imageUrl = localItem.variantImageUrl || "/images/image-not-found.webp";
   const designPrice = localItem.customizationData?.designPrice || 0;
   const unitPrice = localItem.basePrice + localItem.variantPrice + designPrice;
   const itemTotal = unitPrice * localItem.quantity;
@@ -257,12 +258,12 @@ export default function CartClient() {
   const cart = useCartManager();
   const [itemToRemove, setItemToRemove] = useState<CartItemIdentifier | null>(null);
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
-  const [removingItems, setRemovingItems] = useState<Set<string>>(new Set());
 
   // Loading state
   if (cart.isLoading) {
     return <CartPageSkeleton />;
   }
+
 
   // Empty cart
   if (cart.isEmpty) {
@@ -309,8 +310,8 @@ export default function CartClient() {
     return `${localItem.productId}-${localItem.variantId}-${localItem.customizationData?.designId || "none"}`;
   };
 
-  // FIXED: Create proper CartItemIdentifier
-  const createItemIdentifier = (item: CartItem | LocalCartItem): CartItemIdentifier => {
+  // Build item identifier based on cart type
+  const buildItemIdentifier = (item: CartItem | LocalCartItem): CartItemIdentifier => {
     if (cart.isAuthenticated) {
       const cartItem = item as CartItem;
       return {
@@ -319,29 +320,44 @@ export default function CartClient() {
         variantId: cartItem.variant.id,
         designId: cartItem.customization?.designId,
         threadColorHex: cartItem.customization?.threadColorHex,
+        additionalNotes: cartItem.customization?.additionalNotes,
       };
-    } else {
-      const localItem = item as LocalCartItem;
-      return {
-        productId: localItem.productId,
-        variantId: localItem.variantId,
-        designId: localItem.customizationData?.designId,
-        threadColorHex: localItem.customizationData?.threadColorHex,
-      };
+    }
+    
+    const localItem = item as LocalCartItem;
+    return {
+      productId: localItem.productId,
+      variantId: localItem.variantId,
+      designId: localItem.customizationData?.designId,
+      threadColorHex: localItem.customizationData?.threadColorHex,
+      additionalNotes: localItem.customizationData?.additionalNotes,
+    };
+  };
+
+  // Handle increment/decrement with loading state
+  const handleIncrement = async (item: CartItem | LocalCartItem) => {
+    const key = getItemKey(item);
+    setUpdatingItems((prev) => new Set(prev).add(key));
+    
+    try {
+      const itemIdentifier = buildItemIdentifier(item);
+      await cart.incrementQuantity(itemIdentifier);
+    } finally {
+      setUpdatingItems((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
     }
   };
 
-  // FIXED: Use cart manager methods directly instead of reimplementing
-  const handleQuantityChange = async (
-    item: CartItem | LocalCartItem,
-    newQuantity: number
-  ) => {
+  const handleDecrement = async (item: CartItem | LocalCartItem) => {
     const key = getItemKey(item);
     setUpdatingItems((prev) => new Set(prev).add(key));
-
+    
     try {
-      const itemIdentifier = createItemIdentifier(item);
-      await cart.updateQuantity(itemIdentifier, newQuantity);
+      const itemIdentifier = buildItemIdentifier(item);
+      await cart.decrementQuantity(itemIdentifier);
     } finally {
       setUpdatingItems((prev) => {
         const next = new Set(prev);
@@ -354,30 +370,11 @@ export default function CartClient() {
   const handleRemoveItem = async () => {
     if (!itemToRemove) return;
 
-    const item = items.find((i: CartItem | LocalCartItem) => {
-      const identifier = createItemIdentifier(i);
-      return (
-        identifier.productId === itemToRemove.productId &&
-        identifier.variantId === itemToRemove.variantId &&
-        identifier.designId === itemToRemove.designId &&
-        identifier.threadColorHex === itemToRemove.threadColorHex
-      );
-    });
-
-    if (!item) return;
-
-    const key = getItemKey(item);
-    setRemovingItems((prev) => new Set(prev).add(key));
-
     try {
       await cart.removeItem(itemToRemove);
       setItemToRemove(null);
-    } finally {
-      setRemovingItems((prev) => {
-        const next = new Set(prev);
-        next.delete(key);
-        return next;
-      });
+    } catch (error) {
+      console.error('Failed to remove item:', error);
     }
   };
 
@@ -392,10 +389,7 @@ export default function CartClient() {
           <div className="divide-y rounded-lg border bg-card">
             {items.map((item: CartItem | LocalCartItem) => {
               const key = getItemKey(item);
-              const itemIdentifier = createItemIdentifier(item);
-              const currentQuantity = cart.isAuthenticated
-                ? (item as CartItem).quantity
-                : (item as LocalCartItem).quantity;
+              const itemIdentifier = buildItemIdentifier(item);
 
               return (
                 <CartItemRow
@@ -403,10 +397,10 @@ export default function CartClient() {
                   item={item}
                   isAuthenticated={cart.isAuthenticated}
                   onRemove={() => setItemToRemove(itemIdentifier)}
-                  onIncrement={() => handleQuantityChange(item, currentQuantity + 1)}
-                  onDecrement={() => handleQuantityChange(item, Math.max(1, currentQuantity - 1))}
+                  onIncrement={() => handleIncrement(item)}
+                  onDecrement={() => handleDecrement(item)}
                   isUpdating={updatingItems.has(key)}
-                  isRemoving={removingItems.has(key)}
+                  isRemoving={cart.isRemoving}
                 />
               );
             })}

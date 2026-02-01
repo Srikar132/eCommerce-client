@@ -117,6 +117,16 @@ export default function DesignSelectionClient({
   return (
     <>
       <div className="lg:col-span-7">
+        {/* Heading */}
+        <div className="mb-6">
+          <h2 className="text-xl lg:text-2xl font-serif font-light tracking-wide text-foreground mb-1">
+            Choose Your Design
+          </h2>
+          <p className="text-xs lg:text-sm text-muted-foreground font-light">
+            Select a design that speaks to your style
+          </p>
+        </div>
+
         <div className="mb-6 space-y-4">
           {/* Search Input */}
           <form onSubmit={handleSearchSubmit} className="relative">

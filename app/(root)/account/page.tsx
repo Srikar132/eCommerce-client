@@ -11,8 +11,6 @@ import { useAuthStore } from '@/lib/store/auth-store';
 export default function AccountPage() {
     const user = useAuthStore((state) => state.user);
 
-    console.log(user)
-    
     const isProfileIncomplete = !user?.username || !user?.email;
 
     return (

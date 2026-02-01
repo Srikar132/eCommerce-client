@@ -196,6 +196,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                             productSlug={product.slug}
                             selectedVariantId={selectedVariant?.id}
                             isInCart={inCart}
+                            category={product.categoryName}
                         />
                     </div>
 

@@ -47,7 +47,7 @@ function CartItemDisplay({ item, isAuthenticated }: CartItemDisplayProps) {
       <div className="flex gap-3">
         <div className="relative w-16 h-16 bg-muted/30 rounded-lg overflow-hidden shrink-0 border border-border/30">
           <Image
-            src={variant?.primaryImageUrl || '/image/error.png'}
+            src={variant?.primaryImageUrl || '/images/image-not-found.webp'}
             alt={cartItem.product.name}
             fill
             className="object-cover"

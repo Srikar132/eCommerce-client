@@ -1,11 +1,81 @@
 import { User, UserRole } from '@/types';
+import { jwtDecode } from 'jwt-decode';
 
 /**
  * Authentication Utility Functions
  * 
  * Provides helper functions for user role checks,
- * account status validation, and display utilities
+ * account status validation, JWT token validation, and display utilities
  */
+
+// ==================== JWT Token Types ====================
+
+export interface RefreshTokenPayload {
+  sub: string; // User ID
+  type: 'refresh';
+  tokenId: string;
+  role: UserRole;
+  iat: number; // Issued at
+  exp: number; // Expiration
+}
+
+// ==================== JWT Token Validation ====================
+
+/**
+ * Decode and validate refresh token
+ * Returns decoded payload if valid, null otherwise
+ */
+export function validateRefreshToken(token: string): RefreshTokenPayload | null {
+  try {
+    // Decode the JWT token
+    const decoded = jwtDecode<RefreshTokenPayload>(token);
+    
+    // Validate token type
+    if (decoded.type !== 'refresh') {
+      console.error('[Auth] Invalid token type:', decoded.type);
+      return null;
+    }
+    
+    // Validate expiration
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp <= now) {
+      console.error('[Auth] Token expired');
+      return null;
+    }
+    
+    // Validate required fields
+    if (!decoded.sub || !decoded.tokenId || !decoded.role) {
+      console.error('[Auth] Missing required token fields');
+      return null;
+    }
+    
+    return decoded;
+  } catch (error) {
+    console.error('[Auth] Token validation failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if user has required role from token
+ */
+export function hasRoleFromToken(tokenPayload: RefreshTokenPayload | null, role: UserRole): boolean {
+  return tokenPayload?.role === role;
+}
+
+/**
+ * Check if user is admin from token
+ */
+export function isAdminFromToken(tokenPayload: RefreshTokenPayload | null): boolean {
+  return hasRoleFromToken(tokenPayload, 'ADMIN');
+}
+
+/**
+ * Check if user is customer from token
+ */
+export function isCustomerFromToken(tokenPayload: RefreshTokenPayload | null): boolean {
+  return hasRoleFromToken(tokenPayload, 'CUSTOMER');
+}
 
 // ==================== Role Checks ====================
 

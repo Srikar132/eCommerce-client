@@ -29,7 +29,7 @@ export function NoResults({
 
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-12">
+    <div className="w-full max-w-4xl mx-auto px-4 py-4">
       {/* Search Query Display */}
       <div className="text-center mb-8">
         <Card className="inline-block border-border bg-accent/50">
@@ -61,9 +61,6 @@ export function NoResults({
 
       {/* No Matches Message */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center justify-center w-14 h-14 bg-primary/10 rounded-full mb-4">
-          <Search className="w-6 h-6 text-primary" />
-        </div>
         <h2 className="text-3xl font-serif font-light text-foreground mb-3">
           We couldn&apos;t find any matches!
         </h2>
@@ -73,7 +70,7 @@ export function NoResults({
       </div>
 
       {/* Browse all button */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-5">
         <Button
           asChild
           size="lg"
@@ -90,7 +87,7 @@ export function NoResults({
       <div className="max-w-2xl mx-auto mb-10">
         <Card className="border-border bg-card shadow-sm">
           <CardContent className="p-6">
-            <form action={handleSearchAction} className="flex gap-3">
+            <form action={handleSearchAction} className="flex gap-3 items-center">
               <Input
                 name="query"
                 type="text"
@@ -110,32 +107,6 @@ export function NoResults({
           </CardContent>
         </Card>
       </div>
-
-      {/* Popular Searches */}
-      <Card className="border-border bg-card shadow-sm">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-primary" />
-            <h3 className="font-serif font-light text-lg text-foreground">
-              Popular Searches
-            </h3>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {popularSearches.map((search) => (
-              <Link
-                key={search}
-                href={`/products?searchQuery=${encodeURIComponent(search)}`}
-                className="group inline-flex items-center gap-1 px-4 py-2 border border-border rounded-full bg-background hover:bg-accent hover:border-primary/30 transition-all duration-300"
-              >
-                <Sparkles className="w-3 h-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="text-sm text-foreground group-hover:text-primary transition-colors">
-                  {search}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
 
     </div>
   );

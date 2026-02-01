@@ -18,30 +18,21 @@ const Footer: React.FC = () => {
                             <h3 className="font-semibold mb-4 text-sm tracking-widest uppercase text-foreground">Products</h3>
                             <ul className="space-y-3 text-sm">
                                 <li>
-                                    <Link href="/products?category=dress" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Dress
+                                    <Link href="/products?category=men" className="text-muted-foreground hover:text-primary transition-colors">
+                                        Men
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/products?category=blazer" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Blazer
+                                    <Link href="/products?category=women" className="text-muted-foreground hover:text-primary transition-colors">
+                                        Women
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/products?category=skirt" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Skirt
+                                    <Link href="/products?category=kids" className="text-muted-foreground hover:text-primary transition-colors">
+                                        Kids
                                     </Link>
                                 </li>
-                                <li>
-                                    <Link href="/products?category=trousers" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Trousers
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/products?category=jumpers" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Jumpers
-                                    </Link>
-                                </li>
+                                
                             </ul>
                         </div>
 
@@ -76,11 +67,6 @@ const Footer: React.FC = () => {
                                         Return and Refunds
                                     </Link>
                                 </li>
-                                <li>
-                                    <Link href="/legal" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Legal Area
-                                    </Link>
-                                </li>
                             </ul>
                         </div>
 
@@ -103,8 +89,6 @@ const Footer: React.FC = () => {
                         <div className="flex items-center gap-6">
                             <select className="px-4 py-2 text-sm rounded-full border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer">
                                 <option>EN</option>
-                                <option>ES</option>
-                                <option>FR</option>
                             </select>
                             <div className="flex gap-4">
                                 <Link 

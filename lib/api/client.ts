@@ -1,6 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { toast } from "sonner";
-import { isProtectedRoute, isPublicRoute } from "@/lib/auth/middleware-config";
+import { isProtectedRoute } from "@/lib/auth/middleware-config";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -105,7 +105,7 @@ apiClient.interceptors.response.use(
 
         if (typeof window !== 'undefined') {
           const currentPath = window.location.pathname;
-          
+
           localStorage.removeItem('auth-storage');
           sessionStorage.clear();
 

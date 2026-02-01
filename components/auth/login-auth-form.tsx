@@ -10,19 +10,27 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
+    FormControl,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/use-auth";
-import { Phone, Loader2, ArrowRight, ShieldCheck, KeyRound, Sparkles } from "lucide-react";
+import { Loader2, Shield } from "lucide-react";
+import Link from "next/link";
 
 type Step = 'phone' | 'otp';
 
-// Phone validation schema - now validates the full number with country code
+// Phone validation schema with terms acceptance
 const phoneSchema = z.object({
     fullPhone: z
         .string()
         .min(13, 'Please enter country code and phone number')
         .regex(/^\+\d{1,4}\d{10}$/, 'Invalid format. Use +91 followed by 10 digits'),
+    acceptTerms: z
+        .boolean()
+        .refine((val) => val === true, {
+            message: "You must accept the terms and conditions",
+        }),
 });
 
 // OTP validation schema
@@ -48,6 +56,7 @@ export default function LoginAuthForm() {
         resolver: zodResolver(phoneSchema),
         defaultValues: {
             fullPhone: '+91',
+            acceptTerms: false,
         },
     });
 
@@ -57,22 +66,26 @@ export default function LoginAuthForm() {
         defaultValues: {
             otp: '',
         },
+        mode: 'onChange',
     });
 
     const handleSendOtp = async (data: PhoneFormValues) => {
         try {
-            // Extract country code and phone number
             const match = data.fullPhone.match(/^(\+\d{1,4})(\d{10})$/);
             if (!match) return;
 
             const [, countryCode, phone] = match;
 
+            const fullPhone = countryCode + phone;
+
             const response = await sendOtp({
-                phone: countryCode + phone,
+                phone: fullPhone,
                 countryCode
             });
             setPhoneData({ phone, countryCode });
             setMaskedPhone(response.maskedPhone || phone);
+
+            otpForm.reset(); // Reset the OTP form before switching
             setStep('otp');
         } catch (error) {
             console.error('Send OTP error:', error);
@@ -81,7 +94,6 @@ export default function LoginAuthForm() {
 
     const handleVerifyOtp = async (data: OtpFormValues) => {
         try {
-            // Send full phone number with country code
             const fullPhone = phoneData.countryCode + phoneData.phone;
             await verifyOtp({
                 phone: fullPhone,
@@ -103,50 +115,76 @@ export default function LoginAuthForm() {
         }
     };
 
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
-        let value = e.target.value;
-
-        // Always keep the + at the start
-        if (!value.startsWith('+')) {
-            value = '+' + value.replace(/\D/g, '');
-        } else {
-            // Keep the +, remove all other non-digits
-            value = '+' + value.slice(1).replace(/\D/g, '');
-        }
-
-        field.onChange(value);
-    };
 
     return (
         <>
             {step === 'phone' ? (
                 <Form {...phoneForm}>
                     <form onSubmit={phoneForm.handleSubmit(handleSendOtp)} className="space-y-6">
-                        {/* Phone Number Field with Country Code */}
+                        {/* Phone Number Field */}
                         <FormField
                             control={phoneForm.control}
                             name="fullPhone"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-foreground tracking-wide flex items-center gap-2">
-                                        <Phone className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                                    <FormLabel className="text-sm font-medium text-foreground mb-2">
                                         Phone Number
                                     </FormLabel>
-                                    <Input
-                                        placeholder="+919876543210"
-                                        value={field.value}
-                                        name={field.name}
-                                        ref={field.ref}
-                                        disabled={isLoading}
-                                        onChange={(e) => handlePhoneChange(e, field)}
-                                        onBlur={field.onBlur}
-                                        maxLength={16}
-                                        className="h-12 rounded-xl border border-input transition-all duration-200 bg-background focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 pl-4 pr-4 text-base placeholder:text-muted-foreground hover:border-ring/50"
-                                    />
-                                    <p className="text-xs text-muted-foreground mt-1.5 tracking-wide">
-                                        Enter with country code (e.g., +919876543210)
-                                    </p>
-                                    <FormMessage className="text-sm font-medium text-destructive animate-in slide-in-from-top-1 duration-200" />
+                                    <FormControl>
+                                        <div className="relative">
+                                            {/* Country Code Prefix - Static Display */}
+                                            <div className="absolute left-0 top-0 h-11 px-3 flex items-center justify-center border-r border-border bg-muted/30 rounded-l-lg pointer-events-none z-10">
+                                                <span className="text-sm font-medium text-muted-foreground">+91</span>
+                                            </div>
+                                            {/* Phone Number Input - Slimmer and elegant */}
+                                            <Input
+                                                placeholder="9876543210"
+                                                value={field.value.replace(/^\+91/, "")}
+                                                name={field.name}
+                                                ref={field.ref}
+                                                disabled={isLoading}
+                                                onChange={(e) => {
+                                                    const digits = e.target.value.replace(/\D/g, '');
+                                                    field.onChange('+91' + digits);
+                                                }}
+                                                onBlur={field.onBlur}
+                                                maxLength={10}
+                                                className="h-11 pl-16 text-sm font-light tracking-wide border border-input bg-background focus-visible:border-primary focus-visible:ring-0 transition-colors placeholder:text-muted-foreground/60"
+                                            />
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage className="text-xs font-medium text-destructive mt-1.5" />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Terms & Conditions Checkbox */}
+                        <FormField
+                            control={phoneForm.control}
+                            name="acceptTerms"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                            className="mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                        />
+                                    </FormControl>
+                                    <div className="space-y-1">
+                                        <FormLabel className="text-[11px] font-light text-muted-foreground cursor-pointer leading-relaxed block">
+                                            By continuing, I agree to the{" "}
+                                            <Link href="/terms" className="text-primary font-medium hover:underline underline-offset-2 whitespace-nowrap">
+                                                Terms of Use
+                                            </Link>
+                                            {" "}&{" "}
+                                            <Link href="/privacy" className="text-primary font-medium hover:underline underline-offset-2 whitespace-nowrap">
+                                                Privacy Policy
+                                            </Link>
+                                            {" "}and I am above 18 years old.
+                                        </FormLabel>
+                                        <FormMessage className="text-[10px]" />
+                                    </div>
                                 </FormItem>
                             )}
                         />
@@ -155,72 +193,61 @@ export default function LoginAuthForm() {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group tracking-wide"
+                            className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm uppercase tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                         >
                             {isLoading ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" strokeWidth={1.5} />
-                                    Sending OTP...
-                                </>
+                                <span className="flex items-center gap-2">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span className="font-light">Sending...</span>
+                                </span>
                             ) : (
-                                <>
-                                    <Sparkles className="w-4 h-4 mr-2 transition-transform group-hover:rotate-12" strokeWidth={1.5} />
-                                    Send Verification Code
-                                    <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
-                                </>
+                                'Continue'
                             )}
                         </Button>
                     </form>
                 </Form>
             ) : (
-                <Form {...otpForm}>
+                <Form {...otpForm} key="otp-form" >
                     <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="space-y-6">
-                        {/* OTP Info */}
-                        <div className="text-center space-y-3 pb-4">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/50 mb-2">
-                                <ShieldCheck className="h-8 w-8 text-primary" strokeWidth={1.5} />
-                            </div>
-                            <p className="text-sm text-muted-foreground tracking-wide">
+                        {/* OTP Info Header */}
+                        <div className="text-center space-y-2 pb-2">
+                            <p className="text-sm text-muted-foreground">
                                 We've sent a verification code to
                             </p>
-                            <p className="text-base font-medium text-foreground tracking-wide">
+                            <p className="text-base font-semibold text-foreground">
                                 {maskedPhone}
                             </p>
                         </div>
 
-                        {/* OTP Field */}
+                        {/* OTP Input Field */}
                         <FormField
                             control={otpForm.control}
                             name="otp"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-foreground tracking-wide flex items-center gap-2">
-                                        <KeyRound className="h-4 w-4 text-primary" strokeWidth={1.5} />
-                                        Verification Code
-                                    </FormLabel>
-                                    <Input
-                                        placeholder="000000"
-                                        value={field.value}
-                                        name={field.name}
-                                        ref={field.ref}
-                                        disabled={isLoading}
-                                        onChange={(e) => {
-                                            const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                            field.onChange(value);
-                                        }}
-                                        onBlur={field.onBlur}
-                                        type="text"
-                                        inputMode="numeric"
-                                        autoComplete="one-time-code"
-                                        className="h-14 rounded-xl border border-input transition-all duration-200 bg-background focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 text-2xl text-center tracking-[0.5em] font-medium placeholder:text-muted-foreground/50 placeholder:tracking-[0.5em] hover:border-ring/50"
-                                    />
-                                    <FormMessage className="text-sm font-medium text-destructive animate-in slide-in-from-top-1 duration-200" />
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Enter OTP"
+                                            value={field.value}
+                                            disabled={isLoading}
+                                            onChange={(e) => {
+                                                const value = e.target.value.replace(/\D/g, '');
+                                                field.onChange(value);
+                                            }}
+                                            maxLength={6}
+                                            type="text"
+                                            inputMode="numeric"
+                                            autoComplete="one-time-code"
+                                            className="h-11 border border-input bg-background text-lg text-center tracking-[0.5em] font-medium focus-visible:border-primary focus-visible:ring-0 transition-colors placeholder:text-muted-foreground/50 placeholder:tracking-widest placeholder:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-xs font-medium text-destructive mt-1.5 text-center" />
                                 </FormItem>
                             )}
                         />
 
                         {/* Action Links */}
-                        <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center justify-between text-sm pt-2">
                             <button
                                 type="button"
                                 onClick={() => {
@@ -228,16 +255,15 @@ export default function LoginAuthForm() {
                                     otpForm.reset();
                                 }}
                                 disabled={isLoading}
-                                className="font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group disabled:opacity-50 tracking-wide"
+                                className="font-light text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 underline-offset-2 hover:underline"
                             >
-                                <ArrowRight className="h-3 w-3 rotate-180 transition-transform group-hover:-translate-x-0.5" strokeWidth={1.5} />
-                                Change number
+                                ← Change number
                             </button>
                             <button
                                 type="button"
                                 onClick={handleResendOtp}
                                 disabled={isLoading}
-                                className="font-medium text-primary hover:text-primary/80 transition-colors disabled:opacity-50 tracking-wide"
+                                className="font-medium text-primary hover:text-primary/80 transition-colors disabled:opacity-50 uppercase text-xs tracking-wide underline-offset-2 hover:underline"
                             >
                                 Resend Code
                             </button>
@@ -247,19 +273,15 @@ export default function LoginAuthForm() {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group tracking-wide"
+                            className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm uppercase tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                         >
                             {isLoading ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" strokeWidth={1.5} />
-                                    Verifying...
-                                </>
+                                <span className="flex items-center gap-2">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span className="font-light">Verifying...</span>
+                                </span>
                             ) : (
-                                <>
-                                    <Sparkles className="w-4 h-4 mr-2 transition-transform group-hover:rotate-12" strokeWidth={1.5} />
-                                    Verify & Continue
-                                    <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
-                                </>
+                                'Verify & Continue'
                             )}
                         </Button>
                     </form>

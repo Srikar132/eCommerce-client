@@ -11,6 +11,7 @@ interface ProductActionsProps {
     productSlug?: string;
     selectedVariantId?: string;
     isInCart?: boolean;
+    category?: string;
 }
 
 export default function ProductActions({
@@ -19,7 +20,8 @@ export default function ProductActions({
     isCustomizable = false,
     productSlug,
     selectedVariantId,
-    isInCart
+    isInCart,
+    category
 }: ProductActionsProps) {
     const router = useRouter();
 
@@ -29,7 +31,7 @@ export default function ProductActions({
             return;
         }
         if (productSlug && selectedVariantId) {
-            router.push(`/customization/${productSlug}?variantId=${selectedVariantId}`);
+            router.push(`/customization/${productSlug}?variantId=${selectedVariantId}&category=${category}`);
         }
     };
 

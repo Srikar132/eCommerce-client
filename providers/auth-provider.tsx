@@ -47,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     initAuth();
+
+    
   }, [isInitialized, setUser, setLoading, setInitialized]);
 
   return <>{children}</>;
