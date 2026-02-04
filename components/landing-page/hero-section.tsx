@@ -11,8 +11,8 @@ const HeroSection = () => {
                     alt=""
                     width={200}
                     height={135}
-                    className="object-contain select-none w-full h-full"
-                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                    className="object-contain select-none"
+                    style={{ width: '100%', height: 'auto' }}
                     draggable={false}
                     priority
                 />
@@ -22,10 +22,10 @@ const HeroSection = () => {
                 <Image
                     src="/images/home/cloud.webp"
                     alt=""
-                    width={170}
-                    height={113}
-                    className="object-contain select-none w-full h-full"
-                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                    width={200}
+                    height={135}
+                    className="object-contain select-none"
+                    style={{ width: '100%', height: 'auto' }}
                     draggable={false}
                     priority
                 />
@@ -35,10 +35,10 @@ const HeroSection = () => {
                 <Image
                     src="/images/home/cloud.webp"
                     alt=""
-                    width={140}
-                    height={93}
-                    className="object-contain select-none w-full h-full"
-                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                    width={200}
+                    height={135}
+                    className="object-contain select-none"
+                    style={{ width: '100%', height: 'auto' }}
                     draggable={false}
                 />
             </div>
@@ -50,7 +50,7 @@ const HeroSection = () => {
                     {/* Brand Name */}
                     <div className="space-y-2 mb-6 sm:mb-8">
                         <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-light tracking-[0.3em] uppercase text-gray-700">
-                            The Nala Armoire
+                            Nala Armoire
                         </h2>
                         <p className="text-xs sm:text-sm md:text-base font-light italic text-gray-600 tracking-wide">
                             where beauty roars in every stitch
@@ -58,15 +58,13 @@ const HeroSection = () => {
                     </div>
 
                     {/* Main Heading */}
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium italic tracking-tight leading-tight mb-8 sm:mb-10">
-                        Discover Handmade
-                        <br />
-                        Craftsmanship
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight leading-tight mb-8 sm:mb-10">
+                        Every piece tells a story <br /> Lets make your's - together.
                     </h1>
 
                     {/* CTA Button */}
                     <div className="pt-2 sm:pt-4">
-                        <Link 
+                        <Link
                             href="/products"
                             className="inline-block bg-primary text-primary-foreground px-8 py-3 sm:px-10 sm:py-4 rounded-full text-base sm:text-lg font-medium hover:opacity-90 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
                         >
@@ -80,23 +78,21 @@ const HeroSection = () => {
                         <Image
                             src="/images/home/flower2.webp"
                             alt=""
-                            width={112}
-                            height={112}
-                            className="object-contain select-none w-full h-full"
-                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                            fill
+                            sizes="(max-width: 640px) 48px, (max-width: 768px) 80px, (max-width: 1024px) 96px, 112px"
+                            className="object-contain select-none"
                             draggable={false}
-                        />  
+                        />
                     </div>
-                    
+
                     {/* Bottom Right Flower */}
                     <div className="absolute bottom-[5%] sm:bottom-[8%] right-[2%] sm:right-[5%] w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 pointer-events-none opacity-80">
                         <Image
                             src="/images/home/flower3.webp"
                             alt=""
-                            width={144}
-                            height={144}
-                            className="object-contain select-none w-full h-full"
-                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                            fill
+                            sizes="(max-width: 640px) 80px, (max-width: 768px) 112px, (max-width: 1024px) 128px, 144px"
+                            className="object-contain select-none"
                             draggable={false}
                         />
                     </div>
@@ -106,23 +102,21 @@ const HeroSection = () => {
                         <Image
                             src="/images/home/flower6.webp"
                             alt=""
-                            width={128}
-                            height={128}
-                            className="object-contain select-none w-full h-full"
-                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                            fill
+                            sizes="(max-width: 640px) 64px, (max-width: 768px) 96px, (max-width: 1024px) 112px, 128px"
+                            className="object-contain select-none"
                             draggable={false}
                         />
                     </div>
-                    
+
                     {/* Middle Left Flower */}
                     <div className="absolute top-[55%] sm:top-[60%] left-[3%] sm:left-[8%] md:left-[12%] w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 pointer-events-none opacity-90">
                         <Image
                             src="/images/home/flower4.webp"
                             alt=""
-                            width={128}
-                            height={128}
-                            className="object-contain select-none w-full h-full"
-                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                            fill
+                            sizes="(max-width: 640px) 64px, (max-width: 768px) 96px, (max-width: 1024px) 112px, 128px"
+                            className="object-contain select-none"
                             draggable={false}
                         />
                     </div>
@@ -134,8 +128,8 @@ const HeroSection = () => {
                             alt=""
                             width={112}
                             height={112}
-                            className="object-contain select-none w-full h-full"
-                            style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                            className="object-contain select-none"
+                            style={{ width: '100%', height: 'auto' }}
                             draggable={false}
                         />
                     </div>

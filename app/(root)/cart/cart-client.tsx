@@ -48,11 +48,13 @@ function CartItemRow({
   isUpdating: boolean;
   isRemoving: boolean;
 }) {
+
+  console.log("Rendering cart item:", item);
   // Authenticated user cart item
   if (isAuthenticated) {
     const cartItem = item as CartItem;
     
-    const imageUrl = cartItem.variant?.primaryImageUrl || "/images/image-not-found.webp";
+    const imageUrl = cartItem.product?.primaryImageUrl || "/images/image-not-found.webp";
 
     return (
       <div className="flex gap-4 py-6">

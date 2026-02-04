@@ -1,11 +1,11 @@
 import ColorSelector from "@/components/product/color-selector";
 import SizeSelector from "@/components/product/size-selector";
 import { Separator } from "@/components/ui/separator";
-import { ColorGroup, SizeOption } from "@/hooks/use-variant-selector";
+import { ColorOption, SizeOption } from "@/hooks/use-variant-selector";
 
 interface VariantSelectorProps {
-    colorGroups: ColorGroup[];
-    availableSizes: SizeOption[];
+    colors: ColorOption[];
+    sizes: SizeOption[];
     selectedColor: string;
     selectedSize: string;
     onColorChange: (color: string) => void;
@@ -14,8 +14,8 @@ interface VariantSelectorProps {
 }
 
 export default function VariantSelector({
-    colorGroups,
-    availableSizes,
+    colors,
+    sizes,
     selectedColor,
     selectedSize,
     onColorChange,
@@ -23,28 +23,26 @@ export default function VariantSelector({
     className = ""
 }: VariantSelectorProps) {
     return (
-        <div className={`space-y-4 ${className}`}>
+        <div className={`border-2 border-border rounded-xl bg-card/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300 ${className}`}>
             {/* Color Selection */}
-            <div className="py-4">
+            <div className="p-6">
                 <ColorSelector
-                    colors={colorGroups}
+                    colors={colors}
                     selectedColor={selectedColor}
                     onColorChange={onColorChange}
                 />
             </div>
 
-            <Separator className="bg-border/40" />
+            <Separator className="bg-border/60" />
 
             {/* Size Selection */}
-            <div className="py-4">
+            <div className="p-6">
                 <SizeSelector
-                    sizes={availableSizes}
+                    sizes={sizes}
                     selectedSize={selectedSize}
                     onSizeChange={onSizeChange}
                 />
             </div>
-
-          
         </div>
     );
 }

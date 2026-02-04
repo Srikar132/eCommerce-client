@@ -11,17 +11,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ProductParams } from "@/types/product";
 
 interface SortOption {
-  value: string;
+  value: ProductParams["sortBy"];
   label: string;
 }
 
 const sortOptions: SortOption[] = [
-  { value: "basePrice,asc", label: "Price: Low to High" },
-  { value: "basePrice,desc", label: "Price: High to Low" },
-  { value: "createdAt,asc", label: "Date: Old to New" },
-  { value: "createdAt,desc", label: "Date: New to Old" },
+  { value: "PRICE_ASC", label: "Price: Low to High" },
+  { value: "PRICE_DESC", label: "Price: High to Low" },
+  { value: "CREATED_AT_ASC", label: "Date: Old to New" },
+  { value: "CREATED_AT_DESC", label: "Date: New to Old" },
+  { value: "BEST_SELLING", label: "Best Selling" }
 ];
 
 interface SortDropdownProps {
@@ -29,18 +31,18 @@ interface SortDropdownProps {
 }
 
 const SortDropdown: React.FC<SortDropdownProps> = ({
-  currentSort = "relevance"
+  currentSort = "RELEVANCE"
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleSortChange = (sortValue: string) => {
+  const handleSortChange = (sortValue: ProductParams["sortBy"]) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (sortValue === "relevance") {
-      params.delete("sort");
+    if (sortValue === "RELEVANCE") {
+      params.delete("sortBy");
     } else {
-      params.set("sort", sortValue);
+      params.set("sortBy", sortValue ?? "");
     }
 
     // Reset to first page when sorting changes

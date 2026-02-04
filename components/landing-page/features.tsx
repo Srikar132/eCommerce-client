@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 const Features = () => {
     return (
         <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 relative z-10">
+                <div className="max-w-7xl w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 relative z-10 ">
                     {features.map((feature, i) => (
                         <Card 
                             key={i} 
@@ -21,6 +21,7 @@ const Features = () => {
                                         alt={feature.title}
                                         width={50}
                                         height={40}
+                                        style={{ width: 'auto', height: 'auto' }}
                                         className="object-contain drop-shadow-sm sm:w-15 sm:h-12.5"
                                     />
                                 </div>

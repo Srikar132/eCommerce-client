@@ -9,19 +9,11 @@ export type ISODateString = string;
 
 
 export interface PagedResponse<T> {
-    content: T[];
-
+    data: T[];
     page: number;
     size: number;
-
     totalElements: number;
     totalPages: number;
-
-    first: boolean;
-    last: boolean;
-
-    hasNext: boolean;
-    hasPrevious: boolean;
 }
 
 
@@ -65,33 +57,6 @@ export interface Address {
     createdAt: string;
 }
 
-// Phone OTP Authentication Types
-export interface SendOtpRequest {
-    phone: string;
-    countryCode?: string;
-}
-
-export interface SendOtpResponse {
-    success: boolean;
-    message: string;
-    expiresIn: number;
-    maskedPhone: string;
-}
-
-export interface VerifyOtpRequest {
-    phone: string;
-    otp: string;
-}
-
-export interface AuthResponse {
-    user: User;
-    message?: string;
-}
-
-export interface MessageResponse {
-    message: string;
-    success: boolean;
-}
 
 
 // ================================================
@@ -115,19 +80,8 @@ export interface Category {
 }
 
 
-export interface Brand {
-    id: UUID;
-    name: string;
-    slug: string;
 
-    description?: string;
-    logoUrl?: string;
 
-    isActive: boolean;
-    createdAt: ISODateString;
-}
-
-export type ImageRole = 'PREVIEW_BASE' | 'PREVIEW_CUSTOMIZED' | 'GALLERY';
 
 export interface ProductImage {
     id: UUID;
@@ -137,7 +91,6 @@ export interface ProductImage {
 
     displayOrder: number;
     isPrimary: boolean;
-    imageRole?: ImageRole;  // Role of the image (PREVIEW_BASE, PREVIEW_CUSTOMIZED, GALLERY)
 }
 
 export interface ProductVariant {
@@ -153,9 +106,6 @@ export interface ProductVariant {
 
     sku: string;
     isActive: boolean;
-    
-    // Images now belong to variants
-    images?: ProductImage[];
 }
 
 export interface Review {
@@ -175,7 +125,6 @@ export interface Review {
 export interface Product {
     id: UUID;
 
-    brand: Brand;
     category: Category;
 
     name: string;
@@ -194,6 +143,7 @@ export interface Product {
     createdAt: ISODateString;
     updatedAt?: ISODateString;
 
+    images: ProductImage[];
     variants: ProductVariant[];
     reviews: Review[];
 }
@@ -216,17 +166,11 @@ export type ProductResponse =
         reviewCount?: number;
         
         // Variants now include their specific images
-        imageUrl: string;
+        
     };
 
 
 
-
-
-export interface ProductSearchResponse {
-    products: PagedResponse<ProductResponse>;
-    facets: ProductFacets;
-}
 
 
 export type ProductListRequestParams = {
@@ -454,6 +398,7 @@ export interface ProductSummary {
     name: string;
     slug: string;
     sku: string;
+    primaryImageUrl: string;  // The main image for this variant
 }
 
 export interface VariantSummary {
@@ -461,7 +406,6 @@ export interface VariantSummary {
     size: string;
     color: string;
     sku: string;
-    primaryImageUrl?: string;  // The main image for this variant
 }
 
 export interface CustomizationSummary {

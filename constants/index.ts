@@ -1,9 +1,3 @@
-
-
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-
-export const instagramURI =  "https://instagram.com/the-nala-armoire";
-
 export {
     features,
     categories,
@@ -15,3 +9,4 @@ export {
     collections
 } from './data';
 
+export const PLACEHOLDER_IMAGE = '/images/image-not-found.webp';

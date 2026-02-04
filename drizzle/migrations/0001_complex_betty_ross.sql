@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "acceptTerms" boolean DEFAULT false NOT NULL;

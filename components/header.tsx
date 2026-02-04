@@ -12,21 +12,23 @@ const Header = ({ title , subtitle  }: HeaderProps) => {
       {/* Decorative Background Images */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Left side decoration */}
-        <div className="absolute left-0 top-0 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 opacity-60">
+        <div className="absolute left-0 top-0 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40">
           <Image
             src="/images/home/flower5.webp"
             alt=""
             fill
+            sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 160px"
             className="object-contain"
           />
         </div>
         
         {/* Right side decoration */}
-        <div className="absolute right-0 bottom-0 w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 opacity-60">
+        <div className="absolute right-0 bottom-0 w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48">
           <Image
             src="/images/home/flower5.webp"
             alt=""
             fill
+            sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, 192px"
             className="object-contain"
           />
         </div>

@@ -1,13 +1,8 @@
 // Product queries
 export {
   useInfiniteProducts,
-  useProducts,
-  useProduct,
-  useProductReviews,
-  useAddProductReview,
   useFlatProducts,
   useProductCount,
-  useProductFacets,
 } from './product.queries';
 
 // Cart queries

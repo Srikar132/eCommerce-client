@@ -5,6 +5,7 @@
  * Wishlist is only available for logged-in users.
  */
 
+import { ProductImage } from "@/types";
 import { apiClient } from "./client";
 import { AxiosResponse } from "axios";
 
@@ -20,7 +21,7 @@ export interface WishlistItem {
   sku: string;
   isActive: boolean;
   isCustomizable: boolean;
-  primaryImageUrl: string | null;
+  images: ProductImage[];
   categoryName: string | null;
   brandName: string | null;
   addedAt: string;

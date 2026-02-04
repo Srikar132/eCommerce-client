@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAddProductReview } from "@/lib/tanstack/queries/product.queries";
-import { useAuth } from "@/hooks/use-auth";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +19,8 @@ interface AddReviewFormProps {
 }
 
 export function AddReviewForm({ productSlug, onClose }: AddReviewFormProps) {
-    const { isAuthenticated } = useAuth();
+    const { status } = useSession();
+    const isAuthenticated = status === 'authenticated';
     const addReviewMutation = useAddProductReview(productSlug);
     
     const [rating, setRating] = useState(0);

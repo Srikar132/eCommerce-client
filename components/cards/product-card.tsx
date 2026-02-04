@@ -1,23 +1,22 @@
 "use client";
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import {  useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, Eye, ShoppingCart } from 'lucide-react';
+import { Heart, ShoppingCart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ProductResponse } from '@/types';
 import { formatCurrency } from '@/lib/utils';
+import { Product } from '@/types/product';
+import { PLACEHOLDER_IMAGE } from '@/constants';
 
 
 type Props = {
-    product: ProductResponse;
+    product: Product;
     onMouseEnter?: () => void;
     onAddToWishlist?: () => void;
     isWishlisted?: boolean;
 };
 
-const PLACEHOLDER_IMAGE = '/images/error.png';
 
 const ProductCardComponent = ({
     product,
@@ -26,7 +25,6 @@ const ProductCardComponent = ({
 }: Props) => {
 
 
-    const badge = product.isCustomizable ? 'Customizable' : undefined;
 
     // Memoize event handlers to prevent recreating on each render
     const handleWishlistClick = useCallback((e: React.MouseEvent) => {
@@ -38,28 +36,22 @@ const ProductCardComponent = ({
 
 
     return (
-        <Link 
+        <Link
             href={`/products/${product.slug}`} 
             className="block"
         >
             <Card className="overflow-hidden  border-0  transition-all duration-300 bg-white group">
                 {/* Image Container with rounded outline */}
-                <div className="relative aspect-[2.9/3] overflow-hidden m-2 bg-gray-100">
+                <div className="relative aspect-[2.9/3] overflow-hidden m-2 bg-secondary">
                     <Image
-                        src={product.imageUrl || PLACEHOLDER_IMAGE}
-                        alt={"/images/loo.png"}
+                        src={product.images?.[0].imageUrl || PLACEHOLDER_IMAGE}
+                        alt={product.images?.[0].altText || "Product Image"     }
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                         priority={false}
                     />
 
-
-                    {badge && (
-                        <Badge className="absolute top-3 left-3 bg-white text-black hover:bg-white border-0 shadow-md uppercase tracking-wide text-xs">
-                            {badge}
-                        </Badge>
-                    )}
 
 
                     {/* Hover CTAs */}
@@ -92,9 +84,6 @@ const ProductCardComponent = ({
                 </div>
 
                 <CardContent className="p-4 space-y-1">
-                    <p className="text-xs uppercase tracking-wider text-gray-500 font-medium">
-                        {product.brandName}
-                    </p>
 
                     <h3 className="text-sm font-normal text-gray-900 group-hover:underline line-clamp-2">
                         {product.name}

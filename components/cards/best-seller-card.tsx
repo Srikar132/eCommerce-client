@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ProductResponse } from "@/types";
+import { PLACEHOLDER_IMAGE } from "@/constants";
 
 interface BestSellerCardProps {
   product: ProductResponse;
@@ -15,7 +16,7 @@ export default function BestSellerCard({ product }: BestSellerCardProps) {
       {/* Image Container */}
       <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-white mb-3">
         <Image
-          src={product?.imageUrl}
+          src={product?.images && product.images.length > 0 ? product.images[0].imageUrl : PLACEHOLDER_IMAGE}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"

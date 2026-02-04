@@ -11,6 +11,8 @@
  * - Prevents key mismatches between prefetch and client queries
  */
 
+import { ProductParams } from "@/types/product";
+
 export interface ProductFilters {
   category?: string | string[];
   brand?: string | string[];
@@ -60,12 +62,7 @@ export const queryKeys = {
      * @param size - Page size
      * @param sort - Sort order
      */
-    list: (params: {
-      filters: ProductFilters;
-      page?: number;
-      size?: number;
-      sort?: string;
-    }) => ['products', params] as const,
+    list: (params: ProductParams) => ['products', params] as const,
     
     /**
      * Single product by ID or slug

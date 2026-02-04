@@ -1,76 +1,114 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { isProtectedRoute, isGuestOnlyRoute, isPublicRoute, isAdminRoute } from '@/lib/auth/middleware-config';
-import { validateRefreshToken, isAdminFromToken } from '@/lib/auth/auth-utils';
+import { auth } from '@/auth';
 
 /**
- * Simplified Authentication Middleware
+ * NextAuth-based Authentication Middleware
  * 
- * Validates refresh_token JWT from cookies set by Spring backend
- * No token refresh logic - just validation and role checking
+ * Uses NextAuth session for authentication and authorization
+ * Supports role-based access control (USER, ADMIN)
  */
 
+// Route configuration
+const PUBLIC_ROUTES = [
+  '/',
+  '/about',
+  '/contact',
+  '/products',
+  '/faq',
+  '/terms',
+  '/returns',
+  '/privacy',
+  '/help',
+];
+
+const GUEST_ONLY_ROUTES = [
+  '/login',
+];
+
+const PROTECTED_ROUTES = [
+  '/account',
+  '/cart',
+  '/checkout',
+  '/orders',
+  '/customization',
+  '/customization-studio',
+];
+
+const ADMIN_ROUTES = [
+  '/admin',
+];
+
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_ROUTES.some(route =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+}
+
+function isGuestOnlyRoute(pathname: string): boolean {
+  return GUEST_ONLY_ROUTES.some(route => pathname === route);
+}
+
+function isProtectedRoute(pathname: string): boolean {
+  return PROTECTED_ROUTES.some(route =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+}
+
+function isAdminRoute(pathname: string): boolean {
+  return ADMIN_ROUTES.some(route =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check route type using middleware-config helpers
-  const isProtected = isProtectedRoute(pathname);
-  const isGuestOnly = isGuestOnlyRoute(pathname);
+  // Get session using NextAuth
+  const session = await auth();
+  const isAuthenticated = !!session?.user;
+  const userRole = session?.user?.role;
+
+  // Check route types
   const isPublic = isPublicRoute(pathname);
+  const isGuestOnly = isGuestOnlyRoute(pathname);
+  const isProtected = isProtectedRoute(pathname);
   const isAdmin = isAdminRoute(pathname);
 
-  // Skip middleware for public routes (no auth check needed)
-  if (isPublic && !isProtected && !isGuestOnly) {
+  console.log(`[Middleware] ${pathname} | Auth: ${isAuthenticated} | Role: ${userRole || 'None'} | Protected: ${isProtected} | Admin: ${isAdmin}`);
+
+  // Allow public routes without authentication
+  if (isPublic && !isProtected && !isAdmin) {
     return NextResponse.next();
   }
 
+  // Redirect authenticated users away from guest-only routes (login)
+  if (isGuestOnly && isAuthenticated) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
 
+  // Redirect unauthenticated users from protected routes to login
+  if (isProtected && !isAuthenticated) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 
-  // Get refresh token from cookies
-  const refreshToken = request.cookies.get('refresh_token')?.value;
-
-  console.log(`[Middleware] ${pathname} | Protected: ${isProtected} | GuestOnly: ${isGuestOnly} | Admin: ${isAdmin} | Token: ${refreshToken ? 'Found' : 'Not Found'}`);
-  
-  if (!refreshToken) {
-    // No token found - redirect to login for protected routes
-    if (isProtected || isAdmin) {
+  // Check admin access
+  if (isAdmin) {
+    if (!isAuthenticated) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    return NextResponse.next();
+
+    if (userRole !== 'ADMIN') {
+      // Non-admin trying to access admin routes - redirect to home
+      return NextResponse.redirect(new URL('/', request.url));
+    }
   }
 
-  // Validate and decode the refresh token
-  const decoded = validateRefreshToken(refreshToken);
-  const authenticated = !!decoded;
-
-  // Create response based on authentication result
-  let response: NextResponse;
-
-  // Redirect to login if accessing protected route without auth
-  if (isProtected && !authenticated) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    response = NextResponse.redirect(loginUrl);
-  }
-  // Redirect to home if accessing guest-only routes while authenticated
-  else if (isGuestOnly && authenticated) {
-    response = NextResponse.redirect(new URL('/', request.url));
-  }
-  // Admin routes require admin role
-  else if (isAdmin && (!authenticated || !isAdminFromToken(decoded))) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    response = NextResponse.redirect(loginUrl);
-  }
-  // Continue normally
-  else {
-    response = NextResponse.next();
-  }
-
-  return response;
+  return NextResponse.next();
 }
 
 /**

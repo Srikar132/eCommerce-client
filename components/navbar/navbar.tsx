@@ -8,8 +8,8 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import { SearchInput } from '../search-input';
 import { cn } from '@/lib/utils';
-import CartButton from '../cart/cart-button';
-import WishlistButton from './wishlist-button';
+// import CartButton from '../cart/cart-button';
+// import WishlistButton from './wishlist-button';
 import { CollectionsDropdown } from './collections-dropdown';
 import { User2, Menu, ShoppingBag, Heart, Search } from 'lucide-react';
 
@@ -60,7 +60,7 @@ const Navbar = () => {
         <>
             <nav
                 className={`${isHomePage
-                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-none  sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] left-1/2 -translate-x-1/2  sm:my-5 lg:my-6 shadow-md border border-rose-100/20`
+                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-none  sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] left-1/2 -translate-x-1/2  sm:my-5 lg:my-6 shadow-md border border-rose-100/20 top-5`
                     : 'sticky'
                     } ${shouldShowBackdrop
                         ? 'bg-background/80 backdrop-blur-xl'
@@ -91,6 +91,7 @@ const Navbar = () => {
                                         src="/images/logo.webp"
                                         alt="The Nala Armoire"
                                         fill
+                                        sizes="(max-width: 640px) 40px, (max-width: 1024px) 44px, 48px"
                                         className="object-cover"
                                         priority
                                     />
@@ -164,13 +165,13 @@ const Navbar = () => {
                                     </Button>
                                 </>
                             }>
-                                <Link href="/account/wishlist">
+                                {/* <Link href="/account/wishlist">
                                     <WishlistButton />
                                 </Link>
 
                                 <Link href="/cart">
                                     <CartButton />
-                                </Link>
+                                </Link> */}
                             </Suspense>
                         </div>
                     </div>

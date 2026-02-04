@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAuth } from "@/hooks/use-auth";
+import { sendOtp, loginWithOtp } from "@/lib/actions/auth-actions";
 import { Loader2, Shield } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Step = 'phone' | 'otp';
 
@@ -45,7 +47,9 @@ type PhoneFormValues = z.infer<typeof phoneSchema>;
 type OtpFormValues = z.infer<typeof otpSchema>;
 
 export default function LoginAuthForm() {
-    const { sendOtp, verifyOtp, isLoading } = useAuth();
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+    const [isLoading, setIsLoading] = useState(false);
 
     const [step, setStep] = useState<Step>('phone');
     const [phoneData, setPhoneData] = useState({ phone: '', countryCode: '+91' });
@@ -70,48 +74,89 @@ export default function LoginAuthForm() {
     });
 
     const handleSendOtp = async (data: PhoneFormValues) => {
+        setIsLoading(true);
         try {
             const match = data.fullPhone.match(/^(\+\d{1,4})(\d{10})$/);
-            if (!match) return;
+            if (!match) {
+                toast.error('Invalid phone format');
+                return;
+            }
 
             const [, countryCode, phone] = match;
-
             const fullPhone = countryCode + phone;
 
-            const response = await sendOtp({
-                phone: fullPhone,
-                countryCode
-            });
-            setPhoneData({ phone, countryCode });
-            setMaskedPhone(response.maskedPhone || phone);
+            const response = await sendOtp(fullPhone);
+            
+            if (!response.success) {
+                toast.error(response.error || 'Failed to send OTP');
+                return;
+            }
 
-            otpForm.reset(); // Reset the OTP form before switching
+            setPhoneData({ phone, countryCode });
+            const masked = phone.replace(/(\d{2})(\d{4})(\d{4})/, '$1****$3');
+            setMaskedPhone(masked);
+
+            toast.success(response.message || 'OTP sent successfully');
+            otpForm.reset();
             setStep('otp');
         } catch (error) {
             console.error('Send OTP error:', error);
+            toast.error('Failed to send OTP');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleVerifyOtp = async (data: OtpFormValues) => {
+        setIsLoading(true);
         try {
+
+            console.log('Verifying OTP for phone:', phoneData);
             const fullPhone = phoneData.countryCode + phoneData.phone;
-            await verifyOtp({
-                phone: fullPhone,
-                otp: data.otp
+            const response = await loginWithOtp(fullPhone, data.otp);
+            
+            if (!response.success) {
+                toast.error('error' in response ? response.error : 'Verification failed');
+                return;
+            }
+
+            toast.success('Login successful!');
+            
+            // Get redirect from URL or default to home
+            const params = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect') || '/';
+            
+            startTransition(() => {
+                router.push(redirect);
+                router.refresh();
             });
+
+            
         } catch (error) {
             console.error('Verify OTP error:', error);
+            toast.error('Failed to verify OTP');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleResendOtp = async () => {
+        setIsLoading(true);
         try {
-            await sendOtp({
-                phone: phoneData.phone,
-                countryCode: phoneData.countryCode
-            });
+            const fullPhone = phoneData.countryCode + phoneData.phone;
+            const response = await sendOtp(fullPhone);
+            
+            if (!response.success) {
+                toast.error(response.error || 'Failed to resend OTP');
+                return;
+            }
+
+            toast.success('OTP resent successfully');
         } catch (error) {
             console.error('Resend OTP error:', error);
+            toast.error('Failed to resend OTP');
+        } finally {
+            setIsLoading(false);
         }
     };
 

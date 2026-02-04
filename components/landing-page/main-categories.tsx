@@ -14,6 +14,7 @@ export default function ShopByCategories() {
                     src="/images/home/flower2.webp"
                     alt=""
                     fill
+                    sizes="(max-width: 640px) 80px, (max-width: 768px) 112px, 128px"
                     className="object-contain select-none"
                     draggable={false}
                 />
@@ -25,6 +26,7 @@ export default function ShopByCategories() {
                     src="/images/home/flower5.webp"
                     alt=""
                     fill
+                    sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 144px"
                     className="object-contain select-none scale-150"
                     draggable={false}
                 />
@@ -36,6 +38,7 @@ export default function ShopByCategories() {
                     src="/images/home/flower4.webp"
                     alt=""
                     fill
+                    sizes="(max-width: 640px) 96px, (max-width: 768px) 144px, 176px"
                     className="object-contain select-none scale-150"
                     draggable={false}
                 />
@@ -47,6 +50,7 @@ export default function ShopByCategories() {
                     src="/images/home/flower3.webp"
                     alt=""
                     fill
+                    sizes="(max-width: 640px) 112px, (max-width: 768px) 160px, 192px"
                     className="object-cover select-none scale-150"
                     draggable={false}
                 />
@@ -58,6 +62,7 @@ export default function ShopByCategories() {
                     src="/images/home/flower6.webp"
                     alt=""
                     fill
+                    sizes="(max-width: 768px) 80px, 112px"
                     className="object-cover select-none scale-150"
                     draggable={false}
                 />
@@ -69,6 +74,7 @@ export default function ShopByCategories() {
                     src="/images/home/flower2.webp"
                     alt=""
                     fill
+                    sizes="(max-width: 640px) 64px, 96px"
                     className="object-contain select-none"
                     draggable={false}
                 />

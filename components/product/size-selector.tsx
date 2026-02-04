@@ -3,8 +3,11 @@
 import React, {useState} from "react";
 import {SizeGuideModal} from "@/components/product/size-guide-modal";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Ruler } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SizeOption {
     size: string;
@@ -29,58 +32,82 @@ export default function SizeSelector({
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Label className="text-base font-medium text-foreground">
-                        Size
+                <div className="flex items-center gap-3">
+                    <Label className="text-base font-semibold text-foreground">
+                        Select Size
                     </Label>
                     {selectedSize && (
-                        <span className="text-sm text-muted-foreground">
+                        <Badge variant="outline">
                             {selectedSize}
-                        </span>
+                        </Badge>
                     )}
                 </div>
                 <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowSizeGuide(true)}
-                    className="text-primary hover:text-primary/90 h-auto p-0 font-normal"
+                    className="text-primary hover:text-primary/80"
                 >
-                    <Ruler className="w-4 h-4 mr-1" />
-                    Size guide
+                    <Ruler className="w-3.5 h-3.5" />
+                    Size Guide
                 </Button>
             </div>
 
-            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+            <RadioGroup 
+                value={selectedSize} 
+                onValueChange={onSizeChange}
+                className="grid grid-cols-4 sm:grid-cols-5 gap-3"
+            >
                 {sizes.map((sizeOption) => (
-                    <Button
-                        key={sizeOption.variantId}
-                        variant={selectedSize === sizeOption.size ? "default" : "outline"}
-                        onClick={() => sizeOption.inStock && onSizeChange(sizeOption.size)}
-                        disabled={!sizeOption.inStock}
-                        className={`
-                            h-12 text-sm font-medium transition-all duration-200
-                            ${selectedSize === sizeOption.size 
-                                ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                                : "bg-background hover:bg-accent hover:text-accent-foreground"
-                            }
-                            ${!sizeOption.inStock 
-                                ? "opacity-40 cursor-not-allowed line-through" 
-                                : "hover:scale-105"
-                            }
-                        `}
-                        title={sizeOption.additionalPrice > 0 ? `+₹${sizeOption.additionalPrice.toFixed(2)}` : undefined}
-                    >
-                        <span className="flex flex-col items-center">
-                            <span>{sizeOption.size}</span>
-                            {sizeOption.additionalPrice > 0 && (
-                                <span className="text-[10px] opacity-80">
-                                    +₹{sizeOption.additionalPrice}
-                                </span>
+                    <div key={sizeOption.variantId} className="relative">
+                        <RadioGroupItem
+                            value={sizeOption.size}
+                            id={`size-${sizeOption.variantId}`}
+                            disabled={!sizeOption.inStock}
+                            className="peer sr-only"
+                        />
+                        <Label
+                            htmlFor={`size-${sizeOption.variantId}`}
+                            className={cn(
+                                "flex h-14 cursor-pointer flex-col items-center justify-center rounded-lg border-2 transition-all duration-300",
+                                "hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                                selectedSize === sizeOption.size
+                                    ? "border-primary bg-primary text-primary-foreground shadow-lg scale-105 font-semibold"
+                                    : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-accent/30 hover:scale-105 font-medium",
+                                !sizeOption.inStock && "cursor-not-allowed border-dashed opacity-40 hover:scale-100 hover:bg-card hover:border-border"
                             )}
-                        </span>
-                    </Button>
+                            title={
+                                !sizeOption.inStock 
+                                    ? 'Out of stock' 
+                                    : sizeOption.additionalPrice > 0 
+                                        ? `+₹${sizeOption.additionalPrice.toFixed(2)}` 
+                                        : undefined
+                            }
+                        >
+                            <span className="flex flex-col items-center justify-center gap-0.5">
+                                <span className={cn("text-base", !sizeOption.inStock && "line-through")}>
+                                    {sizeOption.size}
+                                </span>
+                                {sizeOption.inStock && sizeOption.additionalPrice > 0 && (
+                                    <span className={cn(
+                                        "text-[10px] font-normal",
+                                        selectedSize === sizeOption.size 
+                                            ? "text-primary-foreground/80" 
+                                            : "text-muted-foreground"
+                                    )}>
+                                        +₹{sizeOption.additionalPrice}
+                                    </span>
+                                )}
+                                {!sizeOption.inStock && (
+                                    <span className="text-[9px] font-normal text-muted-foreground/60 uppercase tracking-wide">
+                                        Sold Out
+                                    </span>
+                                )}
+                            </span>
+                        </Label>
+                    </div>
                 ))}
-            </div>
+            </RadioGroup>
 
             <SizeGuideModal open={showSizeGuide} onOpenChange={setShowSizeGuide} />
         </div>

@@ -12,8 +12,8 @@ import { jwtDecode } from 'jwt-decode';
 
 export interface RefreshTokenPayload {
   sub: string; // User ID
+  jti: string; // JWT ID
   type: 'refresh';
-  tokenId: string;
   role: UserRole;
   iat: number; // Issued at
   exp: number; // Expiration
@@ -44,7 +44,7 @@ export function validateRefreshToken(token: string): RefreshTokenPayload | null 
     }
     
     // Validate required fields
-    if (!decoded.sub || !decoded.tokenId || !decoded.role) {
+    if (!decoded.sub || !decoded.jti || !decoded.role) {
       console.error('[Auth] Missing required token fields');
       return null;
     }

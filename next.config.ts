@@ -6,13 +6,6 @@ const nextConfig: NextConfig = {
   // Enable component caching for better performance
   cacheComponents: true,
 
-  // Optimize build performance and reduce memory usage
-  experimental: {
-    // Reduce memory usage during development
-    memoryBasedWorkersCount: true,
-    // Enable webpack build worker for better performance
-    webpackBuildWorker: true,
-  },
 
   // Image optimization
   images: {
@@ -20,6 +13,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'unsplash.com',
         port: '',
         pathname: '/**',
       },

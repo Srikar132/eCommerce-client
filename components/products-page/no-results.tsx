@@ -15,15 +15,6 @@ interface NoResultsProps {
 
 export function NoResults({
   searchQuery,
-  popularSearches = [
-    'Nike Shoes',
-    'Woodland Shoes',
-    'Adidas Shoes',
-    'Titan Watches',
-    'Fila Shoes',
-    'Puma Shoes',
-    'Fastrack Watches'
-  ],
   imageSrc = '/images/no-results.webp'
 }: NoResultsProps) {
 
@@ -73,7 +64,6 @@ export function NoResults({
       <div className="text-center mb-5">
         <Button
           asChild
-          size="lg"
           className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-sm"
         >
           <Link href="/products" className="inline-flex items-center gap-2">
@@ -97,7 +87,6 @@ export function NoResults({
               />
               <Button
                 type="submit"
-                size="lg"
                 className="px-8 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
               >
                 <Search className="w-4 h-4 mr-2" />

@@ -141,7 +141,7 @@
   --popover-foreground: oklch(0.92 0.015 95);
 
   /* 💗 Primary - Dark Mode (brightened for visibility) */
-  --primary: oklch(0.78 0.14 15);
+  --primary: oklch(77.44% 0.13402 14.907);
   /* luminous rose */
   --primary-foreground: oklch(0.15 0.02 40);
   /* dark text on bright bg */

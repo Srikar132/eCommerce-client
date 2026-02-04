@@ -2,13 +2,13 @@
 import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
 import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
-import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
+import { ShoppingCart } from "lucide-react";
 
 export const metadata = {
-  title: "The Nala Armoire - Discover Your Style",
+  title: "Nala Armoire - Discover Your Style",
   description: "Where beauty roars in every stitch. Shop the latest fashion trends.",
 };
 
@@ -18,31 +18,27 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    <main className="w-full">
+      <div className="w-full bg-primary text-primary-foreground text-xs flex items-center justify-center py-1 tracking-wider">
+        <ShoppingCart className="mr-2" size={13} />
+        PREPAID ORDERS ONLY!
+      </div>
 
-    <div className="w-full no-scrollbar">
-      <AppSidebar />
 
-      <header id="header">
-        <Suspense fallback={<NavbarSkeleton />}>
-          <Navbar />
-        </Suspense>
-      </header>
+      <div className="w-full no-scrollbar">
+        <AppSidebar />
 
-      <Suspense fallback={<></>}>
-        <BreadcrumbNavigation />
-      </Suspense>
+        <header id="header">
+          <Suspense fallback={<NavbarSkeleton />}>
+            <Navbar />
+          </Suspense>
+        </header>
 
-      <main className="w-full relative">{children}</main>
+        <main className="w-full relative">{children}</main>
 
-      <Footer />
-      <Toaster
-        position="top-right"
-        expand={false}
-        richColors={false}
-        closeButton
-        duration={4000}
-      />
-    </div>
+        <Footer />
+
+      </div>
+    </main>
   );
 }
-

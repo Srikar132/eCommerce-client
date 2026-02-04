@@ -1,8 +1,7 @@
-"use client";
 import { Suspense } from "react";
 import AccountSidebarWrapper from "@/components/account/account-sidebar-wrapper";
 import Header from "@/components/header";
-import { useAuth } from "@/hooks/use-auth";
+import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 
@@ -10,13 +9,11 @@ export default function AccountLayout({ children }: {
     children: React.ReactNode
 }) {
 
-    const { user } = useAuth();
-
     return (
         <div className="min-h-screen bg-background">
             <Header
                 title="My Account"
-                subtitle={`Welcome back, ${user?.email}`}
+                subtitle="Welcome back!"
             />
 
             <div className="max-w-7xl mx-auto px-4 py-6">

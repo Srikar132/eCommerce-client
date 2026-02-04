@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack";
-import { AuthProvider } from "@/providers/auth-provider";
 import Script from "next/script";
-import { CartSyncProvider } from "@/providers/cart-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import NextTopLoader from "nextjs-toploader";
+import AuthProvider from "@/providers/auth-provider";
+import { Suspense } from "react";
+import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
+import { Toaster } from "sonner";
 
 
 
@@ -26,7 +29,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "THE NALA ARMOIRE — Bold Streetwear Fashion",
+    default: "NALA ARMOIRE — Bold Streetwear Fashion",
     template: "%s",
   },
   description:
@@ -40,21 +43,39 @@ export default function Layout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" rel="stylesheet" />
-      </head>
       <body
         className={`${inter.variable} ${playfair.variable} antialiased`}
       >
-        <AuthProvider>
-          <TanstackProvider>
-              <CartSyncProvider>
-                <SidebarProvider defaultOpen={false}>
-                  {children}
-                </SidebarProvider>
-              </CartSyncProvider>
+        {/* Page Loading Progress Bar */}
+        <NextTopLoader
+          color="#ff909a"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+        />
+
+        <Suspense fallback={<PageLoadingSkeleton />}>
+          <AuthProvider>
+            <TanstackProvider>
+              <SidebarProvider defaultOpen={false}>
+                {children}
+              </SidebarProvider>
             </TanstackProvider>
-        </AuthProvider>
+          </AuthProvider>
+
+
+          <Toaster
+            position="top-right"
+            expand={false}
+            richColors={false}
+            closeButton
+            duration={4000}
+          />
+        </Suspense>
 
         <Script
           id="razorpay-checkout-js"

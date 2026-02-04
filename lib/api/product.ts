@@ -1,11 +1,11 @@
-import { 
-    FetchProductList, 
-    ProductSearchResponse, 
+import {
+    FetchProductList,
     ProductReviewsResponse,
     AddReviewRequest,
     AddReviewResponse,
     ProductVariant,
-    ProductResponse
+    ProductResponse,
+    PagedResponse
 } from "@/types";
 import { buildParams } from "../utils";
 import { apiClient } from "./client";
@@ -35,7 +35,7 @@ export const productApi = {
         page = 0,
         size = 24,
         sort = 'createdAt,desc'
-    }: FetchProductList): Promise<ProductSearchResponse> => {
+    }: FetchProductList): Promise<PagedResponse<ProductResponse>> => {
         const params = {
             page,
             size,
@@ -43,9 +43,9 @@ export const productApi = {
             ...filters,
         };
 
-        const queryString = buildParams(params);
-        const { data } = await apiClient.get<ProductSearchResponse>(
-            `/api/v1/products?${queryString}`
+        const { data } = await apiClient.get<PagedResponse<ProductResponse>>(
+            `/api/v1/products`,
+            { params }
         );
         return data;
     },
@@ -96,8 +96,8 @@ export const productApi = {
      * @param sort - Sort format (default: "createdAt,desc")
      */
     getProductReviews: async (
-        slug: string, 
-        page: number = 0, 
+        slug: string,
+        page: number = 0,
         size: number = 10,
         sort: string = 'createdAt,desc'
     ): Promise<ProductReviewsResponse> => {
@@ -116,7 +116,7 @@ export const productApi = {
      * @param reviewData - Review data including rating, title, comment, etc.
      */
     addProductReview: async (
-        slug: string, 
+        slug: string,
         reviewData: AddReviewRequest
     ): Promise<AddReviewResponse> => {
         const { data } = await apiClient.post<AddReviewResponse>(

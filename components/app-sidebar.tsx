@@ -1,6 +1,6 @@
 "use client";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/components/ui/sidebar"
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { 
   ChevronDown, 
   User, 
@@ -18,11 +18,11 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { collections } from "@/constants";
 import { Separator } from "./ui/separator";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import Image from "next/image";
 
 export default function AppSidebar() {
   const { open, setOpen, isMobile, setOpenMobile } = useSidebar()
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   // lock scrolling when sidebar is open
   useEffect(() => {
@@ -37,10 +37,6 @@ export default function AppSidebar() {
     };
   }, [open]);
 
-
-  const toggleSection = useCallback((section: string) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  }, [expandedSection]);
 
   const handleClose = () => {
     if (isMobile) {
@@ -59,7 +55,6 @@ export default function AppSidebar() {
           aria-hidden="true"
         />
       )}
-
 
       <Sidebar collapsible="offcanvas" className="z-99999 border-r border-border overflow-x-hidden">
         {/* Header with Logo */}
@@ -110,39 +105,42 @@ export default function AppSidebar() {
 
             {/* Collections - Expandable */}
             <SidebarMenuItem>
-              <SidebarMenuButton 
-                onClick={() => toggleSection('collections')}
-                className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <Package className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-sm font-light tracking-wide">Collections</span>
-                </div>
-                <ChevronDown 
-                  className={`w-4 h-4 transition-transform duration-200 ${expandedSection === 'collections' ? 'rotate-180' : ''}`} 
-                  strokeWidth={1.5}
-                />
-              </SidebarMenuButton>
-              
-              {expandedSection === 'collections' && (
-                <div className="mx-4 mt-1 mb-2 bg-accent/30 rounded-lg overflow-hidden">
-                  {collections.map((collection) => (
-                    <Link 
-                      key={collection.title}
-                      href={collection.href}
-                      onClick={handleClose}
-                      className={`block px-6 py-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0 ${collection.special ? 'bg-destructive/10' : ''}`}
-                    >
-                      <p className={`text-xs font-medium tracking-wider uppercase ${collection.special ? 'text-destructive italic' : 'text-foreground'}`}>
-                        {collection.title}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {collection.description}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              )}
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton 
+                    className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Package className="w-5 h-5" strokeWidth={1.5} />
+                      <span className="text-sm font-light tracking-wide">Collections</span>
+                    </div>
+                    <ChevronDown 
+                      className="w-4 h-4 mr-5 transition-transform duration-200 group-data-[state=open]:rotate-180" 
+                      strokeWidth={1.5}
+                    />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                
+                <CollapsibleContent>
+                  <div className="mx-4 mt-1 mb-2 bg-accent/30 rounded-lg overflow-hidden">
+                    {collections.map((collection) => (
+                      <Link 
+                        key={collection.title}
+                        href={collection.href}
+                        onClick={handleClose}
+                        className={`block px-6 py-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0 ${collection.special ? 'bg-destructive/10' : ''}`}
+                      >
+                        <p className={`text-xs font-medium tracking-wider uppercase ${collection.special ? 'text-destructive italic' : 'text-foreground'}`}>
+                          {collection.title}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {collection.description}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </SidebarMenuItem>
 
             <Separator className="my-2 mx-4" />
@@ -156,19 +154,6 @@ export default function AppSidebar() {
                 <Link href="/products" onClick={handleClose} className="flex items-center gap-3">
                   <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
                   <span className="text-sm font-light tracking-wide">Shop</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            {/* Customization */}
-            <SidebarMenuItem>
-              <SidebarMenuButton 
-                asChild
-                className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-              >
-                <Link href="/customization" onClick={handleClose} className="flex items-center gap-3">
-                  <Sparkles className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-sm font-light tracking-wide">Brands & Designs</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

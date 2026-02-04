@@ -3,13 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import ImageZoomModal from "./image-zoom-modal";
+import { ProductImage } from "@/types/product";
 
-interface ProductImage {
-    id: string;
-    url: string | null;
-    alt: string;
-}
+
 
 interface ProductImageGalleryProps {
     images: ProductImage[];
@@ -36,12 +32,12 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
     return (
         <div className="w-full">
             {/* Main Image Container */}
-            <div className="relative w-full group max-h-175 h-175 overflow-hidden rounded-lg">
+            <div className="relative w-full group max-h-175 h-175 overflow-hidden">
 
-                {!!images[selectedImageIndex]?.url ? (
+                {!!images[selectedImageIndex]?.imageUrl ? (
                     <Image
-                        src={images[selectedImageIndex].url}
-                        alt={images[selectedImageIndex].alt}
+                        src={images[selectedImageIndex].imageUrl}
+                        alt={images[selectedImageIndex].altText || `Product Image ${selectedImageIndex + 1}`}
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
@@ -54,42 +50,12 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                     />
                 )}
 
-                {/* Image Indicator Dots */}
-                {images.length > 1 && (
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                        {images.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setSelectedImageIndex(index)}
-                                className={cn(
-                                    "w-2 h-2 rounded-full transition-all",
-                                    selectedImageIndex === index
-                                        ? "bg-primary"
-                                        : "bg-slate-300 dark:bg-slate-700"
-                                )}
-                                aria-label={`View image ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-                )}
-
-                {/* Zoom Overlay */}
-                {!!images[selectedImageIndex]?.url && (
-                    <div
-                        onClick={() => setIsZoomOpen(true)}
-                        className="zoom-overlay opacity-0 absolute inset-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center bg-black/5 cursor-pointer group-hover:pointer-events-auto group-hover:opacity-100 z-10"
-                    >
-                        <div className="bg-white/80 dark:bg-black/80 backdrop-blur p-4 rounded-full">
-                            <span className="material-icons-outlined text-slate-900 dark:text-white">zoom_in</span>
-                        </div>
-                    </div>
-                )}
             </div>
 
             {/* Thumbnail Grid */}
             {images.length > 1 && (
                 <div className="grid grid-cols-4 gap-4 mt-6">
-                    {images.filter(image => image.url).slice(0, 4).map((image, index) => (
+                    {images.filter(image => image.imageUrl).slice(0, 4).map((image, index) => (
                         <button
                             key={image.id}
                             onClick={() => setSelectedImageIndex(index)}
@@ -102,8 +68,8 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                         >
                             <div className="relative w-full h-full">
                                 <Image
-                                    src={image.url!}
-                                    alt={image.alt}
+                                    src={image.imageUrl!}
+                                    alt={image.altText || `Product Image ${index + 1}`}
                                     fill
                                     className="object-cover"
                                     sizes="100px"
@@ -119,13 +85,6 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                 </div>
             )}
 
-            {/* Zoom Modal */}
-            {isZoomOpen && images[selectedImageIndex]?.url && (
-                <ImageZoomModal
-                    image={images[selectedImageIndex]}
-                    onClose={() => setIsZoomOpen(false)}
-                />
-            )}
         </div>
     );
 }

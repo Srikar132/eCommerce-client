@@ -10,11 +10,6 @@ export const features = [
         description: "24h Green delivery",
     },
     {
-        icon: "/icons/wonder-card.avif",
-        title: "WONDER CARD",
-        description: "Special discount club card",
-    },
-    {
         icon: "/icons/shipping.avif",
         title: "SHIPPING",
         description: "Free standard shipping",
@@ -192,12 +187,12 @@ export const collections = [
   },
   {
     title: "WOMEN'S COLLECTION",
-    href: "/products?category=women",
+    href: "/products?category=womens",
     description: "Elegant designs for modern women",
   },
   {
     title: "MEN'S COLLECTION",
-    href: "/products?category=men",
+    href: "/products?category=mens",
     description: "Refined style for distinguished men",
   },
   {
