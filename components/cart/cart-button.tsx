@@ -1,9 +1,9 @@
-import { useCartManager } from "@/hooks/use-cart";
+import { useCart } from "@/hooks/use-cart";
 import { Button } from "../ui/button";
 import { ShoppingBag } from "lucide-react";
 
 const CartButton = () => {
-  const { itemCount } = useCartManager();
+  const { totalItems } = useCart();
 
   return (
     <Button
@@ -16,7 +16,7 @@ const CartButton = () => {
         strokeWidth={1.5}
       />
 
-      {itemCount > 0 && (
+      {totalItems > 0 && (
         <span
           suppressHydrationWarning
           className="
@@ -31,7 +31,7 @@ const CartButton = () => {
             shadow-sm
           "
         >
-          {itemCount > 99 ? '99+' : itemCount}
+          {totalItems > 99 ? '99+' : totalItems}
         </span>
       )}
     </Button>

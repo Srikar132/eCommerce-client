@@ -1,352 +1,163 @@
-// "use client";
+"use client";
 
-// import { useCallback } from "react";
-// import { localCartManager } from "@/lib/utils/local-cart";
-// import {
-//   useCart,
-//   useAddToCart,
-//   useUpdateCartItem,
-//   useRemoveCartItem,
-//   useClearCart,
-// } from "@/lib/tanstack/queries/cart.queries";
-// import type { AddToCartRequest, UUID } from "@/types";
-// import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+    addItemToCart,
+    removeItemFromCart,
+    updateCartItemQuantity,
+    clearCart,
+    getOrCreateCart,
+} from "@/lib/actions/cart-actions";
+import { Cart } from "@/types/cart";
 
-// /**
-//  * Extended request for adding items to cart
-//  * Includes additional data needed for guest cart storage
-//  */
-// export interface AddToCartRequestExtended extends AddToCartRequest {
-//   // Product info
-//   productSlug: string;
-//   productName: string;
-  
-//   // Variant info  
-//   variantSize: string;
-//   variantColor: string;
-//   variantImageUrl: string;
-  
-//   // Pricing
-//   basePrice: number;
-//   variantPrice: number;
-  
-//   // Customization (optional)
-//   customizationData?: {
-//     designId: UUID;
-//     designPrice: number;
-//     threadColorHex: string;
-//     additionalNotes?: string;
-//   };
-// }
+/**
+ * Custom hook for cart management with authentication and optimistic updates
+ */
+export function useCart() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const pathname = usePathname();
+    const queryClient = useQueryClient();
+    const userId = session?.user?.id;
 
-// /**
-//  * Unified cart interface that abstracts backend vs local cart
-//  */
-// export function useCartManager() {
-//   const { isAuthenticated } = useAuthStore();
+    // Query: Get cart data
+    const { data: cart, isLoading } = useQuery<Cart | null>({
+        queryKey: ["cart", userId],
+        queryFn: () => (userId ? getOrCreateCart(userId) : Promise.resolve(null)),
+        enabled: status === "authenticated" && !!userId,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    });
 
-//   const backendCart = useCart(isAuthenticated);
-//   const addToCartMutation = useAddToCart();
-//   const updateItemMutation = useUpdateCartItem();
-//   const removeItemMutation = useRemoveCartItem();
-//   const clearCartMutation = useClearCart();
+    // Mutation: Add item to cart
+    const addItem = useMutation({
+        mutationFn: async ({
+            productId,
+            productVariantId,
+            quantity = 1,
+        }: {
+            productId: string;
+            productVariantId: string;
+            quantity?: number;
+        }) => {
+            // Check authentication
+            if (!userId) {
+                const redirectUrl = `${pathname}`;
+                router.push(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
+                throw new Error("Please log in to add items to cart");
+            }
 
-//   // ============================================================================
-//   // COMPUTED VALUES
-//   // ============================================================================
+            return addItemToCart(userId, productId, productVariantId, quantity);
+        },
+        onSuccess: (data) => {
+            queryClient.setQueryData(["cart", userId], data);
+            toast.success("Item added to cart");
+        },
+        onError: (error: Error) => {
+            if (!error.message.includes("log in")) {
+                toast.error(error.message || "Failed to add item to cart");
+            }
+        },
+    });
 
-//   const items = isAuthenticated 
-//     ? backendCart.data?.items ?? [] 
-//     : localCartManager.getCart().items;
+    // Mutation: Remove item from cart
+    const removeItem = useMutation({
+        mutationFn: async (cartItemId: string) => {
+            if (!userId) throw new Error("Authentication required");
+            return removeItemFromCart(userId, cartItemId);
+        },
+        onSuccess: (data) => {
+            queryClient.setQueryData(["cart", userId], data);
+            toast.success("Item removed from cart");
+        },
+        onError: (error: Error) => {
+            toast.error(error.message || "Failed to remove item");
+        },
+    });
 
-//   const itemCount = isAuthenticated
-//     ? backendCart.data?.totalItems ?? 0
-//     : localCartManager.getItemCount();
+    // Mutation: Update item quantity
+    const updateQuantity = useMutation({
+        mutationFn: async ({
+            cartItemId,
+            quantity,
+        }: {
+            cartItemId: string;
+            quantity: number;
+        }) => {
+            if (!userId) throw new Error("Authentication required");
+            return updateCartItemQuantity(userId, cartItemId, quantity);
+        },
+        onSuccess: (data) => {
+            queryClient.setQueryData(["cart", userId], data);
+        },
+        onError: (error: Error) => {
+            toast.error(error.message || "Failed to update quantity");
+        },
+    });
 
-//   const total = isAuthenticated 
-//     ? backendCart.data?.total ?? 0 
-//     : 0;
+    // Mutation: Clear cart
+    const clearCartMutation = useMutation({
+        mutationFn: async () => {
+            if (!userId) throw new Error("Authentication required");
+            return clearCart(userId);
+        },
+        onSuccess: () => {
+            queryClient.setQueryData(["cart", userId], {
+                id: cart?.id || "",
+                items: [],
+                totalItems: 0,
+                subtotal: 0,
+                discountAmount: 0,
+                total: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            });
+            toast.success("Cart cleared");
+        },
+        onError: (error: Error) => {
+            toast.error(error.message || "Failed to clear cart");
+        },
+    });
 
-//   const isEmpty = isAuthenticated
-//     ? (backendCart.data?.items.length ?? 0) === 0
-//     : localCartManager.isEmpty();
-
-//   const isLoading = isAuthenticated && backendCart.isLoading;
-
-//   // ============================================================================
-//   // ACTIONS
-//   // ============================================================================
-
-//   /**
-//    * Add item to cart (handles both authenticated and guest users)
-//    */
-//   const addItem = useCallback(
-//     async (request: AddToCartRequestExtended) => {
-//       if (isAuthenticated) {
-//         await addToCartMutation.mutateAsync(request);
-//         toast.success("Added to cart!");
-//       } else {
-//         localCartManager.addItem({
-//           productId: request.productId,
-//           productSlug: request.productSlug,
-//           productName: request.productName,
-//           variantId: request.productVariantId!,
-//           variantSize: request.variantSize,
-//           variantColor: request.variantColor,
-//           variantImageUrl: request.variantImageUrl,
-//           basePrice: request.basePrice,
-//           variantPrice: request.variantPrice,
-//           quantity: request.quantity,
-//           customizationData: request.customizationData,
-//         });
+    // Helper: Check if product variant is in cart
+    const isInCart = (productId: string, productVariantId: string): boolean => {
+        if (!cart?.items) return false;
         
-//         toast.success("Added to cart!", {
-//           description: `${request.quantity} item${request.quantity > 1 ? "s" : ""} added`,
-//           action: {
-//             label: "View Cart",
-//             onClick: () => (window.location.href = "/cart"),
-//           },
-//         });
-//       }
-//     },
-//     [isAuthenticated, addToCartMutation]
-//   );
+        return cart.items.some(
+            (item) => 
+                item.product.id === productId && 
+                item.variant.id === productVariantId
+        );
+    };
 
-//   /**
-//    * Update item quantity
-//    */
-//   const updateQuantity = useCallback(
-//     async (itemIdentifier: CartItemIdentifier, quantity: number) => {
-//       if (quantity < 1 || quantity > 100) {
-//         toast.error("Quantity must be between 1 and 100");
-//         return;
-//       }
-
-//       if (isAuthenticated) {
-//         await updateItemMutation.mutateAsync({ 
-//           itemId: itemIdentifier.itemId!, 
-//           quantity 
-//         });
-//         toast.success("Cart updated");
-//       } else {
-//         localCartManager.updateItem(
-//           itemIdentifier.productId,
-//           itemIdentifier.variantId,
-//           quantity,
-//           itemIdentifier.designId,
-//           itemIdentifier.threadColorHex
-//         );
-//         toast.success("Cart updated");
-//       }
-//     },
-//     [isAuthenticated, updateItemMutation]
-//   );
-
-//   /**
-//    * Increment item quantity
-//    */
-//   const incrementQuantity = useCallback(
-//     async (itemIdentifier: CartItemIdentifier) => {
-//       const currentQty = getItemQuantity(itemIdentifier);
-//       await updateQuantity(itemIdentifier, currentQty + 1);
-//     },
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//     [updateQuantity]
-//   );
-
-//   /**
-//    * Decrement item quantity (removes if quantity becomes 0)
-//    */
-//   const decrementQuantity = useCallback(
-//     async (itemIdentifier: CartItemIdentifier) => {
-//       const currentQty = getItemQuantity(itemIdentifier);
-      
-//       if (currentQty === 1) {
-//         await removeItem(itemIdentifier);
-//       } else {
-//         await updateQuantity(itemIdentifier, currentQty - 1);
-//       }
-//     },
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//     [updateQuantity]
-//   );
-
-//   /**
-//    * Remove item from cart
-//    */
-//   const removeItem = useCallback(
-//     async (itemIdentifier: CartItemIdentifier) => {
-//       if (isAuthenticated) {
-//         await removeItemMutation.mutateAsync(itemIdentifier.itemId!);
-//         toast.success("Item removed");
-//       } else {
-//         localCartManager.removeItem(
-//           itemIdentifier.productId,
-//           itemIdentifier.variantId,
-//           itemIdentifier.designId,
-//           itemIdentifier.threadColorHex
-//         );
-//         toast.success("Item removed");
-//       }
-//     },
-//     [isAuthenticated, removeItemMutation]
-//   );
-
-//   /**
-//    * Clear entire cart
-//    */
-//   const clearCart = useCallback(async () => {
-//     if (isAuthenticated) {
-//       await clearCartMutation.mutateAsync();
-//     } else {
-//       localCartManager.clear();
-//     }
-//     toast.success("Cart cleared");
-//   }, [isAuthenticated, clearCartMutation]);
-
-//   /**
-//    * Refresh cart data
-//    */
-//   const refresh = useCallback(() => {
-//     if (isAuthenticated) {
-//       backendCart.refetch();
-//     }
-//   }, [isAuthenticated, backendCart]);
-
-//   /**
-//    * Check if item is in cart
-//    */
-//   const isInCart = useCallback(
-//     (itemIdentifier: CartItemIdentifier): boolean => {
-//       if (isAuthenticated) {
-//         return backendCart.data?.items.some(item => {
-//           const productMatch = item.product.id === itemIdentifier.productId;
-//           const variantMatch = item.variant?.id === itemIdentifier.variantId;
-          
-//           // For customized items, match by properties (design, threadColor, message)
-//           // This allows detecting existing customizations even if they haven't been saved yet
-//           if (itemIdentifier.designId) {
-//             const customization = item.customization;
-//             if (!customization) return false;
-            
-//             const designMatch = customization.designId === itemIdentifier.designId;
-//             const threadColorMatch = customization.threadColorHex === itemIdentifier.threadColorHex;
-
-            
-//             return productMatch && variantMatch && designMatch && threadColorMatch;
-//           }
-          
-//           // For non-customized items, just check product and variant
-//           const customizationMatch = !item.customization;
-          
-//           return productMatch && variantMatch && customizationMatch;
-//         }) ?? false;
-//       } else {
-//         return localCartManager.hasItem(
-//           itemIdentifier.productId,
-//           itemIdentifier.variantId,
-//           itemIdentifier.designId,
-//           itemIdentifier.threadColorHex
-//         );
-//       }
-//     },
-//     [isAuthenticated, backendCart.data]
-//   );
-
-//   /**
-//    * Get quantity of specific item
-//    */
-//   const getItemQuantity = useCallback(
-//     (itemIdentifier: CartItemIdentifier): number => {
-//       if (isAuthenticated) {
-//         const item = backendCart.data?.items.find(item => {
-//           const productMatch = item.product.id === itemIdentifier.productId;
-//           const variantMatch = item.variant?.id === itemIdentifier.variantId;
-          
-//           // For customized items, match by properties (design, threadColor)
-//           if (itemIdentifier.designId && itemIdentifier.threadColorHex) {
-//             const customization = item.customization;
-//             if (!customization) return false;
-            
-//             const designMatch = customization.designId === itemIdentifier.designId;
-//             const threadColorMatch = customization.threadColorHex === itemIdentifier.threadColorHex;
-            
-//             return productMatch && variantMatch && designMatch && threadColorMatch;
-//           }
-          
-//           // For non-customized items, just check product and variant
-//           const customizationMatch = !item.customization;
-          
-//           return productMatch && variantMatch && customizationMatch;
-//         });
+    return {
+        // Data
+        cart: cart || null,
+        items: cart?.items || [],
+        totalItems: cart?.totalItems || 0,
+        subtotal: cart?.subtotal || 0,
+        total: cart?.total || 0,
         
-//         return item?.quantity ?? 0;
-//       } else {
-//         return localCartManager.getItemQuantity(
-//           itemIdentifier.productId,
-//           itemIdentifier.variantId,
-//           itemIdentifier.designId,
-//           itemIdentifier.threadColorHex
-//         );
-//       }
-//     },
-//     [isAuthenticated, backendCart.data]
-//   );
+        // Loading states
+        isLoading,
+        isAddingItem: addItem.isPending,
+        isRemovingItem: removeItem.isPending,
+        isUpdatingQuantity: updateQuantity.isPending,
+        isClearingCart: clearCartMutation.isPending,
+        
+        // Actions
+        addItem: addItem.mutate,
+        removeItem: removeItem.mutate,
+        updateQuantity: updateQuantity.mutate,
+        clearCart: clearCartMutation.mutate,
+        
+        // Helpers
+        isInCart,
 
-//   return {
-//     // State
-//     items,
-//     itemCount,
-//     total,
-//     isEmpty,
-//     isAuthenticated,
-//     isLoading,
 
-//     // Mutation states
-//     isAdding: addToCartMutation.isPending,
-//     isUpdating: updateItemMutation.isPending,
-//     isRemoving: removeItemMutation.isPending,
-//     isClearing: clearCartMutation.isPending,
-
-//     // Actions
-//     addItem,
-//     updateQuantity,
-//     incrementQuantity,
-//     decrementQuantity,
-//     removeItem,
-//     clearCart,
-//     refresh,
-
-//     // Queries
-//     isInCart,
-//     getItemQuantity,
-//   };
-// }
-
-// // ============================================================================
-// // HELPER TYPES
-// // ============================================================================
-
-// export interface CartItemIdentifier {
-//   itemId?: UUID;
-//   productId: UUID;
-//   variantId: UUID;
-//   designId?: UUID;
-//   threadColorHex?: string;
-//   additionalNotes?: string;
-// }
-
-// export function createItemIdentifier(item: Record<string, unknown>): CartItemIdentifier {
-//   const product = item.product as { id: UUID };
-//   const variant = item.variant as { id: UUID };
-//   const customization = item.customization as { designId?: UUID; threadColorHex?: string; additionalNotes?: string } | undefined;
-  
-//   return {
-//     itemId: item.id as UUID,
-//     productId: product.id,
-//     variantId: variant.id,
-//     designId: customization?.designId,
-//     threadColorHex: customization?.threadColorHex,
-//     additionalNotes: customization?.additionalNotes,
-//   };
-// }
+        // Authentication
+        isAuthenticated: status === "authenticated",
+    };
+}

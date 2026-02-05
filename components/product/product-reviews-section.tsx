@@ -1,20 +1,16 @@
-import { productApi } from "@/lib/api/product";
 import { getQueryClient } from "@/lib/tanstack/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
-import { RatingDistribution } from "@/types";
-import { RatingSummary } from "./rating-summary";
 import ProductReviewsClient from "./product-reviews-client";
-import { ca } from "zod/v4/locales";
+import { getReviewsByProductId } from "@/lib/actions/product-actions";
 
 interface ProductReviewsSectionProps {
-    productSlug: string;
+    productId: string;
     averageRating?: number;
     reviewCount?: number;
 }
 
 export default async function ProductReviewsSection({ 
-    productSlug, 
+    productId, 
 }: ProductReviewsSectionProps) {
 
     try {
@@ -22,17 +18,15 @@ export default async function ProductReviewsSection({
     
         // Prefetch first page of reviews on server
         await queryClient.prefetchInfiniteQuery({
-            queryKey: ['product-reviews', productSlug, { size: 10 }],
+            queryKey: ['product-reviews', productId, { size: 10 }],
             queryFn: ({ pageParam = 0 }) => 
-                productApi.getProductReviews(productSlug, pageParam, 10),
+                getReviewsByProductId(productId, pageParam, 10),
             initialPageParam: 0,
         });
     
-    
-    
         return (
             <HydrationBoundary state={dehydrate(queryClient)}>
-               <ProductReviewsClient productSlug={productSlug} />
+               <ProductReviewsClient productId={productId} />
             </HydrationBoundary>
         );
 

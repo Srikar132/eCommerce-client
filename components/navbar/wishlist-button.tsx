@@ -1,28 +1,30 @@
 "use client";
 
-import { useWishlistCount } from "@/lib/tanstack/queries/wishlist.queries";
-import { useAuthStore } from "@/lib/store/auth-store";
+import { useWishlist } from "@/hooks/use-wishlist";
 import { Button } from "../ui/button";
 import { Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const WishlistButton = () => {
-  const { isAuthenticated } = useAuthStore();
-  const { data: wishlistCount } = useWishlistCount(isAuthenticated);
-  
-  const itemCount = wishlistCount?.count ?? 0;
+  const { totalItems } = useWishlist();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by only showing count after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <Button
       className="relative p-2 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
       aria-label="Wishlist"
-      suppressHydrationWarning
     >
       <Heart 
         className="w-5 h-5 text-foreground" 
         strokeWidth={1.5}
       />
 
-      {itemCount > 0 && (
+      {mounted && totalItems > 0 && (
         <span
           className="
             absolute -top-1 -right-1
@@ -36,7 +38,7 @@ const WishlistButton = () => {
             shadow-sm
           "
         >
-          {itemCount > 99 ? '99+' : itemCount}
+          {totalItems > 99 ? '99+' : totalItems}
         </span>
       )}
     </Button>

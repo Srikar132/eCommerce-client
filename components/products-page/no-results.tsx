@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { handleSearchAction } from '@/lib/actions/search-actions';
-import { Search, ShoppingBag, TrendingUp, Sparkles } from 'lucide-react';
+import { Search, ShoppingBag } from 'lucide-react';
 
 interface NoResultsProps {
   searchQuery: string;

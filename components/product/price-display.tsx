@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { ProductVariant } from "@/types";
+import { ProductVariant } from "@/types/product";
 
 interface PriceDisplayProps {
     basePrice: number;
@@ -25,7 +25,7 @@ export default function PriceDisplay({
         <div className="space-y-3">
             {/* Main Price */}
             <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-primary">
+                <span className="text-3xl font-bold ">
                     {currencySymbol}{finalPrice.toFixed(2)}
                 </span>
                 
@@ -44,10 +44,6 @@ export default function PriceDisplay({
                 </Badge>
             )}
 
-            {/* Tax Info */}
-            <p className="text-xs text-muted-foreground">
-                Inclusive of all taxes
-            </p>
         </div>
     );
 }

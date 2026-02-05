@@ -2,10 +2,10 @@
 // QUERY HOOKS
 // ============================================================================
 
-import { getAllProducts } from "@/lib/actions/product-actions";
+import { addReviewToProduct, getAllProducts, getReviewsByProductId } from "@/lib/actions/product-actions";
 import { PagedResponse } from "@/types";
-import { Product, ProductParams } from "@/types/product";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { AddReviewRequest, Product, ProductParams, Review } from "@/types/product";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../query-keys";
 
 /**
@@ -25,128 +25,44 @@ export const useInfiniteProducts = (params: ProductParams) => {
   });
 };
 
-// /**
-//  * Single page product list (useful for server-side rendering or simple lists)
-//  */
-// export const useProducts = (params: FetchProductList) => {
-//   return useQuery({
-//     queryKey: queryKeys.products.list(params),
-//     queryFn: () => productApi.getProducts(params),
-//     staleTime: 1000 * 60 * 5, // 5 minutes
-//   });
-// };
-
-// /**
-//  * Get single product by slug or ID
-//  * Includes ALL variants with images, stock info, prices, SKUs, etc.
-//  * No need for separate variants API call!
-//  * 
-//  * @example
-//  * ```tsx
-//  * const { data: product, isLoading } = useProduct('navy-blue-tshirt');
-//  * // product.variants contains all color/size combinations with full details
-//  * ```
-//  */
-// export const useProduct = (
-//   slugOrId: string,
-//   options?: { enabled?: boolean; initialData?: Awaited<ReturnType<typeof productApi.getProductBySlug>> }
-// ) => {
-//   return useQuery({
-//     queryKey: queryKeys.products.detail(slugOrId),
-//     queryFn: () => productApi.getProductBySlug(slugOrId),
-//     enabled: options?.enabled ?? true,
-//     initialData: options?.initialData,
-//     staleTime: 1000 * 60 * 10, // 10 minutes
-//   });
-// };
-
-// /**
-//  * Get product variants separately
-//  * Use this when you only need variant data without full product details
-//  * 
-//  * @example
-//  * ```tsx
-//  * const { data: variants, isLoading } = useProductVariants('navy-blue-tshirt');
-//  * ```
-//  */
-// export const useProductVariants = (
-//   slug: string,
-//   options?: { enabled?: boolean , initialData?: Awaited<ReturnType<typeof productApi.getProductVariants>> }
-// ) => {
-//   return useQuery({
-//     queryKey: queryKeys.products.variants(slug),
-//     queryFn: () => productApi.getProductVariants(slug),
-//     enabled: options?.enabled ?? true,
-//     initialData: options?.initialData,
-//     staleTime: 1000 * 60 * 10, // 10 minutes
-//   });
-// };
 
 
-// /**
-//  * Get product reviews with infinite scroll
-//  * 
-//  * @example
-//  * ```tsx
-//  * const { data, fetchNextPage, hasNextPage } = useProductReviews('navy-blue-tshirt');
-//  * ```
-//  */
-// export const useProductReviews = (slug: string, params?: { size?: number; sort?: string }) => {
-//   const { size = 10, sort = 'createdAt,desc' } = params || {};
 
-//   return useInfiniteQuery({
-//     queryKey: queryKeys.products.reviews(slug, { page: 0, size, sort }),
-//     queryFn: ({ pageParam = 0 }) => 
-//       productApi.getProductReviews(slug, pageParam, size, sort),
-//     initialPageParam: 0,
-//     getNextPageParam: (lastPage) => 
-//       lastPage.last ? undefined : lastPage.page + 1,
-//     enabled: !!slug,
-//     staleTime: 1000 * 60 * 5, // 5 minutes
-//   });
-// };
+/**
+ * Get product reviews with infinite scroll
+ */
+export const useInfiniteProductReviews = (productId: string, params?: { size?: number}) => {
+  const { size = 10 } = params || {};
 
-// // ============================================================================
-// // MUTATION HOOKS
-// // ============================================================================
+  return useInfiniteQuery({
+    queryKey: queryKeys.products.reviews(productId, { page: 0, size }),
+    queryFn: ({ pageParam = 0 }) => getReviewsByProductId(productId, pageParam, size),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage: PagedResponse<Review>) =>
+      lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+    enabled: !!productId,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
 
-// /**
-//  * Add a review to a product
-//  * 
-//  * @example
-//  * ```tsx
-//  * const addReview = useAddProductReview('navy-blue-tshirt');
-//  * 
-//  * addReview.mutate({
-//  *   rating: 5,
-//  *   title: 'Great product!',
-//  *   comment: 'I love it!'
-//  * });
-//  * ```
-//  */
-// export const useAddProductReview = (slug: string) => {
-//   const queryClient = useQueryClient();
 
-//   return useMutation({
-//     mutationFn: (data: AddReviewRequest) =>
-//       productApi.addProductReview(slug, data),
-//     onSuccess: () => {
-//       // Invalidate product reviews to refetch
-//       queryClient.invalidateQueries({
-//         queryKey: ['products', 'reviews', slug],
-//       });
-      
-//       // Also invalidate product detail to update rating
-//       queryClient.invalidateQueries({
-//         queryKey: queryKeys.products.detail(slug),
-//       });
-//     },
-//   });
-// };
+export const useAddProductReview = (userId: string, productId: string) => {
+  const queryClient = useQueryClient();
 
-// // ============================================================================
+  return useMutation({
+    mutationFn: (data: AddReviewRequest) => addReviewToProduct(userId , productId , data),
+    onSuccess: () => {
+      // Invalidate product reviews to refetch
+      queryClient.invalidateQueries({
+        queryKey: ['products', 'reviews', productId],
+      });
+    },
+  });
+};
+
+//============================================================================
 // // HELPER HOOKS
-// // ============================================================================
+//============================================================================
 
 // /**
 //  * Get flat array of products from infinite query result

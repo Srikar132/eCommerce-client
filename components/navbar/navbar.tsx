@@ -8,10 +8,11 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import { SearchInput } from '../search-input';
 import { cn } from '@/lib/utils';
-// import CartButton from '../cart/cart-button';
-// import WishlistButton from './wishlist-button';
 import { CollectionsDropdown } from './collections-dropdown';
-import { User2, Menu, ShoppingBag, Heart, Search } from 'lucide-react';
+import { Menu, ShoppingBag, Heart } from 'lucide-react';
+import WishlistButton from './wishlist-button';
+import CartButton from '../cart/cart-button';
+import { AccountHoverCard } from './account-hover-card';
 
 const HERO_SECTION_HEIGHT = 1000;
 
@@ -141,18 +142,8 @@ const Navbar = () => {
                             {/* Divider */}
                             <div className="hidden sm:block h-6 w-px bg-rose-200/50"></div>
 
-                            {/* Account */}
-                            <Link href="/account">
-                                <Button
-                                    className="hidden sm:flex p-2 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
-                                    aria-label="Account"
-                                >
-                                    <User2 
-                                        className="w-5 h-5 text-foreground" 
-                                        strokeWidth={1.5}
-                                    />
-                                </Button>
-                            </Link>
+                            {/* Account with Hover Card */}
+                            <AccountHoverCard />
 
                             {/* Wishlist & Cart with Suspense */}
                             <Suspense fallback={
@@ -165,13 +156,13 @@ const Navbar = () => {
                                     </Button>
                                 </>
                             }>
-                                {/* <Link href="/account/wishlist">
+                                <Link href="/account/wishlist">
                                     <WishlistButton />
                                 </Link>
 
                                 <Link href="/cart">
                                     <CartButton />
-                                </Link> */}
+                                </Link>
                             </Suspense>
                         </div>
                     </div>

@@ -1,55 +1,66 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useProductReviews } from "@/lib/tanstack/queries/product.queries";
-import { useInView } from "react-intersection-observer";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronDown, PenSquare } from "lucide-react";
-import { RatingDistribution } from "@/types";
 import { AddReviewForm } from "./add-review-form";
 import { ReviewCard } from "./review-card";
 import { EmptyReviews } from "./empty-reviews";
+import { useInfiniteProductReviews } from "@/lib/tanstack/queries/product.queries";
+import { canUserReviewProduct } from "@/lib/actions/product-actions";
 
 interface ProductReviewsClientProps {
-    productSlug: string;
+    productId: string;
 }
 
-export default function ProductReviewsClient({ productSlug }: ProductReviewsClientProps) {
+export default function ProductReviewsClient({ productId }: ProductReviewsClientProps) {
     const [showReviewForm, setShowReviewForm] = useState(false);
+    const [canReview, setCanReview] = useState(false);
+    const [checkingEligibility, setCheckingEligibility] = useState(true);
+    const { data: session, status } = useSession();
 
     const { 
         data,  
         fetchNextPage, 
         hasNextPage, 
         isFetchingNextPage,
-        isLoading ,
         error
-    } = useProductReviews(productSlug, { size: 10 });
-    
-    const { ref, inView } = useInView();
-    
-    // Auto-fetch next page when scrolling
+    } = useInfiniteProductReviews(productId, { size: 10 });
+
+    // Check if user can review this product
     useEffect(() => {
-        if (inView && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
+        async function checkReviewEligibility() {
+            if (status === "authenticated" && session?.user?.id) {
+                setCheckingEligibility(true);
+                try {
+                    const eligible = await canUserReviewProduct(session.user.id, productId);
+                    setCanReview(eligible);
+                } catch (error) {
+                    console.error("Error checking review eligibility:", error);
+                    setCanReview(false);
+                } finally {
+                    setCheckingEligibility(false);
+                }
+            } else {
+                setCheckingEligibility(false);
+                setCanReview(false);
+            }
         }
-    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+        checkReviewEligibility();
+    }, [status, session?.user?.id, productId]);
 
     // Flatten reviews from all pages
-    const allReviews = data?.pages.flatMap(page => page.content) ?? [];
+    const allReviews = data?.pages.flatMap(page => page.data) ?? [];
 
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        );
-    }
 
     if(error) {
-        return <div className="flex justify-center items-center py-12">
-            <p className="text-muted-foreground">Error loading reviews</p>
-        </div>;
+        return (
+            <div className="flex justify-center items-center py-12">
+                <p className="text-muted-foreground">Error loading reviews</p>
+            </div>
+        )
     }
 
     return (
@@ -60,27 +71,30 @@ export default function ProductReviewsClient({ productSlug }: ProductReviewsClie
                     Customer Reviews
                 </h2>
                 
-                <Button 
-                    onClick={() => setShowReviewForm(!showReviewForm)}
-                    variant={showReviewForm ? "outline" : "default"}
-                    className="gap-2"
-                >
-                    {showReviewForm ? (
-                        <>Cancel</>
-                    ) : (
-                        <>
-                            <PenSquare className="h-4 w-4" />
-                            Write a Review
-                        </>
-                    )}
-                </Button>
+                {/* Only show review button if user is eligible */}
+                {canReview && !checkingEligibility && (
+                    <Button 
+                        onClick={() => setShowReviewForm(!showReviewForm)}
+                        variant={showReviewForm ? "outline" : "default"}
+                        className="gap-2"
+                    >
+                        {showReviewForm ? (
+                            <>Cancel</>
+                        ) : (
+                            <>
+                                <PenSquare className="h-4 w-4" />
+                                Write a Review
+                            </>
+                        )}
+                    </Button>
+                )}
             </div>
 
             {/* Review Form */}
             {showReviewForm && (
                 <div className="mb-8">
                     <AddReviewForm 
-                        productSlug={productSlug}
+                        productId={productId}
                         onClose={() => setShowReviewForm(false)}
                     />
                 </div>
@@ -96,24 +110,27 @@ export default function ProductReviewsClient({ productSlug }: ProductReviewsClie
                             <ReviewCard key={review.id} review={review} />
                         ))}
 
-                        {/* Load More Trigger */}
+                        {/* View More Button */}
                         {hasNextPage && (
-                            <div ref={ref} className="flex justify-center py-8">
-                                {isFetchingNextPage ? (
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                        <Loader2 className="h-5 w-5 animate-spin" />
-                                        <span>Loading more reviews...</span>
-                                    </div>
-                                ) : (
-                                    <Button 
-                                        variant="outline" 
-                                        onClick={() => fetchNextPage()}
-                                        className="gap-2"
-                                    >
-                                        Load More Reviews
-                                        <ChevronDown className="h-4 w-4" />
-                                    </Button>
-                                )}
+                            <div className="flex justify-center py-8">
+                                <Button 
+                                    variant="outline" 
+                                    onClick={() => fetchNextPage()}
+                                    disabled={isFetchingNextPage}
+                                    className="gap-2"
+                                >
+                                    {isFetchingNextPage ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            Loading...
+                                        </>
+                                    ) : (
+                                        <>
+                                            View More Reviews
+                                            <ChevronDown className="h-4 w-4" />
+                                        </>
+                                    )}
+                                </Button>
                             </div>
                         )}
 

@@ -2,7 +2,6 @@
 
 
 // import { EditAccountDetailsForm } from "@/components/account/edit-account-details-form";
-import { useAuthStore } from "@/lib/store/auth-store";
 import { Suspense } from "react";
 
 export default function AccountDetailsPage() {

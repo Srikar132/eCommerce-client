@@ -7,6 +7,8 @@ import { PLACEHOLDER_IMAGE } from "@/constants";
 import { getProductBySlug, getProductVariants } from "@/lib/actions/product-actions";
 import { Product, ProductVariant } from "@/types/product";
 import { cacheLife } from "next/cache";
+import ProductReviewsSection from "@/components/product/product-reviews-section";
+import { ReviewsSkeleton } from "@/components/product/reviews-skeleton";
 
 
 interface ProductPageProps {
@@ -92,15 +94,19 @@ async function ProductDetailPage({ params }: ProductPageProps) {
 
         return (
             <div className="min-h-screen bg-background overflow-x-hidden">
-                <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+
+                {/* BREADCRUMB  */}
+                
+
+                <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
                     <ProductDetailClient product={product} variants={variants} />
 
                     {/* Reviews Section - Server Component with its own prefetching */}
-                    {/* <Suspense fallback={<ReviewsSkeleton />}>
+                    <Suspense fallback={<ReviewsSkeleton />}>
                         <div className="mt-12">
-                            <ProductReviewsSection productSlug={slug} />
+                            <ProductReviewsSection productId={product.id} />
                         </div>
-                    </Suspense> */}
+                    </Suspense>
 
                     {/* Product Recommendations - Server Component */}
                     {/* <Suspense fallback={<RecommendationsSkeleton />}>

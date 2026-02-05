@@ -77,10 +77,22 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
 
     // Auto-select first color
     useEffect(() => {
+
+
         if (!selectedColor && colors.length > 0) {
             setSelectedColor(colors[0].color);
+
         }
-    }, [colors, selectedColor]);
+
+
+        if (selectedColor && sizes.length > 0 && !selectedSize) {
+            setSelectedSize(sizes[0].size);
+        }
+
+
+    }, [colors, selectedColor , selectedSize]);
+
+
 
     // Handle color change (resets size)
     const handleColorChange = (color: string) => {

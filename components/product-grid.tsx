@@ -3,14 +3,10 @@
 import { Button } from '@/components/ui/button';
 import ProductCardComponent from './cards/product-card';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
-import { ProductResponse } from '@/types';
 import Link from 'next/link';
 import { ProductGridSkeleton } from '@/components/ui/skeletons';
-import { useAuthStore } from '@/lib/store/auth-store';
-import { useCheckWishlist, useToggleWishlist } from '@/lib/tanstack/queries/wishlist.queries';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import { Product } from '@/types/product';
+import { useWishlist } from '@/hooks/use-wishlist';
 
 interface SearchResultsProps {
     results: {
@@ -33,6 +29,9 @@ export default function ProductGrid({
     hasMore, 
     isFetchingNextPage 
 }: SearchResultsProps) {
+    // Use wishlist hook once at parent level
+    const { toggleItem, isInWishlist, isTogglingItem } = useWishlist();
+    
     // Use infinite scroll hook for automatic loading
     const sentinelRef = useInfiniteScroll({
         hasNextPage: hasMore || false,
@@ -43,26 +42,11 @@ export default function ProductGrid({
 
     /**
      * Handle toggling product in/out of wishlist
-     * Requires authentication and checks current wishlist status
+     * Centralized handler for all product cards
      */
-    // const handleToggleWishlist = (productId: string, isCurrentlyWishlisted: boolean) => {
-    //     if (!isAuthenticated) {
-    //         toast.error("Login Required", {
-    //             description: "Please log in to add items to your wishlist",
-    //             action: {
-    //                 label: "Log In",
-    //                 onClick: () => router.push(`/login?redirect=/products`),
-    //             },
-    //         });
-    //         return;
-    //     }
-
-    //     // Toggle wishlist using mutation
-    //     toggleWishlist.mutate({
-    //         productId,
-    //         isCurrentlyInWishlist: isCurrentlyWishlisted,
-    //     });
-    // };
+    const handleToggleWishlist = (productId: string) => {
+        toggleItem(productId);
+    };
 
     if (isLoading && !results.items.length) {
         return <ProductGridSkeleton count={8} />;
@@ -92,13 +76,14 @@ export default function ProductGrid({
         <div className="space-y-6">
 
             {/* Products Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                 {results.items.map((product) => (
-                    <ProductCardWithWishlist 
+                    <ProductCardComponent
                         key={product.id}
                         product={product}
-                        // onToggleWishlist={handleToggleWishlist}
-                        // isAuthenticated={isAuthenticated}
+                        onToggleWishlist={handleToggleWishlist}
+                        isInWishlist={isInWishlist(product.id)}
+                        isTogglingWishlist={isTogglingItem}
                     />
                 ))}
             </div>
@@ -128,30 +113,5 @@ export default function ProductGrid({
             {/* Intersection Observer Sentinel for Auto-Load */}
             <div ref={sentinelRef} className="h-px" />
         </div>
-    );
-}
-
-/**
- * Wrapper component that checks wishlist status for each product
- */
-function ProductCardWithWishlist({ 
-    product, 
-    // onToggleWishlist,
-    // isAuthenticated 
-}: { 
-    product: Product;
-    // onToggleWishlist: (productId: string, isWishlisted: boolean) => void;
-    // isAuthenticated: boolean;
-}) {
-    // // Check if this product is in the wishlist
-    // const { data: wishlistCheck } = useCheckWishlist(product.id, isAuthenticated);
-    // const isWishlisted = wishlistCheck?.inWishlist ?? false;
-
-    return (
-        <ProductCardComponent
-            product={product}
-            // onAddToWishlist={() => onToggleWishlist(product.id, isWishlisted)}
-            // isWishlisted={isWishlisted}
-        />
     );
 }

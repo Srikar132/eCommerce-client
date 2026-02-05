@@ -1,9 +1,9 @@
 "use server";
 
 import { PagedResponse } from "@/types";
-import { Product, ProductParams, ProductImage, ProductVariant } from "@/types/product";
+import { Product, ProductParams, ProductImage, ProductVariant, Review, AddReviewRequest, AddReviewResponse } from "@/types/product";
 import { db } from "@/drizzle/db";
-import { products, productImages, categories, productVariants } from "@/drizzle/schema";
+import { products, productImages, categories, productVariants, reviews, orders, orderItems, users } from "@/drizzle/schema";
 import { eq, and, or, ilike, sql, desc, asc } from "drizzle-orm";
 
 
@@ -255,3 +255,174 @@ export async function getProductVariants(productId: string): Promise<ProductVari
         throw new Error("Failed to fetch product variants");
     }
 }
+
+
+// GET PRODUCT REVIEWS BY PRODUCT ID WITH PAGINATION
+
+export async function getReviewsByProductId(productId: string, page = 0, size = 10): Promise<PagedResponse<Review>> {
+    try {
+        // total count
+        const [countResult] = await db
+            .select({ count: sql<number>`count(*)::int` })
+            .from(reviews)
+            .where(eq(reviews.productId, productId));
+
+        const totalItems = countResult?.count || 0;
+        const totalPages = Math.ceil(totalItems / size);
+
+        // fetch paginated reviews with author name
+        const reviewRows = await db
+            .select({
+                id: reviews.id,
+                userId: reviews.userId,
+                name: users.name,
+                productId: reviews.productId,
+                orderItemId: reviews.orderItemId,
+                rating: reviews.rating,
+                title: reviews.title,
+                comment: reviews.comment,
+                isVerifiedPurchase: reviews.isVerifiedPurchase,
+                createdAt: reviews.createdAt,
+            })
+            .from(reviews)
+            .leftJoin(users, eq(users.id, reviews.userId))
+            .where(eq(reviews.productId, productId))
+            .orderBy(desc(reviews.createdAt))
+            .limit(size)
+            .offset(page * size);
+
+        const data: Review[] = reviewRows.map(r => ({
+            id: r.id,
+            userId: r.userId,
+            name: (r as any).name || "",
+            productId: r.productId,
+            orderItemId: (r as any).orderItemId || undefined,
+            rating: r.rating,
+            title: r.title || "",
+            comment: r.comment || "",
+            isVerifiedPurchase: !!r.isVerifiedPurchase,
+            createdAt: r.createdAt.toISOString(),
+        }));
+
+        return {
+            data,
+            page,
+            size,
+            totalElements: totalItems,
+            totalPages,
+        };
+    } catch (error) {
+        console.error("Error fetching reviews:", error);
+        // Return empty result instead of throwing to prevent page crash
+        return {
+            data: [],
+            page: 0,
+            size,
+            totalElements: 0,
+            totalPages: 0,
+        };
+    }
+}
+
+
+// CAN THIS USER REVIEW? (checks if user has purchased the product before)
+
+export async function canUserReviewProduct(userId: string, productId: string): Promise<boolean> {
+    try {
+        const purchased = await db
+            .selectDistinct({ orderItemId: orderItems.id })
+            .from(orderItems)
+            .leftJoin(orders, eq(orders.id, orderItems.orderId))
+            .leftJoin(productVariants, eq(productVariants.id, orderItems.productVariantId))
+            .where(and(
+                eq(orders.userId, userId),
+                eq(productVariants.productId, productId),
+                // consider delivered orders only
+                eq(orders.status, 'DELIVERED')
+            ))
+            .limit(1);
+
+        return purchased.length > 0;
+
+    } catch (error) {
+        console.error("Error checking purchase for review:", error);
+        return false;
+    }
+}
+
+
+// ADD REVIEW TO PRODUCT
+export async function addReviewToProduct(userId: string, productId: string, request: AddReviewRequest): Promise<AddReviewResponse> {
+    try {
+        // only users who purchased can add verified reviews; still allow adding if not purchased but mark unverified
+        const isEligible = await canUserReviewProduct(userId, productId);
+
+        // prevent duplicate review by same user for same product
+        const existing = await db
+            .select()
+            .from(reviews)
+            .where(and(eq(reviews.userId, userId), eq(reviews.productId, productId)))
+            .limit(1);
+
+        if (existing.length > 0) {
+            throw new Error("User has already reviewed this product");
+        }
+
+        // if eligible, find one order item id to link
+        let orderItemId: string | undefined = undefined;
+        if (isEligible) {
+            const items = await db
+                .select({ orderItemId: orderItems.id })
+                .from(orderItems)
+                .leftJoin(orders, eq(orders.id, orderItems.orderId))
+                .leftJoin(productVariants, eq(productVariants.id, orderItems.productVariantId))
+                .where(and(eq(orders.userId, userId), eq(productVariants.productId, productId), eq(orders.status, 'DELIVERED')))
+                .limit(1);
+
+            if (items.length > 0) {
+                orderItemId = items[0].orderItemId;
+            }
+        }
+
+        const insertResult = await db
+            .insert(reviews)
+            .values({
+                userId,
+                productId,
+                orderItemId: orderItemId || null,
+                rating: request.rating,
+                title: request.title || null,
+                comment: request.comment,
+                isVerifiedPurchase: !!isEligible,
+            })
+            .returning();
+
+        const row = Array.isArray(insertResult) ? insertResult[0] : insertResult;
+
+        const created: Review = {
+            id: row.id,
+            userId: row.userId,
+            name: "",
+            productId: row.productId,
+            orderItemId: row.orderItemId || undefined,
+            rating: row.rating,
+            title: row.title || "",
+            comment: row.comment || "",
+            isVerifiedPurchase: !!row.isVerifiedPurchase,
+            createdAt: row.createdAt.toISOString(),
+        };
+
+        return {
+            message: "Review added",
+            review: created,
+        };
+    } catch (error) {
+        console.error("Error adding review:", error);
+        throw new Error((error as Error)?.message || "Failed to add review");
+    }
+}
+
+
+
+
+

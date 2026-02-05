@@ -1,20 +1,20 @@
-import { Suspense } from "react";
+import { CartClient } from "@/components/cart/cart-client";
+import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import { Metadata } from "next";
-import CartClient from "./cart-client";
-import { CartPageSkeleton } from "@/components/ui/skeletons";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Shopping Cart | Armoire",
+  title: "Shopping Cart | NaLa Armoire",
   description: "Review and manage items in your shopping cart",
+
 };
 
-// Revalidate cart page every 60 seconds
-// export const revalidate = 60;
-
-export default function CartPage() {
+export default function Cart() {
   return (
-    <Suspense fallback={<CartPageSkeleton />}>
-      <CartClient />
-    </Suspense>
+    <>
+      <Suspense fallback={<PageLoadingSkeleton/>}>
+        <CartClient />
+      </Suspense>
+    </>
   );
 }

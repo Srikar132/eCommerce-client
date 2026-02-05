@@ -40,14 +40,7 @@ export default function HomePremiumProductCard({
         <h3 className="text-sm font-medium tracking-wide text-stone-700 line-clamp-2 leading-snug">
           {title}
         </h3>
-
-        {/* Star Rating */}
-        <div className="flex items-center justify-center gap-0.5 py-1">
-          {[...Array(5)].map((_, i) => (
-            <span key={i} className="text-rose-400 text-xs">★</span>
-          ))}
-        </div>
-
+        
       </CardContent>
     </Card>
   );
