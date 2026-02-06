@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 /* @plugin ""; */
 
 @theme inline {
@@ -55,7 +55,7 @@
   /* 🌸 Base Backgrounds */
   --background: oklch(0.985 0.01 95);
   /* cream white */
-  --foreground: oklch(0.32 0.03 40);
+  --foreground: oklch(31.984% 0.02933 42.164);
   /* warm brown text */
 
 
@@ -125,77 +125,6 @@
   --sidebar-ring: oklch(0.78 0.08 15);
 }
 
-.dark {
-  /* 🌸 Base Backgrounds - Dark Mode */
-  --background: oklch(0.18 0.02 40);
-  /* deep warm charcoal */
-  --foreground: oklch(0.92 0.015 95);
-  /* soft cream text */
-
-  /* 🧁 Cards / Surfaces - Dark Mode */
-  --card: oklch(0.22 0.02 40);
-  /* elevated dark surface */
-  --card-foreground: oklch(0.92 0.015 95);
-
-  --popover: oklch(0.22 0.02 40);
-  --popover-foreground: oklch(0.92 0.015 95);
-
-  /* 💗 Primary - Dark Mode (brightened for visibility) */
-  --primary: oklch(77.44% 0.13402 14.907);
-  /* luminous rose */
-  --primary-foreground: oklch(0.15 0.02 40);
-  /* dark text on bright bg */
-
-  /* 🌼 Secondary - Dark Mode */
-  --secondary: oklch(0.25 0.03 95);
-  /* muted dark pastel */
-  --secondary-foreground: oklch(0.88 0.02 95);
-
-  /* 🌫 Muted - Dark Mode */
-  --muted: oklch(0.24 0.02 40);
-  --muted-foreground: oklch(0.65 0.03 95);
-
-  /* 🌸 Accent - Dark Mode */
-  --accent: oklch(0.28 0.04 15);
-  /* dark rose accent */
-  --accent-foreground: oklch(0.92 0.015 95);
-
-  /* 🚨 Destructive - Dark Mode */
-  --destructive: oklch(0.68 0.18 25);
-  /* bright coral for visibility */
-
-  /* 🧵 Borders / Inputs - Dark Mode */
-  --border: oklch(0.3 0.02 40);
-  /* subtle borders */
-  --input: oklch(0.3 0.02 40);
-  --ring: oklch(0.78 0.1 15);
-  /* bright focus ring */
-
-  /* 📊 Charts - Dark Mode */
-  --chart-1: oklch(0.78 0.14 15);
-  /* luminous rose */
-  --chart-2: oklch(0.75 0.09 200);
-  /* soft blue */
-  --chart-3: oklch(0.72 0.08 100);
-  /* muted yellow */
-  --chart-4: oklch(0.78 0.07 330);
-  /* lavender */
-  --chart-5: oklch(0.75 0.09 60);
-  /* peach */
-
-  /* 🧭 Sidebar - Dark Mode */
-  --sidebar: oklch(0.20 0.02 40);
-  --sidebar-foreground: oklch(0.92 0.015 95);
-
-  --sidebar-primary: oklch(0.78 0.14 15);
-  --sidebar-primary-foreground: oklch(0.15 0.02 40);
-
-  --sidebar-accent: oklch(0.28 0.04 15);
-  --sidebar-accent-foreground: oklch(0.92 0.015 95);
-
-  --sidebar-border: oklch(0.3 0.02 40);
-  --sidebar-ring: oklch(0.78 0.1 15);
-}
 
 
 

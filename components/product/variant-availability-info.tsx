@@ -1,7 +1,7 @@
 import { Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import type { ProductVariant } from "@/types";
-import { getAvailableColorsForSize } from "@/utils/variant-utils";
+import type { ProductVariant } from "@/types/product";
+import { getAvailableColorsForSize } from "@/lib/utils/variant-utils";
 
 interface VariantAvailabilityInfoProps {
     variants: ProductVariant[];

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Star, ThumbsUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Review } from "@/types";
+import { Review } from "@/types/product";
 
 interface ReviewCardProps {
     review: Review;
@@ -21,12 +21,12 @@ export function ReviewCard({ review }: ReviewCardProps) {
                         <div className="flex items-center gap-2 mb-2">
                             <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                                 <span className="text-sm font-semibold text-primary">
-                                    {review.userName?.[0]?.toUpperCase() || 'U'}
+                                    {review.name?.[0]?.toUpperCase() || 'U'}
                                 </span>
                             </div>
                             <div>
                                 <p className="font-semibold text-sm">
-                                    {review.userName || 'Anonymous'}
+                                    {review.name || 'Anonymous'}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
                                     {new Date(review.createdAt).toLocaleDateString('en-US', {

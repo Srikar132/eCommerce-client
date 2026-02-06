@@ -16,12 +16,6 @@ export interface PagedResponse<T> {
     totalPages: number;
 }
 
-
-
-
-
-
-
 // ===================================
 
 export interface OrderItem {
@@ -104,31 +98,3 @@ export interface Order {
 
     items: OrderItem[];
 }
-
-// ============================
-// REQUEST TYPES
-// ============================
-
-/**
- * Request to add item to cart
- */
-export interface AddToCartRequest {
-    productId: UUID;
-    productVariantId?: UUID | null;
-    quantity: number;
-    additionalNotes?: string;
-    customizationData?: CustomizationData | null;
-}
-
-/**
- * Inline customization data for cart items
- */
-export interface CustomizationData {
-    designId: UUID;
-    threadColorHex: string; // Format: #RRGGBB
-    additionalNotes?: string;
-}
-
-
-
-

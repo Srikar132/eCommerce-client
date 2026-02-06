@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from "@/hooks/use-cart";
+import { useCart, useRemoveFromCart, useUpdateCartQuantity } from "@/lib/tanstack/queries/cart.queries";
 import { CartItemCard } from "./cart-item-card";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
@@ -8,20 +8,19 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoginRequired } from "@/components/auth/login-required";
 import PageLoadingSkeleton from "../ui/skeletons/page-loading-skeleton";
+import { useSession } from "next-auth/react";
 
 export function CartClient() {
-    const {
-        items,
-        totalItems,
-        subtotal,
-        total,
-        isLoading,
-        removeItem,
-        updateQuantity,
-        isRemovingItem,
-        isUpdatingQuantity,
-        isAuthenticated
-    } = useCart();
+    const {  status } = useSession();
+    const { data: cart, isLoading } = useCart();
+    const removeItem = useRemoveFromCart();
+    const updateQuantity = useUpdateCartQuantity();
+
+    const items = cart?.items || [];
+    const totalItems = cart?.totalItems || 0;
+    const subtotal = cart?.subtotal || 0;
+    const total = cart?.total || 0;
+    const isAuthenticated = status === "authenticated";
 
 
 
@@ -81,12 +80,12 @@ export function CartClient() {
                         <CartItemCard
                             key={item.id}
                             item={item}
-                            onRemove={(cartItemId) => removeItem(cartItemId)}
+                            onRemove={(cartItemId) => removeItem.mutate(cartItemId)}
                             onUpdateQuantity={(cartItemId, quantity) =>
-                                updateQuantity({ cartItemId, quantity })
+                                updateQuantity.mutate({ cartItemId, quantity })
                             }
-                            isRemoving={isRemovingItem}
-                            isUpdating={isUpdatingQuantity}
+                            isRemoving={removeItem.isPending}
+                            isUpdating={updateQuantity.isPending}
                         />
                     ))}
                 </div>

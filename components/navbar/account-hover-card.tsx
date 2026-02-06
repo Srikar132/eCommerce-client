@@ -16,12 +16,14 @@ export function AccountHoverCard() {
         <HoverCard openDelay={200} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <Button
-                    className="hidden sm:flex p-2 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
+                    className="hidden sm:flex p-1 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
                     aria-label="Account"
                 >
                     <User2 
                         className="w-5 h-5 text-foreground" 
-                        strokeWidth={1.5}
+                        strokeWidth={2}
+                        stroke="#402e27"
+                        fill="#402e27"
                     />
                 </Button>
             </HoverCardTrigger>
@@ -99,26 +101,14 @@ export function AccountHoverCard() {
                             Orders
                         </Link>
                         <Link 
-                            href="/account/wishlist" 
+                            href="/wishlist" 
                             className="flex items-center gap-2.5 px-2.5 py-2 text-sm hover:bg-muted/50 rounded-md transition-colors"
                         >
                             <Heart className="w-3.5 h-3.5 text-muted-foreground" />
                             Wishlist
                         </Link>
                         
-                        {isAuthenticated && (
-                            <>
-                                <Separator className="my-1.5" />
-                                <Link 
-                                    href="/account/addresses" 
-                                    className="flex items-center gap-2.5 px-2.5 py-2 text-sm hover:bg-muted/50 rounded-md transition-colors"
-                                >
-                                    <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                                    Saved Addresses
-                                </Link>
-                            </>
-                        )}
-                        
+
                         <Link 
                             href="/contact" 
                             className="flex items-center gap-2.5 px-2.5 py-2 text-sm hover:bg-muted/50 rounded-md transition-colors"

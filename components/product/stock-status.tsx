@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { getStockStatusMessage } from "@/utils/variant-utils";
+import { getStockStatusMessage } from "@/lib/utils/variant-utils";
 import { AlertCircle, CheckCircle, XCircle } from "lucide-react";
 
 interface StockStatusProps {

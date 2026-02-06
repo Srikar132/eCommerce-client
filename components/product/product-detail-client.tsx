@@ -15,8 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useVariantSelection } from "@/hooks/use-variant-selector";
 import { Product, ProductVariant } from "@/types/product";
-import { useCart } from "@/hooks/use-cart";
-import { useWishlist } from "@/hooks/use-wishlist";
+import { useAddToCart } from "@/lib/tanstack/queries/cart.queries";
+import { useToggleWishlist, useWishlist } from "@/lib/tanstack/queries/wishlist.queries";
 
 interface ProductDetailClientProps {
     product: Product;
@@ -43,17 +43,21 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
         variants: variants || []
     });
 
-    const {
-        addItem,
-        isAddingItem,
-        isInCart
-    } = useCart();
+    const addToCart = useAddToCart();
+    const { data: wishlist } = useWishlist();
+    const toggleWishlist = useToggleWishlist();
 
-    const {
-        toggleItem: toggleWishlist,
-        isInWishlist,
-        isTogglingItem: isTogglingWishlistItem
-    } = useWishlist();
+    // Helper to check if product is in cart
+    const isInCart = (productId: string, variantId: string): boolean => {
+        if (!wishlist?.items) return false;
+        return wishlist.items.some(item => item.productId === productId);
+    };
+
+    // Helper to check if product is in wishlist
+    const isInWishlist = (productId: string): boolean => {
+        if (!wishlist?.items) return false;
+        return wishlist.items.some(item => item.productId === productId);
+    };
 
 
 
@@ -135,18 +139,18 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
                         <ProductActions
                             onAddToCart={() => {
                                 if (selectedVariant) {
-                                    addItem({
+                                    addToCart.mutate({
                                         productId: product.id,
                                         productVariantId: selectedVariant.id
                                     })
                                 }
                             }}
                             isInCart={selectedVariant ? isInCart(product.id, selectedVariant.id) : false}
-                            disabled={!selectedVariant || isAddingItem || isTogglingWishlistItem}
-                            isAddingToCart={isAddingItem}
-                            onToggleWishlist={() => toggleWishlist(product.id)}
+                            disabled={!selectedVariant || addToCart.isPending || toggleWishlist.isPending}
+                            isAddingToCart={addToCart.isPending}
+                            onToggleWishlist={() => toggleWishlist.mutate(product.id)}
                             isInWishlist={isInWishlist(product.id)}
-                            isTogglingWishlist={isTogglingWishlistItem}
+                            isTogglingWishlist={toggleWishlist.isPending}
                         />
                     </div>
 

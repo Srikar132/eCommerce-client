@@ -156,7 +156,7 @@ const Navbar = () => {
                                     </Button>
                                 </>
                             }>
-                                <Link href="/account/wishlist">
+                                <Link href="/wishlist">
                                     <WishlistButton />
                                 </Link>
 

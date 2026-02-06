@@ -2,7 +2,7 @@ import { Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { RatingDistribution } from "@/types";
+import { RatingDistribution } from "@/types/product";
 
 interface RatingSummaryProps {
     averageRating: number;

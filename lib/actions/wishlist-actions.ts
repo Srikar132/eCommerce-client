@@ -1,28 +1,37 @@
 "use server";
 
 import { db } from "@/drizzle/db";
-import { wishlists, products, productImages } from "@/drizzle/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { wishlists, products, productImages, categories } from "@/drizzle/schema";
+import { eq, and, desc, or, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { WishlistResponse, CheckWishlistResponse, WishlistCountResponse } from "@/types/wishlist";
-import { Product } from "@/types/product";
+import { WishlistResponse, CheckWishlistResponse, WishlistCountResponse, WishlistItem } from "@/types/wishlist";
+import { auth } from "@/auth";
 
 /**
  * GET WISHLIST
  * Retrieves all wishlist items for the authenticated user
  */
-export async function getWishlist(userId: string): Promise<WishlistResponse> {
+export async function getWishlist(): Promise<WishlistResponse> {
     try {
-        // Get all wishlist items for user
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
+        // Get all wishlist items for user with product details
         const wishlistItems = await db
             .select({
-                id: wishlists.id,
-                productId: wishlists.productId,
-                createdAt: wishlists.createdAt,
+                wishlistId: wishlists.id,
+                addedAt: wishlists.createdAt,
                 product: products,
+                category: categories,
             })
             .from(wishlists)
-            .leftJoin(products, eq(products.id, wishlists.productId))
+            .innerJoin(products, eq(products.id, wishlists.productId))
+            .leftJoin(categories, eq(categories.id, products.categoryId))
             .where(
                 and(
                     eq(wishlists.userId, userId),
@@ -32,56 +41,70 @@ export async function getWishlist(userId: string): Promise<WishlistResponse> {
             )
             .orderBy(desc(wishlists.createdAt));
 
-        // Get product IDs to fetch images
-        const productIds = wishlistItems.map(item => item.productId);
+        // Get product IDs to fetch primary images
+        const productIds = wishlistItems
+            .filter(item => item.product !== null)
+            .map(item => item.product!.id);
         
-        // Fetch images for all products
+        // Fetch primary images for all products
         const images = productIds.length > 0
             ? await db
                 .select()
                 .from(productImages)
                 .where(
                     and(
-                        eq(productImages.productId, productIds[0]),
-                        // Use OR for multiple product IDs
-                        ...productIds.slice(1).map(id => eq(productImages.productId, id))
+                        eq(productImages.isPrimary, true),
+                        inArray(productImages.productId, productIds)
                     )
                 )
-                .orderBy(desc(productImages.isPrimary), productImages.displayOrder)
             : [];
 
-        // Group images by product ID
-        const imagesByProduct = images.reduce((acc, img) => {
-            if (!acc[img.productId]) {
-                acc[img.productId] = [];
-            }
-            acc[img.productId].push({
-                id: img.id,
-                imageUrl: img.imageUrl,
-                altText: img.altText || undefined,
-                isPrimary: img.isPrimary,
-                displayOrder: img.displayOrder,
-            });
+        // Create a map of product ID to primary image
+        const primaryImageMap = images.reduce((acc, img) => {
+            acc[img.productId] = {
+                url: img.imageUrl,
+                alt: img.altText,
+            };
             return acc;
-        }, {} as Record<string, Product['images']>);
+        }, {} as Record<string, { url: string; alt: string | null }>);
 
-        // Map to Product format
-        const items: Product[] = wishlistItems
-            .filter(item => item.product) // Only include items with valid products
-            .map(item => ({
-                id: item.product!.id,
-                name: item.product!.name,
-                slug: item.product!.slug,
-                description: item.product!.description || undefined,
-                basePrice: parseFloat(item.product!.basePrice),
-                sku: item.product!.sku,
-                material: item.product!.material || undefined,
-                careInstructions: item.product!.careInstructions || undefined,
-                isActive: item.product!.isActive,
-                createdAt: item.product!.createdAt.toISOString(),
-                updatedAt: item.product!.updatedAt.toISOString(),
-                images: imagesByProduct[item.productId] || [],
-            }));
+        // Map to WishlistItem format
+        const items: WishlistItem[] = wishlistItems
+            .filter(item => item.product !== null) // Only include items with valid products
+            .map(item => {
+                const product = item.product!;
+                const primaryImage = primaryImageMap[product.id];
+                
+                return {
+                    // Wishlist-specific
+                    wishlistId: item.wishlistId,
+                    addedAt: item.addedAt.toISOString(),
+
+                    // Product info
+                    productId: product.id,
+                    productName: product.name,
+                    productSlug: product.slug,
+                    productDescription: product.description || undefined,
+
+                    basePrice: parseFloat(product.basePrice),
+                    sku: product.sku,
+
+                    // Images
+                    primaryImageUrl: primaryImage?.url || undefined,
+                    primaryImageAlt: primaryImage?.alt || undefined,
+
+                    // Additional details
+                    material: product.material || undefined,
+                    careInstructions: product.careInstructions || undefined,
+
+                    // Category
+                    categoryName: item.category?.name || undefined,
+
+                    // Status
+                    inStock: true, // We'd need to check variants for real stock status
+                    isActive: product.isActive,
+                };
+            });
 
         return {
             items,
@@ -97,8 +120,16 @@ export async function getWishlist(userId: string): Promise<WishlistResponse> {
  * ADD TO WISHLIST
  * Adds a product to the user's wishlist
  */
-export async function addToWishlist(userId: string, productId: string): Promise<WishlistResponse> {
+export async function addToWishlist(productId: string): Promise<WishlistResponse> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
         // Check if product exists and is active
         const product = await db
             .select()
@@ -142,7 +173,7 @@ export async function addToWishlist(userId: string, productId: string): Promise<
         revalidatePath(`/products/${product[0].slug}`);
 
         // Return updated wishlist
-        return await getWishlist(userId);
+        return await getWishlist();
     } catch (error) {
         console.error("Error adding to wishlist:", error);
         throw new Error((error as Error)?.message || "Failed to add to wishlist");
@@ -153,8 +184,16 @@ export async function addToWishlist(userId: string, productId: string): Promise<
  * REMOVE FROM WISHLIST
  * Removes a product from the user's wishlist
  */
-export async function removeFromWishlist(userId: string, productId: string): Promise<WishlistResponse> {
+export async function removeFromWishlist(productId: string): Promise<WishlistResponse> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
         // Delete from wishlist
         await db
             .delete(wishlists)
@@ -170,7 +209,7 @@ export async function removeFromWishlist(userId: string, productId: string): Pro
         revalidatePath("/products");
 
         // Return updated wishlist
-        return await getWishlist(userId);
+        return await getWishlist();
     } catch (error) {
         console.error("Error removing from wishlist:", error);
         throw new Error((error as Error)?.message || "Failed to remove from wishlist");
@@ -181,8 +220,16 @@ export async function removeFromWishlist(userId: string, productId: string): Pro
  * CHECK IF PRODUCT IS IN WISHLIST
  * Returns whether a specific product is in the user's wishlist
  */
-export async function checkWishlist(userId: string, productId: string): Promise<CheckWishlistResponse> {
+export async function checkWishlist(productId: string): Promise<CheckWishlistResponse> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            return { inWishlist: false };
+        }
+
+        const userId = session.user.id;
+
         const wishlistItem = await db
             .select()
             .from(wishlists)
@@ -205,8 +252,16 @@ export async function checkWishlist(userId: string, productId: string): Promise<
  * GET WISHLIST COUNT
  * Returns the total count of items in the user's wishlist
  */
-export async function getWishlistCount(userId: string): Promise<WishlistCountResponse> {
+export async function getWishlistCount(): Promise<WishlistCountResponse> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            return { count: 0 };
+        }
+
+        const userId = session.user.id;
+
         const result = await db
             .select({
                 count: wishlists.id,
@@ -225,8 +280,16 @@ export async function getWishlistCount(userId: string): Promise<WishlistCountRes
  * CLEAR WISHLIST
  * Removes all items from the user's wishlist
  */
-export async function clearWishlist(userId: string): Promise<{ message: string }> {
+export async function clearWishlist(): Promise<{ message: string }> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
         // Delete all wishlist items for user
         await db
             .delete(wishlists)
@@ -248,8 +311,16 @@ export async function clearWishlist(userId: string): Promise<{ message: string }
  * Adds or removes a product from wishlist based on current state
  * Useful for toggle buttons
  */
-export async function toggleWishlist(userId: string, productId: string): Promise<{ inWishlist: boolean; message: string }> {
+export async function toggleWishlist(productId: string): Promise<{ inWishlist: boolean; message: string }> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
         // Check current state
         const existing = await db
             .select()

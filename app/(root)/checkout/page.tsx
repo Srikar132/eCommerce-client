@@ -1,6 +1,6 @@
 
 import { Suspense } from 'react';
-import CheckoutClient from '@/components/checkout/checkout-client';
+// import CheckoutClient from '@/components/checkout/checkout-client';
 import { CheckoutSkeleton } from '@/components/ui/skeletons';
 
 
@@ -22,7 +22,7 @@ export default function CheckoutPage() {
         
         <div className="relative">
           <Suspense fallback={<CheckoutSkeleton />}>
-            <CheckoutClient />
+            {/* <CheckoutClient /> */}
           </Suspense>
         </div>
       </div>

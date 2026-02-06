@@ -141,7 +141,12 @@ export const queryKeys = {
     all: () => ['cart'] as const,
     
     /**
-     * User's cart (or guest cart)
+     * User's cart with all details
+     */
+    details: () => ['cart', 'details'] as const,
+    
+    /**
+     * User's cart (or guest cart) - alias for details
      */
     current: () => ['cart', 'current'] as const,
     
@@ -275,6 +280,11 @@ export const queryKeys = {
     all: () => ['wishlist'] as const,
     
     /**
+     * User's wishlist with all details
+     */
+    details: () => ['wishlist', 'details'] as const,
+    
+    /**
      * Check if product is in wishlist
      * @param productId - Product ID
      */
@@ -285,6 +295,52 @@ export const queryKeys = {
      * Wishlist item count
      */
     count: () => ['wishlist', 'count'] as const,
+  },
+
+  /**
+   * Account-related query keys
+   */
+  account: {
+    /**
+     * Base key for all account queries
+     */
+    all: () => ['account'] as const,
+    
+    /**
+     * Account details (name, email, phone)
+     */
+    details: () => ['account', 'details'] as const,
+    
+    /**
+     * User statistics (orders, wishlist, addresses, cart)
+     */
+    stats: () => ['account', 'stats'] as const,
+  },
+
+  /**
+   * Address-related query keys
+   */
+  addresses: {
+    /**
+     * Base key for all address queries
+     */
+    all: () => ['addresses'] as const,
+    
+    /**
+     * All user addresses
+     */
+    list: () => ['addresses', 'list'] as const,
+    
+    /**
+     * Single address by ID
+     * @param addressId - Address ID
+     */
+    detail: (addressId: string) => ['addresses', 'detail', addressId] as const,
+    
+    /**
+     * Default address
+     */
+    default: () => ['addresses', 'default'] as const,
   },
 } as const;
 

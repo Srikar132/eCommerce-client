@@ -6,7 +6,7 @@ import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import Link from 'next/link';
 import { ProductGridSkeleton } from '@/components/ui/skeletons';
 import { Product } from '@/types/product';
-import { useWishlist } from '@/hooks/use-wishlist';
+import { useToggleWishlist, useWishlist } from '@/lib/tanstack/queries/wishlist.queries';
 
 interface SearchResultsProps {
     results: {
@@ -29,8 +29,15 @@ export default function ProductGrid({
     hasMore, 
     isFetchingNextPage 
 }: SearchResultsProps) {
-    // Use wishlist hook once at parent level
-    const { toggleItem, isInWishlist, isTogglingItem } = useWishlist();
+    // Use wishlist hooks
+    const toggleWishlist = useToggleWishlist();
+    const { data: wishlist } = useWishlist();
+
+    // Helper to check if product is in wishlist
+    const isInWishlist = (productId: string): boolean => {
+        if (!wishlist?.items) return false;
+        return wishlist.items.some((item) => item.productId === productId);
+    };
     
     // Use infinite scroll hook for automatic loading
     const sentinelRef = useInfiniteScroll({
@@ -45,7 +52,7 @@ export default function ProductGrid({
      * Centralized handler for all product cards
      */
     const handleToggleWishlist = (productId: string) => {
-        toggleItem(productId);
+        toggleWishlist.mutate(productId);
     };
 
     if (isLoading && !results.items.length) {
@@ -83,7 +90,7 @@ export default function ProductGrid({
                         product={product}
                         onToggleWishlist={handleToggleWishlist}
                         isInWishlist={isInWishlist(product.id)}
-                        isTogglingWishlist={isTogglingItem}
+                        isTogglingWishlist={toggleWishlist.isPending}
                     />
                 ))}
             </div>

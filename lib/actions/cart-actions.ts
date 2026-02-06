@@ -11,6 +11,7 @@ import {
 import { eq, and, desc } from "drizzle-orm";
 import { Cart, CartItem } from "@/types/cart";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 
 /**
  * Helper function to map database cart to Cart type
@@ -112,8 +113,16 @@ async function recalculateCartTotals(cartId: string): Promise<void> {
 }
 
 // GET CART OR CREATE CART FOR A USER
-export async function getOrCreateCart(userId: string): Promise<Cart> {
+export async function getOrCreateCart(): Promise<Cart> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
         // Try to find an active cart for the user
         let cart = await db.query.carts.findFirst({
             where: and(eq(carts.userId, userId), eq(carts.isActive, true)),
@@ -146,14 +155,13 @@ export async function getOrCreateCart(userId: string): Promise<Cart> {
 
 // ADD ITEM TO CART
 export async function addItemToCart(
-    userId: string,
     productId: string,
     productVariantId: string,
     quantity: number = 1
 ): Promise<Cart> {
     try {
         // Get or create cart
-        const cart = await getOrCreateCart(userId);
+        const cart = await getOrCreateCart();
 
         // Get product and variant details
         const product = await db.query.products.findFirst({
@@ -233,10 +241,17 @@ export async function addItemToCart(
 
 // REMOVE ITEM FROM CART
 export async function removeItemFromCart(
-    userId: string,
     cartItemId: string
 ): Promise<Cart> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
         // Get user's cart
         const cart = await db.query.carts.findFirst({
             where: and(eq(carts.userId, userId), eq(carts.isActive, true)),
@@ -276,11 +291,18 @@ export async function removeItemFromCart(
 
 // UPDATE ITEM QUANTITY IN CART
 export async function updateCartItemQuantity(
-    userId: string,
     cartItemId: string,
     quantity: number
 ): Promise<Cart> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
         if (quantity < 1) {
             throw new Error("Quantity must be at least 1");
         }
@@ -343,8 +365,16 @@ export async function updateCartItemQuantity(
 }
 
 // CLEAR CART
-export async function clearCart(userId: string): Promise<void> {
+export async function clearCart(): Promise<void> {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+
+        const userId = session.user.id;
+
         // Get user's cart
         const cart = await db.query.carts.findFirst({
             where: and(eq(carts.userId, userId), eq(carts.isActive, true)),
