@@ -45,7 +45,7 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                         src={images[selectedImageIndex].imageUrl}
                         alt={images[selectedImageIndex].altText || `Product Image ${selectedImageIndex + 1}`}
                         fill
-                        className="object-contain p-4 md:p-8"
+                        className="object-contain"
                         priority={selectedImageIndex === 0}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                     />

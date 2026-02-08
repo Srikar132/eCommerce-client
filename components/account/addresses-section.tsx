@@ -152,7 +152,7 @@ export function AddressesSectionClient() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    className="h-7 w-7 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
                                                     disabled={isDeleting || isSettingDefault}
                                                 >
                                                     <MoreVertical className="w-3.5 h-3.5" />

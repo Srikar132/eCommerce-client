@@ -22,8 +22,12 @@ export function CartClient() {
     const total = cart?.total || 0;
     const isAuthenticated = status === "authenticated";
 
-
-
+    // Loading state - check this first before authentication
+    if (status === "loading" || isLoading) {
+        return (
+            <PageLoadingSkeleton/>
+        );
+    }
 
     // Not authenticated - show login required
     if (!isAuthenticated) {
@@ -32,13 +36,6 @@ export function CartClient() {
                 title="Your Cart Awaits"
                 description="Please log in to view your shopping cart and continue with your order."
             />
-        );
-    }
-
-    // Loading state
-    if (isLoading) {
-        return (
-            <PageLoadingSkeleton/>
         );
     }
 

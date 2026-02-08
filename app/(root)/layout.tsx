@@ -25,14 +25,12 @@ export default async function RootLayout({
       </div>
 
 
-      <div className="w-full no-scrollbar">
+      <div className="w-full">
         <AppSidebar />
 
-        <header id="header">
-          <Suspense fallback={<NavbarSkeleton />}>
-            <Navbar />
-          </Suspense>
-        </header>
+        <Suspense fallback={<NavbarSkeleton />}>
+          <Navbar />
+        </Suspense>
 
         <main className="w-full relative">{children}</main>
 

@@ -84,11 +84,14 @@ export default function ShopByCategories() {
                 
                 {/* Section Header */}
                 <div className="relative text-center mb-12 sm:mb-16 space-y-3">
+                    <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
+                        Explore Collections
+                    </p>
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
                         Shop by Category
                     </h2>
-                    <p className="text-sm sm:text-base md:text-lg text-muted-foreground italic tracking-wide">
-                        Explore our handpicked collections for everyone
+                    <p className="text-sm sm:text-base md:text-lg text-muted-foreground italic tracking-wide pt-2">
+                        Handpicked collections for everyone
                     </p>
                 </div>
 

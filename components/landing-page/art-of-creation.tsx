@@ -1,52 +1,30 @@
-"use client";
 
-import { Shirt, Wand2, Package } from "lucide-react";
-import { creationSteps } from "@/constants";
 
 export default function ArtOfCreation() {
-  const icons = [Shirt, Wand2, Package];
-
   return (
-    <section className="w-full  py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-gray-900 mb-4">
-            The Art of Creation
+    <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Section Header */}
+        <div className="text-center mb-8 sm:mb-12 space-y-3">
+          <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
+            Personalize Your Style
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
+            Custom Creations
           </h2>
-          <p className="text-sm md:text-base text-gray-600 tracking-widest uppercase">
-            A three-step journey to your unique piece
+        </div>
+        
+        {/* Description Paragraph */}
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
+            Have something special in mind? We love bringing your ideas to life. Every thread is carefully chosen for quality, and every stitch is crafted with patience and a whole lot of love.
+            From the first sketch to the final touch, each piece is made to reflect you — your style, your moments, and your story. Because at NaLa Armoire, every detail truly matters when creating your memories.
           </p>
         </div>
 
-        {/* Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-          {creationSteps.map((step, index) => {
-            const Icon = icons[index];
-            return (
-              <div
-                key={step.number}
-                className="flex flex-col items-center text-center group"
-              >
-                {/* Icon Circle */}
-                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white shadow-sm flex items-center justify-center mb-6 group-hover:shadow-md transition-shadow duration-300">
-                  <Icon className="w-8 h-8 md:w-10 md:h-10 text-rose-400" strokeWidth={1.5} />
-                </div>
-
-                {/* Step Title */}
-                <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-3">
-                  <span className="text-gray-400 mr-2">{step.number}.</span>
-                  {step.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-sm md:text-base text-gray-600 leading-relaxed max-w-xs">
-                  {step.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+        {/* Decorative Gradient Blob */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 sm:w-lg sm:h-128 bg-primary/5 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
       </div>
     </section>
   );

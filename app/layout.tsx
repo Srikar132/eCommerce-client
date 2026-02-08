@@ -8,7 +8,7 @@ import NextTopLoader from "nextjs-toploader";
 import AuthProvider from "@/providers/auth-provider";
 import { Suspense } from "react";
 import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 
 
@@ -77,11 +77,11 @@ export default function Layout({
           />
         </Suspense>
 
-        <Script
+        {/* <Script
           id="razorpay-checkout-js"
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="beforeInteractive"
-        />
+        /> */}
       </body>
     </html>
   );

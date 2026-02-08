@@ -23,9 +23,9 @@ export default function VariantSelector({
     className = ""
 }: VariantSelectorProps) {
     return (
-        <div className={`border-2 border-border rounded-xl bg-card/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300 ${className}`}>
+        <div className={`${className}`}>
             {/* Color Selection */}
-            <div className="p-6">
+            <div className="py-2">
                 <ColorSelector
                     colors={colors}
                     selectedColor={selectedColor}
@@ -36,7 +36,7 @@ export default function VariantSelector({
             <Separator className="bg-border/60" />
 
             {/* Size Selection */}
-            <div className="p-6">
+            <div className="py-2">
                 <SizeSelector
                     sizes={sizes}
                     selectedSize={selectedSize}

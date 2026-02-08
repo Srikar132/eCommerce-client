@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Product , ProductVariant } from "@/types/product";
+import { Product, ProductVariant } from "@/types/product";
 
 // Simple types
 export interface ColorOption {
@@ -21,9 +21,6 @@ interface UseVariantSelectionProps {
 }
 
 export function useVariantSelection({ product, variants }: UseVariantSelectionProps) {
-    const [selectedColor, setSelectedColor] = useState<string>("");
-    const [selectedSize, setSelectedSize] = useState<string>("");
-
     // Get unique colors
     const colors = useMemo<ColorOption[]>(() => {
         const colorMap = new Map<string, ColorOption>();
@@ -42,6 +39,11 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
         return Array.from(colorMap.values());
     }, [variants]);
 
+    // Initialize with first available color
+    const [selectedColor, setSelectedColor] = useState<string>(() => 
+        colors.length > 0 ? colors[0].color : ""
+    );
+
     // Get sizes for selected color
     const sizes = useMemo<SizeOption[]>(() => {
         if (!selectedColor) return [];
@@ -56,6 +58,11 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
                 additionalPrice: v.additionalPrice
             }));
     }, [variants, selectedColor]);
+
+    // Initialize with first available size
+    const [selectedSize, setSelectedSize] = useState<string>(() => 
+        sizes.length > 0 ? sizes[0].size : ""
+    );
 
     // Find selected variant
     const selectedVariant = useMemo(() => {
@@ -75,24 +82,19 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
         return product.basePrice + additionalPrice;
     }, [product, selectedVariant]);
 
-    // Auto-select first color
+    // Auto-select first color when colors become available
     useEffect(() => {
-
-
         if (!selectedColor && colors.length > 0) {
             setSelectedColor(colors[0].color);
-
         }
+    }, [colors, selectedColor]);
 
-
-        if (selectedColor && sizes.length > 0 && !selectedSize) {
+    // Auto-select first size when sizes become available or color changes
+    useEffect(() => {
+        if (sizes.length > 0 && !sizes.find(s => s.size === selectedSize)) {
             setSelectedSize(sizes[0].size);
         }
-
-
-    }, [colors, selectedColor , selectedSize]);
-
-
+    }, [sizes, selectedSize]);
 
     // Handle color change (resets size)
     const handleColorChange = (color: string) => {

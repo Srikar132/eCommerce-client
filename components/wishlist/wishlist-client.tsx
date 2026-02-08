@@ -34,6 +34,11 @@ export function WishlistClient() {
     const totalItems = wishlist?.totalItems || 0;
     const isAuthenticated = status === "authenticated";
 
+    // Loading state - check this first before authentication
+    if (status === "loading" || isLoading) {
+        return <PageLoadingSkeleton />;
+    }
+
     // Not authenticated - show login required
     if (!isAuthenticated) {
         return (
@@ -42,11 +47,6 @@ export function WishlistClient() {
                 description="Please log in to view your saved items and manage your wishlist."
             />
         );
-    }
-
-    // Loading state
-    if (isLoading) {
-        return <PageLoadingSkeleton />;
     }
 
     // Empty wishlist state

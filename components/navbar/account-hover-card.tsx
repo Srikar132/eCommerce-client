@@ -22,8 +22,6 @@ export function AccountHoverCard() {
                     <User2 
                         className="w-5 h-5 text-foreground" 
                         strokeWidth={2}
-                        stroke="#402e27"
-                        fill="#402e27"
                     />
                 </Button>
             </HoverCardTrigger>

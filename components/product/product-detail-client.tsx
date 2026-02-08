@@ -1,7 +1,8 @@
 "use client";
 
-
-
+import { useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
 import ProductImageGallery from "@/components/product/product-image-gallery";
 import ProductActions from "@/components/product/product-actions";
 import ProductAccordion from "@/components/product/product-accordian";
@@ -9,14 +10,14 @@ import VariantSelector from "@/components/product/variant-selector";
 import PriceDisplay from "@/components/product/price-display";
 import StockStatus from "@/components/product/stock-status";
 import VariantAvailabilityInfo from "@/components/product/variant-availability-info";
-
+import { toast } from "sonner";
 
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useVariantSelection } from "@/hooks/use-variant-selector";
 import { Product, ProductVariant } from "@/types/product";
-import { useAddToCart } from "@/lib/tanstack/queries/cart.queries";
-import { useToggleWishlist, useWishlist } from "@/lib/tanstack/queries/wishlist.queries";
+import { useAddToCart, useIsInCart } from "@/lib/tanstack/queries/cart.queries";
+import { useIsInWishlist, useToggleWishlist, useWishlist } from "@/lib/tanstack/queries/wishlist.queries";
 
 interface ProductDetailClientProps {
     product: Product;
@@ -25,7 +26,9 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product, variants }: ProductDetailClientProps) {
 
-
+    const router = useRouter();
+    const pathname = usePathname();
+    const { data: session, status } = useSession();
 
     // Use the variant selection hook for all variant logic
     const {
@@ -44,52 +47,74 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
     });
 
     const addToCart = useAddToCart();
-    const { data: wishlist } = useWishlist();
     const toggleWishlist = useToggleWishlist();
+    const isInCart = useIsInCart(product.id, selectedVariant?.id!);
+    const isInWishlist = useIsInWishlist(product.id);
 
-    // Helper to check if product is in cart
-    const isInCart = (productId: string, variantId: string): boolean => {
-        if (!wishlist?.items) return false;
-        return wishlist.items.some(item => item.productId === productId);
-    };
+    // Handle Add to Cart with authentication check
+    const handleAddToCart = useCallback(() => {
+        // Check authentication
+        if (status !== "authenticated") {
+            toast.error("Please login to add items to cart");
+            router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+            return;
+        }
 
-    // Helper to check if product is in wishlist
-    const isInWishlist = (productId: string): boolean => {
-        if (!wishlist?.items) return false;
-        return wishlist.items.some(item => item.productId === productId);
-    };
+        // Check if variant is selected
+        if (!selectedVariant) {
+            toast.error("Please select a variant");
+            return;
+        }
 
+        // Add to cart
+        addToCart.mutate({
+            productId: product.id,
+            productVariantId: selectedVariant.id
+        });
+    }, [status, selectedVariant, product.id, pathname, router, addToCart]);
 
+    // Handle Toggle Wishlist with authentication check
+    const handleToggleWishlist = useCallback(() => {
+        // Check authentication
+        if (status !== "authenticated") {
+            toast.error("Please login to manage your wishlist");
+            router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+            return;
+        }
+
+        // Toggle wishlist
+        toggleWishlist.mutate(product.id);
+    }, [status, product.id, pathname, router, toggleWishlist]);
 
     return (
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-12">
 
             {/* Image Gallery Section */}
             <div className="order-1 w-full">
-                <div className=" border border-border/30 overflow-hidden bg-card">
+                <div className="border border-border/30 overflow-hidden bg-card">
                     <ProductImageGallery images={product.images} />
                 </div>
             </div>
 
             {/* Product Details Section */}
-            <ScrollArea className="order-2 w-full h-full">
-                <div className="space-y-4 pr-4">
+            <div className="order-2 w-full relative">
+                <div className="space-y-3 sm:space-y-4 pb-20 sm:pb-24 lg:pb-0">
 
                     {/* Product Info & Price */}
-                    <div className="pb-4">
-                        <div className="space-y-3">
-                            <h1 className="text-3xl font-bold text-foreground tracking-tight uppercase">
+                    <div>
+                        <div className="space-y-2">
+                            <h1 className="text-2xl sm:text-3xl text-foreground tracking-tight">
                                 {product.name}
                             </h1>
 
                             {/* description */}
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-muted-foreground line-clamp-3">
                                 {product.description || 'No description available'}
                             </p>
                         </div>
 
-                        <div className="mt-4">
+                        <div className="mt-3">
                             <PriceDisplay
                                 basePrice={product.basePrice}
                                 finalPrice={finalPrice}
@@ -102,7 +127,7 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
 
                         {/* Stock Status */}
                         {selectedVariant && (
-                            <div className="mt-3">
+                            <div className="mt-2">
                                 <StockStatus
                                     stockQuantity={selectedVariant.stockQuantity}
                                     showIcon={true}
@@ -134,37 +159,48 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
 
                     <Separator className="bg-border/40" />
 
-                    {/* Product Actions - Sticky on Mobile */}
-                    <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 p-4 -mx-4 sm:mx-0 sm:static sm:border-0 sm:p-0 sm:bg-transparent z-20">
+                    {/* Accordion Section - Above actions on mobile */}
+                    <div className="lg:hidden">
+                        <ProductAccordion
+                            washCare={product.careInstructions || 'Standard care instructions apply'}
+                        />
+                    </div>
+
+                    {/* Product Actions - Static on Desktop */}
+                    <div className="hidden lg:block pt-2">
                         <ProductActions
-                            onAddToCart={() => {
-                                if (selectedVariant) {
-                                    addToCart.mutate({
-                                        productId: product.id,
-                                        productVariantId: selectedVariant.id
-                                    })
-                                }
-                            }}
-                            isInCart={selectedVariant ? isInCart(product.id, selectedVariant.id) : false}
+                            onAddToCart={handleAddToCart}
+                            isInCart={isInCart}
                             disabled={!selectedVariant || addToCart.isPending || toggleWishlist.isPending}
                             isAddingToCart={addToCart.isPending}
-                            onToggleWishlist={() => toggleWishlist.mutate(product.id)}
-                            isInWishlist={isInWishlist(product.id)}
+                            onToggleWishlist={handleToggleWishlist}
+                            isInWishlist={isInWishlist}
                             isTogglingWishlist={toggleWishlist.isPending}
                         />
                     </div>
 
-
-                    <Separator className="bg-border/40" />
-
-                    {/* Accordion Section */}
-                    <div className="py-4">
+                    {/* Accordion Section - Below actions on desktop */}
+                    <div className="hidden lg:block">
+                        <Separator className="bg-border/40 mb-2" />
                         <ProductAccordion
                             washCare={product.careInstructions || 'Standard care instructions apply'}
                         />
                     </div>
                 </div>
-            </ScrollArea>
+
+                {/* Product Actions - Fixed at Bottom on Mobile */}
+                <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background/98 backdrop-blur-md border-t border-border/50 p-3 sm:p-4 shadow-2xl z-50">
+                    <ProductActions
+                        onAddToCart={handleAddToCart}
+                        isInCart={isInCart}
+                        disabled={!selectedVariant || addToCart.isPending || toggleWishlist.isPending}
+                        isAddingToCart={addToCart.isPending}
+                        onToggleWishlist={handleToggleWishlist}
+                        isInWishlist={isInWishlist}
+                        isTogglingWishlist={toggleWishlist.isPending}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

@@ -81,7 +81,7 @@ async function ProductDetailPage({ params }: ProductPageProps) {
 
     try {
         const { slug } = await params;
-        
+
         // Fetch product data using cached function
         const product = await getCachedProduct(slug);
 
@@ -93,17 +93,17 @@ async function ProductDetailPage({ params }: ProductPageProps) {
         const variants = await getCachedProductVariants(product.id);
 
         return (
-            <div className="min-h-screen bg-background overflow-x-hidden">
+            <div className="min-h-screen bg-background">
 
                 {/* BREADCRUMB  */}
-                
 
-                <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+
+                <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
                     <ProductDetailClient product={product} variants={variants} />
 
                     {/* Reviews Section - Server Component with its own prefetching */}
                     <Suspense fallback={<ReviewsSkeleton />}>
-                        <div className="mt-12">
+                        <div className="sm:mt-10 lg:mt-12">
                             <ProductReviewsSection productId={product.id} />
                         </div>
                     </Suspense>

@@ -40,7 +40,7 @@ const ProductCardComponent = ({
     };
 
     return (
-        <Card className="group overflow-hidden border hover:shadow-lg transition-all duration-300 bg-card">
+        <Card className="group overflow-hidden border hover:shadow-lg transition-all duration-300 bg-card rounded-lg">
             {/* Image Container with Carousel */}
             <div className="relative aspect-3/4 overflow-hidden bg-muted">
                 <Link href={`/products/${product.slug}`} className="block w-full h-full">
@@ -59,14 +59,14 @@ const ProductCardComponent = ({
                     onClick={handleWishlistClick}
                     disabled={isTogglingWishlist}
                     className={cn(
-                        "absolute top-2 right-2 z-10 p-2 rounded-full bg-white/90 hover:bg-white shadow-md transition-all duration-200",
-                        "opacity-0 group-hover:opacity-100",
+                        "absolute top-2 right-2 z-10 p-1.5 sm:p-2 rounded-full bg-white/90 hover:bg-white shadow-md transition-all duration-200",
+                        "lg:opacity-0 lg:group-hover:opacity-100",
                         isInWishlist && "opacity-100"
                     )}
                 >
                     <Heart 
                         className={cn(
-                            "w-4 h-4 transition-all",
+                            "w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all",
                             isInWishlist ? "fill-red-500 text-red-500" : "text-gray-700"
                         )} 
                     />
@@ -115,22 +115,22 @@ const ProductCardComponent = ({
 
             {/* Product Details */}
             <Link href={`/products/${product.slug}`}>
-                <CardContent className="p-4 space-y-2">
+                <CardContent className="p-2.5 sm:p-3 lg:p-4 space-y-1.5 sm:space-y-2">
                     {/* Product Name */}
-                    <h3 className="text-sm font-medium text-foreground line-clamp-2 min-h-10 leading-tight group-hover:text-primary transition-colors">
+                    <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 min-h-8 sm:min-h-10 leading-tight group-hover:text-primary transition-colors">
                         {product.name}
                     </h3>
 
                     {/* Price */}
                     <div className="flex items-baseline gap-2">
-                        <p className="text-base font-semibold text-foreground">
+                        <p className="text-sm sm:text-base font-semibold text-foreground">
                             {formatCurrency(product.basePrice)}
                         </p>
                     </div>
 
                     {/* Additional Info */}
                     {product.material && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">
                             Material: {product.material}
                         </p>
                     )}

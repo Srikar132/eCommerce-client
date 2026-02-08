@@ -10,7 +10,7 @@ export function QuickActionsSection() {
     const actions = [
         {
             label: 'My Orders',
-            href: '/account/orders',
+            href: '/orders',
             icon: Package,
             description: 'View your order history',
             color: 'text-blue-600',
@@ -23,22 +23,6 @@ export function QuickActionsSection() {
             description: 'Your saved items',
             color: 'text-red-600',
             bgColor: 'bg-red-50',
-        },
-        {
-            label: 'Addresses',
-            href: '/account/addresses',
-            icon: MapPin,
-            description: 'Manage delivery addresses',
-            color: 'text-green-600',
-            bgColor: 'bg-green-50',
-        },
-        {
-            label: 'Account Settings',
-            href: '/account/settings',
-            icon: User,
-            description: 'Update your profile',
-            color: 'text-purple-600',
-            bgColor: 'bg-purple-50',
         },
     ];
 

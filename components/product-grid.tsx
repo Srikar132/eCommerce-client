@@ -82,8 +82,8 @@ export default function ProductGrid({
     return (
         <div className="space-y-6">
 
-            {/* Products Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+            {/* Products Grid with better mobile spacing */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5 px-2 sm:px-0">
                 {results.items.map((product) => (
                     <ProductCardComponent
                         key={product.id}

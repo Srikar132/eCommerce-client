@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { SearchInput } from '../search-input';
 import { cn } from '@/lib/utils';
 import { CollectionsDropdown } from './collections-dropdown';
-import { Menu, ShoppingBag, Heart } from 'lucide-react';
+import { Menu, ShoppingBag, Heart, Search } from 'lucide-react';
 import WishlistButton from './wishlist-button';
 import CartButton from '../cart/cart-button';
 import { AccountHoverCard } from './account-hover-card';
@@ -27,6 +27,7 @@ const Navbar = () => {
     const [isPastHero, setIsPastHero] = useState(false);
 
     const isHomePage = pathname === '/';
+    const isProductsPage = pathname === '/products';
 
     useEffect(() => {
         if (!isHomePage) return;
@@ -60,13 +61,18 @@ const Navbar = () => {
     return (
         <>
             <nav
-                className={`${isHomePage
-                    ? `${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} fixed rounded-none  sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] left-1/2 -translate-x-1/2  sm:my-5 lg:my-6 shadow-md border border-rose-100/20 top-5`
-                    : 'sticky'
-                    } ${shouldShowBackdrop
-                        ? 'bg-background/80 backdrop-blur-xl'
-                        : 'bg-background/60 backdrop-blur-md'
-                    } w-full top-0 z-50 transition-all duration-500 ease-in-out `}
+                className={cn(
+                    "w-full z-50 transition-all duration-500 ease-in-out",
+                    isHomePage
+                        ? cn(
+                            "fixed rounded-none sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] left-1/2 -translate-x-1/2 sm:my-5 lg:my-6 shadow-md border border-rose-100/20 top-5",
+                            isVisible ? "translate-y-0" : "-translate-y-[150%]"
+                        )
+                        : "sticky top-0",
+                    shouldShowBackdrop
+                        ? "bg-background/80 backdrop-blur-xl"
+                        : "bg-background/60 backdrop-blur-md"
+                )}
             >
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
                     <div className="flex items-center justify-between h-14 sm:h-16 lg:h-18 gap-3 sm:gap-4 lg:gap-6">
@@ -85,8 +91,8 @@ const Navbar = () => {
                                 />
                             </Button>
 
-                            {/* Logo */}
-                            <Link href="/" className="flex items-center space-x-2 group">
+                            {/* Logo - Centered on Mobile */}
+                            <Link href="/" className="flex items-center space-x-2 group lg:flex-none flex-1 lg:flex-initial justify-center lg:justify-start">
                                 <div className="relative w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 transition-transform duration-300 group-hover:scale-105">
                                     <Image
                                         src="/images/logo.webp"
@@ -138,6 +144,17 @@ const Navbar = () => {
                         {/* RIGHT: Icons */}
                         <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
 
+                            {/* Search Icon - Mobile Only, Hidden on Products Page */}
+                            {!isProductsPage && (
+                                <Link href="/products" className="lg:hidden">
+                                    <Button
+                                        className="p-1 hover:bg-primary rounded-full transition-colors border-0 bg-transparent"
+                                        aria-label="Search products"
+                                    >
+                                        <Search className="w-5 h-5 text-foreground" strokeWidth={2} />
+                                    </Button>
+                                </Link>
+                            )}
 
                             {/* Divider */}
                             <div className="hidden sm:block h-6 w-px bg-rose-200/50"></div>
@@ -148,12 +165,7 @@ const Navbar = () => {
                             {/* Wishlist & Cart with Suspense */}
                             <Suspense fallback={
                                 <>
-                                    <Button className="p-2 hover:bg-primary rounded-full transition-colors border-0 bg-transparent" aria-label="Wishlist">
-                                        <Heart className="w-5 h-5 text-foreground" strokeWidth={1.5} />
-                                    </Button>
-                                    <Button className="p-2 hover:bg-primary rounded-full transition-colors border-0 bg-transparent" aria-label="Cart">
-                                        <ShoppingBag className="w-5 h-5 text-foreground" strokeWidth={1.5} />
-                                    </Button>
+                                  
                                 </>
                             }>
                                 <Link href="/wishlist">

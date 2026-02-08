@@ -14,6 +14,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "../query-keys";
 
+
 /**
  * Get user's cart with all items
  */
@@ -31,6 +32,7 @@ export const useCart = () => {
  */
 export const useAddToCart = () => {
     const queryClient = useQueryClient();
+    
 
     return useMutation({
         mutationFn: ({

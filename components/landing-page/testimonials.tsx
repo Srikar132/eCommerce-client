@@ -17,11 +17,22 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <section className="relative flex items-center justify-center w-full py-16 md:py-24  overflow-hidden">
+    <section className="relative flex items-center justify-center w-full py-16 sm:py-20 md:py-24 overflow-hidden bg-background">
       <div className="max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Section Header */}
+        <div className="text-center mb-12 space-y-3">
+          <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
+            Customer Love
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
+            What Our Customers Say
+          </h2>
+        </div>
+
         {/* Quote Icon */}
         <div className="flex justify-center mb-8">
-          <Quote className="w-12 h-12 md:w-16 md:h-16 text-rose-300 fill-rose-300" />
+          <Quote className="w-12 h-12 md:w-16 md:h-16 text-primary/30 fill-primary/30" />
         </div>
 
         {/* Testimonial Slider */}
@@ -39,16 +50,16 @@ const Testimonials = () => {
             >
               <div className="text-center space-y-8 px-4">
                 {/* Testimonial Text */}
-                <p className="text-xl md:text-2xl lg:text-3xl font-serif italic text-gray-800 leading-relaxed max-w-3xl mx-auto">
+                <p className="text-xl md:text-2xl lg:text-3xl font-serif italic text-foreground leading-relaxed max-w-3xl mx-auto">
                   &ldquo;{testimonial.text}&rdquo;
                 </p>
 
                 {/* Author Info */}
                 <div className="space-y-1">
-                  <h4 className="text-base md:text-lg font-medium text-gray-900">
+                  <h4 className="text-base md:text-lg font-medium text-foreground">
                     {testimonial.name}
                   </h4>
-                  <p className="text-xs md:text-sm text-gray-500 tracking-widest uppercase">
+                  <p className="text-xs md:text-sm text-muted-foreground tracking-widest uppercase">
                     Verified Customer
                   </p>
                 </div>
@@ -65,13 +76,16 @@ const Testimonials = () => {
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 index === currentIndex
-                  ? "bg-rose-400 w-8"
-                  : "bg-gray-300 hover:bg-gray-400"
+                  ? "bg-primary w-8"
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
               }`}
               aria-label={`Go to testimonial ${index + 1}`}
             />
           ))}
         </div>
+
+        {/* Decorative Gradient Blob */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 sm:w-lg sm:h-128 bg-primary/5 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
       </div>
     </section> 
   );

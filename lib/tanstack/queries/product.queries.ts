@@ -11,7 +11,7 @@ import { queryKeys } from "../query-keys";
 /**
  * Infinite scroll product list with filters, pagination, and sorting
  */
-export const useInfiniteProducts = (params: ProductParams) => {
+export const useInfiniteProducts = (params: ProductParams, initialData?: PagedResponse<Product>) => {
   const { category, size, searchQuery, page = 0, limit = 20, sortBy = 'CREATED_AT_DESC' } = params;
 
   return useInfiniteQuery({
@@ -22,6 +22,12 @@ export const useInfiniteProducts = (params: ProductParams) => {
     getNextPageParam: (lastPage: PagedResponse<Product>) =>
       lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
     staleTime: 1000 * 60 * 10, // 10 minutes
+    ...(initialData && {
+      initialData: {
+        pages: [initialData],
+        pageParams: [page],
+      },
+    }),
   });
 };
 

@@ -30,14 +30,14 @@ export interface User {
 export interface Address {
     id: UUID;
     userId : string;
-    addressType: string;
-    streetAddress: string;
+    addressType: string | null;
+    streetAddress: string | null;
     city: string;
     state: string;
     postalCode: string;
     country: string;
     isDefault: boolean;
-    createdAt: string;
+    createdAt: string | Date;
 }
 
 

@@ -3,7 +3,7 @@ import HomePremiumProductCard from "../cards/home-premimum-product-card";
 
 export default function ShowCaseSection() {
   return (
-    <section className="relative w-full overflow-hidden min-h-screen lg:min-h-[110vh] py-12 sm:py-16 md:py-20 lg:py-24">
+    <section className="relative w-full overflow-hidden min-h-screen lg:min-h-[110vh] py-16 sm:py-20 md:py-24">
       
       {/* TOP BLUR GRADIENT OVERLAY */}
       <div className="absolute top-0 left-0 right-0 h-16 sm:h-10 bg-linear-to-b from-background via-background/80 to-transparent z-10 pointer-events-none" />
@@ -18,8 +18,6 @@ export default function ShowCaseSection() {
           priority
           sizes="100vw"
         />
-        {/* Subtle overlay for better text readability */}
-        {/* <div className="absolute inset-0 bg-black/5" /> */}
       </div>
 
       {/* WAVE CUT AT BOTTOM */}
@@ -45,7 +43,7 @@ export default function ShowCaseSection() {
           <div />
 
           {/* RIGHT SIDE - Product Cards */}
-          <div className="flex flex-col items-center  space-y-8 sm:space-y-10 lg:space-y-12 py-8 lg:py-0">
+          <div className="flex flex-col items-center space-y-8 sm:space-y-10 lg:space-y-12 py-8 lg:py-0">
             {/* First Card */}
             <div className="transform hover:scale-105 transition-all duration-500 -rotate-3 hover:rotate-0">
               <HomePremiumProductCard
@@ -70,10 +68,6 @@ export default function ShowCaseSection() {
 
         </div>
       </div>
-
-      {/* Decorative Elements */}
-      {/* <div className="absolute top-1/4 left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl pointer-events-none hidden lg:block" /> */}
-      {/* <div className="absolute bottom-1/3 right-10 w-40 h-40 bg-rose-200/10 rounded-full blur-3xl pointer-events-none hidden lg:block" /> */}
 
     </section>
   );

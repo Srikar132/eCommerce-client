@@ -22,10 +22,10 @@ export default function PriceDisplay({
     const hasAdditionalPrice = selectedVariant && selectedVariant.additionalPrice > 0;
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-2">
             {/* Main Price */}
             <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold ">
+                <span className="text-2xl sm:text-3xl font-bold">
                     {currencySymbol}{finalPrice.toFixed(2)}
                 </span>
                 

@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from '@/types';
+import { OrderStatus, PaymentStatus } from '@/types/orders';
 
 /**
  * Status styling configurations for order statuses

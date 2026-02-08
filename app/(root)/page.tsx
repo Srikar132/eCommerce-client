@@ -24,7 +24,6 @@ export default function HomeClient() {
       {/* 5. ART OF CREATION - Explain 3-Step Customization Process */}
       <ArtOfCreation />
 
-      {/* 6. CUSTOM STUDIO - Interactive Customization Demo */}
 
       {/* 7. TESTIMONIALS - Customer Reviews & Social Proof */}
       <Testimonials />

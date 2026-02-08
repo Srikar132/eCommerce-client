@@ -4,6 +4,7 @@ import { otpHelpers, OTP_CONFIG } from "@/lib/upstash";
 import { sendOtpSms, formatPhoneNumber, validatePhoneNumber } from "@/lib/twilio";
 import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
+import { revalidatePath } from "next/cache";
 
 // ==================== SEND OTP ====================
 
@@ -176,6 +177,11 @@ export async function loginWithOtp(phone: string, otp: string) {
         otp,
         redirect: false,
       });
+
+
+      // revalidate the CART & WISHLIST PAGES
+      revalidatePath("/cart");
+      revalidatePath("/wishlist");
 
       return {
         success: true,

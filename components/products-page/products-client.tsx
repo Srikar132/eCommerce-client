@@ -7,10 +7,16 @@ import { SearchInput } from "../search-input";
 import { useInfiniteProducts, useFlatProducts, useProductCount } from "@/lib/tanstack/queries";
 import ErrorCard from "../cards/error-card";
 import { ProductParams } from "@/types/product";
+import {  Product } from "@/types/product";
+import { PagedResponse } from "@/types";
 
 
 
-const ProductsClient = (params: ProductParams) => {
+interface ProductsClientProps extends ProductParams {
+    initialData?: PagedResponse<Product>;
+}
+
+const ProductsClient = ({ initialData, ...params }: ProductsClientProps) => {
 
 
     // Fetch products with infinite scroll
@@ -22,7 +28,7 @@ const ProductsClient = (params: ProductParams) => {
         isFetchingNextPage,
         error,
         refetch
-    } = useInfiniteProducts(params);
+    } = useInfiniteProducts(params, initialData);
 
     // Extract derived data
     const products = useFlatProducts(data);
@@ -46,25 +52,17 @@ const ProductsClient = (params: ProductParams) => {
 
     return (
         <section className="category-section">
-            {/* Loading indicator for filter changes */}
-            {isLoading && (
-                <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-background shadow-lg rounded-full p-3">
-                    <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
-                </div>
-            )}
-
             {/* Mobile Search Bar - Only on small screens */}
-            <div className="lg:hidden sticky top-0 z-30 bg-background border-b px-4 py-3 shadow-sm">
-                <SearchInput
-                    placeholder="Search products..."
-                    className="w-full"
-                />
+            <div className="lg:hidden sticky top-14 sm:top-16 z-30 bg-background/95 backdrop-blur-sm border-b px-2 py-3 shadow-sm">
+                <div className="flex items-center gap-3">
+                    <SearchInput
+                        placeholder="Search"
+                        className="flex-1"
+                    />
+                    <SortDropdown />
+                </div>
             </div>
 
-            {/* Mobile Filter Header - Only on small screens */}
-            <div className="sticky top-18 z-20 flex items-center justify-end border-b lg:hidden py-2 ">
-                <SortDropdown />
-            </div>
 
 
             {/* Desktop Layout with Filters and Sort */}
@@ -73,7 +71,7 @@ const ProductsClient = (params: ProductParams) => {
                 {/* Main Content */}
                 <div className="flex-1 min-w-0">
                     {/* Desktop Header */}
-                    <header className="hidden lg:flex z-10 bg-background sticky top-0 items-center justify-between mb-6  border-b px-4 py-4">
+                    <header className="hidden lg:flex z-10 bg-background sticky top-16 sm:top-16 lg:top-18 items-center justify-between mb-6 border-b px-4 py-4">
                         <div className="flex items-center gap-4">
                             <span className="text-sm text-muted-foreground">
                                 {/* Convert to showing some out of total */}
@@ -86,19 +84,21 @@ const ProductsClient = (params: ProductParams) => {
                         </div>
                     </header>
 
-                    {/* Product Grid/List */}
-                    <ProductGrid
-                        results={{
-                            items: products,
-                            total: totalProducts,
-                            page: data?.pages?.length || 1,
-                            limit: params.limit ?? 20,
-                        }}
-                        isLoading={isLoading}
-                        onLoadMore={fetchNextPage}
-                        hasMore={hasNextPage}
-                        isFetchingNextPage={isFetchingNextPage}
-                    />
+                    {/* Product Grid/List with mobile spacing */}
+                    <div className="mt-4 lg:mt-0">
+                        <ProductGrid
+                            results={{
+                                items: products,
+                                total: totalProducts,
+                                page: data?.pages?.length || 1,
+                                limit: params.limit ?? 20,
+                            }}
+                            isLoading={isLoading}
+                            onLoadMore={fetchNextPage}
+                            hasMore={hasNextPage}
+                            isFetchingNextPage={isFetchingNextPage}
+                        />
+                    </div>
                 </div>
             </div>
         </section>

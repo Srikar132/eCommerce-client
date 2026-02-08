@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, ListFilter } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   DropdownMenu,
@@ -62,8 +62,12 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
           size="sm" 
           className="gap-2"
         >
-          <span className="text-sm">Sort: {currentLabel}</span>
-          <ChevronsUpDown className="h-4 w-4 opacity-50" />
+          {/* Desktop: Show full text */}
+          <span className="hidden lg:inline text-sm">Sort: {currentLabel}</span>
+          <ChevronsUpDown className="hidden lg:block h-4 w-4 opacity-50" />
+          
+          {/* Mobile: Show only icon */}
+          <ListFilter className="lg:hidden h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-50 z-40">
