@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { verifyPaymentAndConfirmOrder } from "@/lib/actions/order-actions";
@@ -91,6 +91,13 @@ interface UseRazorpayCheckoutReturn {
 }
 
 /**
+ * Check if Razorpay is available in the window object
+ */
+const checkRazorpayLoaded = (): boolean => {
+    return typeof window !== "undefined" && !!(window as any).Razorpay;
+};
+
+/**
  * Custom hook for handling Razorpay checkout flow
  * 
  * Provides a clean interface for initiating payments, handling success/failure,
@@ -121,11 +128,36 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
     const router = useRouter();
     const queryClient = useQueryClient();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
 
     /**
-     * Check if Razorpay SDK is loaded
+     * Check if Razorpay SDK is loaded on mount and periodically
      */
-    const isRazorpayLoaded = typeof window !== "undefined" && !!(window as any).Razorpay;
+    useEffect(() => {
+        // Initial check
+        if (checkRazorpayLoaded()) {
+            setIsRazorpayLoaded(true);
+            return;
+        }
+
+        // Poll for Razorpay to be loaded (useful for slow connections)
+        let attempts = 0;
+        const maxAttempts = 20; // 10 seconds total (500ms * 20)
+        
+        const checkInterval = setInterval(() => {
+            attempts++;
+            
+            if (checkRazorpayLoaded()) {
+                setIsRazorpayLoaded(true);
+                clearInterval(checkInterval);
+            } else if (attempts >= maxAttempts) {
+                console.error('Razorpay SDK failed to load after 10 seconds');
+                clearInterval(checkInterval);
+            }
+        }, 500);
+
+        return () => clearInterval(checkInterval);
+    }, []);
 
     /**
      * Handle successful payment
@@ -209,8 +241,12 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
      * Open Razorpay checkout modal
      */
     const openCheckout = useCallback((checkoutData: CheckoutData) => {
-        if (!isRazorpayLoaded) {
-            toast.error("Payment gateway not loaded. Please refresh the page.");
+        // Double-check if Razorpay is loaded before opening
+        const isLoaded = checkRazorpayLoaded();
+        
+        if (!isLoaded) {
+            toast.error("Payment gateway is loading. Please wait a moment and try again.");
+            console.error('Razorpay SDK not loaded when attempting to open checkout');
             return;
         }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Script from "next/script";
 import { getPaymentDetailsForRetry } from "@/lib/actions/order-actions";
 import { useRazorpayCheckout } from "@/hooks/use-razorpay-checkout";
 import { toast } from "sonner";
@@ -40,30 +39,22 @@ export default function RetryPaymentButton({ orderNumber }: RetryPaymentButtonPr
     };
 
     return (
-        <>
-            <Button 
-                onClick={handleRetryPayment} 
-                disabled={isProcessing}
-                className="w-full sm:w-auto"
-            >
-                {isProcessing ? (
-                    <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Processing...
-                    </>
-                ) : (
-                    <>
-                        <CreditCard className="w-4 h-4 mr-2" />
-                        Pay Now
-                    </>
-                )}
-            </Button>
-
-            {/* Razorpay Script */}
-            <Script
-                id="razorpay-checkout-js"
-                src="https://checkout.razorpay.com/v1/checkout.js"
-            />
-        </>
+        <Button 
+            onClick={handleRetryPayment} 
+            disabled={isProcessing}
+            className="w-full sm:w-auto"
+        >
+            {isProcessing ? (
+                <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                </>
+            ) : (
+                <>
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Pay Now
+                </>
+            )}
+        </Button>
     );
 }

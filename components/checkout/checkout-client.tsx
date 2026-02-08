@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Script from "next/script";
 import { useCart } from "@/lib/tanstack/queries/cart.queries";
 import { useUserAddresses } from "@/lib/tanstack/queries/address.queries";
 import { checkout } from "@/lib/actions/order-actions";
@@ -34,7 +33,7 @@ export default function CheckoutClient() {
     const isLoading = isCartLoading || isAddressesLoading;
 
     // Use Razorpay checkout hook
-    const { openCheckout, isProcessing } = useRazorpayCheckout({
+    const { openCheckout, isProcessing, isRazorpayLoaded } = useRazorpayCheckout({
         onSuccess: (orderNumber) => {
             router.push(`/orders/${orderNumber}`);
         },
@@ -261,12 +260,6 @@ export default function CheckoutClient() {
                     </div>
                 </div>
             </div>
-
-            {/* Razorpay Script */}
-            <Script
-                id="razorpay-checkout-js"
-                src="https://checkout.razorpay.com/v1/checkout.js"
-            />
         </>
     );
 }

@@ -77,11 +77,18 @@ export default function Layout({
           />
         </Suspense>
 
-        {/* <Script
+        {/* Load Razorpay globally for payment gateway */}
+        <Script
           id="razorpay-checkout-js"
           src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="beforeInteractive"
-        /> */}
+          strategy="lazyOnload"
+          onLoad={() => {
+            console.log('Razorpay SDK loaded successfully');
+          }}
+          onError={(e) => {
+            console.error('Failed to load Razorpay SDK:', e);
+          }}
+        />
       </body>
     </html>
   );
