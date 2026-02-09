@@ -1,77 +1,43 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { useSidebar } from '../ui/sidebar';
+import { SidebarTrigger } from '../ui/sidebar';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { SearchInput } from '../search-input';
 import { cn } from '@/lib/utils';
 import { CollectionsDropdown } from './collections-dropdown';
-import { Menu, ShoppingBag, Heart, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import WishlistButton from './wishlist-button';
 import CartButton from '../cart/cart-button';
 import { AccountHoverCard } from './account-hover-card';
+import { useSession } from 'next-auth/react';
 
-const HERO_SECTION_HEIGHT = 1000;
 
 
 const Navbar = () => {
+    const {data : session} = useSession();
     const pathname = usePathname();
-    const { setOpen, open, isMobile, setOpenMobile, openMobile } = useSidebar();
 
     // Scroll state
-    const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-    const [isPastHero, setIsPastHero] = useState(false);
-
     const isHomePage = pathname === '/';
     const isProductsPage = pathname === '/products';
 
-    useEffect(() => {
-        if (!isHomePage) return;
 
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-
-            if (currentScrollY < 400) {
-                setIsVisible(true);
-            } else if (currentScrollY > lastScrollY) {
-                setIsVisible(false);
-            } else {
-                setIsVisible(true);
-            }
-
-
-            const newIsPastHero = currentScrollY > HERO_SECTION_HEIGHT;
-            if (newIsPastHero !== isPastHero) {
-                setIsPastHero(newIsPastHero);
-            }
-
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY, isPastHero, isHomePage]);
-
-    const shouldShowBackdrop = !isHomePage || isPastHero;
 
     return (
         <>
             <nav
                 className={cn(
-                    "w-full z-50 transition-all duration-500 ease-in-out",
+                    "w-full bg-background z-50 transition-all duration-500 ease-in-out",
                     isHomePage
                         ? cn(
                             "fixed rounded-none sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] left-1/2 -translate-x-1/2 sm:my-5 lg:my-6 shadow-md border border-rose-100/20 top-5",
-                            isVisible ? "translate-y-0" : "-translate-y-[150%]"
+                            
                         )
                         : "sticky top-0",
-                    shouldShowBackdrop
-                        ? "bg-background/80 backdrop-blur-xl"
-                        : "bg-background/60 backdrop-blur-md"
                 )}
             >
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
@@ -80,16 +46,7 @@ const Navbar = () => {
                         <div className='flex items-center space-x-4 sm:space-x-6 lg:space-x-8'>
 
                             {/* Mobile Menu Button */}
-                            <Button
-                                className={cn(`lg:hidden p-2 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent`)}
-                                aria-label="Toggle menu"
-                                onClick={() => isMobile ? setOpenMobile(!openMobile) : setOpen(!open)}
-                            >
-                                <Menu
-                                    className="w-5 h-5 text-foreground"
-                                    strokeWidth={1.5}
-                                />
-                            </Button>
+                            <SidebarTrigger />
 
                             {/* Logo - Centered on Mobile */}
                             <Link href="/" className="flex items-center space-x-2 group lg:flex-none flex-1 lg:flex-initial justify-center lg:justify-start">
@@ -113,7 +70,7 @@ const Navbar = () => {
                             <div className="hidden lg:block">
                                 <CollectionsDropdown />
                             </div>
-                            
+
                         </div>
 
                         {/* CENTER: Navigation Links - Desktop Only */}
@@ -162,20 +119,14 @@ const Navbar = () => {
                             {/* Account with Hover Card */}
                             <AccountHoverCard />
 
-                            {/* Wishlist & Cart with Suspense */}
-                            <Suspense fallback={
-                                <>
-                                  
-                                </>
-                            }>
-                                <Link href="/wishlist">
-                                    <WishlistButton />
-                                </Link>
 
-                                <Link href="/cart">
-                                    <CartButton />
-                                </Link>
-                            </Suspense>
+                            <Link href="/wishlist">
+                                <WishlistButton enabled={!!session} />
+                            </Link>
+
+                            <Link href="/cart">
+                                <CartButton enabled={!!session} />
+                            </Link>
                         </div>
                     </div>
                 </div>

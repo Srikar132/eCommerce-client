@@ -23,7 +23,7 @@ import CheckoutOrderSummary from "./checkout-order-summary";
 export default function CheckoutClient() {
     const router = useRouter();
     const { data: session, status } = useSession();
-    const { data: cart, isLoading: isCartLoading } = useCart();
+    const { data: cart, isLoading: isCartLoading } = useCart({ enabled: !!session });
     const { data: addresses, isLoading: isAddressesLoading } = useUserAddresses();
 
     const [selectedAddressId, setSelectedAddressId] = useState<string>("");

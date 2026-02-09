@@ -53,7 +53,9 @@
   --radius: 0.625rem;
 
   /* 🌸 Base Backgrounds */
-  --background: oklch(0.985 0.01 95);
+  /* --background: oklch(0.985 0.01 95); */
+  --background: #ffffff;
+
   /* cream white */
   --foreground: oklch(31.984% 0.02933 42.164);
   /* warm brown text */
@@ -192,132 +194,6 @@
     @apply px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20;
   }
 
-  .section {
-    @apply w-full py-12 sm:py-16 md:py-20 lg:py-24;
-  }
-
-  .btn {
-    @apply border-2 text-white px-4 py-4 lg:px-8 lg:py-8 rounded-none bg-black font-semibold text-lg hover:bg-black/60 hover:text-white cursor-pointer transition-colors;
-  }
-
-  .input {
-    @apply rounded-none;
-  }
-
-
-
-
-
-  /* ============================================
-     DEAL SECTION
-     ============================================ */
-  #deal-section {
-    @apply h-[300vh] relative;
-  }
-
-  #deal-section .content {
-    @apply h-screen relative flex items-center justify-center bg-zinc-100;
-  }
-
-  #deal-section .content .content-text {
-    @apply text-[4rem] font-bold text-center flex items-center flex-col justify-center h-full;
-  }
-
-  #deal-section .content .content-text .content-title {
-    @apply mb-4;
-  }
-
-  #deal-section .content .content-text .content-subtitle {
-    @apply text-2xl md:text-4xl lg:text-7xl max-w-5xl font-thin uppercase;
-  }
-
-  #deal-section .content .content-text .content-button {
-    @apply mt-8 bg-white border-2 text-black px-8 py-8 rounded-none font-semibold text-lg hover:bg-black hover:text-white cursor-pointer transition-colors;
-  }
-
-  #deal-section .content .content-text .content-icon {
-    @apply absolute bottom-2 left-1/2 -translate-y-1/2;
-  }
-
-  #deal-section .content .content-text .content-icon .icon {
-    @apply animate-bounce;
-  }
-
-  #deal-section .content .cards-wrapper {
-    @apply absolute top-0 left-0 w-full h-full flex items-center justify-between gap-20 lg:gap-37.5 pointer-events-none;
-  }
-
-  #deal-section .content .cards-wrapper .card {
-    @apply bg-white w-75 lg:w-100 aspect-auto rounded-lg shadow-lg overflow-hidden flex flex-col z-10 will-change-transform p-5;
-  }
-
-  #deal-section .content .cards-wrapper .card .card-link {
-    @apply z-30 pointer-events-auto;
-  }
-
-  #deal-section .content .cards-wrapper .card.left {
-
-    @apply translate-y-[150vh];
-  }
-
-  #deal-section .content .cards-wrapper .card.right {
-    @apply translate-y-[100vh];
-  }
-
-  /* ============================================
-     CATEGORY & SEARCH PAGES
-     ============================================ */
-  #category-container,
-  #search-container {
-    @apply container mx-auto min-h-screen bg-gray-50;
-  }
-
-  #category-container .category-header {
-    @apply text-3xl font-bold mb-8 text-center py-10 px-5 md:px-6 lg:px-8;
-  }
-
-  #category-container .category-header h1 {
-    @apply uppercase font-medium mb-5 text-lg lg:text-3xl;
-  }
-
-  #category-container .category-header p {
-    @apply text-lg md:text-xl font-light;
-  }
-
-  #category-container .category-section {
-    @apply container mx-auto bg-white px-4 py-6;
-  }
-
-  #category-container .category-section .filter-header {
-    @apply sticky top-0 bg-white col-span-full py-4 px-5 md:px-6 lg:px-8 flex items-center justify-between border-b z-20;
-  }
-
-  #search-container .search-section {
-    @apply px-4 py-6;
-    overflow: visible;
-  }
-
-  #search-container .search-section .search-header {
-    @apply mb-6;
-  }
-
-  /* Product List (Shared by Category & Search) */
-  .product-list {
-    @apply w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2 pb-12 px-5 md:px-6 gap-y-10 lg:px-0;
-  }
-
-  .product-list .product-card {
-    @apply block cursor-pointer transition-opacity duration-200 hover:opacity-90 active:opacity-75;
-  }
-
-  /* ============================================
-     AUTHENTICATION PAGES
-     ============================================ */
-  /* ============================================
-     PRODUCT DETAIL PAGE (PDP)
-     ============================================ */
-
-  /* Container & Layout */
 
 
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -333,234 +209,133 @@
     /* Firefox */
   }
 
-  /* ============================================
-     THREAD TEXTURE - Embroidery Theme
-     ============================================ */
-  .thread-texture {
-    background-image: repeating-linear-gradient(45deg,
-        rgba(0, 0, 0, 0.05) 0px,
-        rgba(0, 0, 0, 0.05) 1px,
-        transparent 1px,
-        transparent 4px);
-  }
 
-  .dark .thread-texture {
-    background-image: repeating-linear-gradient(45deg,
-        rgba(255, 255, 255, 0.05) 0px,
-        rgba(255, 255, 255, 0.05) 1px,
-        transparent 1px,
-        transparent 4px);
-  }
+
 
   /* ============================================
-     SONNER TOAST CUSTOMIZATION - PREMIUM ROYAL EDITION
-     Sophisticated, elegant, and luxurious styling
+     SONNER TOAST CUSTOMIZATION - Clean & Simple
+     Matches the soft cream theme perfectly
      ============================================ */
 
-  /* Base toast styling - Royal Premium */
+  /* Base toast styling - Clean and minimal */
   .toast-custom {
-    @apply rounded-2xl border-2 backdrop-blur-md;
-    padding: 1rem 1.25rem !important;
-    min-height: 4rem !important;
+    @apply rounded-xl border shadow-lg;
+    padding: 0.875rem 1rem !important;
+    min-height: 3.5rem !important;
     font-family: var(--font-inter);
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, oklch(0.99 0.01 95) 0%, oklch(0.97 0.02 95) 100%) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    background: white !important;
+    border-color: oklch(0.9 0.015 95) !important;
   }
 
-  /* Premium shimmer overlay effect */
-  .toast-custom::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(135deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.03) 45%,
-        rgba(255, 255, 255, 0.08) 50%,
-        rgba(255, 255, 255, 0.03) 55%,
-        transparent 100%);
-    animation: shimmer 3s infinite;
-    pointer-events: none;
-  }
-
-  @keyframes shimmer {
-    0% {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-
-    100% {
-      transform: translate(-50%, -50%) rotate(360deg);
-    }
-  }
-
-  /* Title styling - Premium typography */
+  /* Title styling - Simple and readable */
   .toast-title {
-    @apply font-semibold text-sm;
+    @apply font-medium text-sm text-foreground;
     letter-spacing: -0.01em;
-    position: relative;
-    z-index: 1;
-    color: inherit !important;
   }
 
-  /* Description styling - Refined text */
+  /* Description styling - Soft muted text */
   .toast-description {
-    @apply text-xs;
+    @apply text-xs text-muted-foreground;
     line-height: 1.5;
-    position: relative;
-    z-index: 1;
-    opacity: 0.85;
-    font-weight: 400;
-    color: inherit !important;
+    margin-top: 0.25rem;
   }
 
-  /* Action button - Elegant with premium feel */
+  /* Action button - Matches primary theme */
   .toast-action {
-    @apply rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-300;
-    @apply bg-primary text-primary-foreground;
-    position: relative;
-    z-index: 1;
-    letter-spacing: 0.01em;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    @apply rounded-lg px-3 py-1.5 text-xs font-medium transition-colors;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
   }
 
-  .toast-action:hover {
-    transform: translateY(-1px);
-    opacity: 0.9;
-  }
-
-  /* Cancel button - Refined secondary style */
+  /* Cancel button - Subtle secondary style */
   .toast-cancel {
-    @apply rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300;
-    @apply bg-muted/40 text-muted-foreground;
-    position: relative;
-    z-index: 1;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    @apply rounded-lg px-3 py-1.5 text-xs font-medium transition-colors;
+    @apply bg-muted/50 text-muted-foreground hover:bg-muted;
   }
 
-  .toast-cancel:hover {
-    @apply bg-muted/60;
-    transform: translateY(-1px);
-  }
-
-  /* Close button - Minimal and elegant */
+  /* Close button - Minimal and clean */
   .toast-close {
-    @apply transition-all duration-300;
-    opacity: 0.5 !important;
-    border-radius: 0.5rem;
-    position: relative;
-    z-index: 1;
-    background: rgba(0, 0, 0, 0.05) !important;
-    border: none !important;
+    @apply transition-opacity rounded-lg;
+    opacity: 0.4 !important;
   }
 
   .toast-close:hover {
     opacity: 1 !important;
-    background: rgba(0, 0, 0, 0.1) !important;
-    transform: rotate(90deg);
   }
 
-  /* Success toast - Royal Rose with gold accents */
+  /* Success toast - Soft rose/blush */
   .toast-success {
-    background: linear-gradient(135deg,
-        oklch(0.96 0.04 15) 0%,
-        oklch(0.95 0.05 10) 100%) !important;
-    border-color: oklch(0.80 0.12 15) !important;
-    color: oklch(0.30 0.05 15) !important;
+    background: oklch(0.98 0.02 15) !important;
+    border-color: oklch(0.85 0.08 15) !important;
+  }
+
+  .toast-success .toast-title {
+    @apply text-foreground;
   }
 
   .toast-success svg {
-    color: oklch(0.65 0.16 15) !important;
+    color: oklch(0.70 0.15 15) !important;
   }
 
-  /* Error toast - Royal Coral with warm undertones */
+  /* Error toast - Soft coral */
   .toast-error {
-    background: linear-gradient(135deg,
-        oklch(0.96 0.04 25) 0%,
-        oklch(0.94 0.05 22) 100%) !important;
-    border-color: oklch(0.70 0.18 20) !important;
-    color: oklch(0.30 0.05 25) !important;
+    background: oklch(0.98 0.02 25) !important;
+    border-color: oklch(0.80 0.10 25) !important;
+  }
+
+  .toast-error .toast-title {
+    @apply text-foreground;
   }
 
   .toast-error svg {
-    color: oklch(0.62 0.18 25) !important;
+    color: oklch(0.62 0.16 25) !important;
   }
 
-  /* Warning toast - Royal Peach with golden shimmer */
+  /* Warning toast - Soft peach */
   .toast-warning {
-    background: linear-gradient(135deg,
-        oklch(0.96 0.04 60) 0%,
-        oklch(0.95 0.05 55) 100%) !important;
-    border-color: oklch(0.75 0.14 55) !important;
-    color: oklch(0.30 0.05 40) !important;
+    background: oklch(0.98 0.02 60) !important;
+    border-color: oklch(0.85 0.08 60) !important;
+  }
+
+  .toast-warning .toast-title {
+    @apply text-foreground;
   }
 
   .toast-warning svg {
-    color: oklch(0.68 0.14 60) !important;
+    color: oklch(0.68 0.12 60) !important;
   }
 
-  /* Info toast - Royal Lavender with mystical glow */
+  /* Info toast - Soft lavender */
   .toast-info {
-    background: linear-gradient(135deg,
-        oklch(0.96 0.03 280) 0%,
-        oklch(0.95 0.04 275) 100%) !important;
-    border-color: oklch(0.75 0.12 275) !important;
-    color: oklch(0.30 0.04 280) !important;
+    background: oklch(0.98 0.02 280) !important;
+    border-color: oklch(0.85 0.08 280) !important;
+  }
+
+  .toast-info .toast-title {
+    @apply text-foreground;
   }
 
   .toast-info svg {
-    color: oklch(0.65 0.12 280) !important;
+    color: oklch(0.65 0.10 280) !important;
   }
 
-  /* Loading toast - Royal Cream with subtle warmth */
+  /* Loading toast - Clean white */
   .toast-loading {
-    background: linear-gradient(135deg,
-        oklch(0.97 0.02 95) 0%,
-        oklch(0.96 0.03 90) 100%) !important;
-    border-color: oklch(0.85 0.05 90) !important;
-    color: oklch(0.35 0.04 40) !important;
+    background: white !important;
+    border-color: oklch(0.9 0.015 95) !important;
   }
 
   .toast-loading svg {
-    color: oklch(0.68 0.10 15) !important;
+    color: oklch(0.70 0.12 15) !important;
   }
 
-  /* Toast enter animation - Elegant slide with fade */
-  @keyframes toast-slide-in {
-    from {
-      transform: translateX(calc(100% + 2rem)) scale(0.95);
-      opacity: 0;
-    }
-
-    to {
-      transform: translateX(0) scale(1);
-      opacity: 1;
-    }
-  }
-
-  /* Toast exit animation - Graceful departure */
-  @keyframes toast-slide-out {
-    from {
-      transform: translateX(0) scale(1);
-      opacity: 1;
-    }
-
-    to {
-      transform: translateX(calc(100% + 2rem)) scale(0.95);
-      opacity: 0;
-    }
-  }
-
-  /* Hover effect - Refined elegance */
+  /* Hover effect - Subtle lift */
   .toast-custom:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.2s ease !important;
   }
 
-  /* Add premium spacing between toasts */
+  /* Toast spacing */
   .toaster .toast-custom + .toast-custom {
     margin-top: 0.5rem !important;
   }

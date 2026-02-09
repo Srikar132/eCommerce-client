@@ -28,11 +28,8 @@ const GUEST_ONLY_ROUTES = [
 
 const PROTECTED_ROUTES = [
   '/account',
-  '/cart',
   '/checkout',
   '/orders',
-  '/customization',
-  '/customization-studio',
 ];
 
 const ADMIN_ROUTES = [

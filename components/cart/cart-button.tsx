@@ -4,8 +4,8 @@ import { useCartCount } from "@/lib/tanstack/queries/cart.queries";
 import { Button } from "../ui/button";
 import { ShoppingBagIcon } from "lucide-react";
 
-const CartButton = () => {
-  const totalItems = useCartCount();
+const CartButton = ({ enabled } : { enabled: boolean }) => {
+  const totalItems = useCartCount({enabled});
     const [mounted, setMounted] = useState(false);
   
     // Prevent hydration mismatch by only showing count after mount

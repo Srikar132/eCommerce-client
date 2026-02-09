@@ -43,29 +43,29 @@ interface UseRazorpayCheckoutOptions {
      * Called after successful payment verification
      */
     onSuccess?: (orderNumber: string) => void;
-    
+
     /**
      * Called when payment fails
      */
     onFailure?: (orderNumber: string) => void;
-    
+
     /**
      * Called when user cancels the payment
      */
     onCancel?: (orderNumber: string) => void;
-    
+
     /**
      * Whether to invalidate cart cache after successful payment
      * @default true
      */
     clearCartOnSuccess?: boolean;
-    
+
     /**
      * Whether to refresh the page after payment
      * @default false
      */
     refreshOnSuccess?: boolean;
-    
+
     /**
      * Custom theme color for Razorpay modal
      * @default "#ff6376"
@@ -78,12 +78,12 @@ interface UseRazorpayCheckoutReturn {
      * Whether a payment is currently being processed
      */
     isProcessing: boolean;
-    
+
     /**
      * Open Razorpay checkout modal with payment details
      */
     openCheckout: (checkoutData: CheckoutData) => void;
-    
+
     /**
      * Check if Razorpay SDK is loaded
      */
@@ -143,10 +143,10 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
         // Poll for Razorpay to be loaded (useful for slow connections)
         let attempts = 0;
         const maxAttempts = 20; // 10 seconds total (500ms * 20)
-        
+
         const checkInterval = setInterval(() => {
             attempts++;
-            
+
             if (checkRazorpayLoaded()) {
                 setIsRazorpayLoaded(true);
                 clearInterval(checkInterval);
@@ -194,7 +194,7 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
         } catch (error: any) {
             console.error("Payment verification error:", error);
             toast.error(error.message || "Payment verification failed");
-            
+
             // Navigate to order page even on verification failure
             if (onFailure) {
                 onFailure(orderNumber);
@@ -212,10 +212,10 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
         orderNumber: string
     ) => {
         setIsProcessing(false);
-        
+
         const errorMessage = response.error?.description || "Payment failed";
         toast.error(`${errorMessage}. You can retry from order details.`);
-        
+
         console.error("Payment failed:", response.error);
 
         // Call custom failure handler
@@ -243,7 +243,7 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
     const openCheckout = useCallback((checkoutData: CheckoutData) => {
         // Double-check if Razorpay is loaded before opening
         const isLoaded = checkRazorpayLoaded();
-        
+
         if (!isLoaded) {
             toast.error("Payment gateway is loading. Please wait a moment and try again.");
             console.error('Razorpay SDK not loaded when attempting to open checkout');

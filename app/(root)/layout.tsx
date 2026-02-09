@@ -2,10 +2,11 @@
 import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
 import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
-import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import { ShoppingCart } from "lucide-react";
+import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
+import { LoginDrawerProvider } from "@/components/ui/login-drawer";
 
 export const metadata = {
   title: "Nala Armoire - Discover Your Style",
@@ -32,11 +33,17 @@ export default async function RootLayout({
           <Navbar />
         </Suspense>
 
-        <main className="w-full relative">{children}</main>
+        <main className="w-full relative">
+          <Suspense fallback={<PageLoadingSkeleton/>}>
+            {children}
+          </Suspense>
+        </main>
 
         <Footer />
-
       </div>
+
+
+      <LoginDrawerProvider />
     </main>
   );
 }

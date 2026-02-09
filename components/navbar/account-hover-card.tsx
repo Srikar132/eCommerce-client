@@ -2,7 +2,7 @@
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
-import { User2, Package, Heart, MapPin, Mail, LogIn, LogOut } from "lucide-react";
+import { User2, Package, Heart, Mail, LogIn, } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Separator } from "@/components/ui/separator";
@@ -19,15 +19,15 @@ export function AccountHoverCard() {
                     className="hidden sm:flex p-1 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
                     aria-label="Account"
                 >
-                    <User2 
-                        className="w-5 h-5 text-foreground" 
+                    <User2
+                        className="w-5 h-5 text-foreground"
                         strokeWidth={2}
                     />
                 </Button>
             </HoverCardTrigger>
-            
-            <HoverCardContent 
-                className="w-64 p-0" 
+
+            <HoverCardContent
+                className="w-64 p-0"
                 align="end"
                 sideOffset={8}
             >
@@ -68,7 +68,7 @@ export function AccountHoverCard() {
                                 </p>
                             </div>
                             <Link href="/login" className="block">
-                                <Button 
+                                <Button
                                     className="w-full font-medium h-9"
                                     size="sm"
                                 >
@@ -83,32 +83,32 @@ export function AccountHoverCard() {
                     {/* Navigation Links */}
                     <div className="p-1.5">
                         {isAuthenticated && (
-                            <Link 
-                                href="/account" 
+                            <Link
+                                href="/account"
                                 className="flex items-center gap-2.5 px-2.5 py-2 text-sm hover:bg-muted/50 rounded-md transition-colors"
                             >
                                 <User2 className="w-3.5 h-3.5 text-muted-foreground" />
                                 My Account
                             </Link>
                         )}
-                        <Link 
-                            href="/orders" 
+                        <Link
+                            href="/orders"
                             className="flex items-center gap-2.5 px-2.5 py-2 text-sm hover:bg-muted/50 rounded-md transition-colors"
                         >
                             <Package className="w-3.5 h-3.5 text-muted-foreground" />
                             Orders
                         </Link>
-                        <Link 
-                            href="/wishlist" 
+                        <Link
+                            href="/wishlist"
                             className="flex items-center gap-2.5 px-2.5 py-2 text-sm hover:bg-muted/50 rounded-md transition-colors"
                         >
                             <Heart className="w-3.5 h-3.5 text-muted-foreground" />
                             Wishlist
                         </Link>
-                        
 
-                        <Link 
-                            href="/contact" 
+
+                        <Link
+                            href="/contact"
                             className="flex items-center gap-2.5 px-2.5 py-2 text-sm hover:bg-muted/50 rounded-md transition-colors"
                         >
                             <Mail className="w-3.5 h-3.5 text-muted-foreground" />
@@ -116,21 +116,7 @@ export function AccountHoverCard() {
                         </Link>
                     </div>
 
-                    {/* Logout - Only for authenticated users */}
-                    {isAuthenticated && (
-                        <>
-                            <Separator />
-                            <div className="p-1.5">
-                                <Link 
-                                    href="/api/auth/signout"
-                                    className="flex items-center justify-center gap-2 px-2.5 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-md transition-colors w-full"
-                                >
-                                    <LogOut className="w-3.5 h-3.5" />
-                                    Logout
-                                </Link>
-                            </div>
-                        </>
-                    )}
+
                 </div>
             </HoverCardContent>
         </HoverCard>

@@ -2,7 +2,6 @@ import ProductDetailClient from "@/components/product/product-detail-client";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { Suspense } from "react";
-import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import { PLACEHOLDER_IMAGE } from "@/constants";
 import { getProductBySlug, getProductVariants } from "@/lib/actions/product-actions";
 import { Product, ProductVariant } from "@/types/product";
@@ -77,7 +76,7 @@ export async function generateMetadata({
 
 
 
-async function ProductDetailPage({ params }: ProductPageProps) {
+export default async function ProductDetailPage({ params }: ProductPageProps) {
 
     try {
         const { slug } = await params;
@@ -122,14 +121,4 @@ async function ProductDetailPage({ params }: ProductPageProps) {
     } catch (error) {
         notFound();
     }
-}
-
-
-
-export default function ProductDetailPageWrapper({ params }: ProductPageProps) {
-    return (
-        <Suspense fallback={<PageLoadingSkeleton />}>
-            <ProductDetailPage params={params} />
-        </Suspense>
-    );
 }

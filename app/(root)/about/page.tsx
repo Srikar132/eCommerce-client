@@ -1,6 +1,7 @@
 
 
 import Image from "next/image";
+import Link from "next/link";
 
 const About = () => {
     return (
@@ -26,7 +27,7 @@ const About = () => {
             {/* The NaLa Story Section */}
             <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
                 <div className="max-w-4xl mx-auto">
-                    
+
                     {/* Section Header */}
                     <div className="text-center mb-12 sm:mb-16 space-y-3">
                         <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
@@ -42,7 +43,7 @@ const About = () => {
                         <p className="text-base sm:text-lg md:text-xl text-foreground/90 leading-relaxed">
                             I've always had a dream — a place where my talent could truly breathe. With no clear path, I followed faith, trusting that the way would reveal itself.
                         </p>
-                        
+
                         <p className="text-base sm:text-lg md:text-xl text-foreground/90 leading-relaxed">
                             That journey became <span className="font-medium italic text-foreground">NaLa Armoire</span>: a little world where my dreams are stitched alive, and where I can also tenderly knot your memories together through stitches.
                         </p>
@@ -81,7 +82,7 @@ const About = () => {
             {/* Our Mission Section */}
             <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 bg-muted/30">
                 <div className="max-w-6xl mx-auto">
-                    
+
                     {/* Section Header */}
                     <div className="text-center mb-12 sm:mb-16 space-y-3">
                         <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
@@ -94,7 +95,7 @@ const About = () => {
 
                     {/* Mission Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-                        
+
                         {/* Card 1 - Quality */}
                         <div className="group relative bg-background p-6 sm:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-border/50">
                             <div className="text-center space-y-4">
@@ -154,18 +155,18 @@ const About = () => {
                         Explore our collections and discover pieces that speak to your soul
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-                        <a
+                        <Link
                             href="/products"
                             className="inline-block bg-primary text-primary-foreground px-8 py-3 sm:px-10 sm:py-4 rounded-full text-base sm:text-lg font-medium hover:opacity-90 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
                         >
                             Shop Now
-                        </a>
-                        <a
+                        </Link>
+                        <Link
                             href="/contact"
                             className="inline-block bg-background text-foreground border-2 border-border px-8 py-3 sm:px-10 sm:py-4 rounded-full text-base sm:text-lg font-medium hover:bg-muted transition-all duration-300 hover:scale-105 active:scale-95"
                         >
                             Contact Us
-                        </a>
+                        </Link>
                     </div>
                 </div>
 

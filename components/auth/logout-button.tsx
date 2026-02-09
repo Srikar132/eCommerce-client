@@ -6,6 +6,8 @@ import { logout } from '@/lib/actions/auth-actions';
 import { LogOut, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/tanstack/query-keys';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +22,7 @@ import {
 
 export default function LogoutButton() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
@@ -27,6 +30,13 @@ export default function LogoutButton() {
     try {
       const result = await logout();
       if (result.success) {
+        // Clear all user-specific TanStack Query caches
+        queryClient.removeQueries({ queryKey: queryKeys.cart.all() });
+        queryClient.removeQueries({ queryKey: queryKeys.wishlist.all() });
+        queryClient.removeQueries({ queryKey: queryKeys.user.all() });
+        queryClient.removeQueries({ queryKey: queryKeys.account.all() });
+        queryClient.removeQueries({ queryKey: queryKeys.addresses.all() });
+        
         toast.success('Logged out successfully');
         router.push('/login');
         router.refresh();

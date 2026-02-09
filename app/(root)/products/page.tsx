@@ -1,10 +1,6 @@
-import { Suspense } from "react";
 import ProductsClient from "@/components/products-page/products-client";
-import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import { ProductParams } from "@/types/product";
 import { getAllProducts } from "@/lib/actions/product-actions";
-
-
 
 export const metadata = {
   title: 'All Products --- Explore and Customize Your Favorites',
@@ -15,7 +11,7 @@ type Props = {
   searchParams: Promise<ProductParams>;
 }
 
-async function ProductsContent({ searchParams }: Props) {
+export default async function ProductsPage({ searchParams }: Props) {
   const { page = 0, limit = 20, category , searchQuery , sortBy = 'CREATED_AT_DESC', size } = await searchParams;
 
   // Fetch initial products data on the server
@@ -42,13 +38,3 @@ async function ProductsContent({ searchParams }: Props) {
     </div>
   );
 }
-
-const ProductsPage = async ({ searchParams }: Props) => {
-  return (
-    <Suspense fallback={<PageLoadingSkeleton />}>
-      <ProductsContent searchParams={searchParams} />
-    </Suspense>
-  );
-};
-
-export default ProductsPage;
