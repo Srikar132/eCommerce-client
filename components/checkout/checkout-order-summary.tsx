@@ -95,13 +95,6 @@ export default function CheckoutOrderSummary({
                     <ShieldCheck className="w-4 h-4" />
                     <span>Secure checkout powered by Razorpay</span>
                 </div>
-
-                {/* Additional Info */}
-                <div className="text-xs text-muted-foreground space-y-1 pt-2">
-                    <p>• Tax calculated based on delivery address</p>
-                    <p>• You can pay using UPI, Cards, NetBanking</p>
-                    <p>• 7-day return policy available</p>
-                </div>
             </CardContent>
         </Card>
     );

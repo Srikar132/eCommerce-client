@@ -68,7 +68,7 @@ export async function generateMetadata({
                 images: [product.images?.[0]?.imageUrl || PLACEHOLDER_IMAGE],
             },
         };
-    } catch (error) {
+    } catch {
         return {
             title: 'Product Not Found | THE NALA ARMOIRE',
         };
@@ -78,50 +78,45 @@ export async function generateMetadata({
 
 
 async function ProductDetailPage({ params }: ProductPageProps) {
+    const { slug } = await params;
 
-    try {
-        const { slug } = await params;
+    // Fetch product data using cached function
+    const product = await getCachedProduct(slug);
 
-        // Fetch product data using cached function
-        const product = await getCachedProduct(slug);
-
-        if (!product) {
-            notFound();
-        }
-
-        // Fetch variants using cached function
-        const variants = await getCachedProductVariants(product.id);
-
-        return (
-            <div className="min-h-screen bg-background">
-
-                {/* BREADCRUMB  */}
-
-
-                <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-                    <ProductDetailClient product={product} variants={variants} />
-
-                    {/* Reviews Section - Server Component with its own prefetching */}
-                    <Suspense fallback={<ReviewsSkeleton />}>
-                        <div className="sm:mt-10 lg:mt-12">
-                            <ProductReviewsSection productId={product.id} />
-                        </div>
-                    </Suspense>
-
-                    {/* Product Recommendations - Server Component */}
-                    {/* <Suspense fallback={<RecommendationsSkeleton />}>
-                        <ProductRecommendations 
-                            excludeProductSlug={slug}
-                            limit={6}
-                            title="You May Also Like"
-                        />
-                    </Suspense> */}
-                </div>
-            </div>
-        );
-    } catch (error) {
+    if (!product) {
         notFound();
     }
+
+    // Fetch variants using cached function
+    const variants = await getCachedProductVariants(product.id);
+
+    return (
+        <div className="min-h-screen bg-background">
+
+            {/* BREADCRUMB  */}
+
+
+            <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <ProductDetailClient product={product} variants={variants} />
+
+                {/* Reviews Section - Server Component with its own prefetching */}
+                <Suspense fallback={<ReviewsSkeleton />}>
+                    <div className="sm:mt-10 lg:mt-12">
+                        <ProductReviewsSection productId={product.id} />
+                    </div>
+                </Suspense>
+
+                {/* Product Recommendations - Server Component */}
+                {/* <Suspense fallback={<RecommendationsSkeleton />}>
+                    <ProductRecommendations 
+                        excludeProductSlug={slug}
+                        limit={6}
+                        title="You May Also Like"
+                    />
+                </Suspense> */}
+            </div>
+        </div>
+    );
 }
 
 

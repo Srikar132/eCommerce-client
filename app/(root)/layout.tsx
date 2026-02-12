@@ -2,7 +2,6 @@
 import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
 import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
-import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import { ShoppingCart } from "lucide-react";

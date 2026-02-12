@@ -4,27 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Package, Truck, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
+import { ArrowLeft, Package, Truck, CheckCircle2, XCircle, RotateCcw, Clock } from "lucide-react";
 import Link from "next/link";
 import OrderStatusTimeline from "./order-status-timeline";
 import OrderItemsList from "./order-items-list";
 import CancelOrderDialog from "./cancel-order-dialog";
-import ReturnOrderDialog from "./return-order-dialog";
-import RetryPaymentButton from "./retry-payment-button";
+import { canCancelOrder } from "@/lib/utils/order-utils";
 
 interface OrderTrackingClientProps {
     order: Order;
 }
 
 export default function OrderTrackingClient({ order }: OrderTrackingClientProps) {
-    // Determine if order can be cancelled
-    const canCancel = ["PENDING", "CONFIRMED", "PROCESSING"].includes(order.status);
-
-    // Determine if order can be returned
-    const canReturn = order.status === "DELIVERED";
-
-    // Determine if payment can be retried
-    const canRetryPayment = order.paymentStatus === "PENDING" && order.status === "PENDING";
+    // Determine if order can be cancelled using the time-limited logic
+    const { canCancel, daysRemaining, message: cancelMessage } = canCancelOrder(order);
 
     // Get status badge variant
     const getStatusVariant = (status: string) => {
@@ -59,6 +52,8 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 return "secondary";
             case "FAILED":
                 return "destructive";
+            case "REFUND_REQUESTED":
+                return "outline";
             case "REFUNDED":
             case "PARTIALLY_REFUNDED":
                 return "outline";
@@ -103,41 +98,29 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                 </Badge>
             </div>
 
-            {/* Payment Pending Alert */}
-            {canRetryPayment && (
-                <Card className="border-orange-500 bg-orange-50 dark:bg-orange-950">
-                    <CardContent className="pt-6">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                            <div className="flex-1">
-                                <h3 className="font-semibold text-orange-900 dark:text-orange-100 mb-1">
-                                    Payment Pending
-                                </h3>
-                                <p className="text-sm text-orange-800 dark:text-orange-200">
-                                    Complete your payment to confirm this order. Your order will be processed once payment is received.
-                                </p>
-                            </div>
-                            <RetryPaymentButton orderNumber={order.orderNumber} />
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
             {/* Order Status Timeline */}
             <OrderStatusTimeline order={order} />
 
             {/* Action Buttons */}
-            {(canCancel || canReturn) && (
+            {canCancel && (
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Order Actions</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-wrap gap-3">
-                        {canCancel && (
-                            <CancelOrderDialog orderNumber={order.orderNumber} />
+                    <CardContent className="space-y-4">
+                        {daysRemaining !== null && daysRemaining <= 3 && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Clock className="w-4 h-4" />
+                                <span>
+                                    {daysRemaining === 0
+                                        ? "Last day to cancel this order"
+                                        : `${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} left to cancel`}
+                                </span>
+                            </div>
                         )}
-                        {canReturn && (
-                            <ReturnOrderDialog orderNumber={order.orderNumber} />
-                        )}
+                        <div className="flex flex-wrap gap-3">
+                            <CancelOrderDialog orderNumber={order.orderNumber} order={order} />
+                        </div>
                     </CardContent>
                 </Card>
             )}

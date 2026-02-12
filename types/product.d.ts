@@ -7,6 +7,7 @@ export type ProductParams = {
     page?: number;            // 0-based page number
     limit?: number;           // Page size (items per page)
     sortBy?: "PRICE_ASC" | "PRICE_DESC" | "CREATED_AT_ASC" | "CREATED_AT_DESC" | "BEST_SELLING" | "RELEVANCE"
+    | "NAME_ASC" | "NAME_DESC";
 };
 
 
@@ -23,6 +24,7 @@ export interface ProductImage {
 // Product Types
 export interface Product {
     id: string;
+    categoryId: string;
 
     name: string;
     slug: string;
@@ -35,11 +37,13 @@ export interface Product {
     careInstructions?: string;
 
     isActive: boolean;
+    isDraft: boolean;
 
     createdAt: string;
     updatedAt: string;
 
     images: ProductImage[];
+    variants?: ProductVariant[]; // Optional for relationships
 }
 
 

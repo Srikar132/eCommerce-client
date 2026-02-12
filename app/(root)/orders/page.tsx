@@ -2,6 +2,7 @@ import { getUserOrders } from "@/lib/actions/order-actions";
 import OrderCard from "@/components/cards/order-card";
 import LoadMoreButton from "@/components/order/load-more-button";
 import { Package } from "lucide-react";
+import Link from "next/link";
 
 export default async function OrdersPage({
     searchParams
@@ -22,7 +23,7 @@ export default async function OrdersPage({
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-foreground mb-2">Your Orders</h1>
                 <p className="text-muted-foreground">
-                    {totalElements > 0 
+                    {totalElements > 0
                         ? `${totalElements} ${totalElements === 1 ? 'order' : 'orders'} found`
                         : 'No orders yet'
                     }
@@ -50,12 +51,12 @@ export default async function OrdersPage({
                     <p className="text-muted-foreground mb-6">
                         Start shopping to see your orders here
                     </p>
-                    <a
+                    <Link
                         href="/products"
                         className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                     >
                         Browse Products
-                    </a>
+                    </Link>
                 </div>
             )}
         </div>

@@ -4,8 +4,387 @@ import { PagedResponse } from "@/types";
 import { Product, ProductParams, ProductImage, ProductVariant, Review, AddReviewRequest, AddReviewResponse } from "@/types/product";
 import { db } from "@/drizzle/db";
 import { products, productImages, categories, productVariants, reviews, orders, orderItems, users } from "@/drizzle/schema";
-import { eq, and, or, ilike, sql, desc, asc } from "drizzle-orm";
+import { eq, and, or, ilike, sql, desc, asc, inArray } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { productFormSchema, ProductFormData } from "@/lib/validations";
 
+/* ========================================================================== */
+/* ADMIN: PRODUCT MANAGEMENT ACTIONS                                          */
+/* ========================================================================== */
+
+// CREATE PRODUCT
+export async function createProduct(formData: ProductFormData) {
+    try {
+        // Validate input
+        const validatedData = productFormSchema.parse(formData);
+
+        // Generate slug from name
+        const slug = validatedData.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+        // Check if SKU already exists
+        const existingSku = await db
+            .select({ sku: products.sku })
+            .from(products)
+            .where(eq(products.sku, validatedData.sku))
+            .limit(1);
+
+        if (existingSku.length > 0) {
+            throw new Error("SKU already exists");
+        }
+
+        // Check if slug already exists
+        const existingSlug = await db
+            .select({ slug: products.slug })
+            .from(products)
+            .where(eq(products.slug, slug))
+            .limit(1);
+
+        if (existingSlug.length > 0) {
+            throw new Error("A product with this name already exists");
+        }
+
+        // Check for duplicate variant SKUs
+        if (validatedData.variants.length > 0) {
+            const variantSkus = validatedData.variants.map(v => v.sku);
+            const existingVariantSkus = await db
+                .select({ sku: productVariants.sku })
+                .from(productVariants)
+                .where(inArray(productVariants.sku, variantSkus));
+
+            if (existingVariantSkus.length > 0) {
+                throw new Error(`Variant SKU already exists: ${existingVariantSkus[0].sku}`);
+            }
+        }
+
+        // Neon HTTP driver does not support transactions. Use sequential writes with cleanup.
+        let newProductId: string | null = null;
+        try {
+            const [newProduct] = await db
+                .insert(products)
+                .values({
+                    name: validatedData.name,
+                    slug,
+                    description: validatedData.description,
+                    basePrice: validatedData.basePrice.toString(),
+                    sku: validatedData.sku,
+                    material: validatedData.material,
+                    careInstructions: validatedData.careInstructions,
+                    categoryId: validatedData.categoryId,
+                    isActive: validatedData.isActive,
+                    isDraft: validatedData.isDraft,
+                })
+                .returning();
+
+            newProductId = newProduct.id;
+
+            if (validatedData.images.length > 0) {
+                await db.insert(productImages).values(
+                    validatedData.images.map((image, index) => ({
+                        productId: newProductId!,
+                        imageUrl: image.imageUrl,
+                        altText: image.altText || validatedData.name,
+                        isPrimary: image.isPrimary || index === 0,
+                        displayOrder: image.displayOrder || index,
+                    }))
+                );
+            }
+
+            if (validatedData.variants.length > 0) {
+                await db.insert(productVariants).values(
+                    validatedData.variants.map((variant) => ({
+                        productId: newProductId!,
+                        size: variant.size,
+                        color: variant.color,
+                        colorHex: variant.colorHex,
+                        stockQuantity: variant.stockQuantity,
+                        additionalPrice: variant.additionalPrice.toString(),
+                        sku: variant.sku,
+                        isActive: true,
+                    }))
+                );
+            }
+
+            revalidatePath("/admin/products");
+            return { success: true, data: newProduct };
+        } catch (writeError) {
+            if (newProductId) {
+                await db.delete(productImages).where(eq(productImages.productId, newProductId));
+                await db.delete(productVariants).where(eq(productVariants.productId, newProductId));
+                await db.delete(products).where(eq(products.id, newProductId));
+            }
+            throw writeError;
+        }
+    } catch (error) {
+        console.error("Create product error:", error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to create product"
+        };
+    }
+}
+
+// UPDATE PRODUCT
+export async function updateProduct(productId: string, formData: ProductFormData) {
+    try {
+        const validatedData = productFormSchema.parse(formData);
+
+        // Generate slug from name
+        const slug = validatedData.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+        // Check if SKU already exists (excluding current product)
+        const existingSku = await db
+            .select({ id: products.id })
+            .from(products)
+            .where(and(
+                eq(products.sku, validatedData.sku),
+                sql`${products.id} != ${productId}`
+            ))
+            .limit(1);
+
+        if (existingSku.length > 0) {
+            throw new Error("SKU already exists");
+        }
+
+        if (validatedData.variants.length > 0) {
+            const variantSkus = validatedData.variants.map(v => v.sku);
+            const existingVariantSkus = await db
+                .select({ sku: productVariants.sku, productId: productVariants.productId })
+                .from(productVariants)
+                .where(inArray(productVariants.sku, variantSkus));
+
+            const conflictingVariant = existingVariantSkus.find(v => v.productId !== productId);
+            if (conflictingVariant) {
+                throw new Error(`Variant SKU already exists: ${conflictingVariant.sku}`);
+            }
+        }
+
+        // Neon HTTP driver does not support transactions. Use sequential writes.
+        await db
+            .update(products)
+            .set({
+                name: validatedData.name,
+                slug,
+                description: validatedData.description,
+                basePrice: validatedData.basePrice.toString(),
+                sku: validatedData.sku,
+                material: validatedData.material,
+                careInstructions: validatedData.careInstructions,
+                categoryId: validatedData.categoryId,
+                isActive: validatedData.isActive,
+                isDraft: validatedData.isDraft,
+                updatedAt: new Date(),
+            })
+            .where(eq(products.id, productId));
+
+        await db.delete(productImages).where(eq(productImages.productId, productId));
+        await db.delete(productVariants).where(eq(productVariants.productId, productId));
+
+        if (validatedData.images.length > 0) {
+            await db.insert(productImages).values(
+                validatedData.images.map((image, index) => ({
+                    productId,
+                    imageUrl: image.imageUrl,
+                    altText: image.altText || validatedData.name,
+                    isPrimary: image.isPrimary || index === 0,
+                    displayOrder: image.displayOrder || index,
+                }))
+            );
+        }
+
+        if (validatedData.variants.length > 0) {
+            await db.insert(productVariants).values(
+                validatedData.variants.map((variant) => ({
+                    productId,
+                    size: variant.size,
+                    color: variant.color,
+                    colorHex: variant.colorHex,
+                    stockQuantity: variant.stockQuantity,
+                    additionalPrice: variant.additionalPrice.toString(),
+                    sku: variant.sku,
+                    isActive: true,
+                }))
+            );
+        }
+
+        revalidatePath("/admin/products");
+        revalidatePath(`/admin/products/${productId}/edit`);
+        return { success: true };
+    } catch (error) {
+        console.error("Update product error:", error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to update product"
+        };
+    }
+}
+
+// DELETE PRODUCT
+export async function deleteProduct(productId: string) {
+    try {
+        // Check if product exists
+        const product = await db
+            .select({ id: products.id, name: products.name })
+            .from(products)
+            .where(eq(products.id, productId))
+            .limit(1);
+
+        if (product.length === 0) {
+            throw new Error("Product not found");
+        }
+
+        // Delete product (cascading will handle related data)
+        await db.delete(products).where(eq(products.id, productId));
+
+        revalidatePath("/admin/products");
+        return { success: true, message: `Product "${product[0].name}" deleted successfully` };
+    } catch (error) {
+        console.error("Delete product error:", error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to delete product"
+        };
+    }
+}
+
+// BULK DELETE PRODUCTS
+export async function bulkDeleteProducts(productIds: string[]) {
+    try {
+        if (productIds.length === 0) {
+            throw new Error("No products selected");
+        }
+
+        await db
+            .delete(products)
+            .where(inArray(products.id, productIds));
+
+        revalidatePath("/admin/products");
+        return {
+            success: true,
+            message: `${productIds.length} product(s) deleted successfully`
+        };
+    } catch (error) {
+        console.error("Bulk delete error:", error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to delete products"
+        };
+    }
+}
+
+/* ========================================================================== */
+/* ADMIN: PRODUCT EDITING AND CATEGORY DATA                                   */
+/* ========================================================================== */
+
+// GET PRODUCT BY ID (for editing)
+export async function getProductById(productId: string) {
+    try {
+        const product = await db
+            .select({
+                id: products.id,
+                name: products.name,
+                slug: products.slug,
+                description: products.description,
+                basePrice: products.basePrice,
+                sku: products.sku,
+                material: products.material,
+                careInstructions: products.careInstructions,
+                categoryId: products.categoryId,
+                isActive: products.isActive,
+                isDraft: products.isDraft,
+                createdAt: products.createdAt,
+                updatedAt: products.updatedAt,
+            })
+            .from(products)
+            .where(eq(products.id, productId))
+            .limit(1);
+
+        if (product.length === 0) {
+            throw new Error("Product not found");
+        }
+
+        // Get images
+        const images = await db
+            .select({
+                id: productImages.id,
+                imageUrl: productImages.imageUrl,
+                altText: productImages.altText,
+                isPrimary: productImages.isPrimary,
+                displayOrder: productImages.displayOrder,
+            })
+            .from(productImages)
+            .where(eq(productImages.productId, productId))
+            .orderBy(productImages.displayOrder);
+
+        // Get variants
+        const variants = await db
+            .select({
+                id: productVariants.id,
+                size: productVariants.size,
+                color: productVariants.color,
+                colorHex: productVariants.colorHex,
+                stockQuantity: productVariants.stockQuantity,
+                additionalPrice: productVariants.additionalPrice,
+                sku: productVariants.sku,
+                isActive: productVariants.isActive,
+            })
+            .from(productVariants)
+            .where(eq(productVariants.productId, productId));
+
+        return {
+            success: true,
+            data: {
+                ...product[0],
+                basePrice: parseFloat(product[0].basePrice),
+                images: images,
+                variants: variants.map(v => ({
+                    ...v,
+                    stockQuantity: v.stockQuantity,
+                    additionalPrice: parseFloat(v.additionalPrice),
+                })),
+            }
+        };
+    } catch (error) {
+        console.error("Get product error:", error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to get product"
+        };
+    }
+}
+
+// GET ALL CATEGORIES (for dropdown)
+export async function getAllCategories() {
+    try {
+        const result = await db
+            .select({
+                id: categories.id,
+                name: categories.name,
+                slug: categories.slug,
+            })
+            .from(categories)
+            .where(eq(categories.isActive, true))
+            .orderBy(categories.displayOrder, categories.name);
+
+        return { success: true, data: result };
+    } catch (error) {
+        console.error("Get categories error:", error);
+        return {
+            success: false,
+            error: "Failed to get categories",
+            data: []
+        };
+    }
+}
+
+/* ========================================================================== */
+/* STOREFRONT: PRODUCT BROWSING DATA                                          */
+/* ========================================================================== */
 
 // GET ALL PRODUCTS WITH PAGINATION
 export async function getAllProducts(params: ProductParams): Promise<PagedResponse<Product>> {
@@ -17,9 +396,9 @@ export async function getAllProducts(params: ProductParams): Promise<PagedRespon
         // Build WHERE conditions
         const conditions = [];
 
-        // Always filter active products only
-        conditions.push(eq(products.isActive, true));
-        conditions.push(eq(products.isDraft, false));
+        // For admin panel, show all products (don't filter by isActive/isDraft)
+        // conditions.push(eq(products.isActive, true));
+        // conditions.push(eq(products.isDraft, false));
 
         // Filter by category slug (single value)
         if (category) {
@@ -96,6 +475,12 @@ export async function getAllProducts(params: ProductParams): Promise<PagedRespon
         // Determine sorting order
         let orderByClause;
         switch (sortBy) {
+            case "NAME_ASC":
+                orderByClause = asc(products.name);
+                break;
+            case "NAME_DESC":
+                orderByClause = desc(products.name);
+                break;
             case "PRICE_ASC":
                 orderByClause = asc(products.basePrice);
                 break;
@@ -126,14 +511,21 @@ export async function getAllProducts(params: ProductParams): Promise<PagedRespon
             .limit(limit)
             .offset(page * limit);
 
-        // Get images for all products
+        // Get images and variants for all products
         const productIds = productResults.map(p => p.id);
         const imagesResults = productIds.length > 0
             ? await db
                 .select()
                 .from(productImages)
-                .where(sql`${productImages.productId} = ANY(ARRAY[${sql.join(productIds.map(id => sql`${id}`), sql`, `)}])`)
+                .where(inArray(productImages.productId, productIds))
                 .orderBy(desc(productImages.isPrimary), productImages.displayOrder)
+            : [];
+
+        const variantsResults = productIds.length > 0
+            ? await db
+                .select()
+                .from(productVariants)
+                .where(inArray(productVariants.productId, productIds))
             : [];
 
         // Group images by product ID
@@ -151,9 +543,29 @@ export async function getAllProducts(params: ProductParams): Promise<PagedRespon
             return acc;
         }, {} as Record<string, Product['images']>);
 
-        // Map products with images
+        // Group variants by product ID
+        const variantsByProduct = variantsResults.reduce((acc, variant) => {
+            if (!acc[variant.productId]) {
+                acc[variant.productId] = [];
+            }
+            acc[variant.productId].push({
+                id: variant.id,
+                productId: variant.productId,
+                size: variant.size,
+                color: variant.color,
+                colorHex: variant.colorHex || undefined,
+                stockQuantity: variant.stockQuantity,
+                additionalPrice: parseFloat(variant.additionalPrice),
+                sku: variant.sku,
+                isActive: variant.isActive,
+            });
+            return acc;
+        }, {} as Record<string, ProductVariant[]>);
+
+        // Map products with images and variants
         const data: Product[] = productResults.map(product => ({
             id: product.id,
+            categoryId: product.categoryId || "",
             name: product.name,
             slug: product.slug,
             description: product.description || undefined,
@@ -162,9 +574,11 @@ export async function getAllProducts(params: ProductParams): Promise<PagedRespon
             material: product.material || undefined,
             careInstructions: product.careInstructions || undefined,
             isActive: product.isActive,
+            isDraft: product.isDraft,
             createdAt: product.createdAt.toISOString(),
             updatedAt: product.updatedAt.toISOString(),
             images: imagesByProduct[product.id] || [],
+            variants: variantsByProduct[product.id] || [],
         }));
 
         return {
@@ -211,6 +625,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
         return {
             id: product.id,
+            categoryId: product.categoryId || "",
             name: product.name,
             slug: product.slug,
             description: product.description || undefined,
@@ -219,9 +634,11 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
             material: product.material || undefined,
             careInstructions: product.careInstructions || undefined,
             isActive: product.isActive,
+            isDraft: product.isDraft,
             createdAt: product.createdAt.toISOString(),
             updatedAt: product.updatedAt.toISOString(),
             images,
+            variants: [], // Include empty variants array for compatibility
         };
     } catch (error) {
         console.error("Error fetching product by slug:", error);
@@ -256,9 +673,11 @@ export async function getProductVariants(productId: string): Promise<ProductVari
     }
 }
 
+/* ========================================================================== */
+/* STOREFRONT: PRODUCT REVIEWS                                                */
+/* ========================================================================== */
 
 // GET PRODUCT REVIEWS BY PRODUCT ID WITH PAGINATION
-
 export async function getReviewsByProductId(productId: string, page = 0, size = 10): Promise<PagedResponse<Review>> {
     try {
         // total count
@@ -294,9 +713,9 @@ export async function getReviewsByProductId(productId: string, page = 0, size = 
         const data: Review[] = reviewRows.map(r => ({
             id: r.id,
             userId: r.userId,
-            name: (r as any).name || "",
+            name: r.name || "",
             productId: r.productId,
-            orderItemId: (r as any).orderItemId || undefined,
+            orderItemId: r.orderItemId || undefined,
             rating: r.rating,
             title: r.title || "",
             comment: r.comment || "",
@@ -421,6 +840,8 @@ export async function addReviewToProduct(userId: string, productId: string, requ
         throw new Error((error as Error)?.message || "Failed to add review");
     }
 }
+
+
 
 
 

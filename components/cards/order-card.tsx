@@ -4,7 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Order, OrderStatus, PaymentStatus } from "@/types/orders";
-import { Package, Calendar, CreditCard, MapPin, ChevronRight } from "lucide-react";
+import { Package, Calendar, CreditCard, MapPin, ChevronRight, Clock, AlertCircle } from "lucide-react";
+import { canCancelOrder, CANCELLATION_TIME_LIMIT_DAYS } from "@/lib/utils/order-utils";
+import CancelOrderDialog from "@/components/order/cancel-order-dialog";
 
 interface OrderCardProps {
     order: Order;
@@ -38,8 +40,15 @@ const paymentStatusColors: Record<PaymentStatus, string> = {
     PROCESSING: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
     PAID: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
     FAILED: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+    REFUND_REQUESTED: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
     REFUNDED: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300",
-    PARTIALLY_REFUNDED: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+    PARTIALLY_REFUNDED: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300",
+};
+
+// Format payment status text for display
+const formatPaymentStatus = (status: string) => {
+    if (status === "REFUND_REQUESTED") return "Refund Requested";
+    return status.replace(/_/g, " ");
 };
 
 // Format status text
@@ -50,6 +59,9 @@ const formatStatus = (status: string) => {
 export default function OrderCard({ order }: OrderCardProps) {
     const firstItem = order.items[0];
     const remainingItems = order.items.length - 1;
+
+    // Check if order can be cancelled
+    const { canCancel, daysRemaining } = canCancelOrder(order);
 
     return (
         <Card className="overflow-hidden hover:shadow-md transition-shadow">
@@ -80,7 +92,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                             className={paymentStatusColors[order.paymentStatus]}
                         >
                             <CreditCard className="h-3 w-3 mr-1" />
-                            {formatStatus(order.paymentStatus)}
+                            {formatPaymentStatus(order.paymentStatus)}
                         </Badge>
                     </div>
                 </div>
@@ -185,6 +197,33 @@ export default function OrderCard({ order }: OrderCardProps) {
                     <div className="mt-2 text-xs text-muted-foreground">
                         <span className="font-medium">Estimated Delivery:</span>{" "}
                         {formatDate(order.estimatedDeliveryDate)}
+                    </div>
+                )}
+
+                {/* Cancellation Info */}
+                {canCancel && daysRemaining !== null && (
+                    <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-950 rounded-md border border-amber-200 dark:border-amber-800">
+                        <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 text-xs text-amber-700 dark:text-amber-300">
+                                <Clock className="h-3 w-3" />
+                                <span>
+                                    {daysRemaining === 0
+                                        ? "Last day to cancel this order"
+                                        : `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""} left to cancel`}
+                                </span>
+                            </div>
+                            <CancelOrderDialog orderNumber={order.orderNumber} order={order} />
+                        </div>
+                    </div>
+                )}
+
+                {/* Refund Requested Notice */}
+                {order.paymentStatus === "REFUND_REQUESTED" && (
+                    <div className="mt-3 p-2 bg-orange-50 dark:bg-orange-950 rounded-md border border-orange-200 dark:border-orange-800">
+                        <div className="flex items-center gap-2 text-xs text-orange-700 dark:text-orange-300">
+                            <AlertCircle className="h-3 w-3" />
+                            <span>Refund is being processed. It may take 5-7 business days.</span>
+                        </div>
                     </div>
                 )}
             </CardContent>

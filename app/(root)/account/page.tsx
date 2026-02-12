@@ -3,6 +3,7 @@ import { AccountDetailsSection } from '@/components/account/account-details-sect
 import { UserStatsSection } from '@/components/account/user-stats-section';
 import { AddressesSectionClient } from '@/components/account/addresses-section';
 import { QuickActionsSection } from '@/components/account/quick-actions-section';
+import RoleBasedWelcome from '@/components/auth/role-based-welcome';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -24,9 +25,14 @@ function LoadingSkeleton() {
 export default function AccountPage() {
     return (
         <div className="container mx-auto px-4 py-6 md:py-10 max-w-7xl">
+            {/* Authentication Welcome Section */}
+            <div className="mb-8">
+                <RoleBasedWelcome />
+            </div>
+
             {/* Page Header */}
             <div className="mb-6 md:mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1">My Account</h1>
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1">Account Settings</h1>
                 <p className="text-sm text-muted-foreground">
                     Manage your personal information, orders, and preferences
                 </p>

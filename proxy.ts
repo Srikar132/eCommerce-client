@@ -1,44 +1,29 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/auth';
+import {
+  UserRole,
+  ROLE_REDIRECTS,
+  PUBLIC_ROUTES,
+  GUEST_ONLY_ROUTES,
+  PROTECTED_ROUTES,
+  ADMIN_ROUTES,
+  getPostAuthRedirect,
+  hasRoutePermission,
+} from '@/lib/auth-utils';
 
 /**
- * NextAuth-based Authentication Middleware
+ * Enhanced Authentication Middleware
+ * Flow: /login → authenticate → role check → redirect
  * 
- * Uses NextAuth session for authentication and authorization
- * Supports role-based access control (USER, ADMIN)
+ * Features:
+ * - Role-based access control (USER, ADMIN)
+ * - Smart redirects based on user role
+ * - Protected route handling
+ * - Guest-only route restrictions
  */
 
-// Route configuration
-const PUBLIC_ROUTES = [
-  '/',
-  '/about',
-  '/contact',
-  '/products',
-  '/faq',
-  '/terms',
-  '/returns',
-  '/privacy',
-  '/help',
-];
-
-const GUEST_ONLY_ROUTES = [
-  '/login',
-];
-
-const PROTECTED_ROUTES = [
-  '/account',
-  '/cart',
-  '/checkout',
-  '/orders',
-  '/customization',
-  '/customization-studio',
-];
-
-const ADMIN_ROUTES = [
-  '/admin',
-];
-
+// Route checking functions
 function isPublicRoute(pathname: string): boolean {
   return PUBLIC_ROUTES.some(route =>
     pathname === route || pathname.startsWith(`${route}/`)
@@ -61,58 +46,98 @@ function isAdminRoute(pathname: string): boolean {
   );
 }
 
+// Check if user has required role for route
+function hasRequiredRole(userRole: UserRole | undefined, pathname: string): boolean {
+  return hasRoutePermission(userRole, pathname);
+}
+
+// Add security headers helper function
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
 
   // Get session using NextAuth
   const session = await auth();
   const isAuthenticated = !!session?.user;
-  const userRole = session?.user?.role;
+  const userRole = session?.user?.role as UserRole | undefined;
+  const redirectParam = searchParams.get('redirect');
 
-  // Check route types
+  // Route type checks
   const isPublic = isPublicRoute(pathname);
   const isGuestOnly = isGuestOnlyRoute(pathname);
   const isProtected = isProtectedRoute(pathname);
   const isAdmin = isAdminRoute(pathname);
 
-  console.log(`[Middleware] ${pathname} | Auth: ${isAuthenticated} | Role: ${userRole || 'None'} | Protected: ${isProtected} | Admin: ${isAdmin}`);
+  // Enhanced logging with flow information
+  console.log(`🔐 [AUTH FLOW] ${pathname}`);
+  console.log(`├─ Authenticated: ${isAuthenticated ? '✅' : '❌'}`);
+  console.log(`├─ Role: ${userRole || 'None'}`);
+  console.log(`├─ Route Type: ${isPublic ? 'Public' :
+      isGuestOnly ? 'Guest-Only' :
+        isProtected ? 'Protected' :
+          isAdmin ? 'Admin' : 'Unknown'
+    }`);
+  console.log(`└─ Redirect Param: ${redirectParam || 'None'}`);
 
-  // Allow public routes without authentication
+  // STEP 1: Handle public routes (no authentication required)
   if (isPublic && !isProtected && !isAdmin) {
-    return NextResponse.next();
+    console.log(`🟢 [ALLOW] Public route access granted`);
+    return addSecurityHeaders(NextResponse.next());
   }
 
-  // Redirect authenticated users away from guest-only routes (login)
-  if (isGuestOnly && isAuthenticated) {
-    return NextResponse.redirect(new URL('/', request.url));
+  // STEP 2: Guest-only routes (/login) - implement the core auth flow
+  if (isGuestOnly) {
+    if (isAuthenticated && userRole) {
+      // User is already authenticated - redirect based on role
+      const redirectUrl = getPostAuthRedirect(userRole, redirectParam);
+      console.log(`🔄 [REDIRECT] Authenticated user (${userRole}) redirected from guest route to: ${redirectUrl}`);
+      return NextResponse.redirect(new URL(redirectUrl, request.url));
+    } else {
+      // User is not authenticated - allow access to login page
+      console.log(`🟢 [ALLOW] Guest access to authentication page`);
+      return addSecurityHeaders(NextResponse.next());
+    }
   }
 
-  // Redirect unauthenticated users from protected routes to login
-  if (isProtected && !isAuthenticated) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Check admin access
-  if (isAdmin) {
+  // STEP 3: Protected routes - require authentication
+  if (isProtected || isAdmin) {
     if (!isAuthenticated) {
+      // Redirect to login with current path as redirect parameter
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
+      console.log(`🔄 [REDIRECT] Unauthenticated user redirected to login with redirect=${pathname}`);
       return NextResponse.redirect(loginUrl);
     }
 
-    if (userRole !== 'ADMIN') {
-      // Non-admin trying to access admin routes - redirect to home
-      return NextResponse.redirect(new URL('/', request.url));
+    // STEP 4: Role-based access control
+    if (!hasRequiredRole(userRole, pathname)) {
+      // User authenticated but lacks required role
+      const fallbackUrl = userRole ? ROLE_REDIRECTS[userRole] : '/account';
+      console.log(`❌ [DENIED] User role '${userRole}' insufficient for ${pathname}. Redirecting to: ${fallbackUrl}`);
+      return NextResponse.redirect(new URL(fallbackUrl, request.url));
     }
+
+    // Authentication and role check passed
+    console.log(`✅ [AUTHORIZED] User '${userRole}' granted access to ${pathname}`);
+    return addSecurityHeaders(NextResponse.next());
   }
 
-  return NextResponse.next();
+  // Default: allow access
+  console.log(`🟢 [ALLOW] Default access granted`);
+  return addSecurityHeaders(NextResponse.next());
 }
 
 /**
  * Configure which routes middleware should run on
+ * Excludes static files, API routes, and assets for better performance
  */
 export const config = {
   matcher: [
@@ -120,10 +145,45 @@ export const config = {
      * Match all request paths except:
      * - _next/static (static files)
      * - _next/image (image optimization)
-     * - favicon.ico (favicon file)
-     * - public folder (images, icons, etc.)
-     * - api routes
+     * - favicon.ico (favicon file)  
+     * - public folder assets (images, icons, etc.)
+     * - api routes (handled separately)
+     * - manifest and service worker files
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|bmp|tiff)$|api).*)',
+    '/((?!_next/static|_next/image|favicon.ico|manifest|sw\.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|bmp|tiff|woff|woff2|eot|ttf|otf)$|api/).*)',
   ],
 };
+
+/**
+ * Utility function to check if a user can access a specific route
+ * Useful for conditional rendering in components
+ */
+export function canUserAccess(userRole: UserRole | undefined, pathname: string): boolean {
+  const isPublic = isPublicRoute(pathname);
+
+  // Public routes are accessible to everyone
+  if (isPublic && !isProtectedRoute(pathname) && !isAdminRoute(pathname)) {
+    return true;
+  }
+
+  // All other routes require authentication
+  if (!userRole) return false;
+
+  return hasRequiredRole(userRole, pathname);
+}
+
+/**
+ * Get all accessible routes for a user role
+ * Useful for generating navigation menus
+ */
+export function getAccessibleRoutes(userRole: UserRole): string[] {
+  const accessible = [...PUBLIC_ROUTES, ...PROTECTED_ROUTES];
+
+  switch (userRole) {
+    case 'ADMIN':
+      return [...accessible, ...ADMIN_ROUTES];
+    case 'USER':
+    default:
+      return accessible;
+  }
+}

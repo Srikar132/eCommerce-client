@@ -1,0 +1,441 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  --font-sans-fallback: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-heading-fallback: Georgia, "Times New Roman", serif;
+
+  --radius: 0.5rem;
+
+  /* Light theme - Soft Pastel Colors with Beautiful Blue */
+  --background: oklch(0.99 0.005 250);
+  --foreground: oklch(0.25 0.015 250);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.25 0.015 250);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.25 0.015 250);
+
+  /* Primary - Beautiful Soft Blue (like a clear sky) */
+  --primary: oklch(0.62 0.14 235);
+  --primary-foreground: oklch(1 0 0);
+
+  /* Secondary - Soft Lavender */
+  --secondary: oklch(0.96 0.02 280);
+  --secondary-foreground: oklch(0.30 0.02 250);
+
+  /* Muted - Soft Gray with hint of blue */
+  --muted: oklch(0.97 0.01 250);
+  --muted-foreground: oklch(0.50 0.02 250);
+
+  /* Accent - Soft Peach/Coral */
+  --accent: oklch(0.96 0.03 40);
+  --accent-foreground: oklch(0.30 0.02 250);
+
+  /* Destructive - Soft Rose */
+  --destructive: oklch(0.65 0.18 15);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.93 0.01 250);
+  --input: oklch(0.95 0.01 250);
+  --ring: oklch(0.62 0.14 235);
+
+  /* Chart colors - Pastel Rainbow */
+  --chart-1: oklch(0.70 0.12 160);
+  /* Soft Mint */
+  --chart-2: oklch(0.72 0.14 280);
+  /* Soft Purple */
+  --chart-3: oklch(0.68 0.16 30);
+  /* Soft Coral */
+  --chart-4: oklch(0.78 0.14 85);
+  /* Soft Yellow */
+  --chart-5: oklch(0.70 0.12 200);
+  /* Soft Cyan */
+
+  /* Sidebar - Clean white with soft blue accents */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.40 0.02 250);
+  --sidebar-primary: oklch(0.62 0.14 235);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.96 0.02 235);
+  --sidebar-accent-foreground: oklch(0.30 0.02 250);
+  --sidebar-border: oklch(0.94 0.01 250);
+  --sidebar-ring: oklch(0.62 0.14 235);
+}
+
+.dark {
+  /* * Main Background: The very dark navy appearing behind the cards.
+   * Extracted approx: #0b1727
+   */
+  --background: #0b1727;
+  --foreground: #ffffff;
+
+  /* * Cards: The slightly lighter blue-navy used for 'Total Earnings', 'Orders', etc.
+   * Extracted approx: #11243e
+   */
+  --card: #0C192C;
+  --card-foreground: #ffffff;
+
+  /* * Popovers/Dropdowns: Matching the card style or slightly elevated.
+   */
+  --popover: #1a2f4d;
+  --popover-foreground: #ffffff;
+
+  /* * Primary: The bright Blue used on the "Date" button and "Report" text.
+   * Extracted approx: #3b82f6 (Bright Royal Blue)
+   */
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+
+  /* * Secondary: The Muted/Darker backgrounds (like the inactive sidebar items or input fields).
+   */
+  --secondary: #1f2937;
+  --secondary-foreground: #ffffff;
+
+  /* * Muted: The greyish-blue text for labels like "Total Earnings" or "than last week".
+   * Extracted approx: #8c9097
+   */
+  --muted: #11243e;
+  --muted-foreground: #8c9097;
+
+  /* * Accent: The purple used on the settings FAB (bottom right) and "Total Earnings" icon bg.
+   * Extracted approx: #7e68fa
+   */
+  --accent: #2b4c7e;
+  --accent-foreground: #e5edff;
+
+  /* * Destructive: The Pinkish-Red used for the "Online Chat" button and negative trends.
+   * Extracted approx: #ff4d76
+   */
+  --destructive: #ff4d76;
+  --destructive-foreground: #ffffff;
+
+  /* Borders: Dark navy lines separating sections */
+  --border: #1f3655;
+  --input: #1f3655;
+  --ring: #3b82f6;
+
+  /* * Chart Colors (The Wave Lines) 
+   * 1: Green/Teal line (Top) -> #00d284
+   * 2: Purple line (Middle) -> #7e68fa
+   * 3: Red/Pink line (Bottom) -> #ff4d76
+   * 4: Yellow/Orange (Gold icon bg) -> #f7b924
+   * 5: Cyan/Blue (Orders icon bg) -> #00c9db
+   */
+  --chart-1: #00d284;
+  --chart-2: #7e68fa;
+  --chart-3: #ff4d76;
+  --chart-4: #f7b924;
+  --chart-5: #00c9db;
+
+  /* * Sidebar: The left navigation panel. 
+   * It appears slightly darker/denser than the main content area.
+   * Extracted approx: #0e1726
+   */
+  --sidebar: #0E203A;
+  --sidebar-foreground: #a0aec0;
+  /* Light grey text */
+  --sidebar-primary: #3b82f6;
+  /* Active item blue */
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #0E203A;
+  /* Hover state */
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1f3655;
+  --sidebar-ring: #3b82f6;
+}
+
+@layer base {
+
+  * {
+    @apply border-border outline-ring/50;
+
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans), var(--font-sans-fallback);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .heading {
+    font-family: var(--font-heading), var(--font-heading-fallback);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  h1 {
+    font-size: theme('fontSize.3xl');
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: theme('fontSize.2xl');
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: theme('fontSize.xl');
+    font-weight: 500;
+  }
+
+  h4 {
+    font-size: theme('fontSize.lg');
+    font-weight: 500;
+  }
+
+  /* Shimmer Animation for Skeleton Loaders */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+/* Sidebar Performance Optimizations */
+@layer components {
+
+  /* Optimize sidebar transitions for smooth performance */
+  [data-sidebar] {
+    will-change: width;
+    transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hardware acceleration for sidebar */
+  [data-sidebar],
+  [data-sidebar] * {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+
+  /* Optimize sidebar content visibility during transitions */
+  [data-sidebar][data-state="collapsed"] [data-sidebar-content] {
+    visibility: hidden;
+    transition: visibility 0s linear 200ms;
+  }
+
+  [data-sidebar][data-state="expanded"] [data-sidebar-content] {
+    visibility: visible;
+    transition: visibility 0s linear 0s;
+  }
+
+  /* Smooth sidebar trigger button */
+  button[data-sidebar-trigger] {
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  button[data-sidebar-trigger]:active {
+    transform: scale(0.95);
+  }
+
+  /* Prevent layout shift during sidebar toggle */
+  [data-sidebar-container] {
+    contain: layout style;
+  }
+
+  /* Optimize collapsible animations */
+  [data-radix-collapsible-content] {
+    transition: height 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: height;
+  }
+
+  /* Smooth hover states */
+  [data-sidebar] button,
+  [data-sidebar] a {
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Admin-specific styles for product management */
+.admin-page-title {
+  @apply text-2xl font-bold tracking-tight;
+}
+
+.admin-page-description {
+  @apply text-muted-foreground;
+}
+
+.admin-container {
+  @apply container mx-auto px-4 py-8 max-w-7xl;
+}
+
+.admin-page-header {
+  @apply flex items-start justify-between gap-4 mb-6 pb-4 border-b;
+}
+
+.admin-primary-button {
+  @apply bg-green-600 hover:bg-green-700 text-white transition-all duration-200 shadow-md hover:shadow-lg;
+}
+
+.admin-secondary-button {
+  @apply bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-all duration-200;
+}
+
+/* Table styles with proper padding */
+.admin-table-container {
+  @apply rounded-md border overflow-hidden;
+}
+
+.admin-table {
+  @apply w-full border-collapse;
+}
+
+.admin-table th {
+  @apply px-6 py-4 text-left font-medium text-muted-foreground bg-muted/30;
+}
+
+.admin-table td {
+  @apply px-6 py-4 border-t;
+}
+
+.admin-table tr:hover {
+  @apply bg-muted/20;
+}
+
+/* Data table specific styles */
+[data-table-container] table {
+  @apply w-full;
+}
+
+[data-table-container] th {
+  @apply px-6 py-4 text-left font-medium text-sm text-muted-foreground bg-muted/30 border-b;
+}
+
+[data-table-container] td {
+  @apply px-6 py-4 text-sm border-b border-border/40;
+}
+
+[data-table-container] tbody tr:hover {
+  @apply bg-muted/20 transition-colors;
+}
+
+[data-table-container] tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+/* Admin action buttons with green theme */
+.admin-glow-button {
+  @apply hover:bg-green-50 hover:text-green-700 transition-all duration-200;
+}
+
+.admin-glow-button:hover {
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
+}
+
+/* Order Details Page Styles */
+.order-status-step {
+  @apply relative flex flex-col items-center;
+}
+
+.order-status-step::before {
+  @apply absolute top-5 -left-1/2 w-full h-0.5 bg-muted;
+  content: '';
+}
+
+.order-status-step:first-child::before {
+  @apply hidden;
+}
+
+.order-status-step.completed::before {
+  @apply bg-primary;
+}
+
+/* Order item hover effect */
+.order-item-card {
+  @apply transition-colors duration-200;
+}
+
+.order-item-card:hover {
+  @apply bg-muted/30;
+}
+
+/* Clickable table rows */
+[data-table-container] tbody tr.cursor-pointer:hover {
+  @apply bg-muted/40;
+}
+
+/* Dark mode adjustments for order details */
+.dark .order-status-completed {
+  @apply bg-primary/20 border-primary/50;
+}
+
+/* Info cards subtle hover */
+.order-info-card {
+  @apply transition-shadow duration-200;
+}
+
+.order-info-card:hover {
+  @apply shadow-sm;
+}

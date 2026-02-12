@@ -30,12 +30,29 @@ interface RazorpayError {
 interface CheckoutData {
     razorpayKeyId: string;
     razorpayOrderId: string;
-    orderNumber: string;
     amount: number;
     currency: string;
     customerName?: string;
     customerEmail?: string;
     customerPhone?: string;
+    // Checkout session data for order creation after payment
+    checkoutSession: {
+        shippingAddressId: string;
+        billingAddressId: string;
+        paymentMethod?: "card" | "upi" | "netbanking";
+        notes?: string;
+        subtotal: number;
+        taxAmount: number;
+        shippingCost: number;
+        discountAmount: number;
+        totalAmount: number;
+        cartItems: {
+            productVariantId: string;
+            quantity: number;
+            unitPrice: string;
+            itemTotal: string;
+        }[];
+    };
 }
 
 interface UseRazorpayCheckoutOptions {
@@ -43,29 +60,29 @@ interface UseRazorpayCheckoutOptions {
      * Called after successful payment verification
      */
     onSuccess?: (orderNumber: string) => void;
-    
+
     /**
      * Called when payment fails
      */
     onFailure?: (orderNumber: string) => void;
-    
+
     /**
      * Called when user cancels the payment
      */
     onCancel?: (orderNumber: string) => void;
-    
+
     /**
      * Whether to invalidate cart cache after successful payment
      * @default true
      */
     clearCartOnSuccess?: boolean;
-    
+
     /**
      * Whether to refresh the page after payment
      * @default false
      */
     refreshOnSuccess?: boolean;
-    
+
     /**
      * Custom theme color for Razorpay modal
      * @default "#ff6376"
@@ -78,12 +95,12 @@ interface UseRazorpayCheckoutReturn {
      * Whether a payment is currently being processed
      */
     isProcessing: boolean;
-    
+
     /**
      * Open Razorpay checkout modal with payment details
      */
     openCheckout: (checkoutData: CheckoutData) => void;
-    
+
     /**
      * Check if Razorpay SDK is loaded
      */
@@ -143,10 +160,10 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
         // Poll for Razorpay to be loaded (useful for slow connections)
         let attempts = 0;
         const maxAttempts = 20; // 10 seconds total (500ms * 20)
-        
+
         const checkInterval = setInterval(() => {
             attempts++;
-            
+
             if (checkRazorpayLoaded()) {
                 setIsRazorpayLoaded(true);
                 clearInterval(checkInterval);
@@ -164,13 +181,14 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
      */
     const handlePaymentSuccess = useCallback(async (
         response: RazorpayResponse,
-        orderNumber: string
+        checkoutData: CheckoutData
     ) => {
         try {
             const order = await verifyPaymentAndConfirmOrder({
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpaySignature: response.razorpay_signature,
+                checkoutSession: checkoutData.checkoutSession,
             });
 
             // Clear cart cache if needed
@@ -193,47 +211,44 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
             }
         } catch (error: any) {
             console.error("Payment verification error:", error);
-            toast.error(error.message || "Payment verification failed");
-            
-            // Navigate to order page even on verification failure
-            if (onFailure) {
-                onFailure(orderNumber);
-            }
-        } finally {
+            toast.error(error.message || "Payment verification failed. Please contact support.");
+
+            // On verification failure, stay on checkout (no order was created)
             setIsProcessing(false);
         }
-    }, [clearCartOnSuccess, refreshOnSuccess, onSuccess, onFailure, queryClient, router]);
+    }, [clearCartOnSuccess, refreshOnSuccess, onSuccess, queryClient, router]);
 
     /**
      * Handle payment failure
+     * No order exists yet, so user stays on checkout page
      */
     const handlePaymentFailure = useCallback((
-        response: RazorpayError,
-        orderNumber: string
+        response: RazorpayError
     ) => {
         setIsProcessing(false);
-        
+
         const errorMessage = response.error?.description || "Payment failed";
-        toast.error(`${errorMessage}. You can retry from order details.`);
-        
+        toast.error(`${errorMessage}. Please try again.`);
+
         console.error("Payment failed:", response.error);
 
-        // Call custom failure handler
+        // Call custom failure handler (no orderNumber since order wasn't created)
         if (onFailure) {
-            onFailure(orderNumber);
+            onFailure("");
         }
     }, [onFailure]);
 
     /**
      * Handle payment cancellation
+     * No order exists yet, so user stays on checkout page
      */
-    const handlePaymentCancel = useCallback((orderNumber: string) => {
+    const handlePaymentCancel = useCallback(() => {
         setIsProcessing(false);
-        toast.info("Payment cancelled. You can complete payment from order details.");
+        toast.info("Payment cancelled. Your cart is still available.");
 
-        // Call custom cancel handler
+        // Call custom cancel handler (no orderNumber since order wasn't created)
         if (onCancel) {
-            onCancel(orderNumber);
+            onCancel("");
         }
     }, [onCancel]);
 
@@ -243,7 +258,7 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
     const openCheckout = useCallback((checkoutData: CheckoutData) => {
         // Double-check if Razorpay is loaded before opening
         const isLoaded = checkRazorpayLoaded();
-        
+
         if (!isLoaded) {
             toast.error("Payment gateway is loading. Please wait a moment and try again.");
             console.error('Razorpay SDK not loaded when attempting to open checkout');
@@ -257,11 +272,11 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
             amount: checkoutData.amount,
             currency: checkoutData.currency,
             name: "NALA ARMOIRE",
-            description: `Order #${checkoutData.orderNumber}`,
+            description: `Order Payment`,
             order_id: checkoutData.razorpayOrderId,
 
             handler: function (response: RazorpayResponse) {
-                handlePaymentSuccess(response, checkoutData.orderNumber);
+                handlePaymentSuccess(response, checkoutData);
             },
 
             prefill: {
@@ -276,7 +291,7 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
 
             modal: {
                 ondismiss: function () {
-                    handlePaymentCancel(checkoutData.orderNumber);
+                    handlePaymentCancel();
                 },
             },
         };
@@ -285,7 +300,7 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
 
         // Handle payment failure event
         razorpay.on("payment.failed", function (response: RazorpayError) {
-            handlePaymentFailure(response, checkoutData.orderNumber);
+            handlePaymentFailure(response);
         });
 
         razorpay.open();

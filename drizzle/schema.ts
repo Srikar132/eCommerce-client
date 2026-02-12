@@ -36,6 +36,7 @@ export const paymentStatusEnum = pgEnum('payment_status', [
     'PROCESSING',
     'PAID',
     'FAILED',
+    'REFUND_REQUESTED',
     'REFUNDED',
     'PARTIALLY_REFUNDED'
 ]);
@@ -336,6 +337,8 @@ export const orders = pgTable(
         razorpayOrderId: text("razorpay_order_id"),
         razorpayPaymentId: text("razorpay_payment_id"),
         razorpaySignature: text("razorpay_signature"),
+        razorpayRefundId: text("razorpay_refund_id"),
+        refundedAt: timestamp("refunded_at"),
         paymentMethod: text("payment_method"),
         subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
         taxAmount: numeric("tax_amount", { precision: 10, scale: 2 }).default("0").notNull(),

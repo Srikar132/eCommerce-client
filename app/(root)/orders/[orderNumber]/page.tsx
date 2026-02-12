@@ -11,15 +11,15 @@ export default async function OrderPage({
 }) {
     const { orderNumber } = await params;
 
-    try {
-        const order = await getOrderDetails(orderNumber);
+    const order = await getOrderDetails(orderNumber).catch(() => null);
 
-        return (
-            <div className="container mx-auto px-4 py-8 max-w-5xl">
-                <OrderTrackingClient order={order} />
-            </div>
-        );
-    } catch (error) {
+    if (!order) {
         notFound();
     }
+
+    return (
+        <div className="container mx-auto px-4 py-8 max-w-5xl">
+            <OrderTrackingClient order={order} />
+        </div>
+    );
 }

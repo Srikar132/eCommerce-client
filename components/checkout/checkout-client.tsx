@@ -33,16 +33,13 @@ export default function CheckoutClient() {
     const isLoading = isCartLoading || isAddressesLoading;
 
     // Use Razorpay checkout hook
+    // With payment-first flow: no order exists until payment succeeds
+    // On failure/cancel, user stays on checkout page (no redirect)
     const { openCheckout, isProcessing, isRazorpayLoaded } = useRazorpayCheckout({
         onSuccess: (orderNumber) => {
             router.push(`/orders/${orderNumber}`);
         },
-        onFailure: (orderNumber) => {
-            router.push(`/orders/${orderNumber}`);
-        },
-        onCancel: (orderNumber) => {
-            router.push(`/orders/${orderNumber}`);
-        },
+        // No redirect on failure/cancel - user stays on checkout to retry
         clearCartOnSuccess: true,
     });
 

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
 /* @custom-variant dark (&:is(.dark *)); */
 /* @plugin ""; */
 
@@ -43,7 +45,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-
   /* CUSTOM COLORS */
   --color-whitesmoke: #f5f5f3;
 }
@@ -57,7 +58,6 @@
   /* cream white */
   --foreground: oklch(31.984% 0.02933 42.164);
   /* warm brown text */
-
 
   /* 🧁 Cards / Surfaces */
   --card: oklch(0.99 0.008 95);
@@ -125,14 +125,10 @@
   --sidebar-ring: oklch(0.78 0.08 15);
 }
 
-
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
 
   body {
     @apply bg-background text-foreground antialiased;
@@ -181,8 +177,6 @@
   }
 }
 
-
-
 @layer utilities {
 
   /* ============================================
@@ -203,10 +197,6 @@
   .input {
     @apply rounded-none;
   }
-
-
-
-
 
   /* ============================================
      DEAL SECTION
@@ -318,7 +308,6 @@
      ============================================ */
 
   /* Container & Layout */
-
 
   /* Hide scrollbar for Chrome, Safari and Opera */
   .scrollbar-hide::-webkit-scrollbar {
@@ -588,5 +577,25 @@
   .design-card:hover .add-btn {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.dark {
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

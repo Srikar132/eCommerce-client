@@ -21,13 +21,13 @@ export const categories = [
         id: 1,
         title: "MEN",
         image: "/images/home/men-category.webp",
-        url : "/products?category=men"
+        url : "/products?category=mens"
     },
     {
         id: 2,
         title: "WOMEN",
         image: "/images/home/women-category.webp",
-        url : "/products?category=women"
+        url : "/products?category=womens"
     },
     {
         id: 3,

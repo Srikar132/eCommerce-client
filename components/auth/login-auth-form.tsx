@@ -19,6 +19,8 @@ import { Loader2, Shield } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getPostAuthRedirect } from "@/lib/auth-utils";
+import { useSession } from "next-auth/react";
 
 type Step = 'phone' | 'otp';
 
@@ -86,7 +88,7 @@ export default function LoginAuthForm() {
             const fullPhone = countryCode + phone;
 
             const response = await sendOtp(fullPhone);
-            
+
             if (!response.success) {
                 toast.error(response.error || 'Failed to send OTP');
                 return;
@@ -110,28 +112,37 @@ export default function LoginAuthForm() {
     const handleVerifyOtp = async (data: OtpFormValues) => {
         setIsLoading(true);
         try {
-
             console.log('Verifying OTP for phone:', phoneData);
             const fullPhone = phoneData.countryCode + phoneData.phone;
             const response = await loginWithOtp(fullPhone, data.otp);
-            
+
             if (!response.success) {
                 toast.error('error' in response ? response.error : 'Verification failed');
                 return;
             }
 
             toast.success('Login successful!');
-            
-            // Get redirect from URL or default to home
+
+            // Wait a moment for session to update
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Get user role from the response or session
+            const userRole = response.user?.role || 'USER';
+
+            // Get redirect from URL parameter
             const params = new URLSearchParams(window.location.search);
-            const redirect = params.get('redirect') || '/';
-            
+            const redirectParam = params.get('redirect');
+
+            // Use smart redirect based on role and redirect parameter
+            const redirectUrl = getPostAuthRedirect(userRole as any, redirectParam);
+
+            console.log(`🔄 [LOGIN SUCCESS] Redirecting ${userRole} user to: ${redirectUrl}`);
+
             startTransition(() => {
-                router.push(redirect);
+                router.push(redirectUrl);
                 router.refresh();
             });
 
-            
         } catch (error) {
             console.error('Verify OTP error:', error);
             toast.error('Failed to verify OTP');
@@ -145,7 +156,7 @@ export default function LoginAuthForm() {
         try {
             const fullPhone = phoneData.countryCode + phoneData.phone;
             const response = await sendOtp(fullPhone);
-            
+
             if (!response.success) {
                 toast.error(response.error || 'Failed to resend OTP');
                 return;
