@@ -23,9 +23,9 @@ interface OrderItemCardProps {
 
 export function OrderItemCard({ item }: OrderItemCardProps) {
     return (
-        <div className="flex gap-4 py-4 border-b last:border-b-0">
+        <div className="flex gap-4 py-4 first:pt-0 last:pb-0">
             {/* Product Image */}
-            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
+            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-muted border border-border">
                 {item.imageUrl ? (
                     <Image
                         src={item.imageUrl}
@@ -56,12 +56,12 @@ export function OrderItemCard({ item }: OrderItemCardProps) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="text-xs rounded-lg">
                         Qty: {item.quantity}
                     </Badge>
                     <Badge
                         variant={item.productionStatus === "COMPLETED" ? "default" : "secondary"}
-                        className="text-xs"
+                        className="text-xs rounded-lg"
                     >
                         {item.productionStatus}
                     </Badge>
@@ -70,7 +70,7 @@ export function OrderItemCard({ item }: OrderItemCardProps) {
 
             {/* Price */}
             <div className="flex flex-col items-end justify-between">
-                <span className="font-semibold">₹{item.totalPrice.toLocaleString()}</span>
+                <span className="font-semibold text-emerald-400">₹{item.totalPrice.toLocaleString()}</span>
                 <span className="text-sm text-muted-foreground">
                     ₹{item.unitPrice.toLocaleString()} × {item.quantity}
                 </span>

@@ -27,15 +27,6 @@ const inter = Inter({
 });
 
 
-export const metadata: Metadata = {
-  title: {
-    default: "NALA ARMOIRE — Bold Streetwear Fashion",
-    template: "%s",
-  },
-  description:
-    "Discover premium streetwear clothing with bold fits and modern aesthetic. Designed for everyday attitude and urban lifestyle.",
-};
-
 export default function Layout({
   children,
 }: Readonly<{

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -15,12 +15,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { sendOtp, loginWithOtp } from "@/lib/actions/auth-actions";
-import { Loader2, Shield } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { getPostAuthRedirect } from "@/lib/auth-utils";
-import { useSession } from "next-auth/react";
+import { getPostAuthRedirect, UserRole } from "@/lib/auth-utils";
 
 type Step = 'phone' | 'otp';
 
@@ -49,8 +47,6 @@ type PhoneFormValues = z.infer<typeof phoneSchema>;
 type OtpFormValues = z.infer<typeof otpSchema>;
 
 export default function LoginAuthForm() {
-    const router = useRouter();
-    const [isPending, startTransition] = useTransition();
     const [isLoading, setIsLoading] = useState(false);
 
     const [step, setStep] = useState<Step>('phone');
@@ -126,22 +122,25 @@ export default function LoginAuthForm() {
             // Wait a moment for session to update
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Get user role from the response or session
-            const userRole = response.user?.role || 'USER';
+            // Get user role from the response
+            console.log('🔐 [LOGIN RESPONSE]:', JSON.stringify(response, null, 2));
+
+            // Access user from the response
+            const userRole = 'user' in response && response.user?.role ? response.user.role : 'USER';
+
+            console.log('🔐 [PARSED ROLE]:', userRole);
 
             // Get redirect from URL parameter
             const params = new URLSearchParams(window.location.search);
             const redirectParam = params.get('redirect');
 
             // Use smart redirect based on role and redirect parameter
-            const redirectUrl = getPostAuthRedirect(userRole as any, redirectParam);
+            const redirectUrl = getPostAuthRedirect(userRole as UserRole, redirectParam);
 
             console.log(`🔄 [LOGIN SUCCESS] Redirecting ${userRole} user to: ${redirectUrl}`);
 
-            startTransition(() => {
-                router.push(redirectUrl);
-                router.refresh();
-            });
+            // Use hard redirect to ensure proper session hydration
+            window.location.href = redirectUrl;
 
         } catch (error) {
             console.error('Verify OTP error:', error);
@@ -237,7 +236,6 @@ export default function LoginAuthForm() {
                                             <Link href="/privacy" className="text-primary font-medium hover:underline underline-offset-2 whitespace-nowrap">
                                                 Privacy Policy
                                             </Link>
-                                            {" "}and I am above 18 years old.
                                         </FormLabel>
                                         <FormMessage className="text-[10px]" />
                                     </div>

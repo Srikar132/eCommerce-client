@@ -17,12 +17,13 @@ import { queryKeys } from "../query-keys";
 /**
  * Get user's wishlist with all items
  */
-export const useWishlist = () => {
+export const useWishlist = ({enabled}: {enabled: boolean}) => {
     return useQuery<WishlistResponse>({
         queryKey: queryKeys.wishlist.all(),
         queryFn: () => getWishlist(),
         staleTime: 1000 * 60 * 5, // 5 minutes
         retry: 1,
+        enabled
     });
 };
 
@@ -111,8 +112,16 @@ export const useClearWishlist = () => {
  * @param productId - Product ID to check
  * @returns boolean indicating if the item is in wishlist
  */
-export const useIsInWishlist = (productId: string): boolean => {
-    const { data: wishlist } = useWishlist();
+export const useIsInWishlist = ({
+    productId,
+    enabled
+}: {
+    productId: string;
+    enabled: boolean;
+}): boolean => {
+    const { data: wishlist } = useWishlist({enabled});
+
+    if (!enabled) return false;
 
     if (!wishlist?.items) return false;
 
@@ -123,7 +132,7 @@ export const useIsInWishlist = (productId: string): boolean => {
  * Get total number of items in wishlist
  * @returns Total item count
  */
-export const useWishlistCount = (): number => {
-    const { data: wishlist } = useWishlist();
-    return wishlist?.totalItems || 0;
+export const useWishlistCount = ({enabled}: {enabled: boolean}): number => {
+    const { data: wishlist } = useWishlist({enabled});
+    return enabled ? wishlist?.totalItems || 0 : 0;
 };

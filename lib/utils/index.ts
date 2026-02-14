@@ -10,13 +10,13 @@ export function cn(...inputs: ClassValue[]) {
 export function convertSearchParamsToObject(searchParams: URLSearchParams): Record<string, string | string[]> {
   const paramsObj: Record<string, string | string[]> = {};
   const sizeValues: string[] = [];
-  
+
   searchParams.forEach((value, key) => {
     if (key === 'size') {
       sizeValues.push(value);
       return;
     }
-    
+
     const existing = paramsObj[key];
     if (existing) {
       paramsObj[key] = Array.isArray(existing) ? [...existing, value] : [existing, value];
@@ -24,27 +24,27 @@ export function convertSearchParamsToObject(searchParams: URLSearchParams): Reco
       paramsObj[key] = value;
     }
   });
-  
+
   // Process size values: separate pagination size from product sizes
   if (sizeValues.length > 0) {
     const paginationSizes = sizeValues.filter(v => /^\d+$/.test(v) && parseInt(v) > 10);
     const productSizes = sizeValues.filter(v => !/^\d+$/.test(v) || parseInt(v) <= 10);
-    
+
     if (paginationSizes.length > 0) {
       paramsObj.paginationSize = paginationSizes[0]; // Take the first pagination size
     }
-    
+
     if (productSizes.length > 0) {
       paramsObj.productSize = productSizes.length === 1 ? productSizes[0] : productSizes;
     }
   }
-  
+
   return paramsObj;
 }
 
 // utils/format.ts
 export const formatPrice = (price: number): string => {
-    return `INR ${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `INR ${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
 /**
@@ -87,15 +87,15 @@ export const formatDate = (
  */
 export const formatPhone = (phone: string): string => {
   if (!phone) return '';
-  
+
   // Remove all non-digit characters except +
   const cleaned = phone.replace(/[^\d+]/g, '');
-  
+
   // Format Indian numbers: +91 XXXXX XXXXX
   if (cleaned.startsWith('+91') && cleaned.length === 13) {
     return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 8)} ${cleaned.slice(8)}`;
   }
-  
+
   // Generic format for other numbers
   return cleaned;
 };
@@ -139,17 +139,17 @@ export const buildParams = (params: Record<string, any>) => {
     (Array.isArray(params.category) ? params.category : [params.category])
       .forEach(v => append("category", v));
   }
-  
+
   if (params.brand) {
     (Array.isArray(params.brand) ? params.brand : [params.brand])
       .forEach(v => append("brand", v));
   }
-  
+
   if (params.productSize) {
     (Array.isArray(params.productSize) ? params.productSize : [params.productSize])
       .forEach(v => append("productSize", v));  // Changed back to "productSize"
   }
-  
+
   if (params.color) {
     (Array.isArray(params.color) ? params.color : [params.color])
       .forEach(v => append("color", v));
@@ -163,9 +163,9 @@ export const buildParams = (params: Record<string, any>) => {
   append("page", params.page);
   append("size", params.size);
   append("searchQuery", params.searchQuery);
-  append("categorySlug" , params.categorySlug);
-  append("q" , params.q);
-  append("isPremium" , params.isPremium);
+  append("categorySlug", params.categorySlug);
+  append("q", params.q);
+  append("isPremium", params.isPremium);
 
   return searchParams.toString();
 };
@@ -177,17 +177,60 @@ export function normalizeArray(value: string | string[] | undefined): string[] |
 }
 
 
- export const parseCustomizationSnapshot = (snapshot: string | null | undefined) => {
-    if (!snapshot) return null;
-    try {
-      return JSON.parse(snapshot) as {
-        designId?: string;
-        previewUrl?: string;
-        threadColor?: string;
-        additionalNotes?: string;
-      };
-    } catch (error) {
-      console.error('Failed to parse customization snapshot:', error);
-      return null;
-    }
-  };
+export const parseCustomizationSnapshot = (snapshot: string | null | undefined) => {
+  if (!snapshot) return null;
+  try {
+    return JSON.parse(snapshot) as {
+      designId?: string;
+      previewUrl?: string;
+      threadColor?: string;
+      additionalNotes?: string;
+    };
+  } catch (error) {
+    console.error('Failed to parse customization snapshot:', error);
+    return null;
+  }
+};
+
+/**
+ * Format a date to relative time (e.g., "2 min ago", "1 hour ago")
+ * @param date - Date object or ISO date string
+ * @returns Relative time string
+ */
+export const formatRelativeTime = (date: Date | string): string => {
+  const now = new Date();
+  const then = typeof date === 'string' ? new Date(date) : date;
+  const diffInSeconds = Math.floor((now.getTime() - then.getTime()) / 1000);
+
+  if (diffInSeconds < 60) {
+    return 'just now';
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} min ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) {
+    return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+  }
+
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) {
+    return `${diffInWeeks} ${diffInWeeks === 1 ? 'week' : 'weeks'} ago`;
+  }
+
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) {
+    return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`;
+  }
+
+  const diffInYears = Math.floor(diffInMonths / 12);
+  return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
+};

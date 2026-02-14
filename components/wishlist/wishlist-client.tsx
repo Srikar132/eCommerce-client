@@ -25,28 +25,16 @@ import { WishlistCard } from "@/components/cards/wishlist-card";
 import { useSession } from "next-auth/react";
 
 export function WishlistClient() {
-    const {  status } = useSession();
-    const { data: wishlist, isLoading } = useWishlist();
+    const { data: wishlist, isLoading } = useWishlist({ enabled: true });
     const removeFromWishlist = useRemoveFromWishlist();
     const clearWishlistMutation = useClearWishlist();
 
     const items = wishlist?.items || [];
     const totalItems = wishlist?.totalItems || 0;
-    const isAuthenticated = status === "authenticated";
 
     // Loading state - check this first before authentication
-    if (status === "loading" || isLoading) {
+    if (isLoading) {
         return <PageLoadingSkeleton />;
-    }
-
-    // Not authenticated - show login required
-    if (!isAuthenticated) {
-        return (
-            <LoginRequired
-                title="Your Wishlist Awaits"
-                description="Please log in to view your saved items and manage your wishlist."
-            />
-        );
     }
 
     // Empty wishlist state

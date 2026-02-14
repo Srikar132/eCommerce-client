@@ -68,7 +68,12 @@ export function useDeleteProduct() {
         mutationFn: deleteProduct,
         onSuccess: (result) => {
             if (result.success) {
-                toast.success(result.message || "Product deleted successfully");
+                // Show info toast for archived products, success for deleted
+                if ('archived' in result && result.archived) {
+                    toast.info(result.message || "Product archived");
+                } else {
+                    toast.success(result.message || "Product deleted successfully");
+                }
                 queryClient.invalidateQueries({ queryKey: ["products"] });
                 queryClient.invalidateQueries({ queryKey: ["admin-products"] });
             } else {

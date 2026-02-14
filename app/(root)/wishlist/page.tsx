@@ -1,17 +1,20 @@
-import { Suspense } from "react";
 import { Metadata } from "next";
-import { WishlistPageSkeleton } from "@/components/ui/skeletons";
 import { WishlistClient } from "@/components/wishlist/wishlist-client";
+import { auth } from "@/auth";
+import { LoginRequired } from "@/components/auth/login-required";
 
 export const metadata: Metadata = {
   title: "My Wishlist | Armoire",
   description: "View and manage your saved favorite items",
 };
 
-export default function WishlistPage() {
-  return (
-    <Suspense fallback={<WishlistPageSkeleton />}>
-      <WishlistClient />
-    </Suspense>
-  );
+export default async function WishlistPage() {
+
+  const session = await auth();
+
+  if (!session) {
+    return <LoginRequired/>;
+  }
+
+  return <WishlistClient />;
 }

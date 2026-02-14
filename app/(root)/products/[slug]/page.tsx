@@ -2,7 +2,6 @@ import ProductDetailClient from "@/components/product/product-detail-client";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { Suspense } from "react";
-import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import { PLACEHOLDER_IMAGE } from "@/constants";
 import { getProductBySlug, getProductVariants } from "@/lib/actions/product-actions";
 import { Product, ProductVariant } from "@/types/product";
@@ -77,11 +76,11 @@ export async function generateMetadata({
 
 
 
-async function ProductDetailPage({ params }: ProductPageProps) {
+export default async function ProductDetailPage({ params }: ProductPageProps) {
     const { slug } = await params;
 
     // Fetch product data using cached function
-    const product = await getCachedProduct(slug);
+    const product = await getCachedProduct(slug).catch(() => null);
 
     if (!product) {
         notFound();
@@ -105,26 +104,7 @@ async function ProductDetailPage({ params }: ProductPageProps) {
                         <ProductReviewsSection productId={product.id} />
                     </div>
                 </Suspense>
-
-                {/* Product Recommendations - Server Component */}
-                {/* <Suspense fallback={<RecommendationsSkeleton />}>
-                    <ProductRecommendations 
-                        excludeProductSlug={slug}
-                        limit={6}
-                        title="You May Also Like"
-                    />
-                </Suspense> */}
             </div>
         </div>
-    );
-}
-
-
-
-export default function ProductDetailPageWrapper({ params }: ProductPageProps) {
-    return (
-        <Suspense fallback={<PageLoadingSkeleton />}>
-            <ProductDetailPage params={params} />
-        </Suspense>
     );
 }

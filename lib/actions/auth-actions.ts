@@ -5,6 +5,9 @@ import { sendOtpSms, formatPhoneNumber, validatePhoneNumber } from "@/lib/twilio
 import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { db } from "@/drizzle/db";
+import { users } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
 
 // ==================== SEND OTP ====================
 
@@ -19,7 +22,7 @@ export async function sendOtp(phone: string) {
 
     // Format and validate phone number
     const formattedPhone = formatPhoneNumber(phone);
-    
+
     if (!validatePhoneNumber(formattedPhone)) {
       return {
         success: false,
@@ -117,7 +120,7 @@ export async function verifyOtp(phone: string, otp: string) {
     const storedOtpString = String(storedOtp).trim();
     const receivedOtpString = String(otp).trim();
 
-    
+
 
     // Verify OTP
     if (storedOtpString !== receivedOtpString) {
@@ -165,7 +168,7 @@ export async function loginWithOtp(phone: string, otp: string) {
 
     // First verify the OTP
     const verifyResult = await verifyOtp(formattedPhone, otp);
-    
+
     if (!verifyResult.success) {
       return verifyResult;
     }
@@ -178,6 +181,18 @@ export async function loginWithOtp(phone: string, otp: string) {
         redirect: false,
       });
 
+      // Fetch the user to get their role for client-side redirect
+      const [user] = await db
+        .select({ id: users.id, role: users.role, phone: users.phone })
+        .from(users)
+        .where(eq(users.phone, formattedPhone))
+        .limit(1);
+
+      console.log("🔐 [LOGIN] User fetched for redirect:", {
+        phone: formattedPhone,
+        userId: user?.id,
+        role: user?.role,
+      });
 
       // revalidate the CART & WISHLIST PAGES
       revalidatePath("/cart");
@@ -186,6 +201,7 @@ export async function loginWithOtp(phone: string, otp: string) {
       return {
         success: true,
         message: "Login successful",
+        user: user ? { id: user.id, role: user.role, phone: user.phone } : undefined,
       };
     } catch (error) {
       if (error instanceof AuthError) {

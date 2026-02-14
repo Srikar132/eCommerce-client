@@ -3,26 +3,28 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from 'lucide-react';
 import Header from '@/components/header';
+import { getStoreSettings } from '@/lib/actions/store-settings-actions';
 
 export const metadata = {
   title: 'Contact Us - THE NALA ARMOIRE',
   description: 'Get in touch with us for any questions, feedback, or support. We\'re here to help you with your shopping experience.',
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getStoreSettings();
   return (
     <main className="min-h-screen bg-background">
       {/* Header Section */}
-      <Header 
-        title="Get In Touch" 
-        subtitle="We'd love to hear from you. Send us a message and we'll respond as soon as possible." 
+      <Header
+        title="Get In Touch"
+        subtitle="We'd love to hear from you. Send us a message and we'll respond as soon as possible."
       />
 
       {/* Main Content */}
       <section className="py-12 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
-            
+
             {/* Contact Form */}
             <div className="lg:col-span-3 order-2 lg:order-1">
               <Card className="border-border bg-card shadow-sm">
@@ -40,7 +42,7 @@ export default function ContactPage() {
                       </p>
                     </div>
                   </div>
-                  
+
                   <form className="space-y-5">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
@@ -84,8 +86,8 @@ export default function ContactPage() {
                       />
                     </div>
 
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 font-medium flex items-center justify-center gap-2 shadow-sm"
                     >
                       <Send className="w-4 h-4" />
@@ -99,12 +101,12 @@ export default function ContactPage() {
             {/* Contact Information */}
             <div className="lg:col-span-2 order-1 lg:order-2">
               <div className="space-y-6">
-                
+
                 <div>
                   <h2 className="text-2xl font-serif font-light text-foreground mb-6">
                     Visit Us
                   </h2>
-                  
+
                   <div className="space-y-5">
                     <Card className="border-border bg-card hover:shadow-md transition-shadow duration-300">
                       <CardContent className="p-5">
@@ -115,10 +117,10 @@ export default function ContactPage() {
                           <div>
                             <h3 className="font-medium text-foreground text-sm mb-2">Address</h3>
                             <p className="text-sm text-muted-foreground leading-relaxed">
-                              THE NALA ARMOIRE<br />
-                              123 Fashion District<br />
-                              Style Street, Suite 456<br />
-                              New York, NY 10001
+                              NALA ARMOIRE<br />
+                              {settings.address}<br />
+                              {settings.city}, {settings.state} {settings.pincode}<br />
+                              {settings.country}
                             </p>
                           </div>
                         </div>
@@ -133,7 +135,7 @@ export default function ContactPage() {
                           </div>
                           <div>
                             <h3 className="font-medium text-foreground text-sm mb-2">Phone</h3>
-                            <p className="text-sm text-muted-foreground">+1 (555) 123-4567</p>
+                            <p className="text-sm text-muted-foreground">{settings.phone}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -147,7 +149,7 @@ export default function ContactPage() {
                           </div>
                           <div>
                             <h3 className="font-medium text-foreground text-sm mb-2">Email</h3>
-                            <p className="text-sm text-muted-foreground">hello@thenalaarmoire.com</p>
+                            <p className="text-sm text-muted-foreground">{settings.email}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -178,7 +180,7 @@ export default function ContactPage() {
                   <CardContent className="p-6">
                     <h3 className="text-lg font-serif font-light mb-3">Customer Service</h3>
                     <p className="text-sm opacity-90 mb-3 leading-relaxed">
-                      Our dedicated team is here to assist you with any inquiries about products, 
+                      Our dedicated team is here to assist you with any inquiries about products,
                       orders, returns, or general questions.
                     </p>
                     <div className="flex items-center gap-2 text-sm">

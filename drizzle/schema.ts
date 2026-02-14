@@ -452,3 +452,107 @@ export const wishlists = pgTable(
         uniqueIndex("uk_user_product").on(table.userId, table.productId),
     ]
 );
+
+// Store Settings Table (singleton - only one row)
+export const storeSettings = pgTable(
+    "store_settings",
+    {
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => "default"),
+        email: text("email").notNull().default("support@armoire.com"),
+        phone: text("phone").notNull().default("+91 9876543210"),
+        address: text("address").notNull().default("123, Fashion Street"),
+        city: text("city").notNull().default("Mumbai"),
+        state: text("state").notNull().default("Maharashtra"),
+        pincode: text("pincode").notNull().default("400001"),
+        country: text("country").notNull().default("India"),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    }
+);
+
+// ==================== LANDING PAGE CONTENT TABLES ====================
+
+// Landing Page Categories (for Shop by Category section)
+export const landingCategories = pgTable(
+    "landing_categories",
+    {
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => randomUUID()),
+        title: text("title").notNull(),
+        imageUrl: text("image_url").notNull(),
+        linkUrl: text("link_url").notNull(),
+        displayOrder: integer("display_order").default(0).notNull(),
+        isActive: boolean("is_active").default(true).notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    },
+    (table) => [
+        index("idx_landing_cat_order").on(table.displayOrder),
+        index("idx_landing_cat_active").on(table.isActive),
+    ]
+);
+
+// Showcase Products (for premium showcase section)
+export const showcaseProducts = pgTable(
+    "showcase_products",
+    {
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => randomUUID()),
+        title: text("title").notNull(),
+        price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+        imageUrl: text("image_url").notNull(),
+        displayOrder: integer("display_order").default(0).notNull(),
+        isActive: boolean("is_active").default(true).notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    },
+    (table) => [
+        index("idx_showcase_order").on(table.displayOrder),
+        index("idx_showcase_active").on(table.isActive),
+    ]
+);
+
+// Landing Page Testimonials (admin-approved reviews for display)
+export const landingTestimonials = pgTable(
+    "landing_testimonials",
+    {
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => randomUUID()),
+        customerName: text("customer_name").notNull(),
+        customerRole: text("customer_role").default("Verified Customer"),
+        reviewText: text("review_text").notNull(),
+        rating: integer("rating").default(5).notNull(),
+        isVerifiedPurchase: boolean("is_verified_purchase").default(false).notNull(),
+        displayOrder: integer("display_order").default(0).notNull(),
+        isActive: boolean("is_active").default(true).notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    },
+    (table) => [
+        index("idx_testimonial_order").on(table.displayOrder),
+        index("idx_testimonial_active").on(table.isActive),
+    ]
+);
+
+// Instagram Slider Images
+export const sliderImages = pgTable(
+    "slider_images",
+    {
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => randomUUID()),
+        imageUrl: text("image_url").notNull(),
+        altText: text("alt_text").default("Fashion image"),
+        displayOrder: integer("display_order").default(0).notNull(),
+        isActive: boolean("is_active").default(true).notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+    },
+    (table) => [
+        index("idx_slider_order").on(table.displayOrder),
+        index("idx_slider_active").on(table.isActive),
+    ]
+);

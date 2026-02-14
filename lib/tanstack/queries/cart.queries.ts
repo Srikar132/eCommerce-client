@@ -18,12 +18,13 @@ import { queryKeys } from "../query-keys";
 /**
  * Get user's cart with all items
  */
-export const useCart = () => {
+export const useCart = ({enabled}: {enabled: boolean}) => {
     return useQuery<Cart | null>({
         queryKey: queryKeys.cart.details(),
         queryFn: () => getOrCreateCart(),
         staleTime: 1000 * 60 * 5, // 5 minutes
         retry: 1,
+        enabled
     });
 };
 
@@ -126,8 +127,11 @@ export const useClearCart = () => {
  * @param productVariantId - Product variant ID to check
  * @returns boolean indicating if the item is in cart
  */
-export const useIsInCart = (productId: string, productVariantId: string): boolean => {
-    const { data: cart } = useCart();
+export const useIsInCart = ({productId, productVariantId , enabled}: {productId: string; productVariantId: string; enabled: boolean}): boolean => {
+
+    if (!enabled) return false;
+
+    const { data: cart } = useCart({enabled});
 
     if (!cart?.items) return false;
 
@@ -142,25 +146,25 @@ export const useIsInCart = (productId: string, productVariantId: string): boolea
  * Get total number of items in cart
  * @returns Total item count
  */
-export const useCartCount = (): number => {
-    const { data: cart } = useCart();
-    return cart?.totalItems || 0;
+export const useCartCount = ({enabled}: {enabled: boolean}): number => {
+    const { data: cart } = useCart({enabled});
+    return enabled ? cart?.totalItems || 0 : 0;
 };
 
 /**
  * Get cart total amount
  * @returns Cart total
  */
-export const useCartTotal = (): number => {
-    const { data: cart } = useCart();
-    return cart?.total || 0;
+export const useCartTotal = ({enabled}: {enabled: boolean}): number => {
+    const { data: cart } = useCart({enabled});
+    return enabled ? cart?.total || 0 : 0;
 };
 
 /**
  * Get cart subtotal amount
  * @returns Cart subtotal
  */
-export const useCartSubtotal = (): number => {
-    const { data: cart } = useCart();
-    return cart?.subtotal || 0;
+export const useCartSubtotal = ({enabled}: {enabled: boolean}): number => {
+    const { data: cart } = useCart({enabled});
+    return enabled ? cart?.subtotal || 0 : 0;
 };

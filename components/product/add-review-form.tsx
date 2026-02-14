@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -21,12 +20,15 @@ import { Input } from "@/components/ui/input";
 import { Star, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import Link from "next/link";
 import { useAddProductReview } from "@/lib/tanstack/queries/product.queries";
 import { reviewFormSchema } from "@/lib/validations";
 
 
-type ReviewFormValues = z.infer<typeof reviewFormSchema>;
+type ReviewFormValues = {
+    rating: number;
+    title?: string;
+    comment: string;
+};
 
 interface AddReviewFormProps {
     productId: string;
@@ -42,7 +44,7 @@ export function AddReviewForm({ productId, onClose }: AddReviewFormProps) {
 
     // Initialize form with React Hook Form
     const form = useForm<ReviewFormValues>({
-        resolver: zodResolver(reviewFormSchema),
+        resolver: zodResolver(reviewFormSchema) as Resolver<ReviewFormValues>,
         defaultValues: {
             rating: 0,
             title: "",
@@ -50,7 +52,6 @@ export function AddReviewForm({ productId, onClose }: AddReviewFormProps) {
         },
     });
 
-    const watchRating = form.watch("rating");
     const watchTitle = form.watch("title");
     const watchComment = form.watch("comment");
 
@@ -65,8 +66,8 @@ export function AddReviewForm({ productId, onClose }: AddReviewFormProps) {
             toast.success("Review submitted successfully!");
             form.reset();
             onClose?.();
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || "Failed to submit review";
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : "Failed to submit review";
             toast.error(errorMessage);
         }
     };

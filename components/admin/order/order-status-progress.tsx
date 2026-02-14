@@ -20,10 +20,10 @@ const ORDER_STEPS = [
 
 // Special statuses that break the normal flow
 const SPECIAL_STATUSES = {
-    CANCELLED: { label: "Cancelled", icon: X, color: "text-red-500 bg-red-50 border-red-200" },
-    RETURN_REQUESTED: { label: "Return Requested", icon: RotateCcw, color: "text-orange-500 bg-orange-50 border-orange-200" },
-    RETURNED: { label: "Returned", icon: RotateCcw, color: "text-orange-500 bg-orange-50 border-orange-200" },
-    REFUNDED: { label: "Refunded", icon: RefreshCw, color: "text-purple-500 bg-purple-50 border-purple-200" },
+    CANCELLED: { label: "Cancelled", icon: X, color: "text-red-400 bg-red-500/10 border-red-500/20" },
+    RETURN_REQUESTED: { label: "Return Requested", icon: RotateCcw, color: "text-orange-400 bg-orange-500/10 border-orange-500/20" },
+    RETURNED: { label: "Returned", icon: RotateCcw, color: "text-orange-400 bg-orange-500/10 border-orange-500/20" },
+    REFUNDED: { label: "Refunded", icon: RefreshCw, color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
 } as const;
 
 function getStepIndex(status: OrderStatus): number {

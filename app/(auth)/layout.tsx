@@ -1,7 +1,9 @@
 import Navbar from "@/components/navbar/navbar";
 import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
+import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Page from "twilio/lib/base/Page";
 
 export const metadata: Metadata = {
     title: "SignIn Or SignUp - The Nala Armoire",
@@ -18,7 +20,9 @@ export default function Layout({
             <Suspense fallback={<NavbarSkeleton />}>
                 <Navbar />
             </Suspense>
-            {children}
+            <Suspense fallback={<PageLoadingSkeleton />}>
+                {children}
+            </Suspense>
         </main>
     );
 }

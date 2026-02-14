@@ -71,7 +71,7 @@ export default function AppSidebar() {
                   />
                 </div>
                 <div>
-                  <p className="text-xs font-medium tracking-[0.2em] uppercase text-foreground">The Nala Armoire</p>
+                  <p className="text-xs font-medium tracking-[0.2em] uppercase text-foreground">Nala Armoire</p>
                   <p className="text-[10px] italic text-muted-foreground -mt-0.5">where beauty roars</p>
                 </div>
               </Link>

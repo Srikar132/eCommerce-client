@@ -7,6 +7,9 @@ import Link from 'next/link';
 import { ProductGridSkeleton } from '@/components/ui/skeletons';
 import { Product } from '@/types/product';
 import { useToggleWishlist, useWishlist } from '@/lib/tanstack/queries/wishlist.queries';
+import { useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { showLoginDrawer } from './ui/login-drawer';
 
 interface SearchResultsProps {
     results: {
@@ -22,23 +25,26 @@ interface SearchResultsProps {
     isFetchingNextPage?: boolean;
 }
 
-export default function ProductGrid({ 
-    results, 
-    isLoading, 
-    onLoadMore, 
-    hasMore, 
-    isFetchingNextPage 
+export default function ProductGrid({
+    results,
+    isLoading,
+    onLoadMore,
+    hasMore,
+    isFetchingNextPage
 }: SearchResultsProps) {
     // Use wishlist hooks
+    const { data: session, status } = useSession();
     const toggleWishlist = useToggleWishlist();
-    const { data: wishlist } = useWishlist();
-
-    // Helper to check if product is in wishlist
-    const isInWishlist = (productId: string): boolean => {
-        if (!wishlist?.items) return false;
-        return wishlist.items.some((item) => item.productId === productId);
-    };
     
+    // Fetch wishlist data only when authenticated
+    const { data: wishlist } = useWishlist({ enabled: status === "authenticated" });
+
+    // Helper function to check if product is in wishlist
+    const isInWishlist = useCallback((productId: string) => {
+        if (status !== "authenticated" || !wishlist?.items) return false;
+        return wishlist.items.some(item => item.productId === productId);
+    }, [status, wishlist]);
+
     // Use infinite scroll hook for automatic loading
     const sentinelRef = useInfiniteScroll({
         hasNextPage: hasMore || false,
@@ -51,9 +57,18 @@ export default function ProductGrid({
      * Handle toggling product in/out of wishlist
      * Centralized handler for all product cards
      */
-    const handleToggleWishlist = (productId: string) => {
+    const handleToggleWishlist = useCallback((productId: string) => {
+
+        // Check Auth to allow toggling
+        if (status !== "authenticated") {
+            showLoginDrawer();
+            return;
+        }
+
         toggleWishlist.mutate(productId);
-    };
+
+
+    } , [status, toggleWishlist]);
 
     if (isLoading && !results.items.length) {
         return <ProductGridSkeleton count={8} />;
@@ -65,7 +80,7 @@ export default function ProductGrid({
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-xl font-medium text-gray-900 mb-2">No products found</h3>
                 <p className="text-gray-500 mb-4">
-                    {results.query 
+                    {results.query
                         ? `No products found for "${results.query}". Try different keywords or filters.`
                         : 'No products match your current filters. Try adjusting your selection.'
                     }

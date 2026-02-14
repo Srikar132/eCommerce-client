@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Product, ProductVariant } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,6 +16,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { formatCurrency } from "@/lib/utils/format";
 import { useDeleteProduct } from "@/hooks/use-product-mutations";
 import { toast } from "sonner";
@@ -46,6 +57,7 @@ const StatusBadge = ({ isActive, isDraft }: { isActive: boolean; isDraft?: boole
 
 // Product row actions component
 const ProductRowActions = ({ product }: { product: Product }) => {
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const deleteProductMutation = useDeleteProduct();
 
     const handleCopyId = () => {
@@ -59,74 +71,97 @@ const ProductRowActions = ({ product }: { product: Product }) => {
     };
 
     const handleDelete = async () => {
-        const confirmMessage = `Are you sure you want to delete "${product.name}"? This action cannot be undone and will remove all associated variants and images.`;
-
-        if (!confirm(confirmMessage)) {
-            return;
-        }
-
-        deleteProductMutation.mutate(product.id);
+        deleteProductMutation.mutate(product.id, {
+            onSuccess: () => {
+                setShowDeleteDialog(false);
+            },
+        });
     };
 
     return (
-        <div className="flex items-center gap-1">
-            <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 admin-glow-button"
-                asChild
-            >
-                <Link href={`/products/${product.slug}`} target="_blank">
-                    <Eye className="w-4 h-4" />
-                    <span className="sr-only">View product</span>
-                </Link>
-            </Button>
-            <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 admin-glow-button"
-                asChild
-            >
-                <Link href={`/admin/products/${product.id}/edit`}>
-                    <Edit className="w-4 h-4" />
-                    <span className="sr-only">Edit product</span>
-                </Link>
-            </Button>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0 admin-glow-button">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="admin-card">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem
-                        onClick={handleCopyId}
-                        className="admin-glow-button cursor-pointer"
-                    >
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copy product ID
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        onClick={handleCopySlug}
-                        className="admin-glow-button cursor-pointer"
-                    >
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copy slug
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        className="text-destructive admin-glow-button cursor-pointer"
-                        onClick={handleDelete}
-                        disabled={deleteProductMutation.isPending}
-                    >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        {deleteProductMutation.isPending ? "Deleting..." : "Delete product"}
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+        <>
+            <div className="flex items-center gap-1">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 admin-glow-button"
+                    asChild
+                >
+                    <Link href={`/products/${product.slug}`} target="_blank">
+                        <Eye className="w-4 h-4" />
+                        <span className="sr-only">View product</span>
+                    </Link>
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 admin-glow-button"
+                    asChild
+                >
+                    <Link href={`/admin/products/${product.id}/edit`}>
+                        <Edit className="w-4 h-4" />
+                        <span className="sr-only">Edit product</span>
+                    </Link>
+                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0 admin-glow-button">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="admin-card">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                            onClick={handleCopyId}
+                            className="admin-glow-button cursor-pointer"
+                        >
+                            <Copy className="w-4 h-4 mr-2" />
+                            Copy product ID
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={handleCopySlug}
+                            className="admin-glow-button cursor-pointer"
+                        >
+                            <Copy className="w-4 h-4 mr-2" />
+                            Copy slug
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            className="text-destructive admin-glow-button cursor-pointer"
+                            onClick={() => setShowDeleteDialog(true)}
+                            disabled={deleteProductMutation.isPending}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete product
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                <AlertDialogContent className="admin-card">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Product</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete &quot;{product.name}&quot;? This action cannot be undone and will remove all associated variants and images.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deleteProductMutation.isPending}>
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDelete}
+                            disabled={deleteProductMutation.isPending}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            {deleteProductMutation.isPending ? "Deleting..." : "Delete"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 };
 

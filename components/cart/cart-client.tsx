@@ -5,14 +5,16 @@ import { CartItemCard } from "./cart-item-card";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { Skeleton } from "@/components/ui/skeleton";
-import { LoginRequired } from "@/components/auth/login-required";
 import PageLoadingSkeleton from "../ui/skeletons/page-loading-skeleton";
-import { useSession } from "next-auth/react";
 
 export function CartClient() {
-    const {  status } = useSession();
-    const { data: cart, isLoading } = useCart();
+
+
+    const { data: cart, isLoading } = useCart({
+        enabled: true
+    });
+
+    
     const removeItem = useRemoveFromCart();
     const updateQuantity = useUpdateCartQuantity();
 
@@ -20,22 +22,11 @@ export function CartClient() {
     const totalItems = cart?.totalItems || 0;
     const subtotal = cart?.subtotal || 0;
     const total = cart?.total || 0;
-    const isAuthenticated = status === "authenticated";
 
     // Loading state - check this first before authentication
-    if (status === "loading" || isLoading) {
+    if (isLoading) {
         return (
             <PageLoadingSkeleton/>
-        );
-    }
-
-    // Not authenticated - show login required
-    if (!isAuthenticated) {
-        return (
-            <LoginRequired
-                title="Your Cart Awaits"
-                description="Please log in to view your shopping cart and continue with your order."
-            />
         );
     }
 

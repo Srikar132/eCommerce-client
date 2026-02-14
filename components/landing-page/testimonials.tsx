@@ -1,25 +1,43 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { testimonials } from "@/constants";
 import { Quote } from "lucide-react";
 
-const Testimonials = () => {
+interface Testimonial {
+  id: string;
+  customerName: string;
+  customerRole: string | null;
+  reviewText: string;
+  rating: number;
+  isVerifiedPurchase: boolean;
+}
+
+interface TestimonialsClientProps {
+  testimonials: Testimonial[];
+}
+
+const TestimonialsClient = ({ testimonials }: TestimonialsClientProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Auto-play: change testimonial every 5 seconds
   useEffect(() => {
+    if (testimonials.length === 0) return;
+
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [testimonials.length]);
+
+  if (testimonials.length === 0) {
+    return null;
+  }
 
   return (
     <section className="relative flex items-center justify-center w-full py-16 sm:py-20 md:py-24 overflow-hidden bg-background">
       <div className="max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center mb-12 space-y-3">
           <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
@@ -40,27 +58,26 @@ const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
-              className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-                index === currentIndex
+              className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === currentIndex
                   ? "opacity-100 translate-x-0"
                   : index < currentIndex
-                  ? "opacity-0 -translate-x-full"
-                  : "opacity-0 translate-x-full"
-              }`}
+                    ? "opacity-0 -translate-x-full"
+                    : "opacity-0 translate-x-full"
+                }`}
             >
               <div className="text-center space-y-8 px-4">
                 {/* Testimonial Text */}
                 <p className="text-xl md:text-2xl lg:text-3xl font-serif italic text-foreground leading-relaxed max-w-3xl mx-auto">
-                  &ldquo;{testimonial.text}&rdquo;
+                  &ldquo;{testimonial.reviewText}&rdquo;
                 </p>
 
                 {/* Author Info */}
                 <div className="space-y-1">
                   <h4 className="text-base md:text-lg font-medium text-foreground">
-                    {testimonial.name}
+                    {testimonial.customerName}
                   </h4>
                   <p className="text-xs md:text-sm text-muted-foreground tracking-widest uppercase">
-                    Verified Customer
+                    {testimonial.isVerifiedPurchase ? "Verified Customer" : testimonial.customerRole}
                   </p>
                 </div>
               </div>
@@ -74,11 +91,10 @@ const Testimonials = () => {
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
                   ? "bg-primary w-8"
                   : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-              }`}
+                }`}
               aria-label={`Go to testimonial ${index + 1}`}
             />
           ))}
@@ -87,8 +103,8 @@ const Testimonials = () => {
         {/* Decorative Gradient Blob */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 sm:w-lg sm:h-128 bg-primary/5 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
       </div>
-    </section> 
+    </section>
   );
 };
 
-export default Testimonials;
+export default TestimonialsClient;

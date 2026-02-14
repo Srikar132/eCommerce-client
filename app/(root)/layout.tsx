@@ -5,6 +5,8 @@ import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import { ShoppingCart } from "lucide-react";
+import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
+import { LoginDrawerProvider } from "@/components/ui/login-drawer";
 
 export const metadata = {
   title: "Nala Armoire - Discover Your Style",
@@ -18,7 +20,7 @@ export default async function RootLayout({
 }) {
   return (
     <main className="w-full">
-      <div className="w-full bg-primary text-primary-foreground text-xs flex items-center justify-center py-1 tracking-wider">
+      <div className="sticky top-0 z-50 w-full bg-primary text-primary-foreground text-xs flex items-center justify-center py-1 tracking-wider">
         <ShoppingCart className="mr-2" size={13} />
         PREPAID ORDERS ONLY!
       </div>
@@ -31,11 +33,17 @@ export default async function RootLayout({
           <Navbar />
         </Suspense>
 
-        <main className="w-full relative">{children}</main>
+        <main className="w-full relative">
+          <Suspense fallback={<PageLoadingSkeleton />}>
+            {children}
+          </Suspense>
+        </main>
 
         <Footer />
-
       </div>
+
+
+      <LoginDrawerProvider />
     </main>
   );
 }

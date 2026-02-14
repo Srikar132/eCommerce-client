@@ -1,4 +1,4 @@
-import { FolderTree, LayoutDashboard, Package, Settings, ShoppingCart, Star, Users } from "lucide-react";
+import { ConciergeBell, FolderTree, LayoutDashboard, Package, Settings, ShoppingCart, Star, Users } from "lucide-react";
 
 export const routes = [
   {
@@ -26,4 +26,10 @@ export const routes = [
     icon: Settings,
     href: "/admin/settings",
   },
+
+  {
+    label: "Content",
+    icon: ConciergeBell,
+    href: "/admin/content"
+  }
 ];

@@ -18,6 +18,7 @@ import { useVariantSelection } from "@/hooks/use-variant-selector";
 import { Product, ProductVariant } from "@/types/product";
 import { useAddToCart, useIsInCart } from "@/lib/tanstack/queries/cart.queries";
 import { useIsInWishlist, useToggleWishlist, useWishlist } from "@/lib/tanstack/queries/wishlist.queries";
+import { showLoginDrawer } from "../ui/login-drawer";
 
 interface ProductDetailClientProps {
     product: Product;
@@ -48,15 +49,16 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
 
     const addToCart = useAddToCart();
     const toggleWishlist = useToggleWishlist();
-    const isInCart = useIsInCart(product.id, selectedVariant?.id!);
-    const isInWishlist = useIsInWishlist(product.id);
+    const isInCart = useIsInCart({ productId: product.id, productVariantId: selectedVariant?.id! , enabled: !!session});
+    const isInWishlist = useIsInWishlist({ productId: product.id, enabled: !!session });
 
     // Handle Add to Cart with authentication check
     const handleAddToCart = useCallback(() => {
         // Check authentication
         if (status !== "authenticated") {
-            toast.error("Please login to add items to cart");
-            router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+            showLoginDrawer({
+                description: "Please login to add items to your cart.",
+            });
             return;
         }
 
@@ -77,8 +79,7 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
     const handleToggleWishlist = useCallback(() => {
         // Check authentication
         if (status !== "authenticated") {
-            toast.error("Please login to manage your wishlist");
-            router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+            showLoginDrawer();
             return;
         }
 

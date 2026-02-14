@@ -99,13 +99,11 @@ function OrdersContent() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="PENDING">Pending</SelectItem>
                                 <SelectItem value="CONFIRMED">Confirmed</SelectItem>
                                 <SelectItem value="PROCESSING">Processing</SelectItem>
                                 <SelectItem value="SHIPPED">Shipped</SelectItem>
                                 <SelectItem value="DELIVERED">Delivered</SelectItem>
                                 <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                                <SelectItem value="RETURNED">Returned</SelectItem>
                                 <SelectItem value="REFUNDED">Refunded</SelectItem>
                             </SelectContent>
                         </Select>
@@ -116,12 +114,11 @@ function OrdersContent() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Payments</SelectItem>
-                                <SelectItem value="PENDING">Pending</SelectItem>
                                 <SelectItem value="PROCESSING">Processing</SelectItem>
                                 <SelectItem value="PAID">Paid</SelectItem>
                                 <SelectItem value="FAILED">Failed</SelectItem>
                                 <SelectItem value="REFUNDED">Refunded</SelectItem>
-                                <SelectItem value="PARTIALLY_REFUNDED">Partially Refunded</SelectItem>
+                                <SelectItem value="PARTIALLY_REFUNDED">Requested Refunded</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

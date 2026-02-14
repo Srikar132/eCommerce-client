@@ -1,26 +1,13 @@
-import { Suspense } from 'react';
 import { AccountDetailsSection } from '@/components/account/account-details-section';
 import { UserStatsSection } from '@/components/account/user-stats-section';
 import { AddressesSectionClient } from '@/components/account/addresses-section';
 import { QuickActionsSection } from '@/components/account/quick-actions-section';
 import RoleBasedWelcome from '@/components/auth/role-based-welcome';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent } from '@/components/ui/card';
 
 export const metadata = {
     title: 'My Account',
     description: 'Manage your account settings and preferences',
 };
-
-function LoadingSkeleton() {
-    return (
-        <Card>
-            <CardContent className="p-6">
-                <Skeleton className="h-32 w-full" />
-            </CardContent>
-        </Card>
-    );
-}
 
 export default function AccountPage() {
     return (
@@ -43,27 +30,19 @@ export default function AccountPage() {
                 {/* Left Column - Account Details & Stats */}
                 <div className="space-y-4 md:space-y-6 lg:col-span-2">
                     {/* Account Details */}
-                    <Suspense fallback={<LoadingSkeleton />}>
-                        <AccountDetailsSection />
-                    </Suspense>
+                    <AccountDetailsSection />
 
                     {/* User Stats */}
-                    <Suspense fallback={<LoadingSkeleton />}>
-                        <UserStatsSection />
-                    </Suspense>
+                    <UserStatsSection />
 
                     {/* Addresses Section */}
-                    <Suspense fallback={<LoadingSkeleton />}>
-                        <AddressesSectionClient />
-                    </Suspense>
+                    <AddressesSectionClient />
                 </div>
 
                 {/* Right Column - Quick Actions */}
                 <div className="lg:col-span-1">
                     <div className="lg:sticky lg:top-6">
-                        <Suspense fallback={<LoadingSkeleton />}>
-                            <QuickActionsSection />
-                        </Suspense>
+                        <QuickActionsSection />
                     </div>
                 </div>
             </div>

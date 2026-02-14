@@ -61,15 +61,18 @@ interface UseRazorpayCheckoutOptions {
      */
     onSuccess?: (orderNumber: string) => void;
 
+
     /**
      * Called when payment fails
      */
     onFailure?: (orderNumber: string) => void;
 
+
     /**
      * Called when user cancels the payment
      */
     onCancel?: (orderNumber: string) => void;
+
 
     /**
      * Whether to invalidate cart cache after successful payment
@@ -77,11 +80,13 @@ interface UseRazorpayCheckoutOptions {
      */
     clearCartOnSuccess?: boolean;
 
+
     /**
      * Whether to refresh the page after payment
      * @default false
      */
     refreshOnSuccess?: boolean;
+
 
     /**
      * Custom theme color for Razorpay modal
@@ -96,10 +101,12 @@ interface UseRazorpayCheckoutReturn {
      */
     isProcessing: boolean;
 
+
     /**
      * Open Razorpay checkout modal with payment details
      */
     openCheckout: (checkoutData: CheckoutData) => void;
+
 
     /**
      * Check if Razorpay SDK is loaded
@@ -161,8 +168,10 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
         let attempts = 0;
         const maxAttempts = 20; // 10 seconds total (500ms * 20)
 
+
         const checkInterval = setInterval(() => {
             attempts++;
+
 
             if (checkRazorpayLoaded()) {
                 setIsRazorpayLoaded(true);
@@ -227,6 +236,7 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
     ) => {
         setIsProcessing(false);
 
+
         const errorMessage = response.error?.description || "Payment failed";
         toast.error(`${errorMessage}. Please try again.`);
 
@@ -258,6 +268,7 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
     const openCheckout = useCallback((checkoutData: CheckoutData) => {
         // Double-check if Razorpay is loaded before opening
         const isLoaded = checkRazorpayLoaded();
+
 
         if (!isLoaded) {
             toast.error("Payment gateway is loading. Please wait a moment and try again.");

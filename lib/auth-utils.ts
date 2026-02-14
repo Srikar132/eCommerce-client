@@ -45,9 +45,15 @@ export const ADMIN_ROUTES = ['/admin'];
 /**
  * Get redirect URL after successful authentication
  * Takes into account user role and redirect parameter
+ * Note: Admin users are ALWAYS redirected to admin panel
  */
 export function getPostAuthRedirect(userRole: UserRole, redirectParam?: string | null): string {
-    // If there's a specific redirect parameter, validate it's safe to use
+    // Admin users always go to admin panel - no exceptions
+    if (userRole === 'ADMIN') {
+        return ROLE_REDIRECTS.ADMIN;
+    }
+
+    // For regular users, check redirect parameter first
     if (redirectParam && isValidRedirect(redirectParam)) {
         return redirectParam;
     }

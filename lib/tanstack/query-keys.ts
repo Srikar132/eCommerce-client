@@ -222,49 +222,6 @@ export const queryKeys = {
   },
 
   /**
-   * Customization-related query keys
-   */
-  customization: {
-    /**
-     * Base key for all customization queries
-     */
-    all: () => ['customization'] as const,
-
-    /**
-     * Single customization by ID
-     * @param customizationId - Customization ID
-     */
-    detail: (customizationId: string) => ['customization', 'detail', customizationId] as const,
-
-    /**
-     * User's all customizations (paginated)
-     * @param params - Pagination params
-     */
-    myDesigns: (params: { page?: number; size?: number }) =>
-      ['customization', 'my-designs', params] as const,
-
-    /**
-     * User's customizations for a specific product
-     * @param productId - Product ID
-     */
-    byProduct: (productId: string) => ['customization', 'product', productId] as const,
-
-    /**
-     * Guest customizations for a specific product
-     * @param productId - Product ID
-     * @param sessionId - Guest session ID
-     */
-    guestByProduct: (productId: string, sessionId: string) =>
-      ['customization', 'guest', productId, sessionId] as const,
-
-    /**
-     * Latest customization for a product
-     * @param productId - Product ID
-     */
-    latest: (productId: string) => ['customization', 'latest', productId] as const,
-  },
-
-  /**
    * Wishlist-related query keys
    */
   wishlist: {

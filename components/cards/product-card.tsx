@@ -26,9 +26,9 @@ const ProductCardComponent = ({
     isTogglingWishlist = false,
 }: Props) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    
-    const images = product.images && product.images.length > 0 
-        ? product.images 
+
+    const images = product.images && product.images.length > 0
+        ? product.images
         : [{ imageUrl: PLACEHOLDER_IMAGE, altText: product.name }];
 
     const handleWishlistClick = (e: React.MouseEvent) => {
@@ -64,17 +64,17 @@ const ProductCardComponent = ({
                         isInWishlist && "opacity-100"
                     )}
                 >
-                    <Heart 
+                    <Heart
                         className={cn(
                             "w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all",
                             isInWishlist ? "fill-red-500 text-red-500" : "text-gray-700"
-                        )} 
+                        )}
                     />
                 </button>
 
                 {/* Image Navigation Dots (only if multiple images) */}
                 {images.length > 1 && (
-                    <div 
+                    <div
                         className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                         onMouseEnter={(e) => e.stopPropagation()}
                     >
@@ -88,8 +88,8 @@ const ProductCardComponent = ({
                                 }}
                                 className={cn(
                                     "w-1.5 h-1.5 rounded-full transition-all duration-200",
-                                    currentImageIndex === index 
-                                        ? "bg-white w-6" 
+                                    currentImageIndex === index
+                                        ? "bg-white w-6"
                                         : "bg-white/50 hover:bg-white/75"
                                 )}
                                 aria-label={`View image ${index + 1}`}

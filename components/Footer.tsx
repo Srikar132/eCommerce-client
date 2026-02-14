@@ -18,21 +18,26 @@ const Footer: React.FC = () => {
                             <h3 className="font-semibold mb-4 text-sm tracking-widest uppercase text-foreground">Products</h3>
                             <ul className="space-y-3 text-sm">
                                 <li>
-                                    <Link href="/products?category=men" className="text-muted-foreground hover:text-primary transition-colors">
+                                    <Link href="/products?category=mens" className="text-muted-foreground hover:text-primary transition-colors">
                                         Men
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/products?category=women" className="text-muted-foreground hover:text-primary transition-colors">
+                                    <Link href="/products?category=womens" className="text-muted-foreground hover:text-primary transition-colors">
                                         Women
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/products?category=kids" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Kids
+                                    <Link href="/products?category=kid-boys" className="text-muted-foreground hover:text-primary transition-colors">
+                                        Kids Boys
                                     </Link>
                                 </li>
-                                
+                                <li>
+                                    <Link href="/products?category=kid-girls" className="text-muted-foreground hover:text-primary transition-colors">
+                                        Kids Girls
+                                    </Link>
+                                </li>
+
                             </ul>
                         </div>
 
@@ -62,11 +67,6 @@ const Footer: React.FC = () => {
                                         About Us
                                     </Link>
                                 </li>
-                                <li>
-                                    <Link href="/returns" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Return and Refunds
-                                    </Link>
-                                </li>
                             </ul>
                         </div>
 
@@ -91,33 +91,33 @@ const Footer: React.FC = () => {
                                 <option>EN</option>
                             </select>
                             <div className="flex gap-4">
-                                <Link 
-                                    href="https://facebook.com" 
+                                <Link
+                                    href="https://facebook.com"
                                     target="_blank"
                                     className="text-muted-foreground hover:text-primary transition-colors"
                                 >
                                     <Facebook className="w-5 h-5" />
                                 </Link>
-                                <Link 
-                                    href="https://twitter.com" 
+                                <Link
+                                    href="https://twitter.com"
                                     target="_blank"
                                     className="text-muted-foreground hover:text-primary transition-colors"
                                 >
                                     <Twitter className="w-5 h-5" />
                                 </Link>
-                                <Link 
-                                    href="https://instagram.com/the-nala-armoire" 
+                                <Link
+                                    href="https://instagram.com/the-nala-armoire"
                                     target="_blank"
                                     className="text-muted-foreground hover:text-primary transition-colors"
                                 >
                                     <Instagram className="w-5 h-5" />
                                 </Link>
-                                <Link 
-                                    href="#" 
+                                <Link
+                                    href="#"
                                     className="text-muted-foreground hover:text-primary transition-colors"
                                 >
                                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M16.75 2h-2.5v20h2.5c7.2 0 7.2-20 0-20M13 2H6C2.5 2 2.5 22 6 22h7V2z"/>
+                                        <path d="M16.75 2h-2.5v20h2.5c7.2 0 7.2-20 0-20M13 2H6C2.5 2 2.5 22 6 22h7V2z" />
                                     </svg>
                                 </Link>
                             </div>
@@ -130,8 +130,8 @@ const Footer: React.FC = () => {
             {/* Large Brand Name */}
             <div className="w-full overflow-hidden bg-background border-t border-border">
                 <div className="max-w-7xl mx-auto py-12 sm:py-16 md:py-20 px-4">
-                    <p className="text-center text-lg sm:text-xl tracking-[0.3em] uppercase text-muted-foreground mb-2">
-                        The Nala
+                    <p className="text-center text-xl sm:text-2xl tracking-[0.3em] uppercase text-muted-foreground mb-2">
+                        Nala
                     </p>
                     <h2 className="text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] xl:text-[220px] font-medium italic leading-none tracking-wider text-center text-foreground">
                         Armoire

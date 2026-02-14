@@ -3,19 +3,31 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { sliderImage } from '@/constants';
 import { Instagram } from 'lucide-react';
 
+interface SliderImage {
+    id: string;
+    imageUrl: string;
+    altText: string | null;
+}
 
-const SmoothSlider = () => {
+interface SmoothSliderClientProps {
+    images: SliderImage[];
+}
+
+const SmoothSliderClient = ({ images }: SmoothSliderClientProps) => {
     const [isPaused, setIsPaused] = useState(false);
 
     // Duplicate posts for seamless loop
-    const duplicatedPosts = [...sliderImage, ...sliderImage];
+    const duplicatedPosts = [...images, ...images];
+
+    if (images.length === 0) {
+        return null;
+    }
 
     return (
         <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
-            
+
             {/* Section Header */}
             <div className="text-center mb-12 space-y-3">
                 <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
@@ -44,13 +56,13 @@ const SmoothSlider = () => {
                             className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 bg-card"
                         >
                             <Image
-                                src={post.image}
-                                alt={post.alt}
+                                src={post.imageUrl}
+                                alt={post.altText || 'Fashion image'}
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 width={320}
                                 height={400}
                             />
-                            
+
                             {/* Hover Overlay */}
                             <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
@@ -67,7 +79,7 @@ const SmoothSlider = () => {
                     className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full text-sm sm:text-base font-medium uppercase tracking-wide hover:opacity-90 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
                 >
                     <span>Follow Us</span>
-                    <Instagram/>
+                    <Instagram />
                 </Link>
             </div>
 
@@ -89,4 +101,4 @@ const SmoothSlider = () => {
     );
 };
 
-export default SmoothSlider;
+export default SmoothSliderClient;

@@ -81,11 +81,44 @@ export async function proxy(request: NextRequest) {
   console.log(`├─ Authenticated: ${isAuthenticated ? '✅' : '❌'}`);
   console.log(`├─ Role: ${userRole || 'None'}`);
   console.log(`├─ Route Type: ${isPublic ? 'Public' :
-      isGuestOnly ? 'Guest-Only' :
-        isProtected ? 'Protected' :
-          isAdmin ? 'Admin' : 'Unknown'
+    isGuestOnly ? 'Guest-Only' :
+      isProtected ? 'Protected' :
+        isAdmin ? 'Admin' : 'Unknown'
     }`);
   console.log(`└─ Redirect Param: ${redirectParam || 'None'}`);
+
+  // ADMIN REDIRECT: Admin users should always be in admin panel
+  // Exception: Preview mode allows admins to view the store
+  const previewParam = searchParams.get('preview') === 'true';
+  const previewCookie = request.cookies.get('admin_preview')?.value === 'true';
+  const isPreviewMode = previewParam || previewCookie;
+
+  // If admin is accessing admin routes, clear preview cookie
+  if (isAuthenticated && userRole === 'ADMIN' && isAdmin && previewCookie) {
+    const response = addSecurityHeaders(NextResponse.next());
+    response.cookies.delete('admin_preview');
+    console.log(`🔄 [PREVIEW] Admin returned to panel, clearing preview cookie`);
+    return response;
+  }
+
+  // If preview param is set, create cookie for subsequent navigation
+  if (isAuthenticated && userRole === 'ADMIN' && previewParam && !isAdmin) {
+    const response = addSecurityHeaders(NextResponse.next());
+    response.cookies.set('admin_preview', 'true', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60, // 1 hour
+    });
+    console.log(`🔄 [PREVIEW] Admin entered preview mode, setting cookie`);
+    return response;
+  }
+
+  // Redirect admin to admin panel if not in preview mode
+  if (isAuthenticated && userRole === 'ADMIN' && !isAdmin && !isPreviewMode) {
+    console.log(`🔄 [REDIRECT] Admin user redirected from ${pathname} to /admin`);
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
 
   // STEP 1: Handle public routes (no authentication required)
   if (isPublic && !isProtected && !isAdmin) {

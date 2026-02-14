@@ -1,12 +1,12 @@
-
 import Image from 'next/image';
-import { categories } from '@/constants';
 import CategoryCard from '@/components/cards/category-card';
+import { getActiveLandingCategories } from '@/lib/actions/content-actions';
 
-export default function ShopByCategories() {
+export default async function ShopByCategories() {
+    const categories = await getActiveLandingCategories();
     return (
         <section className="relative w-full py-16 sm:py-20 md:py-24 lg:py-28 bg-background overflow-hidden">
-            
+
             {/* Decorative Flowers - Top Corners */}
             {/* Top Left Corner */}
             <div className="absolute top-8 left-4 sm:left-8 lg:left-12 w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 opacity-50 pointer-events-none z-10">
@@ -80,8 +80,8 @@ export default function ShopByCategories() {
                 />
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-                
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 relative z-20">
+
                 {/* Section Header */}
                 <div className="relative text-center mb-12 sm:mb-16 space-y-3">
                     <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
@@ -96,14 +96,14 @@ export default function ShopByCategories() {
                 </div>
 
                 {/* Categories Grid */}
-                <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+                <div className="relative grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4">
                     {categories.map((category) => (
                         <CategoryCard
                             key={category.id}
                             id={category.id}
                             title={category.title}
-                            image={category.image}
-                            url={category.url}
+                            image={category.imageUrl}
+                            url={category.linkUrl}
                         />
                     ))}
                 </div>

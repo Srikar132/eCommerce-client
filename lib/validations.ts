@@ -97,7 +97,7 @@ export const productVariantSchema = z.object({
     colorHex: z.string().optional(),
     stockQuantity: z.coerce.number().min(0, "Stock quantity must be non-negative"),
     additionalPrice: z.coerce.number().default(0),
-    sku: z.string().min(1, "Variant SKU is required"),
+    sku: z.string().optional(), // SKU is auto-generated
 });
 
 // Main product form validation schema

@@ -21,19 +21,25 @@ export const categories = [
         id: 1,
         title: "MEN",
         image: "/images/home/men-category.webp",
-        url : "/products?category=mens"
+        url: "/products?category=mens"
     },
     {
         id: 2,
         title: "WOMEN",
         image: "/images/home/women-category.webp",
-        url : "/products?category=womens"
+        url: "/products?category=womens"
     },
     {
         id: 3,
-        title: "KIDS",
+        title: "BOYS",
         image: "/images/home/kids-category.webp",
-        url : "/products?category=kids"
+        url: "/products?category=kid-boys"
+    },
+    {
+        id: 4,
+        title: "GIRLS",
+        image: "/images/home/kids-category.webp",
+        url: "/products?category=kid-girls"
     },
 ];
 
@@ -180,30 +186,35 @@ export const sliderImage = [
 
 
 export const collections = [
-  {
-    title: "ALL COLLECTIONS",
-    href: "/products",
-    description: "Versatile styles for everyone",
-  },
-  {
-    title: "WOMEN'S COLLECTION",
-    href: "/products?category=womens",
-    description: "Elegant designs for modern women",
-  },
-  {
-    title: "MEN'S COLLECTION",
-    href: "/products?category=mens",
-    description: "Refined style for distinguished men",
-  },
-  {
-    title: "KIDS & BABY",
-    href: "/products?category=kids",
-    description: "Comfortable clothing for little ones",
-  },
-  {
-    title: "LIMITED EDITION STITCHES",
-    href: "/products?featured=limited-edition",
-    description: "Exclusive handcrafted pieces",
-    special: true,
-  },
+    {
+        title: "ALL COLLECTIONS",
+        href: "/products",
+        description: "Versatile styles for everyone",
+    },
+    {
+        title: "WOMEN'S COLLECTION",
+        href: "/products?category=womens",
+        description: "Elegant designs for modern women",
+    },
+    {
+        title: "MEN'S COLLECTION",
+        href: "/products?category=mens",
+        description: "Refined style for distinguished men",
+    },
+    {
+        title: "KIDS BOYS",
+        href: "/products?category=kid-boys",
+        description: "Comfortable clothing for boys",
+    },
+    {
+        title: "KIDS GIRLS",
+        href: "/products?category=kid-girls",
+        description: "Comfortable clothing for girls",
+    },
+    {
+        title: "LIMITED EDITION STITCHES",
+        href: "/products?featured=limited-edition",
+        description: "Exclusive handcrafted pieces",
+        special: true,
+    },
 ];

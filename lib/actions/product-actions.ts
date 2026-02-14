@@ -8,6 +8,20 @@ import { eq, and, or, ilike, sql, desc, asc, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { productFormSchema, ProductFormData } from "@/lib/validations";
 
+/**
+ * Generate a unique SKU for a product variant
+ * Format: {PRODUCT_SKU}-{SIZE}-{COLOR_CODE}-{RANDOM}
+ */
+function generateVariantSku(productSku: string, size: string, color: string): string {
+    const colorCode = color
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '')
+        .substring(0, 3) || 'XXX';
+    const sizeCode = size.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `${productSku}-${sizeCode}-${colorCode}-${randomSuffix}`;
+}
+
 /* ========================================================================== */
 /* ADMIN: PRODUCT MANAGEMENT ACTIONS                                          */
 /* ========================================================================== */
@@ -44,19 +58,6 @@ export async function createProduct(formData: ProductFormData) {
 
         if (existingSlug.length > 0) {
             throw new Error("A product with this name already exists");
-        }
-
-        // Check for duplicate variant SKUs
-        if (validatedData.variants.length > 0) {
-            const variantSkus = validatedData.variants.map(v => v.sku);
-            const existingVariantSkus = await db
-                .select({ sku: productVariants.sku })
-                .from(productVariants)
-                .where(inArray(productVariants.sku, variantSkus));
-
-            if (existingVariantSkus.length > 0) {
-                throw new Error(`Variant SKU already exists: ${existingVariantSkus[0].sku}`);
-            }
         }
 
         // Neon HTTP driver does not support transactions. Use sequential writes with cleanup.
@@ -101,7 +102,7 @@ export async function createProduct(formData: ProductFormData) {
                         colorHex: variant.colorHex,
                         stockQuantity: variant.stockQuantity,
                         additionalPrice: variant.additionalPrice.toString(),
-                        sku: variant.sku,
+                        sku: generateVariantSku(validatedData.sku, variant.size, variant.color),
                         isActive: true,
                     }))
                 );
@@ -119,11 +120,60 @@ export async function createProduct(formData: ProductFormData) {
         }
     } catch (error) {
         console.error("Create product error:", error);
+
+        // Parse database errors into user-friendly messages
+        const errorMessage = parseProductError(error);
+
         return {
             success: false,
-            error: error instanceof Error ? error.message : "Failed to create product"
+            error: errorMessage
         };
     }
+}
+
+/**
+ * Parse database/validation errors into user-friendly messages
+ */
+function parseProductError(error: unknown): string {
+    if (error instanceof Error) {
+        const message = error.message.toLowerCase();
+
+        // Handle unique constraint violations
+        if (message.includes('unique constraint') || message.includes('duplicate key')) {
+            if (message.includes('sku')) {
+                return 'A product with this SKU already exists. Please use a different SKU.';
+            }
+            if (message.includes('slug')) {
+                return 'A product with this name already exists. Please use a different name.';
+            }
+            return 'This item already exists. Please check for duplicates.';
+        }
+
+        // Handle foreign key violations
+        if (message.includes('foreign key') || message.includes('violates foreign key')) {
+            return 'Invalid category selected. Please choose a valid category.';
+        }
+
+        // Handle validation errors
+        if (message.includes('validation') || message.includes('invalid')) {
+            return error.message;
+        }
+
+        // Handle known error messages (from our own throws)
+        if (message.includes('sku already exists') ||
+            message.includes('product with this name already exists')) {
+            return error.message;
+        }
+
+        // Generic database error
+        if (message.includes('failed query') || message.includes('database')) {
+            return 'Unable to save product. Please try again later.';
+        }
+
+        return error.message;
+    }
+
+    return 'Failed to create product. Please try again.';
 }
 
 // UPDATE PRODUCT
@@ -149,19 +199,6 @@ export async function updateProduct(productId: string, formData: ProductFormData
 
         if (existingSku.length > 0) {
             throw new Error("SKU already exists");
-        }
-
-        if (validatedData.variants.length > 0) {
-            const variantSkus = validatedData.variants.map(v => v.sku);
-            const existingVariantSkus = await db
-                .select({ sku: productVariants.sku, productId: productVariants.productId })
-                .from(productVariants)
-                .where(inArray(productVariants.sku, variantSkus));
-
-            const conflictingVariant = existingVariantSkus.find(v => v.productId !== productId);
-            if (conflictingVariant) {
-                throw new Error(`Variant SKU already exists: ${conflictingVariant.sku}`);
-            }
         }
 
         // Neon HTTP driver does not support transactions. Use sequential writes.
@@ -206,7 +243,7 @@ export async function updateProduct(productId: string, formData: ProductFormData
                     colorHex: variant.colorHex,
                     stockQuantity: variant.stockQuantity,
                     additionalPrice: variant.additionalPrice.toString(),
-                    sku: variant.sku,
+                    sku: generateVariantSku(validatedData.sku, variant.size, variant.color),
                     isActive: true,
                 }))
             );
@@ -219,7 +256,7 @@ export async function updateProduct(productId: string, formData: ProductFormData
         console.error("Update product error:", error);
         return {
             success: false,
-            error: error instanceof Error ? error.message : "Failed to update product"
+            error: parseProductError(error)
         };
     }
 }
@@ -238,8 +275,67 @@ export async function deleteProduct(productId: string) {
             throw new Error("Product not found");
         }
 
-        // Delete product (cascading will handle related data)
+        // Check if product has any orders associated with its variants
+        const productWithOrders = await db
+            .select({ orderId: orderItems.orderId })
+            .from(orderItems)
+            .innerJoin(productVariants, eq(orderItems.productVariantId, productVariants.id))
+            .where(eq(productVariants.productId, productId))
+            .limit(1);
+
+        if (productWithOrders.length > 0) {
+            // Product has orders - archive it instead of deleting
+            await db
+                .update(products)
+                .set({
+                    isActive: false,
+                    isDraft: true,
+                    updatedAt: new Date()
+                })
+                .where(eq(products.id, productId));
+
+            // Also deactivate all variants
+            await db
+                .update(productVariants)
+                .set({ isActive: false })
+                .where(eq(productVariants.productId, productId));
+
+            revalidatePath("/admin/products");
+            return {
+                success: true,
+                message: `Product "${product[0].name}" has been archived (has order history)`,
+                archived: true
+            };
+        }
+
+        // Get product images to delete from Cloudinary
+        const imagesToDelete = await db
+            .select({ imageUrl: productImages.imageUrl })
+            .from(productImages)
+            .where(eq(productImages.productId, productId));
+
+        // Delete product from database (cascading will handle variants and images in DB)
         await db.delete(products).where(eq(products.id, productId));
+
+        // Delete images from Cloudinary (do this after DB delete, non-blocking)
+        if (imagesToDelete.length > 0) {
+            // Import dynamically to avoid issues with server-side imports
+            const { extractPublicId, deleteImage } = await import('@/lib/cloudinary');
+
+            // Delete images in parallel (fire and forget - don't fail if Cloudinary delete fails)
+            Promise.all(
+                imagesToDelete.map(async (img) => {
+                    try {
+                        const publicId = extractPublicId(img.imageUrl);
+                        if (publicId) {
+                            await deleteImage(publicId);
+                        }
+                    } catch (error) {
+                        console.error('Failed to delete image from Cloudinary:', img.imageUrl, error);
+                    }
+                })
+            ).catch(err => console.error('Cloudinary cleanup error:', err));
+        }
 
         revalidatePath("/admin/products");
         return { success: true, message: `Product "${product[0].name}" deleted successfully` };
@@ -259,14 +355,83 @@ export async function bulkDeleteProducts(productIds: string[]) {
             throw new Error("No products selected");
         }
 
-        await db
-            .delete(products)
-            .where(inArray(products.id, productIds));
+        // Find products that have orders (can only be archived)
+        const productsWithOrders = await db
+            .selectDistinct({ productId: productVariants.productId })
+            .from(orderItems)
+            .innerJoin(productVariants, eq(orderItems.productVariantId, productVariants.id))
+            .where(inArray(productVariants.productId, productIds));
+
+        const productIdsWithOrders = productsWithOrders.map(p => p.productId);
+        const productIdsToDelete = productIds.filter(id => !productIdsWithOrders.includes(id));
+
+        let archivedCount = 0;
+        let deletedCount = 0;
+
+        // Archive products with orders
+        if (productIdsWithOrders.length > 0) {
+            await db
+                .update(products)
+                .set({
+                    isActive: false,
+                    isDraft: true,
+                    updatedAt: new Date()
+                })
+                .where(inArray(products.id, productIdsWithOrders));
+
+            await db
+                .update(productVariants)
+                .set({ isActive: false })
+                .where(inArray(productVariants.productId, productIdsWithOrders));
+
+            archivedCount = productIdsWithOrders.length;
+        }
+
+        // Hard delete products without orders
+        if (productIdsToDelete.length > 0) {
+            // Get images to delete from Cloudinary before deleting products
+            const imagesToDelete = await db
+                .select({ imageUrl: productImages.imageUrl })
+                .from(productImages)
+                .where(inArray(productImages.productId, productIdsToDelete));
+
+            // Delete products from database
+            await db
+                .delete(products)
+                .where(inArray(products.id, productIdsToDelete));
+
+            deletedCount = productIdsToDelete.length;
+
+            // Delete images from Cloudinary (fire and forget)
+            if (imagesToDelete.length > 0) {
+                const { extractPublicId, deleteImage } = await import('@/lib/cloudinary');
+
+                Promise.all(
+                    imagesToDelete.map(async (img) => {
+                        try {
+                            const publicId = extractPublicId(img.imageUrl);
+                            if (publicId) {
+                                await deleteImage(publicId);
+                            }
+                        } catch (error) {
+                            console.error('Failed to delete image from Cloudinary:', img.imageUrl, error);
+                        }
+                    })
+                ).catch(err => console.error('Cloudinary bulk cleanup error:', err));
+            }
+        }
 
         revalidatePath("/admin/products");
+
+        const messages: string[] = [];
+        if (deletedCount > 0) messages.push(`${deletedCount} deleted`);
+        if (archivedCount > 0) messages.push(`${archivedCount} archived (have orders)`);
+
         return {
             success: true,
-            message: `${productIds.length} product(s) deleted successfully`
+            message: `Products: ${messages.join(', ')}`,
+            deletedCount,
+            archivedCount
         };
     } catch (error) {
         console.error("Bulk delete error:", error);

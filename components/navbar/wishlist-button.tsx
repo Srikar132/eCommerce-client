@@ -5,8 +5,8 @@ import { Button } from "../ui/button";
 import { Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const WishlistButton = () => {
-  const totalItems = useWishlistCount();
+const WishlistButton = ({ enabled } : { enabled: boolean }) => {
+  const totalItems = useWishlistCount({enabled});
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch by only showing count after mount
