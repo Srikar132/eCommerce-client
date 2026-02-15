@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
+
 import ProductImageGallery from "@/components/product/product-image-gallery";
 import ProductActions from "@/components/product/product-actions";
 import ProductAccordion from "@/components/product/product-accordian";
@@ -13,11 +13,10 @@ import VariantAvailabilityInfo from "@/components/product/variant-availability-i
 import { toast } from "sonner";
 
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useVariantSelection } from "@/hooks/use-variant-selector";
 import { Product, ProductVariant } from "@/types/product";
 import { useAddToCart, useIsInCart } from "@/lib/tanstack/queries/cart.queries";
-import { useIsInWishlist, useToggleWishlist, useWishlist } from "@/lib/tanstack/queries/wishlist.queries";
+import { useIsInWishlist, useToggleWishlist } from "@/lib/tanstack/queries/wishlist.queries";
 import { showLoginDrawer } from "../ui/login-drawer";
 
 interface ProductDetailClientProps {
@@ -27,9 +26,7 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product, variants }: ProductDetailClientProps) {
 
-    const router = useRouter();
-    const pathname = usePathname();
-    const { data: session, status } = useSession();
+    const { status } = useSession();
 
     // Use the variant selection hook for all variant logic
     const {
@@ -39,7 +36,6 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
         colors,
         sizes,
         finalPrice,
-        inStock,
         setColor,
         setSize
     } = useVariantSelection({
@@ -49,8 +45,8 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
 
     const addToCart = useAddToCart();
     const toggleWishlist = useToggleWishlist();
-    const isInCart = useIsInCart({ productId: product.id, productVariantId: selectedVariant?.id! , enabled: !!session});
-    const isInWishlist = useIsInWishlist({ productId: product.id, enabled: !!session });
+    const isInCart = useIsInCart({ productId: product.id, productVariantId: selectedVariant?.id ?? '', enabled: status === "authenticated" });
+    const isInWishlist = useIsInWishlist({ productId: product.id, enabled: status === "authenticated" });
 
     // Handle Add to Cart with authentication check
     const handleAddToCart = useCallback(() => {
@@ -73,7 +69,7 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
             productId: product.id,
             productVariantId: selectedVariant.id
         });
-    }, [status, selectedVariant, product.id, pathname, router, addToCart]);
+    }, [status, selectedVariant, product.id, addToCart]);
 
     // Handle Toggle Wishlist with authentication check
     const handleToggleWishlist = useCallback(() => {
@@ -85,7 +81,7 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
 
         // Toggle wishlist
         toggleWishlist.mutate(product.id);
-    }, [status, product.id, pathname, router, toggleWishlist]);
+    }, [status, product.id, toggleWishlist]);
 
     return (
 
@@ -93,7 +89,7 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
 
             {/* Image Gallery Section */}
             <div className="order-1 w-full">
-                <div className="border border-border/30 overflow-hidden bg-card">
+                <div className="overflow-hidden">
                     <ProductImageGallery images={product.images} />
                 </div>
             </div>

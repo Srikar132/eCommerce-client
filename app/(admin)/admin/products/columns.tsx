@@ -87,7 +87,7 @@ const ProductRowActions = ({ product }: { product: Product }) => {
                     className="h-8 w-8 p-0 admin-glow-button"
                     asChild
                 >
-                    <Link href={`/products/${product.slug}`} target="_blank">
+                    <Link href={`/products/${product.slug}?admin_browse=true`} target="_blank">
                         <Eye className="w-4 h-4" />
                         <span className="sr-only">View product</span>
                     </Link>

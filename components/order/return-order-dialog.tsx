@@ -13,7 +13,8 @@ interface ReturnOrderDialogProps {
     orderNumber: string;
 }
 
-export default function ReturnOrderDialog({ orderNumber }: ReturnOrderDialogProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function ReturnOrderDialog({ orderNumber: _orderNumber }: ReturnOrderDialogProps) {
     // Return functionality has been removed
     // Only cancellation is allowed within the time limit
     return (

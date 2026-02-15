@@ -3,7 +3,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useUpdateAccountDetails } from '@/lib/tanstack/queries/account.queries';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -76,7 +75,7 @@ export function EditAccountDialog({ open, onOpenChange, currentName, currentEmai
                         <DialogHeader>
                             <DialogTitle>Edit Account Details</DialogTitle>
                             <DialogDescription>
-                                Update your name and email address. Click save when you're done.
+                                Update your name and email address. Click save when you&apos;re done.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">

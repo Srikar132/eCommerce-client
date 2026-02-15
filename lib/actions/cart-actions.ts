@@ -1,17 +1,18 @@
 "use server";
 
 import { db } from "@/drizzle/db";
-import { 
-    carts, 
-    cartItems, 
-    products, 
-    productVariants, 
-    productImages 
+import {
+    carts,
+    cartItems,
+    products,
+    productVariants,
+    productImages
 } from "@/drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { Cart, CartItem } from "@/types/cart";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
+import { requirePermission, UserRole } from "@/lib/auth-utils";
 
 /**
  * Helper function to map database cart to Cart type
@@ -160,6 +161,13 @@ export async function addItemToCart(
     quantity: number = 1
 ): Promise<Cart> {
     try {
+        // RBAC: Check if user has permission to add to cart
+        const session = await auth();
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized. Please log in.");
+        }
+        requirePermission(session.user.role as UserRole, 'cart:add');
+
         // Get or create cart
         const cart = await getOrCreateCart();
 
@@ -195,12 +203,12 @@ export async function addItemToCart(
         if (existingItem) {
             // Update quantity
             const newQuantity = existingItem.quantity + quantity;
-            
+
             // Check stock for new quantity
             if (variant.stockQuantity < newQuantity) {
                 throw new Error(`Only ${variant.stockQuantity} items available in stock`);
             }
-            
+
             const newItemTotal = unitPrice * newQuantity;
 
             await db
@@ -249,6 +257,9 @@ export async function removeItemFromCart(
         if (!session?.user?.id) {
             throw new Error("Unauthorized. Please log in.");
         }
+
+        // RBAC: Check if user has permission to remove from cart
+        requirePermission(session.user.role as UserRole, 'cart:remove');
 
         const userId = session.user.id;
 
@@ -300,6 +311,9 @@ export async function updateCartItemQuantity(
         if (!session?.user?.id) {
             throw new Error("Unauthorized. Please log in.");
         }
+
+        // RBAC: Check if user has permission to update cart
+        requirePermission(session.user.role as UserRole, 'cart:update');
 
         const userId = session.user.id;
 
@@ -372,6 +386,9 @@ export async function clearCart(): Promise<void> {
         if (!session?.user?.id) {
             throw new Error("Unauthorized. Please log in.");
         }
+
+        // RBAC: Check if user has permission to clear cart
+        requirePermission(session.user.role as UserRole, 'cart:clear');
 
         const userId = session.user.id;
 

@@ -7,6 +7,43 @@ import { verifyPaymentAndConfirmOrder } from "@/lib/actions/order-actions";
 import { queryKeys } from "@/lib/tanstack/query-keys";
 import { toast } from "sonner";
 
+// Razorpay SDK type declarations
+interface RazorpayOptions {
+    key: string;
+    amount: number;
+    currency: string;
+    name: string;
+    description: string;
+    order_id: string;
+    handler: (response: RazorpayResponse) => void;
+    prefill?: {
+        name?: string;
+        email?: string;
+        contact?: string;
+    };
+    theme?: {
+        color?: string;
+    };
+    modal?: {
+        ondismiss?: () => void;
+    };
+}
+
+interface RazorpayInstance {
+    on: (event: string, handler: (response: RazorpayError) => void) => void;
+    open: () => void;
+}
+
+interface RazorpayConstructor {
+    new(options: RazorpayOptions): RazorpayInstance;
+}
+
+declare global {
+    interface Window {
+        Razorpay: RazorpayConstructor;
+    }
+}
+
 interface RazorpayResponse {
     razorpay_order_id: string;
     razorpay_payment_id: string;
@@ -118,7 +155,7 @@ interface UseRazorpayCheckoutReturn {
  * Check if Razorpay is available in the window object
  */
 const checkRazorpayLoaded = (): boolean => {
-    return typeof window !== "undefined" && !!(window as any).Razorpay;
+    return typeof window !== "undefined" && !!window.Razorpay;
 };
 
 /**
@@ -218,9 +255,9 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
             if (onSuccess) {
                 onSuccess(order.orderNumber);
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error("Payment verification error:", error);
-            toast.error(error.message || "Payment verification failed. Please contact support.");
+            toast.error(error instanceof Error ? error.message : "Payment verification failed. Please contact support.");
 
             // On verification failure, stay on checkout (no order was created)
             setIsProcessing(false);
@@ -307,7 +344,7 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
             },
         };
 
-        const razorpay = new (window as any).Razorpay(options);
+        const razorpay = new window.Razorpay(options);
 
         // Handle payment failure event
         razorpay.on("payment.failed", function (response: RazorpayError) {
@@ -316,7 +353,6 @@ export function useRazorpayCheckout(options: UseRazorpayCheckoutOptions = {}): U
 
         razorpay.open();
     }, [
-        isRazorpayLoaded,
         themeColor,
         handlePaymentSuccess,
         handlePaymentFailure,

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Package, Truck, CheckCircle2, XCircle, RotateCcw, Clock } from "lucide-react";
+import { ArrowLeft, XCircle, RotateCcw, Clock } from "lucide-react";
 import Link from "next/link";
 import OrderStatusTimeline from "./order-status-timeline";
 import OrderItemsList from "./order-items-list";
@@ -17,7 +17,7 @@ interface OrderTrackingClientProps {
 
 export default function OrderTrackingClient({ order }: OrderTrackingClientProps) {
     // Determine if order can be cancelled using the time-limited logic
-    const { canCancel, daysRemaining, message: cancelMessage } = canCancelOrder(order);
+    const { canCancel, daysRemaining } = canCancelOrder(order);
 
     // Get status badge variant
     const getStatusVariant = (status: string) => {
@@ -121,42 +121,6 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                         <div className="flex flex-wrap gap-3">
                             <CancelOrderDialog orderNumber={order.orderNumber} order={order} />
                         </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Tracking Information */}
-            {order.trackingNumber && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <Truck className="w-5 h-5" />
-                            Tracking Information
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <div className="flex justify-between">
-                            <span className="text-sm text-muted-foreground">Tracking Number</span>
-                            <span className="text-sm font-medium">{order.trackingNumber}</span>
-                        </div>
-                        {order.carrier && (
-                            <div className="flex justify-between">
-                                <span className="text-sm text-muted-foreground">Carrier</span>
-                                <span className="text-sm font-medium">{order.carrier}</span>
-                            </div>
-                        )}
-                        {order.estimatedDeliveryDate && (
-                            <div className="flex justify-between">
-                                <span className="text-sm text-muted-foreground">Estimated Delivery</span>
-                                <span className="text-sm font-medium">
-                                    {new Date(order.estimatedDeliveryDate).toLocaleDateString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                    })}
-                                </span>
-                            </div>
-                        )}
                     </CardContent>
                 </Card>
             )}

@@ -59,7 +59,7 @@ const HeroSection = () => {
 
                     {/* Main Heading */}
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight leading-tight mb-8 sm:mb-10 text-foreground">
-                        Every piece tells a story <br /> Let's make yours - together.
+                        Every piece tells a story <br /> Let&apos;s make yours - together.
                     </h1>
 
                     {/* CTA Button */}

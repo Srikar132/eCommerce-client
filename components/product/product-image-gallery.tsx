@@ -25,8 +25,8 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
     if (!images || images.length === 0) {
         return (
             <div className="w-full">
-                <div className="relative w-full aspect-square">
-                    <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-lg">
+                <div className="relative w-full aspect-[3/4]">
+                    <div className="absolute inset-0 flex items-center justify-center bg-muted/30">
                         <div className="text-muted-foreground text-center">
                             <p className="text-lg">No images available</p>
                         </div>
@@ -36,83 +36,118 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
         );
     }
 
+    const hasMultipleImages = images.length > 1;
+
     return (
-        <div className="w-full space-y-4">
-            {/* Main Image Container with Navigation */}
-            <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-muted group">
-                {!!images[selectedImageIndex]?.imageUrl ? (
-                    <Image
-                        src={images[selectedImageIndex].imageUrl}
-                        alt={images[selectedImageIndex].altText || `Product Image ${selectedImageIndex + 1}`}
-                        fill
-                        className="object-contain"
-                        priority={selectedImageIndex === 0}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                    />
-                ) : (
-                    <Image
-                        src="/images/image-not-found.webp"
-                        alt="Image not found"
-                        fill
-                        className="object-contain p-4 md:p-8"
-                    />
-                )}
+        <div className="w-full">
+            {/* Desktop Layout: Thumbnails Left + Main Image Right */}
+            <div className="flex flex-col lg:flex-row gap-3 lg:gap-4">
 
-                {/* Navigation Arrows - Only show if multiple images */}
-                {images.length > 1 && (
-                    <>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={handlePrevious}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/80 hover:bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                            aria-label="Previous image"
-                        >
-                            <ChevronLeft className="h-6 w-6" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={handleNext}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/80 hover:bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                            aria-label="Next image"
-                        >
-                            <ChevronRight className="h-6 w-6" />
-                        </Button>
-
-                        {/* Image Counter */}
-                        <div className="absolute bottom-4 right-4 bg-black/50 text-white text-sm px-3 py-1 rounded-full backdrop-blur-sm">
-                            {selectedImageIndex + 1} / {images.length}
+                {/* Thumbnails - Left side on desktop, below on mobile */}
+                {hasMultipleImages && (
+                    <div className="order-2 lg:order-1 lg:w-20 xl:w-24 shrink-0">
+                        {/* Vertical thumbnails for desktop */}
+                        <div className="hidden lg:flex flex-col gap-2 max-h-[600px] overflow-y-auto scrollbar-thin">
+                            {images.filter(image => image.imageUrl).map((image, index) => (
+                                <button
+                                    key={image.id}
+                                    onClick={() => setSelectedImageIndex(index)}
+                                    className={cn(
+                                        "relative aspect-square w-full overflow-hidden transition-all cursor-pointer border-2 rounded-md",
+                                        selectedImageIndex === index
+                                            ? "border-primary"
+                                            : "border-transparent hover:border-primary/40"
+                                    )}
+                                >
+                                    <Image
+                                        src={image.imageUrl!}
+                                        alt={image.altText || `Product Image ${index + 1}`}
+                                        fill
+                                        className="object-cover"
+                                        sizes="96px"
+                                    />
+                                </button>
+                            ))}
                         </div>
-                    </>
-                )}
-            </div>
 
-            {/* Thumbnail Grid */}
-            {images.length > 1 && (
-                <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3">
-                    {images.filter(image => image.imageUrl).map((image, index) => (
-                        <button
-                            key={image.id}
-                            onClick={() => setSelectedImageIndex(index)}
-                            className={cn(
-                                "relative aspect-square rounded-lg overflow-hidden transition-all cursor-pointer bg-muted",
-                                selectedImageIndex === index
-                                    ? "ring-2 ring-primary ring-offset-2"
-                                    : "hover:ring-2 hover:ring-primary/50 hover:ring-offset-2"
-                            )}
-                        >
+                        {/* Horizontal thumbnails for mobile/tablet */}
+                        <div className="flex lg:hidden gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                            {images.filter(image => image.imageUrl).map((image, index) => (
+                                <button
+                                    key={image.id}
+                                    onClick={() => setSelectedImageIndex(index)}
+                                    className={cn(
+                                        "relative aspect-square w-16 sm:w-20 shrink-0 overflow-hidden transition-all cursor-pointer border-2 rounded-md",
+                                        selectedImageIndex === index
+                                            ? "border-primary"
+                                            : "border-transparent hover:border-primary/40"
+                                    )}
+                                >
+                                    <Image
+                                        src={image.imageUrl!}
+                                        alt={image.altText || `Product Image ${index + 1}`}
+                                        fill
+                                        className="object-cover"
+                                        sizes="80px"
+                                    />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Main Image Container */}
+                <div className="order-1 lg:order-2 flex-1 relative">
+                    <div className="relative w-full aspect-[3/4] overflow-hidden group rounded-md">
+                        {!!images[selectedImageIndex]?.imageUrl ? (
                             <Image
-                                src={image.imageUrl!}
-                                alt={image.altText || `Product Image ${index + 1}`}
+                                src={images[selectedImageIndex].imageUrl}
+                                alt={images[selectedImageIndex].altText || `Product Image ${selectedImageIndex + 1}`}
                                 fill
-                                className="object-contain p-2"
-                                sizes="(max-width: 768px) 25vw, 100px"
+                                className="object-cover"
+                                priority={selectedImageIndex === 0}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                             />
-                        </button>
-                    ))}
+                        ) : (
+                            <Image
+                                src="/images/image-not-found.webp"
+                                alt="Image not found"
+                                fill
+                                className="object-cover"
+                            />
+                        )}
+
+                        {/* Navigation Arrows - Only show if multiple images */}
+                        {hasMultipleImages && (
+                            <>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={handlePrevious}
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                    aria-label="Previous image"
+                                >
+                                    <ChevronLeft className="h-5 w-5" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={handleNext}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                    aria-label="Next image"
+                                >
+                                    <ChevronRight className="h-5 w-5" />
+                                </Button>
+
+                                {/* Image Counter */}
+                                <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">
+                                    {selectedImageIndex + 1} / {images.length}
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 }

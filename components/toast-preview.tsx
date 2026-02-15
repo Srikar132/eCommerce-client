@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 /**
  * Toast Preview Component
@@ -16,7 +15,6 @@ import { useRouter } from "next/navigation";
  * <ToastPreview />
  */
 export function ToastPreview() {
-  const router = useRouter();
 
   const showSuccessToast = () => {
     toast.success("Added to cart!", {
@@ -69,9 +67,13 @@ export function ToastPreview() {
   };
 
   const showPromiseToast = () => {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise<string>((resolve, reject) => {
       setTimeout(() => {
-        Math.random() > 0.5 ? resolve("Success!") : reject("Failed!");
+        if (Math.random() > 0.5) {
+          resolve("Success!");
+        } else {
+          reject(new Error("Failed!"));
+        }
       }, 2000);
     });
 

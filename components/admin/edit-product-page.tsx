@@ -12,13 +12,7 @@
 import { ProductForm } from "@/components/admin/product-form";
 import { useParams } from "next/navigation";
 
-interface EditProductPageProps {
-    params: {
-        productId: string;
-    };
-}
-
-export default function EditProductPage({ params }: EditProductPageProps) {
+export default function EditProductPage() {
     const { productId } = useParams();
 
     return (

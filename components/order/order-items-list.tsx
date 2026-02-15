@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Package } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface OrderItemsListProps {
     items: OrderItem[];
@@ -42,11 +43,13 @@ export default function OrderItemsList({ items }: OrderItemsListProps) {
                         <div key={item.id} className="flex gap-4 pb-4 border-b last:border-b-0 last:pb-0">
                             {/* Product Image */}
                             {item.imageUrl ? (
-                                <Link href={`/products/${item.productSlug}`}>
-                                    <img
+                                <Link href={`/products/${item.productSlug}`} className="relative w-20 h-20 md:w-24 md:h-24 shrink-0">
+                                    <Image
                                         src={item.imageUrl}
                                         alt={item.productName}
-                                        className="w-20 h-20 md:w-24 md:h-24 object-cover rounded border hover:opacity-80 transition-opacity"
+                                        fill
+                                        sizes="(max-width: 768px) 80px, 96px"
+                                        className="object-cover rounded border hover:opacity-80 transition-opacity"
                                     />
                                 </Link>
                             ) : (
@@ -62,7 +65,7 @@ export default function OrderItemsList({ items }: OrderItemsListProps) {
                                         {item.productName}
                                     </h3>
                                 </Link>
-                                
+
                                 <div className="flex flex-wrap gap-2 mt-2">
                                     <Badge variant="outline" className="text-xs">
                                         {item.color}

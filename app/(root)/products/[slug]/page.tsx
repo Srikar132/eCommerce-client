@@ -8,6 +8,7 @@ import { Product, ProductVariant } from "@/types/product";
 import { cacheLife } from "next/cache";
 import ProductReviewsSection from "@/components/product/product-reviews-section";
 import { ReviewsSkeleton } from "@/components/product/reviews-skeleton";
+import { ProductSchema, BreadcrumbSchema } from "@/components/shared/structured-data";
 
 
 interface ProductPageProps {
@@ -47,29 +48,43 @@ export async function generateMetadata({
 
         if (!product) {
             return {
-                title: 'Product Not Found | THE NALA ARMOIRE',
+                title: "Product Not Found",
             };
         }
 
+        const productImage = product.images?.[0]?.imageUrl || PLACEHOLDER_IMAGE;
+        const description = product.description?.slice(0, 160) || `Shop ${product.name} at Nala Armoire. Premium customizable fashion, handcrafted with love.`;
+
         return {
-            title: `${product.name} | THE NALA ARMOIRE`,
-            description: product.description?.slice(0, 160),
+            title: product.name,
+            description,
             openGraph: {
-                title: product.name,
-                description: product.description,
-                images: [product.images?.[0]?.imageUrl || PLACEHOLDER_IMAGE],
-                type: 'website',
+                title: `${product.name} | Nala Armoire`,
+                description,
+                url: `https://nalaarmoire.com/products/${slug}`,
+                images: [
+                    {
+                        url: productImage,
+                        width: 800,
+                        height: 800,
+                        alt: product.name,
+                    },
+                ],
+                type: "website",
             },
             twitter: {
-                card: 'summary_large_image',
-                title: product.name,
-                description: product.description,
-                images: [product.images?.[0]?.imageUrl || PLACEHOLDER_IMAGE],
+                card: "summary_large_image",
+                title: `${product.name} | Nala Armoire`,
+                description,
+                images: [productImage],
+            },
+            alternates: {
+                canonical: `https://nalaarmoire.com/products/${slug}`,
             },
         };
     } catch {
         return {
-            title: 'Product Not Found | THE NALA ARMOIRE',
+            title: "Product Not Found",
         };
     }
 }
@@ -89,8 +104,31 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     // Fetch variants using cached function
     const variants = await getCachedProductVariants(product.id);
 
+    // Prepare structured data
+    const productUrl = `https://nalaarmoire.com/products/${product.slug}`;
+    const productImage = product.images?.[0]?.imageUrl || PLACEHOLDER_IMAGE;
+    const productPrice = product.basePrice;
+
+    const breadcrumbItems = [
+        { name: "Home", url: "https://nalaarmoire.com" },
+        { name: "Products", url: "https://nalaarmoire.com/products" },
+        { name: product.name, url: productUrl },
+    ];
+
     return (
         <div className="min-h-screen bg-background">
+            {/* Structured Data for SEO */}
+            <ProductSchema
+                name={product.name}
+                description={product.description || "Premium customizable fashion from Nala Armoire"}
+                image={productImage}
+                price={productPrice}
+                currency="INR"
+                availability="InStock"
+                sku={product.id}
+                url={productUrl}
+            />
+            <BreadcrumbSchema items={breadcrumbItems} />
 
             {/* BREADCRUMB  */}
 

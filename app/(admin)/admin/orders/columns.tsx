@@ -4,7 +4,7 @@ import { OrderWithUser, OrderStatus } from "@/types/orders";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Eye, Edit2, Package } from "lucide-react";
+import { MoreHorizontal, Eye } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -61,10 +61,10 @@ export const columns: ColumnDef<OrderWithUser>[] = [
                     Order Number
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"
@@ -97,10 +97,10 @@ export const columns: ColumnDef<OrderWithUser>[] = [
                     Status
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"
@@ -156,10 +156,10 @@ export const columns: ColumnDef<OrderWithUser>[] = [
                     Payment Status
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"
@@ -211,10 +211,10 @@ export const columns: ColumnDef<OrderWithUser>[] = [
                     Created At
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"
@@ -249,10 +249,10 @@ export const columns: ColumnDef<OrderWithUser>[] = [
                     Total Amount
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"

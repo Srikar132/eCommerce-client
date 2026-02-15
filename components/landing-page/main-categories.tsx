@@ -96,15 +96,16 @@ export default async function ShopByCategories() {
                 </div>
 
                 {/* Categories Grid */}
-                <div className="relative grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4">
+                <div className="relative flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-4">
                     {categories.map((category) => (
-                        <CategoryCard
-                            key={category.id}
-                            id={category.id}
-                            title={category.title}
-                            image={category.imageUrl}
-                            url={category.linkUrl}
-                        />
+                        <div key={category.id} className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-12px)]">
+                            <CategoryCard
+                                id={category.id}
+                                title={category.title}
+                                image={category.imageUrl}
+                                url={category.linkUrl}
+                            />
+                        </div>
                     ))}
                 </div>
 

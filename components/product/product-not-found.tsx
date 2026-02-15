@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Home, Search, ShoppingBag, AlertCircle, Sparkles } from 'lucide-react';
+import { Home, ShoppingBag, AlertCircle } from 'lucide-react';
 
 interface ProductNotFoundProps {
   productSlug?: string;

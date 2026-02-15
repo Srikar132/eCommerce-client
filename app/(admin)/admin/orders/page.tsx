@@ -127,7 +127,6 @@ function OrdersContent() {
                 <SearchForm
                     action="/admin/orders"
                     search={params.searchQuery}
-                    page={params.page}
                     size={params.limit}
                     placeholder="Search by order number, customer name, email..."
                 />

@@ -3,27 +3,31 @@
 import { useWishlistCount } from "@/lib/tanstack/queries/wishlist.queries";
 import { Button } from "../ui/button";
 import { Heart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-const WishlistButton = ({ enabled } : { enabled: boolean }) => {
-  const totalItems = useWishlistCount({enabled});
-  const [mounted, setMounted] = useState(false);
+// Hydration-safe mount detection
+const emptySubscribe = () => () => { };
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
 
-  // Prevent hydration mismatch by only showing count after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+function useHasMounted() {
+  return useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
+}
+
+const WishlistButton = ({ enabled }: { enabled: boolean }) => {
+  const totalItems = useWishlistCount({ enabled });
+  const mounted = useHasMounted();
 
   return (
     <Button
       className="relative p-1 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
       aria-label="Wishlist"
     >
-      <Heart 
-        className="w-5 h-5 text-foreground" 
+      <Heart
+        className="w-5 h-5 text-foreground"
         strokeWidth={2}
-        // fill="#402e27"
-        // stroke="#402e27"
+      // fill="#402e27"
+      // stroke="#402e27"
       />
 
       {mounted && totalItems > 0 && (

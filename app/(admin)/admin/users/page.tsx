@@ -12,11 +12,9 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { useInfiniteUsers, useFlatUsers, useUserCount } from "@/lib/tanstack/queries/user.queries";
 import { buildUserParams } from "@/lib/searchparams";
-import { Users, Plus } from "lucide-react";
-import Link from "next/link";
+import { Users } from "lucide-react";
 import { columns } from "./columns";
 
 // Users content component
@@ -67,7 +65,6 @@ function UsersContent() {
                 <SearchForm
                     action="/admin/users"
                     search={params.searchQuery}
-                    page={params.page}
                     size={params.limit}
                     placeholder="Search users by email, phone, or name..."
                 />

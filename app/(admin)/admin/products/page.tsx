@@ -115,7 +115,6 @@ function ProductsContent() {
                 <SearchForm
                     action="/admin/products"
                     search={params.searchQuery}
-                    page={params.page}
                     size={params.limit}
                 />
             </div>

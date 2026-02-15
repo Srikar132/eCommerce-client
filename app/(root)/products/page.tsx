@@ -1,10 +1,17 @@
 import ProductsClient from "@/components/products-page/products-client";
 import { ProductParams } from "@/types/product";
 import { getAllProducts } from "@/lib/actions/product-actions";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: 'All Products --- Explore and Customize Your Favorites',
-  description: 'Browse our collection of products and customize them to your liking. Find the perfect items that suit your style and needs.',
+export const metadata: Metadata = {
+  title: "All Products",
+  description: "Browse our collection of premium customizable fashion. Find ethnic wear, contemporary styles, and personalized clothing that suits your unique style.",
+  openGraph: {
+    title: "Shop All Products - Nala Armoire",
+    description: "Browse our collection of premium customizable fashion at Nala Armoire.",
+    url: "https://nalaarmoire.com/products",
+    images: ["/images/og-image.jpg"],
+  },
 };
 
 type Props = {

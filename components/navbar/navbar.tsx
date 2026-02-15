@@ -1,6 +1,5 @@
 "use client";
 
-import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { SidebarTrigger } from '../ui/sidebar';

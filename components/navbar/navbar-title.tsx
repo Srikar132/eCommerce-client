@@ -29,8 +29,6 @@ export default function NavbarTitle({
             desktop: { y: 150, scale: 6 }
         };
 
-        const normalState = { y: 0, scale: 1, duration: 0.5, ease: "power2.out" };
-
         const animateLogo = (config: { y: number; scale: number }) => {
             const targetState = (isAtTop && isHomePage) ? config : { y: 0, scale: 1 };
             gsap.to(logoRef.current, { ...targetState, duration: 0.5, ease: "power2.out" });
@@ -43,7 +41,7 @@ export default function NavbarTitle({
         return () => mm.revert();
 
         // do this even resize is happening
-    }, [isAtTop, pathname, logoRef ]);
+    }, [isAtTop, pathname, logoRef]);
 
     useEffect(() => {
 

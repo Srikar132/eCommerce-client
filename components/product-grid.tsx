@@ -33,9 +33,9 @@ export default function ProductGrid({
     isFetchingNextPage
 }: SearchResultsProps) {
     // Use wishlist hooks
-    const { data: session, status } = useSession();
+    const { status } = useSession();
     const toggleWishlist = useToggleWishlist();
-    
+
     // Fetch wishlist data only when authenticated
     const { data: wishlist } = useWishlist({ enabled: status === "authenticated" });
 
@@ -68,7 +68,7 @@ export default function ProductGrid({
         toggleWishlist.mutate(productId);
 
 
-    } , [status, toggleWishlist]);
+    }, [status, toggleWishlist]);
 
     if (isLoading && !results.items.length) {
         return <ProductGridSkeleton count={8} />;

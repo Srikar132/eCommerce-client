@@ -1,14 +1,13 @@
 "use client";
 
-import { 
-    useWishlist, 
-    useRemoveFromWishlist, 
-    useClearWishlist 
+import {
+    useWishlist,
+    useRemoveFromWishlist,
+    useClearWishlist
 } from "@/lib/tanstack/queries/wishlist.queries";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingBag, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { LoginRequired } from "@/components/auth/login-required";
 import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import {
     AlertDialog,
@@ -22,7 +21,6 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { WishlistCard } from "@/components/cards/wishlist-card";
-import { useSession } from "next-auth/react";
 
 export function WishlistClient() {
     const { data: wishlist, isLoading } = useWishlist({ enabled: true });
@@ -77,8 +75,8 @@ export function WishlistClient() {
                 {totalItems > 0 && (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 size="sm"
                                 disabled={clearWishlistMutation.isPending}
                                 className="gap-2"
@@ -91,7 +89,7 @@ export function WishlistClient() {
                             <AlertDialogHeader>
                                 <AlertDialogTitle>Clear wishlist?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    This will remove all {totalItems} items from your wishlist. 
+                                    This will remove all {totalItems} items from your wishlist.
                                     This action cannot be undone.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
@@ -113,9 +111,9 @@ export function WishlistClient() {
             {/* Wishlist Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {items.map((item) => (
-                    <WishlistCard 
-                        key={item.productId} 
-                        item={item} 
+                    <WishlistCard
+                        key={item.productId}
+                        item={item}
                         onRemove={(productId) => removeFromWishlist.mutate(productId)}
                         isRemoving={removeFromWishlist.isPending}
                     />

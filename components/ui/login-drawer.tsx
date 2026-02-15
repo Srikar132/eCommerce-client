@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -33,7 +32,7 @@ export function showLoginDrawer(options?: ShowLoginDrawerOptions) {
     title: "Login Required",
     description: "Please login to continue your personalized experience",
     imageSrc: "/images/login-required.webp",
-    onCancel: () => {},
+    onCancel: () => { },
   };
 
   drawerState.options = { ...defaultOptions, ...options };
@@ -112,7 +111,7 @@ export function LoginDrawerProvider() {
             <LogIn className="w-4 h-4 mr-2" />
             Login to Continue
           </button>
-          
+
           <DrawerClose asChild>
             <button
               onClick={handleClose}

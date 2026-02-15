@@ -266,7 +266,7 @@ export default function LoginAuthForm() {
                         {/* OTP Info Header */}
                         <div className="text-center space-y-2 pb-2">
                             <p className="text-sm text-muted-foreground">
-                                We've sent a verification code to
+                                We&apos;ve sent a verification code to
                             </p>
                             <p className="text-base font-semibold text-foreground">
                                 {maskedPhone}

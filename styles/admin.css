@@ -392,8 +392,31 @@
   @apply hover:bg-green-50 hover:text-green-700 transition-all duration-200;
 }
 
+.dark .admin-glow-button {
+  @apply hover:bg-green-900/30 hover:text-green-400;
+}
+
 .admin-glow-button:hover {
   box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
+}
+
+.dark .admin-glow-button:hover {
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+/* Admin header buttons - fix hover in dark mode */
+.admin-header [data-slot="button"][data-variant="outline"]:hover,
+.admin-header [data-slot="button"][data-variant="ghost"]:hover {
+  @apply dark:bg-white/10 dark:text-white;
+}
+
+/* Admin dropdown menu items in dark mode */
+.admin-card {
+  @apply dark:bg-[#1a2f4d] dark:border-[#1f3655];
+}
+
+.admin-card [role="menuitem"]:hover {
+  @apply dark:bg-white/10;
 }
 
 /* Order Details Page Styles */

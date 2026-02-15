@@ -350,6 +350,76 @@ export const queryKeys = {
      */
     my: (page: number, size: number) => ['orders', 'my', { page, size }] as const,
   },
+
+  /**
+   * Content management query keys (Admin)
+   */
+  content: {
+    /**
+     * Base key for all content queries
+     */
+    all: () => ['content'] as const,
+
+    /**
+     * Landing page categories
+     */
+    categories: () => ['content', 'categories'] as const,
+
+    /**
+     * Showcase products
+     */
+    showcase: () => ['content', 'showcase'] as const,
+
+    /**
+     * Testimonials
+     */
+    testimonials: () => ['content', 'testimonials'] as const,
+
+    /**
+     * Slider images
+     */
+    slider: () => ['content', 'slider'] as const,
+  },
+
+  /**
+   * Admin Dashboard query keys
+   */
+  dashboard: {
+    /**
+     * Base key for all dashboard queries
+     */
+    all: () => ['dashboard'] as const,
+
+    /**
+     * Dashboard statistics
+     */
+    stats: () => ['dashboard', 'stats'] as const,
+
+    /**
+     * Recent orders for dashboard
+     */
+    recentOrders: (limit?: number) => ['dashboard', 'recent-orders', limit] as const,
+
+    /**
+     * Low stock products alert
+     */
+    lowStock: (threshold?: number) => ['dashboard', 'low-stock', threshold] as const,
+
+    /**
+     * Order status counts
+     */
+    orderStatusCounts: () => ['dashboard', 'order-status-counts'] as const,
+
+    /**
+     * Payment status counts
+     */
+    paymentStatusCounts: () => ['dashboard', 'payment-status-counts'] as const,
+
+    /**
+     * Category statistics
+     */
+    categoryStats: () => ['dashboard', 'category-stats'] as const,
+  },
 } as const;
 
 /**

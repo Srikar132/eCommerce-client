@@ -13,7 +13,6 @@ export interface TestimonialCardProps {
 export default function TestimonialCard({
   name,
   role,
-  avatar,
   rating,
   text,
   className
@@ -28,8 +27,8 @@ export default function TestimonialCard({
             <Star
               key={i}
               className={`w-5 h-5 ${i < rating
-                  ? 'fill-primary text-primary'
-                  : 'fill-muted text-muted'
+                ? 'fill-primary text-primary'
+                : 'fill-muted text-muted'
                 }`}
             />
           ))}

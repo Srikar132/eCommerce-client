@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useRef, useLayoutEffect } from "react";
 import { Product, ProductVariant } from "@/types/product";
 
 // Simple types
@@ -20,6 +20,9 @@ interface UseVariantSelectionProps {
     variants: ProductVariant[];
 }
 
+// Use useLayoutEffect on client, no-op on server
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : () => { };
+
 export function useVariantSelection({ product, variants }: UseVariantSelectionProps) {
     // Get unique colors
     const colors = useMemo<ColorOption[]>(() => {
@@ -39,8 +42,11 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
         return Array.from(colorMap.values());
     }, [variants]);
 
+    // Track previous colors to detect when they change
+    const prevColorsRef = useRef(colors);
+
     // Initialize with first available color
-    const [selectedColor, setSelectedColor] = useState<string>(() => 
+    const [selectedColor, setSelectedColor] = useState<string>(() =>
         colors.length > 0 ? colors[0].color : ""
     );
 
@@ -59,8 +65,11 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
             }));
     }, [variants, selectedColor]);
 
+    // Track previous sizes to detect when they change
+    const prevSizesRef = useRef(sizes);
+
     // Initialize with first available size
-    const [selectedSize, setSelectedSize] = useState<string>(() => 
+    const [selectedSize, setSelectedSize] = useState<string>(() =>
         sizes.length > 0 ? sizes[0].size : ""
     );
 
@@ -69,9 +78,9 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
         if (!selectedColor || !selectedSize) return undefined;
 
         return variants.find(
-            v => v.color === selectedColor && 
-                 v.size === selectedSize && 
-                 v.isActive
+            v => v.color === selectedColor &&
+                v.size === selectedSize &&
+                v.isActive
         );
     }, [variants, selectedColor, selectedSize]);
 
@@ -82,18 +91,20 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
         return product.basePrice + additionalPrice;
     }, [product, selectedVariant]);
 
-    // Auto-select first color when colors become available
-    useEffect(() => {
-        if (!selectedColor && colors.length > 0) {
+    // Auto-select first color when colors become available (synchronous update before paint)
+    useIsomorphicLayoutEffect(() => {
+        if (!selectedColor && colors.length > 0 && colors !== prevColorsRef.current) {
             setSelectedColor(colors[0].color);
         }
+        prevColorsRef.current = colors;
     }, [colors, selectedColor]);
 
     // Auto-select first size when sizes become available or color changes
-    useEffect(() => {
-        if (sizes.length > 0 && !sizes.find(s => s.size === selectedSize)) {
+    useIsomorphicLayoutEffect(() => {
+        if (sizes.length > 0 && !sizes.find(s => s.size === selectedSize) && sizes !== prevSizesRef.current) {
             setSelectedSize(sizes[0].size);
         }
+        prevSizesRef.current = sizes;
     }, [sizes, selectedSize]);
 
     // Handle color change (resets size)
@@ -107,15 +118,15 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
         selectedColor,
         selectedSize,
         selectedVariant,
-        
+
         // Available options
         colors,
         sizes,
-        
+
         // Computed values
         finalPrice,
         inStock: selectedVariant ? selectedVariant.stockQuantity > 0 : false,
-        
+
         // Actions
         setColor: handleColorChange,
         setSize: setSelectedSize,

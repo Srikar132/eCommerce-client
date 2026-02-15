@@ -2,9 +2,8 @@
 
 import { Address } from "@/types/auth";
 import { Card } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
-import { MapPin } from "lucide-react";
+import { RadioGroupItem } from "@/components/ui/radio-group";
 
 interface AddressSelectionCardProps {
     address: Address;
@@ -19,11 +18,10 @@ export default function AddressSelectionCard({
 }: AddressSelectionCardProps) {
     return (
         <Card
-            className={`p-4 cursor-pointer transition-all ${
-                isSelected
-                    ? "border-primary ring-2 ring-primary/20"
-                    : "border-border hover:border-primary/50"
-            }`}
+            className={`p-4 cursor-pointer transition-all ${isSelected
+                ? "border-primary ring-2 ring-primary/20"
+                : "border-border hover:border-primary/50"
+                }`}
             onClick={onSelect}
         >
             <div className="flex items-start gap-3">

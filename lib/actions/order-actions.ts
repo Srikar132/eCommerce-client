@@ -19,6 +19,7 @@ import crypto from "crypto";
 import Razorpay from "razorpay";
 import { CheckoutRequest, CheckoutResponse, Order, OrderItem, OrderStatus, PaymentStatus, PaymentVerificationRequest, OrderParams, OrderWithUser } from "@/types/orders";
 import { PagedResponse } from "@/types";
+import { requirePermission, UserRole } from "@/lib/auth-utils";
 
 
 
@@ -250,6 +251,9 @@ export async function checkout(request: CheckoutRequest): Promise<CheckoutRespon
         throw new Error("Unauthorized");
     }
 
+    // RBAC: Only users with 'USER' role can checkout - admins cannot place orders
+    requirePermission(session.user.role as UserRole, 'checkout:initiate');
+
     const userId = session.user.id;
 
     try {
@@ -346,6 +350,9 @@ export async function verifyPaymentAndConfirmOrder(
     if (!session?.user?.id) {
         throw new Error("Unauthorized");
     }
+
+    // RBAC: Only users with 'USER' role can complete orders - admins cannot place orders
+    requirePermission(session.user.role as UserRole, 'payment:verify');
 
     const userId = session.user.id;
 

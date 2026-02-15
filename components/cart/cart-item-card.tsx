@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { CartItem } from "@/types/cart";
 import { cn } from "@/lib/utils";
 

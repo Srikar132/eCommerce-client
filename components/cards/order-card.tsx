@@ -4,8 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Order, OrderStatus, PaymentStatus } from "@/types/orders";
-import { Package, Calendar, CreditCard, MapPin, ChevronRight, Clock, AlertCircle } from "lucide-react";
-import { canCancelOrder, CANCELLATION_TIME_LIMIT_DAYS } from "@/lib/utils/order-utils";
+import { Package, Calendar, CreditCard, ChevronRight, Clock, AlertCircle } from "lucide-react";
+import { canCancelOrder } from "@/lib/utils/order-utils";
 import CancelOrderDialog from "@/components/order/cancel-order-dialog";
 
 interface OrderCardProps {
@@ -180,25 +180,6 @@ export default function OrderCard({ order }: OrderCardProps) {
                         <span>₹{order.totalAmount.toFixed(2)}</span>
                     </div>
                 </div>
-
-                {/* Tracking Info */}
-                {order.trackingNumber && (
-                    <div className="mt-3 p-2 bg-muted/50 rounded-md text-xs">
-                        <div className="flex items-center gap-2">
-                            <MapPin className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-muted-foreground">Tracking:</span>
-                            <span className="font-medium">{order.trackingNumber}</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* Delivery Date */}
-                {order.estimatedDeliveryDate && (
-                    <div className="mt-2 text-xs text-muted-foreground">
-                        <span className="font-medium">Estimated Delivery:</span>{" "}
-                        {formatDate(order.estimatedDeliveryDate)}
-                    </div>
-                )}
 
                 {/* Cancellation Info */}
                 {canCancel && daysRemaining !== null && (

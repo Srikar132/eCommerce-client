@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/admin/theme-toggle";
-import { Bell, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,6 @@ import {
 import { logout } from "@/lib/actions/auth-actions";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import Link from "next/link";
 
 export function AdminHeader() {
   const handleLogout = async () => {
@@ -39,10 +38,10 @@ export function AdminHeader() {
             asChild
             className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <Link href="/?preview=true" target="_blank" rel="noopener noreferrer">
+            <a href="/?admin_browse=true" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-4 w-4" />
               <span>Visit Store</span>
-            </Link>
+            </a>
           </Button>
 
           <ThemeToggle />

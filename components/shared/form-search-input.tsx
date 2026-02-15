@@ -9,13 +9,12 @@ import { Search, X } from "lucide-react";
 interface SearchFormProps {
     action: string;
     search?: string;
-    page?: number;
     size?: number;
     className?: string;
     placeholder?: string;
 }
 
-export function SearchForm({ action, search, page, size, className, placeholder = "Search products..." }: SearchFormProps) {
+export function SearchForm({ action, search, size, className, placeholder = "Search products..." }: SearchFormProps) {
     const [query, setQuery] = useState(search || "");
     const router = useRouter();
 

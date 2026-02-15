@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Package, Heart, MapPin, User, LogOut } from 'lucide-react';
+import { Package, Heart } from 'lucide-react';
 import Link from 'next/link';
 import LogoutButton from '../auth/logout-button';
 

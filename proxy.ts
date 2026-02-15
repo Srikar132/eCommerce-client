@@ -87,36 +87,53 @@ export async function proxy(request: NextRequest) {
     }`);
   console.log(`└─ Redirect Param: ${redirectParam || 'None'}`);
 
-  // ADMIN REDIRECT: Admin users should always be in admin panel
-  // Exception: Preview mode allows admins to view the store
-  const previewParam = searchParams.get('preview') === 'true';
-  const previewCookie = request.cookies.get('admin_preview')?.value === 'true';
-  const isPreviewMode = previewParam || previewCookie;
+  // ADMIN STORE BROWSING LOGIC
+  // - Admin accessing "/" redirects to "/admin" by default
+  // - Admin can browse store via "Visit Store" button (sets secure cookie)
+  // - Cookie allows admin to navigate store freely
+  // - "Return to Admin" clears cookie and redirects back
+  if (isAuthenticated && userRole === 'ADMIN') {
+    // Allow access to admin routes (and clear browse cookie if present)
+    if (isAdmin) {
+      const browseCookie = request.cookies.get('admin_store_browse')?.value;
+      if (browseCookie) {
+        const response = addSecurityHeaders(NextResponse.next());
+        response.cookies.delete('admin_store_browse');
+        console.log(`🔄 [ADMIN] Returned to admin panel, cleared store browse cookie`);
+        return response;
+      }
+      console.log(`✅ [AUTHORIZED] Admin granted access to ${pathname}`);
+      return addSecurityHeaders(NextResponse.next());
+    }
 
-  // If admin is accessing admin routes, clear preview cookie
-  if (isAuthenticated && userRole === 'ADMIN' && isAdmin && previewCookie) {
-    const response = addSecurityHeaders(NextResponse.next());
-    response.cookies.delete('admin_preview');
-    console.log(`🔄 [PREVIEW] Admin returned to panel, clearing preview cookie`);
-    return response;
-  }
+    // Check for store browsing permission
+    const browseParam = searchParams.get('admin_browse') === 'true';
+    const browseCookie = request.cookies.get('admin_store_browse')?.value === 'true';
 
-  // If preview param is set, create cookie for subsequent navigation
-  if (isAuthenticated && userRole === 'ADMIN' && previewParam && !isAdmin) {
-    const response = addSecurityHeaders(NextResponse.next());
-    response.cookies.set('admin_preview', 'true', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60, // 1 hour
-    });
-    console.log(`🔄 [PREVIEW] Admin entered preview mode, setting cookie`);
-    return response;
-  }
+    if (browseParam) {
+      // Admin clicked "Visit Store" - set HttpOnly cookie and redirect to clean URL
+      const cleanUrl = new URL(pathname, request.url);
+      // Remove the admin_browse param for clean URL
+      const response = NextResponse.redirect(cleanUrl);
+      response.cookies.set('admin_store_browse', 'true', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 60 * 60 * 4, // 4 hours max - prevents indefinite access
+      });
+      console.log(`🟢 [ADMIN BROWSE] Admin started browsing store, redirecting to clean URL`);
+      return addSecurityHeaders(response);
+    }
 
-  // Redirect admin to admin panel if not in preview mode
-  if (isAuthenticated && userRole === 'ADMIN' && !isAdmin && !isPreviewMode) {
-    console.log(`🔄 [REDIRECT] Admin user redirected from ${pathname} to /admin`);
+    if (browseCookie) {
+      // Admin has valid browse cookie - allow store navigation
+      console.log(`🟢 [ADMIN BROWSE] Admin browsing store at ${pathname}`);
+      return addSecurityHeaders(NextResponse.next());
+    }
+
+    // No browse permission - redirect to admin panel
+    console.log(`🔄 [REDIRECT] Admin redirected from ${pathname} to /admin`);
     return NextResponse.redirect(new URL('/admin', request.url));
   }
 

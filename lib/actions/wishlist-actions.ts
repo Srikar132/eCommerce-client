@@ -2,10 +2,11 @@
 
 import { db } from "@/drizzle/db";
 import { wishlists, products, productImages, categories } from "@/drizzle/schema";
-import { eq, and, desc, or, inArray } from "drizzle-orm";
+import { eq, and, desc, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { WishlistResponse, CheckWishlistResponse, WishlistCountResponse, WishlistItem } from "@/types/wishlist";
 import { auth } from "@/auth";
+import { requirePermission, UserRole } from "@/lib/auth-utils";
 
 /**
  * GET WISHLIST
@@ -45,7 +46,7 @@ export async function getWishlist(): Promise<WishlistResponse> {
         const productIds = wishlistItems
             .filter(item => item.product !== null)
             .map(item => item.product!.id);
-        
+
         // Fetch primary images for all products
         const images = productIds.length > 0
             ? await db
@@ -74,7 +75,7 @@ export async function getWishlist(): Promise<WishlistResponse> {
             .map(item => {
                 const product = item.product!;
                 const primaryImage = primaryImageMap[product.id];
-                
+
                 return {
                     // Wishlist-specific
                     wishlistId: item.wishlistId,
@@ -127,6 +128,9 @@ export async function addToWishlist(productId: string): Promise<WishlistResponse
         if (!session?.user?.id) {
             throw new Error("Unauthorized. Please log in.");
         }
+
+        // RBAC: Only users with 'USER' role can add to wishlist
+        requirePermission(session.user.role as UserRole, 'wishlist:add');
 
         const userId = session.user.id;
 
@@ -191,6 +195,9 @@ export async function removeFromWishlist(productId: string): Promise<WishlistRes
         if (!session?.user?.id) {
             throw new Error("Unauthorized. Please log in.");
         }
+
+        // RBAC: Only users with 'USER' role can remove from wishlist
+        requirePermission(session.user.role as UserRole, 'wishlist:remove');
 
         const userId = session.user.id;
 
@@ -319,6 +326,10 @@ export async function toggleWishlist(productId: string): Promise<{ inWishlist: b
             throw new Error("Unauthorized. Please log in.");
         }
 
+        // RBAC: Only users with 'USER' role can toggle wishlist
+        // Check for 'wishlist:add' since toggle can add items
+        requirePermission(session.user.role as UserRole, 'wishlist:add');
+
         const userId = session.user.id;
 
         // Check current state
@@ -347,9 +358,9 @@ export async function toggleWishlist(productId: string): Promise<{ inWishlist: b
             revalidatePath("/wishlist");
             revalidatePath("/products");
 
-            return { 
-                inWishlist: false, 
-                message: "Removed from wishlist" 
+            return {
+                inWishlist: false,
+                message: "Removed from wishlist"
             };
         } else {
             // Add to wishlist
@@ -361,9 +372,9 @@ export async function toggleWishlist(productId: string): Promise<{ inWishlist: b
             revalidatePath("/wishlist");
             revalidatePath("/products");
 
-            return { 
-                inWishlist: true, 
-                message: "Added to wishlist" 
+            return {
+                inWishlist: true,
+                message: "Added to wishlist"
             };
         }
     } catch (error) {

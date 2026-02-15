@@ -1,7 +1,17 @@
-
-
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+    title: "About Us",
+    description: "Discover the story of Nala Armoire - where dreams are stitched alive and memories are tenderly woven together. Learn about our journey, craftsmanship, and passion for personalized fashion.",
+    openGraph: {
+        title: "About Nala Armoire - Our Story",
+        description: "Discover the story of Nala Armoire - where dreams are stitched alive and memories are tenderly woven together.",
+        url: "https://nalaarmoire.com/about",
+        images: ["/images/og-image.jpg"],
+    },
+};
 
 const About = () => {
     return (
@@ -41,7 +51,7 @@ const About = () => {
                     {/* Story Content */}
                     <div className="space-y-8 text-center">
                         <p className="text-base sm:text-lg md:text-xl text-foreground/90 leading-relaxed">
-                            I've always had a dream — a place where my talent could truly breathe. With no clear path, I followed faith, trusting that the way would reveal itself.
+                            I&apos;ve always had a dream — a place where my talent could truly breathe. With no clear path, I followed faith, trusting that the way would reveal itself.
                         </p>
 
                         <p className="text-base sm:text-lg md:text-xl text-foreground/90 leading-relaxed">
@@ -149,7 +159,7 @@ const About = () => {
             <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 text-center">
                 <div className="max-w-3xl mx-auto space-y-8">
                     <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium italic tracking-tight text-foreground">
-                        Let's Stitch Your Story Together
+                        Let&apos;s Stitch Your Story Together
                     </h2>
                     <p className="text-base sm:text-lg text-muted-foreground">
                         Explore our collections and discover pieces that speak to your soul

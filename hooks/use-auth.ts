@@ -4,7 +4,14 @@
  */
 
 import { useSession } from 'next-auth/react';
-import { UserRole, hasRoutePermission, getRoleDisplayName } from '@/lib/auth-utils';
+import {
+    UserRole,
+    hasRoutePermission,
+    getRoleDisplayName,
+    hasPermission,
+    canShop,
+    ActionPermission,
+} from '@/lib/auth-utils';
 
 export function useAuth() {
     const { data: session, status } = useSession();
@@ -25,8 +32,17 @@ export function useAuth() {
         isAdmin: userRole === 'ADMIN',
         isUser: userRole === 'USER',
 
+        // RBAC permission checks
+        canShop: canShop(userRole),
+        canAddToCart: hasPermission(userRole, 'cart:add'),
+        canCheckout: hasPermission(userRole, 'checkout:initiate'),
+        canPlaceOrder: hasPermission(userRole, 'order:create'),
+
+        // Generic permission check
+        hasActionPermission: (action: ActionPermission) => hasPermission(userRole, action),
+
         // Utilities
-        hasPermission: (pathname: string) => hasRoutePermission(userRole, pathname),
+        hasRoutePermission: (pathname: string) => hasRoutePermission(userRole, pathname),
         getRoleDisplayName: () => userRole ? getRoleDisplayName(userRole) : 'Guest',
 
         // Session status

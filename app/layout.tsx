@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack";
@@ -9,6 +8,105 @@ import AuthProvider from "@/providers/auth-provider";
 import { Suspense } from "react";
 import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import { Toaster } from "@/components/ui/sonner";
+import type { Metadata, Viewport } from "next";
+
+// ============================================================================
+// SEO METADATA CONFIGURATION
+// ============================================================================
+
+const SITE_URL = "https://nalaarmoire.com";
+const SITE_NAME = "Nala Armoire";
+const SITE_DESCRIPTION = "Where beauty roars in every stitch. Discover premium customizable fashion, handcrafted with love. Shop ethnic wear, contemporary styles, and personalized clothing at Nala Armoire.";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} - Premium Customizable Fashion`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "Nala Armoire",
+    "customizable fashion",
+    "ethnic wear",
+    "handcrafted clothing",
+    "Indian fashion",
+    "personalized clothing",
+    "women's fashion",
+    "designer wear",
+    "boutique fashion",
+    "custom tailoring",
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} - Premium Customizable Fashion`,
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/images/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} - Where beauty roars in every stitch`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} - Premium Customizable Fashion`,
+    description: SITE_DESCRIPTION,
+    images: ["/images/og-image.jpg"],
+    creator: "@nalaarmoire",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180" },
+    ],
+  },
+  manifest: "/manifest.json",
+  alternates: {
+    canonical: SITE_URL,
+  },
+  verification: {
+    // Add your Google Search Console verification code here
+    google: "google2475ce37e89fe0b0.html",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 
 

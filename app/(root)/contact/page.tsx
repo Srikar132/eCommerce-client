@@ -4,10 +4,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from 'lucide-react';
 import Header from '@/components/header';
 import { getStoreSettings } from '@/lib/actions/store-settings-actions';
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: 'Contact Us - THE NALA ARMOIRE',
-  description: 'Get in touch with us for any questions, feedback, or support. We\'re here to help you with your shopping experience.',
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Get in touch with Nala Armoire for any questions, feedback, or support. We're here to help you with your shopping experience.",
+  openGraph: {
+    title: "Contact Us - Nala Armoire",
+    description: "Get in touch with Nala Armoire for any questions, feedback, or support.",
+    url: "https://nalaarmoire.com/contact",
+  },
 };
 
 export default async function ContactPage() {

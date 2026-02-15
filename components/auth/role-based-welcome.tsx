@@ -37,7 +37,7 @@ export default function RoleBasedWelcome() {
         isAuthenticated,
         isLoading,
         getRoleDisplayName,
-        hasPermission
+        hasRoutePermission
     } = useAuth();
 
     if (isLoading) {
@@ -141,7 +141,7 @@ export default function RoleBasedWelcome() {
                                 <Button
                                     variant="outline"
                                     className="w-full justify-start h-12"
-                                    disabled={!hasPermission(action.href)}
+                                    disabled={!hasRoutePermission(action.href)}
                                 >
                                     {action.icon}
                                     <span className="ml-2">{action.label}</span>
@@ -163,8 +163,8 @@ export default function RoleBasedWelcome() {
                             {['/admin', '/account', '/cart', '/orders'].map(route => (
                                 <div key={route} className="flex justify-between">
                                     <span>{route}</span>
-                                    <span className={hasPermission(route) ? 'text-green-600' : 'text-red-600'}>
-                                        {hasPermission(route) ? '✓' : '✗'}
+                                    <span className={hasRoutePermission(route) ? 'text-green-600' : 'text-red-600'}>
+                                        {hasRoutePermission(route) ? '✓' : '✗'}
                                     </span>
                                 </div>
                             ))}

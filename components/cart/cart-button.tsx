@@ -1,23 +1,27 @@
 "use client";
-import { useState , useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import { useCartCount } from "@/lib/tanstack/queries/cart.queries";
 import { Button } from "../ui/button";
 import { ShoppingBagIcon } from "lucide-react";
 
-const CartButton = ({ enabled } : { enabled: boolean }) => {
-  const totalItems = useCartCount({enabled});
-    const [mounted, setMounted] = useState(false);
-  
-    // Prevent hydration mismatch by only showing count after mount
-    useEffect(() => {
-      setMounted(true);
-    }, []);
+// Hydration-safe mount detection
+const emptySubscribe = () => () => { };
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+function useHasMounted() {
+  return useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
+}
+
+const CartButton = ({ enabled }: { enabled: boolean }) => {
+  const totalItems = useCartCount({ enabled });
+  const mounted = useHasMounted();
 
   return (
     <Button
       className="relative p-1 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
       aria-label="Shopping cart"
-      
+
     >
       <ShoppingBagIcon
         className="w-5 h-5 text-foreground"
@@ -26,7 +30,7 @@ const CartButton = ({ enabled } : { enabled: boolean }) => {
 
       {mounted && totalItems > 0 && (
         <span
-          
+
           className="
             absolute -top-1 -right-1
             min-w-4.5 h-4.5

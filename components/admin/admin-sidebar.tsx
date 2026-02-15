@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { Collapsible } from "@/components/ui/collapsible";
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -31,7 +30,7 @@ export function AdminSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r">
-      <SidebarHeader className="border-b border-sidebar-border pb-4">
+      <SidebarHeader className="border-b border-sidebar-border p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             {/* Mobile close button */}
@@ -46,18 +45,22 @@ export function AdminSidebar() {
               </Button>
             )}
 
-            <SidebarMenuButton size="lg" asChild className="">
-              <Link href="/admin">
-                <div className="flex aspect-square size-16 items-center justify-center rounded-xl overflow-hidden">
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              className="h-12 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-0!"
+            >
+              <Link href="/admin" className="flex items-center gap-3">
+                <div className="flex items-center justify-center rounded-xl overflow-hidden size-10 shrink-0">
                   <Image
                     src="/images/logo.webp"
                     alt="Nala-armoire"
-                    width={60}
-                    height={60}
-                    className="object-cover"
+                    width={40}
+                    height={40}
+                    className="object-cover w-full h-full"
                   />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                   <span className="truncate font-bold text-base">ARMOIRE</span>
                   <span className="truncate text-xs text-muted-foreground">Admin Panel</span>
                 </div>
@@ -67,35 +70,39 @@ export function AdminSidebar() {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-4">
-        <SidebarGroup>
+      <SidebarContent className="p-2">
+        <SidebarGroup className="p-0">
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className="gap-1">
               {routes.map((route) => {
                 const Icon = route.icon;
                 const active = isActive(route.href);
 
                 return (
-                  <Collapsible key={route.label}
-                    asChild
-                    className="group/collapsible">
-                    <SidebarMenuItem key={route.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={active}
-                        tooltip={route.label}
-                        className={`rounded-xl h-11 transition-all duration-200 ${active
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                            : "hover:bg-sidebar-accent"
-                          }`}
-                      >
-                        <Link href={route.href}>
-                          <Icon className={`h-5 w-5 ${active ? "" : "text-muted-foreground"}`} />
-                          <span className="text-sm font-medium">{route.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </Collapsible>
+                  <SidebarMenuItem key={route.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      tooltip={route.label}
+                      className={`
+                        rounded-lg h-10 px-3 transition-all duration-200
+                        group-data-[collapsible=icon]:size-10! 
+                        group-data-[collapsible=icon]:p-0! 
+                        group-data-[collapsible=icon]:justify-center!
+                        ${active
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "hover:bg-sidebar-accent"
+                        }
+                      `}
+                    >
+                      <Link href={route.href} className="flex items-center gap-3">
+                        <Icon className={`size-5! shrink-0 ${active ? "" : "text-muted-foreground"}`} />
+                        <span className="text-sm font-medium group-data-[collapsible=icon]:hidden">
+                          {route.label}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 );
               })}
             </SidebarMenu>

@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import type { WishlistItem } from '@/types/wishlist';
 import { useState } from 'react';
@@ -27,10 +26,10 @@ export function WishlistCard({ item, onRemove, isRemoving }: WishlistCardProps) 
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
     });
   };
 
@@ -40,7 +39,7 @@ export function WishlistCard({ item, onRemove, isRemoving }: WishlistCardProps) 
         {/* Image Container */}
         <div className="relative aspect-3/4 overflow-hidden bg-muted">
           <Image
-            src={item.primaryImageUrl || PLACEHOLDER_IMAGE}
+            src={imageError ? PLACEHOLDER_IMAGE : (item.primaryImageUrl || PLACEHOLDER_IMAGE)}
             alt={item.primaryImageAlt || item.productName}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "Terms & Conditions",
+    description: "Read the terms and conditions for using Nala Armoire. Learn about our policies, disclaimers, and user agreements.",
+    openGraph: {
+        title: "Terms & Conditions - Nala Armoire",
+        description: "Read the terms and conditions for using Nala Armoire.",
+        url: "https://nalaarmoire.com/terms",
+    },
+};
 
 const Terms = () => {
     return (

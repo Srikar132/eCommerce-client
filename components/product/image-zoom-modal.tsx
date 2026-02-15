@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { X, ZoomIn, ZoomOut } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
 
 interface ImageZoomModalProps {
@@ -14,7 +14,7 @@ interface ImageZoomModalProps {
   onClose: () => void;
 }
 
-const ImageZoomModal: React.FC<ImageZoomModalProps> = ({ 
+const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
   image,
   onClose
 }) => {

@@ -12,6 +12,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
     authenticatorsTable: authenticators,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any, // Type assertion to handle version mismatch between @auth/core packages
 
   // Add explicit secret and JWT configuration

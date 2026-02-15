@@ -78,7 +78,7 @@ export default function OrderSuccessClient({ orderNumber }: OrderSuccessClientPr
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="min-h-screen bg-linear-to-b from-background via-background to-accent/10 flex items-center justify-center p-4"
     >
@@ -89,7 +89,7 @@ export default function OrderSuccessClient({ orderNumber }: OrderSuccessClientPr
             <div className="relative">
               {/* Outer ring with gradient */}
               <div className="absolute inset-0 bg-linear-to-br from-primary to-primary/60 rounded-full blur-xl opacity-50" />
-              
+
               {/* Checkmark icon */}
               <div className="relative bg-linear-to-br from-primary to-primary/80 rounded-full p-6">
                 <CheckCircle2 className="h-20 w-20 text-primary-foreground" strokeWidth={2.5} />
@@ -102,7 +102,7 @@ export default function OrderSuccessClient({ orderNumber }: OrderSuccessClientPr
             <h1 className="text-3xl md:text-4xl font-bold text-foreground">
               Order Placed Successfully! 🎉
             </h1>
-            
+
             <p className="text-muted-foreground text-base md:text-lg">
               Thank you for your purchase! Your order has been confirmed.
             </p>
@@ -125,7 +125,7 @@ export default function OrderSuccessClient({ orderNumber }: OrderSuccessClientPr
             </Card>
 
             <p className="text-sm text-muted-foreground pt-2">
-              We've sent a confirmation email with your order details.
+              We&apos;ve sent a confirmation email with your order details.
               <br />
               You can track your order from your account page.
             </p>

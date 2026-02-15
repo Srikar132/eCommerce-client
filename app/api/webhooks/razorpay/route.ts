@@ -5,6 +5,52 @@ import { eq } from "drizzle-orm";
 import crypto from "crypto";
 
 /**
+ * Razorpay Webhook Payload Types
+ */
+interface RazorpayPaymentEntity {
+    id: string;
+    order_id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    method: string;
+    refund_status: string | null;
+    amount_refunded: number;
+    error_code?: string;
+    error_description?: string;
+}
+
+interface RazorpayRefundEntity {
+    id: string;
+    payment_id: string;
+    amount: number;
+    currency: string;
+    status: string;
+}
+
+interface RazorpayOrderEntity {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+}
+
+interface RazorpayWebhookPayload {
+    event: string;
+    payload: {
+        payment?: {
+            entity: RazorpayPaymentEntity;
+        };
+        refund?: {
+            entity: RazorpayRefundEntity;
+        };
+        order?: {
+            entity: RazorpayOrderEntity;
+        };
+    };
+}
+
+/**
  * Razorpay Webhook Handler
  * 
  * Configure this webhook URL in Razorpay Dashboard:
@@ -56,7 +102,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Parse webhook payload
-        const webhook = JSON.parse(payload);
+        const webhook = JSON.parse(payload) as RazorpayWebhookPayload;
         const event = webhook.event;
 
         console.log(`Processing Razorpay webhook event: ${event}`);
@@ -110,9 +156,10 @@ export async function POST(request: NextRequest) {
  * Handle payment.authorized event
  * Payment has been authorized but not captured yet
  */
-async function handlePaymentAuthorized(webhook: any) {
+async function handlePaymentAuthorized(webhook: RazorpayWebhookPayload) {
     try {
-        const payment = webhook.payload.payment.entity;
+        const payment = webhook.payload.payment?.entity;
+        if (!payment) return;
         const razorpayOrderId = payment.order_id;
         const razorpayPaymentId = payment.id;
 
@@ -141,9 +188,10 @@ async function handlePaymentAuthorized(webhook: any) {
  * Handle payment.captured event
  * Payment has been captured successfully
  */
-async function handlePaymentCaptured(webhook: any) {
+async function handlePaymentCaptured(webhook: RazorpayWebhookPayload) {
     try {
-        const payment = webhook.payload.payment.entity;
+        const payment = webhook.payload.payment?.entity;
+        if (!payment) return;
         const razorpayOrderId = payment.order_id;
 
         const order = await db.query.orders.findFirst({
@@ -171,9 +219,10 @@ async function handlePaymentCaptured(webhook: any) {
  * Handle payment.failed event
  * Payment attempt failed
  */
-async function handlePaymentFailed(webhook: any) {
+async function handlePaymentFailed(webhook: RazorpayWebhookPayload) {
     try {
-        const payment = webhook.payload.payment.entity;
+        const payment = webhook.payload.payment?.entity;
+        if (!payment) return;
         const razorpayOrderId = payment.order_id;
 
         const order = await db.query.orders.findFirst({
@@ -200,9 +249,10 @@ async function handlePaymentFailed(webhook: any) {
  * Handle order.paid event
  * Order has been paid successfully
  */
-async function handleOrderPaid(webhook: any) {
+async function handleOrderPaid(webhook: RazorpayWebhookPayload) {
     try {
-        const orderData = webhook.payload.order.entity;
+        const orderData = webhook.payload.order?.entity;
+        if (!orderData) return;
         const razorpayOrderId = orderData.id;
 
         const order = await db.query.orders.findFirst({
@@ -230,9 +280,10 @@ async function handleOrderPaid(webhook: any) {
  * Handle refund.created event
  * Refund has been initiated
  */
-async function handleRefundCreated(webhook: any) {
+async function handleRefundCreated(webhook: RazorpayWebhookPayload) {
     try {
-        const refund = webhook.payload.refund.entity;
+        const refund = webhook.payload.refund?.entity;
+        if (!refund) return;
         const razorpayPaymentId = refund.payment_id;
         const refundId = refund.id;
 
@@ -263,9 +314,10 @@ async function handleRefundCreated(webhook: any) {
  * Handle refund.processed event
  * Refund has been processed successfully - money returned to customer
  */
-async function handleRefundProcessed(webhook: any) {
+async function handleRefundProcessed(webhook: RazorpayWebhookPayload) {
     try {
-        const refund = webhook.payload.refund.entity;
+        const refund = webhook.payload.refund?.entity;
+        if (!refund) return;
         const razorpayPaymentId = refund.payment_id;
         const refundId = refund.id;
 
@@ -298,9 +350,10 @@ async function handleRefundProcessed(webhook: any) {
  * Handle refund.failed event
  * Refund attempt failed
  */
-async function handleRefundFailed(webhook: any) {
+async function handleRefundFailed(webhook: RazorpayWebhookPayload) {
     try {
-        const refund = webhook.payload.refund.entity;
+        const refund = webhook.payload.refund?.entity;
+        if (!refund) return;
         const razorpayPaymentId = refund.payment_id;
         const refundId = refund.id;
 

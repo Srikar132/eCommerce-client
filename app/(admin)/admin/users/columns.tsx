@@ -28,7 +28,7 @@ function UserActions({ user }: { user: UserWithStats }) {
                 toast.success("User deleted", {
                     description: "User has been successfully deleted.",
                 });
-            } catch (error) {
+            } catch {
                 toast.error("Error", {
                     description: "Failed to delete user. Please try again.",
                 });
@@ -44,7 +44,7 @@ function UserActions({ user }: { user: UserWithStats }) {
                 toast.success("Role updated", {
                     description: `User role has been changed to ${newRole}.`,
                 });
-            } catch (error) {
+            } catch {
                 toast.error("Error", {
                     description: "Failed to update user role. Please try again.",
                 });
@@ -97,10 +97,10 @@ export const columns: ColumnDef<UserWithStats>[] = [
                     Email
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"
@@ -134,10 +134,10 @@ export const columns: ColumnDef<UserWithStats>[] = [
                     Phone
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"
@@ -175,10 +175,10 @@ export const columns: ColumnDef<UserWithStats>[] = [
                     Role
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"
@@ -211,13 +211,13 @@ export const columns: ColumnDef<UserWithStats>[] = [
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     className="h-auto p-0 hover:bg-transparent"
                 >
-                Products Orderd
+                    Products Orderd
                     <svg
                         className={`ml-2 h-4 w-4 transition-transform ${column.getIsSorted() === "asc"
-                                ? "rotate-0"
-                                : column.getIsSorted() === "desc"
-                                    ? "rotate-180"
-                                    : "opacity-50"
+                            ? "rotate-0"
+                            : column.getIsSorted() === "desc"
+                                ? "rotate-180"
+                                : "opacity-50"
                             }`}
                         fill="none"
                         stroke="currentColor"

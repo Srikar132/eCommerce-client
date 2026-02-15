@@ -20,10 +20,10 @@ export default function ProductReviewsClient({ productId }: ProductReviewsClient
     const [checkingEligibility, setCheckingEligibility] = useState(true);
     const { data: session, status } = useSession();
 
-    const { 
-        data,  
-        fetchNextPage, 
-        hasNextPage, 
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
         isFetchingNextPage,
         error
     } = useInfiniteProductReviews(productId, { size: 10 });
@@ -55,7 +55,7 @@ export default function ProductReviewsClient({ productId }: ProductReviewsClient
     const allReviews = data?.pages.flatMap(page => page.data) ?? [];
 
 
-    if(error) {
+    if (error) {
         return (
             <div className="flex justify-center items-center py-12">
                 <p className="text-muted-foreground">Error loading reviews</p>
@@ -70,10 +70,10 @@ export default function ProductReviewsClient({ productId }: ProductReviewsClient
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
                     Customer Reviews
                 </h2>
-                
+
                 {/* Only show review button if user is eligible */}
                 {canReview && !checkingEligibility && (
-                    <Button 
+                    <Button
                         onClick={() => setShowReviewForm(!showReviewForm)}
                         variant={showReviewForm ? "outline" : "default"}
                         className="gap-2"
@@ -93,7 +93,7 @@ export default function ProductReviewsClient({ productId }: ProductReviewsClient
             {/* Review Form */}
             {showReviewForm && (
                 <div className="mb-8">
-                    <AddReviewForm 
+                    <AddReviewForm
                         productId={productId}
                         onClose={() => setShowReviewForm(false)}
                     />
@@ -113,8 +113,8 @@ export default function ProductReviewsClient({ productId }: ProductReviewsClient
                         {/* View More Button */}
                         {hasNextPage && (
                             <div className="flex justify-center py-8">
-                                <Button 
-                                    variant="outline" 
+                                <Button
+                                    variant="outline"
                                     onClick={() => fetchNextPage()}
                                     disabled={isFetchingNextPage}
                                     className="gap-2"
@@ -136,7 +136,7 @@ export default function ProductReviewsClient({ productId }: ProductReviewsClient
 
                         {!hasNextPage && allReviews.length > 5 && (
                             <p className="text-center text-sm text-muted-foreground py-4">
-                                You've reached the end of reviews
+                                You&apos;ve reached the end of reviews
                             </p>
                         )}
                     </>

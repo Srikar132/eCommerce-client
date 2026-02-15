@@ -11,12 +11,12 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { LoginRequired } from "@/components/auth/login-required";
 import { ShoppingBag, Loader2, MessageSquare } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import AddressSelectionCard from "./address-selection-card";
 import CheckoutOrderSummary from "./checkout-order-summary";
 
@@ -35,7 +35,7 @@ export default function CheckoutClient() {
     // Use Razorpay checkout hook
     // With payment-first flow: no order exists until payment succeeds
     // On failure/cancel, user stays on checkout page (no redirect)
-    const { openCheckout, isProcessing, isRazorpayLoaded } = useRazorpayCheckout({
+    const { openCheckout, isProcessing } = useRazorpayCheckout({
         onSuccess: (orderNumber) => {
             router.push(`/orders/${orderNumber}`);
         },
@@ -45,16 +45,13 @@ export default function CheckoutClient() {
 
 
     // Auto-select default address
+    const defaultAddressId = addresses?.find(addr => addr.isDefault)?.id ?? addresses?.[0]?.id;
     useEffect(() => {
-        if (addresses && addresses.length > 0 && !selectedAddressId) {
-            const defaultAddress = addresses.find(addr => addr.isDefault);
-            if (defaultAddress) {
-                setSelectedAddressId(defaultAddress.id);
-            } else {
-                setSelectedAddressId(addresses[0].id);
-            }
+        if (defaultAddressId && !selectedAddressId) {
+            setSelectedAddressId(defaultAddressId);
         }
-    }, [addresses, selectedAddressId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [defaultAddressId]);
 
     const handleCheckout = async () => {
         if (!selectedAddressId) {
@@ -72,8 +69,8 @@ export default function CheckoutClient() {
 
             // Open Razorpay checkout using the hook
             openCheckout(checkoutData);
-        } catch (error: any) {
-            toast.error(error.message || "Checkout failed");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Checkout failed");
         }
     };
 
@@ -188,11 +185,15 @@ export default function CheckoutClient() {
                                     {cart.items.slice(0, 3).map((item) => (
                                         <div key={item.id} className="flex items-center gap-3">
                                             {item.product.primaryImageUrl && (
-                                                <img
-                                                    src={item.product.primaryImageUrl}
-                                                    alt={item.product.name}
-                                                    className="w-16 h-16 object-cover rounded"
-                                                />
+                                                <div className="relative w-16 h-16 shrink-0">
+                                                    <Image
+                                                        src={item.product.primaryImageUrl}
+                                                        alt={item.product.name}
+                                                        fill
+                                                        sizes="64px"
+                                                        className="object-cover rounded"
+                                                    />
+                                                </div>
                                             )}
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-medium text-sm truncate">

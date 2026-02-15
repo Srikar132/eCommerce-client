@@ -1,16 +1,15 @@
 "use client";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/components/ui/sidebar"
 import { useEffect } from "react";
-import { 
-  ChevronDown, 
-  User, 
-  Mail, 
-  ShoppingCart, 
-  Search, 
+import {
+  ChevronDown,
+  User,
+  Mail,
+  ShoppingCart,
+  Search,
   Home,
   ShoppingBag,
   Heart,
-  Sparkles,
   Info,
   Package
 } from "lucide-react";
@@ -75,8 +74,8 @@ export default function AppSidebar() {
                   <p className="text-[10px] italic text-muted-foreground -mt-0.5">where beauty roars</p>
                 </div>
               </Link>
-              
-              <Button 
+
+              <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleClose}
@@ -92,7 +91,7 @@ export default function AppSidebar() {
           <SidebarMenu>
             {/* Home */}
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 asChild
                 className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
               >
@@ -107,24 +106,24 @@ export default function AppSidebar() {
             <SidebarMenuItem>
               <Collapsible>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
                       <Package className="w-5 h-5" strokeWidth={1.5} />
                       <span className="text-sm font-light tracking-wide">Collections</span>
                     </div>
-                    <ChevronDown 
-                      className="w-4 h-4 mr-5 transition-transform duration-200 group-data-[state=open]:rotate-180" 
+                    <ChevronDown
+                      className="w-4 h-4 mr-5 transition-transform duration-200 group-data-[state=open]:rotate-180"
                       strokeWidth={1.5}
                     />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
-                
+
                 <CollapsibleContent>
                   <div className="mx-4 mt-1 mb-2 bg-accent/30 rounded-lg overflow-hidden">
                     {collections.map((collection) => (
-                      <Link 
+                      <Link
                         key={collection.title}
                         href={collection.href}
                         onClick={handleClose}
@@ -147,7 +146,7 @@ export default function AppSidebar() {
 
             {/* Shop */}
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 asChild
                 className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
               >
@@ -162,7 +161,7 @@ export default function AppSidebar() {
 
             {/* Search */}
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 asChild
                 className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
               >
@@ -175,7 +174,7 @@ export default function AppSidebar() {
 
             {/* Wishlist */}
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 asChild
                 className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
               >
@@ -188,7 +187,7 @@ export default function AppSidebar() {
 
             {/* Cart */}
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 asChild
                 className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
               >
@@ -206,7 +205,7 @@ export default function AppSidebar() {
             <SidebarMenu>
               {/* Account */}
               <SidebarMenuItem>
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   asChild
                   className="my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
                 >
@@ -219,7 +218,7 @@ export default function AppSidebar() {
 
               {/* About */}
               <SidebarMenuItem>
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   asChild
                   className="my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
                 >
@@ -232,7 +231,7 @@ export default function AppSidebar() {
 
               {/* Contact */}
               <SidebarMenuItem>
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   asChild
                   className="my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
                 >
@@ -247,6 +246,6 @@ export default function AppSidebar() {
         </SidebarFooter>
       </Sidebar>
     </>
-    
+
   )
 }

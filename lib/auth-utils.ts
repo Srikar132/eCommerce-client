@@ -5,6 +5,147 @@
 
 export type UserRole = 'USER' | 'ADMIN';
 
+// ============================================================================
+// ROLE-BASED ACCESS CONTROL (RBAC)
+// ============================================================================
+
+/**
+ * Actions that require specific role permissions
+ * ADMIN: Can manage products, orders, and view store
+ * USER: Can shop, add to cart, checkout, and place orders
+ */
+export type ActionPermission =
+    // Cart actions - USER only
+    | 'cart:view'
+    | 'cart:add'
+    | 'cart:update'
+    | 'cart:remove'
+    | 'cart:clear'
+    // Checkout & Payment - USER only
+    | 'checkout:initiate'
+    | 'checkout:complete'
+    | 'payment:process'
+    | 'payment:verify'
+    // Order actions
+    | 'order:create'      // USER only
+    | 'order:view-own'    // USER only
+    | 'order:view-all'    // ADMIN only
+    | 'order:update'      // ADMIN only
+    // Product management - ADMIN only
+    | 'product:create'
+    | 'product:update'
+    | 'product:delete'
+    // Wishlist - USER only
+    | 'wishlist:add'
+    | 'wishlist:remove';
+
+/**
+ * Permission matrix defining which roles can perform which actions
+ */
+const ROLE_PERMISSIONS: Record<UserRole, ActionPermission[]> = {
+    USER: [
+        // Cart
+        'cart:view',
+        'cart:add',
+        'cart:update',
+        'cart:remove',
+        'cart:clear',
+        // Checkout & Payment
+        'checkout:initiate',
+        'checkout:complete',
+        'payment:process',
+        'payment:verify',
+        // Orders
+        'order:create',
+        'order:view-own',
+        // Wishlist
+        'wishlist:add',
+        'wishlist:remove',
+    ],
+    ADMIN: [
+        // Orders (admin can view all orders but cannot create/checkout)
+        'order:view-all',
+        'order:update',
+        // Product management
+        'product:create',
+        'product:update',
+        'product:delete',
+    ],
+};
+
+/**
+ * Check if a role has permission to perform an action
+ * @param role - User role
+ * @param action - Action to check
+ * @returns boolean - Whether the role has permission
+ */
+export function hasPermission(role: UserRole | undefined, action: ActionPermission): boolean {
+    if (!role) return false;
+    return ROLE_PERMISSIONS[role]?.includes(action) ?? false;
+}
+
+/**
+ * Check if a role can perform shopping actions (cart, checkout, orders)
+ * Quick helper for common checks
+ */
+export function canShop(role: UserRole | undefined): boolean {
+    return role === 'USER';
+}
+
+/**
+ * Check if a role has admin privileges
+ */
+export function isAdmin(role: UserRole | undefined): boolean {
+    return role === 'ADMIN';
+}
+
+/**
+ * RBAC error class for consistent error handling
+ */
+export class RBACError extends Error {
+    public readonly statusCode: number;
+    public readonly action: string;
+    public readonly role: string | undefined;
+
+    constructor(action: string, role: string | undefined) {
+        super(`Forbidden: Role '${role || 'unknown'}' cannot perform action '${action}'`);
+        this.name = 'RBACError';
+        this.statusCode = 403;
+        this.action = action;
+        this.role = role;
+    }
+}
+
+/**
+ * Assert that a role has permission to perform an action
+ * Throws RBACError if permission is denied
+ * @param role - User role
+ * @param action - Action to check
+ * @throws RBACError if permission denied
+ */
+export function requirePermission(role: UserRole | undefined, action: ActionPermission): void {
+    if (!hasPermission(role, action)) {
+        throw new RBACError(action, role);
+    }
+}
+
+/**
+ * Assert that user can shop (not admin)
+ * Throws RBACError if user is admin trying to shop
+ * @param role - User role
+ * @param action - Action being attempted (for error message)
+ * @throws RBACError if admin user
+ */
+export function requireShoppingRole(role: UserRole | undefined, action: string): void {
+    if (!canShop(role)) {
+        throw new RBACError(action, role);
+    }
+}
+
+// ============================================================================
+// ROUTE CONFIGURATION
+// ============================================================================
+
 // Role-based default redirects after authentication
 export const ROLE_REDIRECTS: Record<UserRole, string> = {
     ADMIN: '/admin',
