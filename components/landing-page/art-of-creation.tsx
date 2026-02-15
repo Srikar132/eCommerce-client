@@ -4,7 +4,7 @@ export default function ArtOfCreation() {
   return (
     <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
       <div className="max-w-7xl mx-auto">
-        
+
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12 space-y-3">
           <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
@@ -14,12 +14,11 @@ export default function ArtOfCreation() {
             Custom Creations
           </h2>
         </div>
-        
+
         {/* Description Paragraph */}
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
-            Have something special in mind? We love bringing your ideas to life. Every thread is carefully chosen for quality, and every stitch is crafted with patience and a whole lot of love.
-            From the first sketch to the final touch, each piece is made to reflect you — your style, your moments, and your story. Because at NaLa Armoire, every detail truly matters when creating your memories.
+            Where beauty roars in every stitch. Discover premium customizable fashion, handcrafted with love. Shop ethnic wear, contemporary styles, and personalized clothing at Nala Armoire.
           </p>
         </div>
 

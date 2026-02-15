@@ -10,17 +10,17 @@ const promises = [
     {
         icon: Sparkles,
         title: "Premium Quality",
-        description: "We use only the finest fabrics and materials for lasting elegance.",
+        description: "Carefully chosen fabrics and materials for pieces that last.",
     },
     {
         icon: Leaf,
         title: "Sustainable Craft",
-        description: "Eco-friendly practices that honor both tradition and our planet.",
+        description: "Honoring tradition while caring for our planet.",
     },
     {
         icon: Award,
         title: "Unique Designs",
-        description: "One-of-a-kind pieces that tell your personal story.",
+        description: "One-of-a-kind pieces that tenderly knot your memories together.",
     },
 ];
 
@@ -106,15 +106,19 @@ export default function OurPromise() {
 
                 {/* Section Header */}
                 <div className="text-center mb-12 sm:mb-16 md:mb-20 space-y-4">
-                    <p className="text-xs sm:text-sm tracking-[0.25em] uppercase text-primary/80">
-                        The NaLa Promise
+                    <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary/70 font-medium font-[var(--font-inter)]">
+                        NaLa ARMOIRE Promise
                     </p>
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
+                    <h2 className="font-[var(--font-heading)] text-3xl sm:text-4xl md:text-5xl font-semibold italic tracking-wide text-foreground">
                         Why Choose Us
                     </h2>
-                    <p className="text-sm sm:text-base md:text-lg text-muted-foreground italic max-w-2xl mx-auto">
-                        More than just clothing — we create wearable memories
-                    </p>
+                    <div className="flex items-center justify-center gap-3 pt-3">
+                        <span className="w-16 sm:w-20 h-px bg-gradient-to-r from-transparent via-primary/50 to-primary/50" />
+                        <span className="w-2.5 h-2.5 rotate-45 bg-primary/30 border border-primary/50 rounded-sm" />
+                        <span className="w-3 h-3 rotate-45 bg-primary/50 shadow-sm shadow-primary/30 rounded-sm" />
+                        <span className="w-2.5 h-2.5 rotate-45 bg-primary/30 border border-primary/50 rounded-sm" />
+                        <span className="w-16 sm:w-20 h-px bg-gradient-to-l from-transparent via-primary/50 to-primary/50" />
+                    </div>
                 </div>
 
                 {/* Promise Cards Grid */}
@@ -124,34 +128,39 @@ export default function OurPromise() {
                         return (
                             <div
                                 key={index}
-                                className="group relative bg-card/60 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-2"
+                                className="group relative bg-card/40 backdrop-blur-sm p-6 sm:p-8 border-l-2 border-rose-400/60 hover:border-rose-500 hover:bg-card/60 transition-all duration-500 rounded-lg"
                             >
                                 {/* Icon Container */}
-                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5 sm:mb-6 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-500">
-                                    <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-primary" strokeWidth={1.5} />
+                                <div className="w-12 h-12 sm:w-14 sm:h-14 border-2 border-rose-400/60 flex items-center justify-center mb-5 sm:mb-6 group-hover:border-rose-500 group-hover:bg-rose-50/50 transition-all duration-500 rounded-md">
+                                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500 group-hover:text-rose-600" strokeWidth={1.5} />
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-lg sm:text-xl font-medium text-foreground mb-2 sm:mb-3 tracking-tight">
+                                <h3 className="font-[var(--font-heading)] text-lg sm:text-xl font-semibold italic text-foreground mb-3 tracking-wide">
                                     {promise.title}
                                 </h3>
 
                                 {/* Description */}
-                                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                                <p className="text-sm text-muted-foreground leading-relaxed font-normal tracking-wide font-[var(--font-inter)]">
                                     {promise.description}
                                 </p>
 
-                                {/* Decorative Corner */}
-                                <div className="absolute top-4 right-4 w-8 h-8 border-t border-r border-primary/20 group-hover:border-primary/40 rounded-tr-lg transition-colors duration-500" />
+                                {/* Decorative Line */}
+                                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-rose-400/60 group-hover:w-full transition-all duration-700 rounded-full" />
                             </div>
                         );
                     })}
                 </div>
 
                 {/* Bottom Decorative Text */}
-                <div className="text-center mt-12 sm:mt-16 md:mt-20">
-                    <p className="text-base sm:text-lg md:text-xl text-muted-foreground italic">
-                        &ldquo;Where every thread weaves a story of elegance&rdquo;
+                <div className="text-center mt-16 sm:mt-20 md:mt-24">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <span className="w-8 sm:w-12 h-px bg-gradient-to-r from-transparent to-primary/40" />
+                        <span className="w-1.5 h-1.5 rotate-45 bg-primary/40 rounded-sm" />
+                        <span className="w-8 sm:w-12 h-px bg-gradient-to-l from-transparent to-primary/40" />
+                    </div>
+                    <p className="font-[var(--font-heading)] text-lg sm:text-xl md:text-2xl text-foreground/80 italic font-semibold tracking-wide">
+                        &ldquo;Every thread holds emotion, and every stitch tells a story&rdquo;
                     </p>
                 </div>
             </div>

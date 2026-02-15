@@ -11,7 +11,7 @@ import { queryKeys } from "../query-keys";
 /**
  * Infinite scroll product list with filters, pagination, and sorting
  */
-export const useInfiniteProducts = (params: ProductParams, initialData?: PagedResponse<Product>) => {
+export const useInfiniteProducts = (params: ProductParams) => {
   const { category, size, searchQuery, page = 0, limit = 20, sortBy = 'CREATED_AT_DESC' } = params;
 
   return useInfiniteQuery({
@@ -22,22 +22,14 @@ export const useInfiniteProducts = (params: ProductParams, initialData?: PagedRe
     getNextPageParam: (lastPage: PagedResponse<Product>) =>
       lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
     staleTime: 1000 * 60 * 10, // 10 minutes
-    ...(initialData && {
-      initialData: {
-        pages: [initialData],
-        pageParams: [page],
-      },
-    }),
   });
 };
-
-
 
 
 /**
  * Get product reviews with infinite scroll
  */
-export const useInfiniteProductReviews = (productId: string, params?: { size?: number}) => {
+export const useInfiniteProductReviews = (productId: string, params?: { size?: number }) => {
   const { size = 10 } = params || {};
 
   return useInfiniteQuery({
@@ -56,7 +48,7 @@ export const useAddProductReview = (userId: string, productId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: AddReviewRequest) => addReviewToProduct(userId , productId , data),
+    mutationFn: (data: AddReviewRequest) => addReviewToProduct(userId, productId, data),
     onSuccess: () => {
       // Invalidate product reviews to refetch
       queryClient.invalidateQueries({

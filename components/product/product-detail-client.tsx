@@ -90,7 +90,11 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
             {/* Image Gallery Section */}
             <div className="order-1 w-full">
                 <div className="overflow-hidden">
-                    <ProductImageGallery images={product.images} />
+                    <ProductImageGallery
+                        images={product.images}
+                        productName={product.name}
+                        productSlug={product.slug}
+                    />
                 </div>
             </div>
 

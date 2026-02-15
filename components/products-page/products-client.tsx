@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import SortDropdown from "../sort-dropdown";
 import ProductGrid from "../product-grid";
 import NoResults from "./no-results";
@@ -7,28 +8,21 @@ import { SearchInput } from "../search-input";
 import { useInfiniteProducts, useFlatProducts, useProductCount } from "@/lib/tanstack/queries";
 import ErrorCard from "../cards/error-card";
 import { ProductParams } from "@/types/product";
-import {  Product } from "@/types/product";
-import { PagedResponse } from "@/types";
 
-
-
-interface ProductsClientProps extends ProductParams {
-    initialData?: PagedResponse<Product>;
-}
-
-const ProductsClient = ({ initialData, ...params }: ProductsClientProps) => {
-
+const ProductsClient = (params: ProductParams) => {
+    const [sortBy, setSortBy] = useState<ProductParams["sortBy"]>(params.sortBy || "CREATED_AT_DESC");
 
     // Fetch products with infinite scroll
     const {
         data,
         isLoading,
+        isFetching,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
         error,
         refetch
-    } = useInfiniteProducts(params, initialData);
+    } = useInfiniteProducts({ ...params, sortBy });
 
     // Extract derived data
     const products = useFlatProducts(data);
@@ -59,7 +53,11 @@ const ProductsClient = ({ initialData, ...params }: ProductsClientProps) => {
                         placeholder="Search"
                         className="flex-1"
                     />
-                    <SortDropdown />
+                    <SortDropdown
+                        value={sortBy}
+                        onChange={setSortBy}
+                        isLoading={isFetching && !isFetchingNextPage}
+                    />
                 </div>
             </div>
 
@@ -73,14 +71,21 @@ const ProductsClient = ({ initialData, ...params }: ProductsClientProps) => {
                     {/* Desktop Header */}
                     <header className="hidden lg:flex z-10 bg-background sticky top-16 sm:top-16 lg:top-18 items-center justify-between mb-6 border-b px-4 py-4">
                         <div className="flex items-center gap-4">
-                            <span className="text-sm text-muted-foreground">
-                                {/* Convert to showing some out of total */}
-                                Showing {products.length} of {totalProducts} {totalProducts === 1 ? "product" : "products"}
-                            </span>
+                            {isLoading ? (
+                                <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+                            ) : (
+                                <span className="text-sm text-muted-foreground">
+                                    Showing {products.length} of {totalProducts} {totalProducts === 1 ? "product" : "products"}
+                                </span>
+                            )}
                         </div>
 
                         <div className="flex items-center gap-3">
-                            <SortDropdown />
+                            <SortDropdown
+                                value={sortBy}
+                                onChange={setSortBy}
+                                isLoading={isFetching && !isFetchingNextPage}
+                            />
                         </div>
                     </header>
 

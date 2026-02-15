@@ -1,6 +1,5 @@
 import ProductsClient from "@/components/products-page/products-client";
 import { ProductParams } from "@/types/product";
-import { getAllProducts } from "@/lib/actions/product-actions";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,17 +18,7 @@ type Props = {
 }
 
 export default async function ProductsPage({ searchParams }: Props) {
-  const { page = 0, limit = 20, category , searchQuery , sortBy = 'CREATED_AT_DESC', size } = await searchParams;
-
-  // Fetch initial products data on the server
-  const initialData = await getAllProducts({
-    page,
-    limit,
-    category,
-    searchQuery,
-    sortBy,
-    size
-  });
+  const { page = 0, limit = 20, category, searchQuery, sortBy = 'CREATED_AT_DESC', size } = await searchParams;
 
   return (
     <div className="mx-auto px-0 lg:px-8 py-0 lg:py-6">
@@ -40,7 +29,6 @@ export default async function ProductsPage({ searchParams }: Props) {
         sortBy={sortBy}
         searchQuery={searchQuery}
         size={size}
-        initialData={initialData}
       />
     </div>
   );

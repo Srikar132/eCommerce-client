@@ -53,7 +53,7 @@ const SmoothSliderClient = ({ images }: SmoothSliderClientProps) => {
                     {duplicatedPosts.map((post, index) => (
                         <div
                             key={`${post.id}-${index}`}
-                            className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 bg-card"
+                            className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-card"
                         >
                             <Image
                                 src={post.imageUrl}
@@ -73,7 +73,7 @@ const SmoothSliderClient = ({ images }: SmoothSliderClientProps) => {
             {/* Follow Button */}
             <div className="text-center mt-12">
                 <Link
-                    href="https://www.instagram.com/the.nala.armoire/"
+                    href="https://www.instagram.com/nala_armoire/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full text-sm sm:text-base font-medium uppercase tracking-wide hover:opacity-90 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"

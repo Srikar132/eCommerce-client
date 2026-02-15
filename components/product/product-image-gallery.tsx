@@ -1,18 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ProductImage } from "@/types/product";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface ProductImageGalleryProps {
     images: ProductImage[];
+    productName?: string;
+    productSlug?: string;
 }
 
-export default function ProductImageGallery({ images }: ProductImageGalleryProps) {
+export default function ProductImageGallery({ images, productName, productSlug }: ProductImageGalleryProps) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+    const handleShare = useCallback(() => {
+        if (!productSlug) return;
+
+        const productUrl = `https://nalaarmoire.com/products/${productSlug}`;
+        const message = productName
+            ? `Check out ${productName} from Nala Armoire! ${productUrl}`
+            : `Check out this product from Nala Armoire! ${productUrl}`;
+
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        toast.success("Opening WhatsApp...");
+    }, [productName, productSlug]);
 
     const handlePrevious = () => {
         setSelectedImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -98,7 +114,7 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
 
                 {/* Main Image Container */}
                 <div className="order-1 lg:order-2 flex-1 relative">
-                    <div className="relative w-full aspect-[3/4] overflow-hidden group rounded-md">
+                    <div className="relative w-full aspect-square sm:aspect-4/5 lg:aspect-3/4 overflow-hidden group rounded-md">
                         {!!images[selectedImageIndex]?.imageUrl ? (
                             <Image
                                 src={images[selectedImageIndex].imageUrl}
@@ -144,6 +160,17 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                                     {selectedImageIndex + 1} / {images.length}
                                 </div>
                             </>
+                        )}
+
+                        {/* Share on WhatsApp Button */}
+                        {productSlug && (
+                            <button
+                                onClick={handleShare}
+                                className="absolute top-3 right-3 z-10 p-2.5 rounded-full bg-white/90 hover:bg-green-500 hover:text-white shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                aria-label="Share on WhatsApp"
+                            >
+                                <Share2 className="h-5 w-5" />
+                            </button>
                         )}
                     </div>
                 </div>

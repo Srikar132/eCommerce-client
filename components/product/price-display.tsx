@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { ProductVariant } from "@/types/product";
 
 interface PriceDisplayProps {
@@ -10,8 +9,15 @@ interface PriceDisplayProps {
     showBreakdown?: boolean;
 }
 
+// Format price in Indian number system (e.g., 1,00,000)
+const formatIndianPrice = (price: number): string => {
+    return price.toLocaleString('en-IN', {
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0
+    });
+};
+
 export default function PriceDisplay({
-    basePrice,
     finalPrice,
     selectedVariant,
     selectedColor,
@@ -22,28 +28,23 @@ export default function PriceDisplay({
     const hasAdditionalPrice = selectedVariant && selectedVariant.additionalPrice > 0;
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-1">
             {/* Main Price */}
             <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-bold">
-                    {currencySymbol}{finalPrice.toFixed(2)}
+                <span className="text-2xl sm:text-3xl font-bold text-foreground">
+                    {currencySymbol}{formatIndianPrice(finalPrice)}
                 </span>
-                
-                {hasAdditionalPrice && showBreakdown && (
-                    <span className="text-sm text-muted-foreground line-through">
-                        {currencySymbol}{basePrice.toFixed(2)}
-                    </span>
-                )}
+                <span className="text-xs sm:text-sm text-muted-foreground">
+                    (Incl. of all taxes)
+                </span>
             </div>
 
-            {/* Price Breakdown Badge */}
+            {/* Variant Price Note */}
             {hasAdditionalPrice && showBreakdown && selectedColor && (
-                <Badge variant="secondary" className="text-xs font-normal">
-                    Base: {currencySymbol}{basePrice.toFixed(2)} + {currencySymbol}
-                    {selectedVariant.additionalPrice.toFixed(2)} for {selectedColor}
-                </Badge>
+                <p className="text-xs text-muted-foreground">
+                    +{currencySymbol}{formatIndianPrice(selectedVariant.additionalPrice)} for {selectedColor} variant
+                </p>
             )}
-
         </div>
     );
 }
