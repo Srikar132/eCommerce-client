@@ -21,7 +21,7 @@ export default function CategoryCard({
       href={url}
       className={`block group ${className}`}
     >
-      <Card className="relative w-full h-[400px] sm:h-[450px] lg:h-[430px] overflow-hidden rounded-2xl border-2 border-border hover:border-primary shadow-md hover:shadow-2xl transition-all duration-500 bg-card group-hover:-translate-y-2">
+      <Card className="relative w-full h-100 sm:h-112.5 lg:h-107.5 overflow-hidden rounded-2xl border-2 border-border hover:border-primary shadow-md hover:shadow-2xl transition-all duration-500 bg-card group-hover:-translate-y-2">
 
         {/* Background Image */}
         <div className="absolute inset-0">
@@ -35,8 +35,8 @@ export default function CategoryCard({
         </div>
 
         {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
-        <div className="absolute inset-0 bg-linear-to-br from-primary/20 via-transparent to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" /> */}
+        {/* <div className="absolute inset-0 bg-linear-to-br from-primary/20 via-transparent to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" /> */}
 
         {/* Content Container */}
         <div className="relative h-full flex flex-col justify-end p-4 sm:p-5 lg:p-6">

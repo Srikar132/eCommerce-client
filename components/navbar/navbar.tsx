@@ -24,8 +24,6 @@ const Navbar = () => {
     const isHomePage = pathname === '/';
     const isProductsPage = pathname === '/products';
 
-
-
     return (
         <>
             <nav
