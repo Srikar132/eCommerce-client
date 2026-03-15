@@ -153,12 +153,7 @@ export const columns: ColumnDef<UserWithStats>[] = [
             const user = row.original;
             return (
                 <div className="flex items-center gap-2">
-                    <span>{user.phone}</span>
-                    {user.phoneVerified && (
-                        <Badge variant="outline" className="text-xs">
-                            ✓ Verified
-                        </Badge>
-                    )}
+                    <span>{user.phone || '—'}</span>
                 </div>
             );
         },

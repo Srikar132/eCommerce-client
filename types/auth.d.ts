@@ -3,15 +3,11 @@ export type UserRole = 'ADMIN' | 'USER';
 export interface User {
     id: string;
 
-
-    phone: string;
-    phoneVerified: boolean;
-
-
-    email?: string;
+    email: string;
     emailVerified: boolean;
     name?: string;
-
+    phone?: string;
+    image?: string;
 
     role: UserRole;
 
@@ -19,7 +15,6 @@ export interface User {
 
     createdAt: string;
     updatedAt: string;
-
 }
 
 // User Params for admin table

@@ -107,7 +107,7 @@ export default function RoleBasedWelcome() {
                                         {getRoleDisplayName()}
                                     </Badge>
                                     <span>•</span>
-                                    <span>{user.email || user.phone}</span>
+                                    <span>{user.email}</span>
                                 </CardDescription>
                             </div>
                         </div>

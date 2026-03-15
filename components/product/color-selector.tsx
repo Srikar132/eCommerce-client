@@ -3,8 +3,6 @@
 
 import React from "react";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,63 +23,67 @@ export default function ColorSelector({
     onColorChange,
 }: ColorSelectorProps) {
     return (
-        <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <Label className="text-base font-semibold text-foreground">
-                    Select Color
+        <div className="space-y-3">
+            <div className="flex items-center gap-2">
+                <Label className="text-sm font-medium text-foreground">
+                    Color:
                 </Label>
-                <Badge variant="outline" className="capitalize">
+                <span className="text-sm text-muted-foreground capitalize">
                     {selectedColor}
-                </Badge>
+                </span>
             </div>
 
-            <RadioGroup 
-                value={selectedColor} 
-                onValueChange={onColorChange}
-                className="flex flex-wrap gap-3"
-            >
-                {colors.map((colorOption) => (
-                    <div key={colorOption.color} className="relative">
-                        <RadioGroupItem
-                            value={colorOption.color}
-                            id={`color-${colorOption.color}`}
-                            className="peer sr-only"
-                        />
-                        <Label
-                            htmlFor={`color-${colorOption.color}`}
+            <div className="flex flex-wrap gap-2.5">
+                {colors.map((colorOption) => {
+                    const isSelected = selectedColor === colorOption.color;
+                    const isLight = isLightColor(colorOption.colorHex);
+
+                    return (
+                        <button
+                            key={colorOption.color}
+                            type="button"
+                            onClick={() => onColorChange(colorOption.color)}
                             className={cn(
-                                "group relative flex size-12 cursor-pointer items-center justify-center rounded-full transition-all duration-300",
-                                "ring-2 ring-offset-2 ring-offset-background",
-                                "hover:scale-105 hover:shadow-md",
-                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-                                selectedColor === colorOption.color
-                                    ? "ring-primary shadow-lg scale-110"
-                                    : "ring-border hover:ring-primary/50"
+                                "relative w-8 h-8 sm:w-9 sm:h-9 rounded-full cursor-pointer transition-all duration-200",
+                                "border-2",
+                                isSelected
+                                    ? "border-foreground scale-110"
+                                    : "border-border hover:border-foreground/40 hover:scale-105"
                             )}
+                            title={colorOption.color}
+                            aria-label={`Select color ${colorOption.color}`}
                         >
-                            {/* Color circle with border for better visibility */}
-                            <span 
-                                className="absolute inset-1 rounded-full border-2 border-background shadow-inner"
+                            <span
+                                className="absolute inset-0.5 rounded-full"
                                 style={{ backgroundColor: colorOption.colorHex }}
                             />
-                            
-                            {/* Check icon for selected state */}
-                            {selectedColor === colorOption.color && (
-                                <span className="absolute inset-0 flex items-center justify-center z-10">
-                                    <span className="bg-background/90 rounded-full p-0.5 shadow-sm">
-                                        <Check className="w-4 h-4 text-primary" strokeWidth={3} />
-                                    </span>
+
+                            {/* Check mark for selected */}
+                            {isSelected && (
+                                <span className="absolute inset-0 flex items-center justify-center">
+                                    <Check
+                                        className={cn(
+                                            "w-3.5 h-3.5 sm:w-4 sm:h-4",
+                                            isLight ? "text-foreground" : "text-white"
+                                        )}
+                                        strokeWidth={2.5}
+                                    />
                                 </span>
                             )}
-                            
-                            {/* Hover tooltip */}
-                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-foreground text-background text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none capitalize">
-                                {colorOption.color}
-                            </span>
-                        </Label>
-                    </div>
-                ))}
-            </RadioGroup>
+                        </button>
+                    );
+                })}
+            </div>
         </div>
     );
+}
+
+/** Determine if a hex color is light (for check icon contrast) */
+function isLightColor(hex: string): boolean {
+    const c = hex.replace("#", "");
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    // Perceived luminance
+    return (r * 299 + g * 587 + b * 114) / 1000 > 160;
 }

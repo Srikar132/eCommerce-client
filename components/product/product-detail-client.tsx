@@ -94,6 +94,9 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
                         images={product.images}
                         productName={product.name}
                         productSlug={product.slug}
+                        onToggleWishlist={handleToggleWishlist}
+                        isInWishlist={isInWishlist}
+                        isTogglingWishlist={toggleWishlist.isPending}
                     />
                 </div>
             </div>

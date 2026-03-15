@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ProductImage } from "@/types/product";
-import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Share2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -12,9 +12,12 @@ interface ProductImageGalleryProps {
     images: ProductImage[];
     productName?: string;
     productSlug?: string;
+    onToggleWishlist?: () => void;
+    isInWishlist?: boolean;
+    isTogglingWishlist?: boolean;
 }
 
-export default function ProductImageGallery({ images, productName, productSlug }: ProductImageGalleryProps) {
+export default function ProductImageGallery({ images, productName, productSlug, onToggleWishlist, isInWishlist = false, isTogglingWishlist = false }: ProductImageGalleryProps) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     const handleShare = useCallback(() => {
@@ -114,7 +117,7 @@ export default function ProductImageGallery({ images, productName, productSlug }
 
                 {/* Main Image Container */}
                 <div className="order-1 lg:order-2 flex-1 relative">
-                    <div className="relative w-full aspect-square sm:aspect-4/5 lg:aspect-3/4 overflow-hidden group rounded-md">
+                    <div className="relative w-full aspect-square sm:aspect-4/5 lg:aspect-3/4 overflow-hidden group">
                         {!!images[selectedImageIndex]?.imageUrl ? (
                             <Image
                                 src={images[selectedImageIndex].imageUrl}
@@ -162,16 +165,18 @@ export default function ProductImageGallery({ images, productName, productSlug }
                             </>
                         )}
 
-                        {/* Share on WhatsApp Button */}
-                        {productSlug && (
-                            <button
-                                onClick={handleShare}
-                                className="absolute top-3 right-3 z-10 p-2.5 rounded-full bg-white/90 hover:bg-green-500 hover:text-white shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200"
-                                aria-label="Share on WhatsApp"
-                            >
-                                <Share2 className="h-5 w-5" />
-                            </button>
-                        )}
+                        {/* Share & Like Buttons */}
+                        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+                            {productSlug && (
+                                <button
+                                    onClick={handleShare}
+                                    className="p-2.5 rounded-full bg-white/90 hover:bg-primary cursor-pointer hover:text-white transition-all duration-200"
+                                    aria-label="Share on WhatsApp"
+                                >
+                                    <Share2 className="h-5 w-5" />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

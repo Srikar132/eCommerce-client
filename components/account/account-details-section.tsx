@@ -95,22 +95,17 @@ export function AccountDetailsSection() {
                     </div>
 
                     {/* Phone */}
-                    <div className="flex items-center gap-3 p-3 rounded-md border bg-card hover:bg-accent/50 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10 shrink-0">
-                            <Phone className="w-4 h-4 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                                <p className="text-xs text-muted-foreground">Phone Number</p>
-                                {user.phoneVerified && (
-                                    <Badge variant="default" className="text-[10px] h-4 px-1.5">
-                                        Verified
-                                    </Badge>
-                                )}
+                    {user.phone && (
+                        <div className="flex items-center gap-3 p-3 rounded-md border bg-card hover:bg-accent/50 transition-colors">
+                            <div className="p-2 rounded-full bg-primary/10 shrink-0">
+                                <Phone className="w-4 h-4 text-primary" />
                             </div>
-                            <p className="text-sm font-medium">{user.phone}</p>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs text-muted-foreground">Phone Number</p>
+                                <p className="text-sm font-medium">{user.phone}</p>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Account Created */}
                     <div className="flex items-center gap-3 p-3 rounded-md border bg-card hover:bg-accent/50 transition-colors">

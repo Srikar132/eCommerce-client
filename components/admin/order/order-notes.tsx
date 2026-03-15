@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, XCircle, RefreshCcw } from "lucide-react";
+import { FileText, MessageSquare, XCircle, RefreshCcw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // ============================================================================
@@ -18,7 +18,7 @@ interface OrderNotesProps {
 // ============================================================================
 
 interface NoteBlockProps {
-    icon?: React.ReactNode;
+    icon: React.ReactNode;
     title: string;
     content: string;
     variant?: "default" | "error" | "warning";
@@ -26,30 +26,30 @@ interface NoteBlockProps {
 
 function NoteBlock({ icon, title, content, variant = "default" }: NoteBlockProps) {
     const variantStyles = {
-        default: "bg-muted/30",
-        error: "bg-red-500/20 border border-red-500/30",
-        warning: "bg-orange-500/20 border border-orange-500/30",
+        default: "bg-muted/30 border border-border",
+        error: "bg-destructive/10 border border-destructive/30",
+        warning: "bg-orange-500/10 border border-orange-500/30",
     };
 
     const titleStyles = {
         default: "text-muted-foreground",
-        error: "text-red-400",
-        warning: "text-orange-400",
+        error: "text-destructive",
+        warning: "text-orange-600 dark:text-orange-400",
     };
 
     const contentStyles = {
-        default: "",
-        error: "text-red-300",
-        warning: "text-orange-300",
+        default: "text-foreground",
+        error: "text-destructive/90",
+        warning: "text-orange-700 dark:text-orange-300",
     };
 
     return (
-        <div className={`p-3 rounded-xl ${variantStyles[variant]}`}>
-            <p className={`text-xs font-medium mb-2 flex items-center gap-1 ${titleStyles[variant]}`}>
+        <div className={`p-3.5 rounded-xl ${variantStyles[variant]}`}>
+            <p className={`text-xs font-medium mb-2 flex items-center gap-1.5 ${titleStyles[variant]}`}>
                 {icon}
                 {title}
             </p>
-            <p className={`text-sm leading-relaxed ${contentStyles[variant]}`}>{content}</p>
+            <p className={`text-sm leading-relaxed whitespace-pre-wrap ${contentStyles[variant]}`}>{content}</p>
         </div>
     );
 }
@@ -76,12 +76,16 @@ export function OrderNotes({ notes, cancellationReason, returnReason }: OrderNot
             </CardHeader>
             <CardContent className="pt-4 space-y-4">
                 {notes && (
-                    <NoteBlock title="Order Notes" content={notes} />
+                    <NoteBlock
+                        icon={<MessageSquare className="h-3.5 w-3.5" />}
+                        title="Customer Notes"
+                        content={notes}
+                    />
                 )}
 
                 {cancellationReason && (
                     <NoteBlock
-                        icon={<XCircle className="h-3 w-3" />}
+                        icon={<XCircle className="h-3.5 w-3.5" />}
                         title="Cancellation Reason"
                         content={cancellationReason}
                         variant="error"
@@ -90,7 +94,7 @@ export function OrderNotes({ notes, cancellationReason, returnReason }: OrderNot
 
                 {returnReason && (
                     <NoteBlock
-                        icon={<RefreshCcw className="h-3 w-3" />}
+                        icon={<RefreshCcw className="h-3.5 w-3.5" />}
                         title="Return Reason"
                         content={returnReason}
                         variant="warning"

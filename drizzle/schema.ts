@@ -49,14 +49,13 @@ export const users = pgTable("user", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => randomUUID()),
-    // Required by NextAuth DrizzleAdapter (even if not used)
+    // Required by NextAuth DrizzleAdapter
     name: text("name"),
     email: text("email").unique(),
     emailVerified: timestamp("emailVerified", { mode: "date" }),
     image: text("image"),
-    // Your actual auth fields
-    phone: text("phone").notNull().unique(),
-    phoneVerified: boolean("phoneVerified").default(false).notNull(),
+    // Application fields
+    phone: text("phone").unique(),
     acceptTerms: boolean("acceptTerms").default(false).notNull(),
     role: roleEnum("role").default('USER').notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),

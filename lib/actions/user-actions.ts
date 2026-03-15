@@ -84,7 +84,6 @@ export async function getAllUsers(params: UserParams = {}): Promise<PagedRespons
                 email: users.email,
                 emailVerified: users.emailVerified,
                 phone: users.phone,
-                phoneVerified: users.phoneVerified,
                 role: users.role,
                 acceptTerms: users.acceptTerms,
                 createdAt: users.createdAt,
@@ -101,7 +100,6 @@ export async function getAllUsers(params: UserParams = {}): Promise<PagedRespons
                 users.email,
                 users.emailVerified,
                 users.phone,
-                users.phoneVerified,
                 users.role,
                 users.acceptTerms,
                 users.createdAt,
@@ -124,8 +122,9 @@ export async function getAllUsers(params: UserParams = {}): Promise<PagedRespons
         return {
             data: usersWithStats.map(user => ({
                 ...user,
-                email: user.email || undefined,
+                email: user.email ?? "",
                 name: user.name || undefined,
+                phone: user.phone || undefined,
                 emailVerified: !!user.emailVerified,
                 createdAt: user.createdAt.toISOString(),
                 updatedAt: user.updatedAt.toISOString(),

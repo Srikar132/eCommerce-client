@@ -4,17 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, Heart, ShoppingCart, MapPin } from 'lucide-react';
 import { useUserStats } from '@/lib/tanstack/queries/account.queries';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/hooks/use-auth';
 
 export function UserStatsSection() {
     const { data: stats, isLoading } = useUserStats();
+    const { isAdmin } = useAuth();
 
-    const statItems = [
+    const allStatItems = [
         {
             label: 'Total Orders',
             value: stats?.totalOrders ?? 0,
             icon: Package,
             color: 'text-blue-600',
             bgColor: 'bg-blue-50',
+            adminVisible: false,
         },
         {
             label: 'Wishlist Items',
@@ -22,6 +25,7 @@ export function UserStatsSection() {
             icon: Heart,
             color: 'text-red-600',
             bgColor: 'bg-red-50',
+            adminVisible: false,
         },
         {
             label: 'Saved Addresses',
@@ -29,6 +33,7 @@ export function UserStatsSection() {
             icon: MapPin,
             color: 'text-green-600',
             bgColor: 'bg-green-50',
+            adminVisible: true,
         },
         {
             label: 'Cart Items',
@@ -36,8 +41,13 @@ export function UserStatsSection() {
             icon: ShoppingCart,
             color: 'text-purple-600',
             bgColor: 'bg-purple-50',
+            adminVisible: false,
         },
     ];
+
+    const statItems = isAdmin
+        ? allStatItems.filter((item) => item.adminVisible)
+        : allStatItems;
 
     return (
         <Card className="overflow-hidden border hover:shadow-lg transition-all duration-300">
@@ -45,7 +55,7 @@ export function UserStatsSection() {
                 <CardTitle className="text-lg font-semibold">Account Overview</CardTitle>
             </CardHeader>
             <CardContent className="pt-3">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className={`grid gap-3 ${isAdmin ? 'grid-cols-1 sm:grid-cols-1' : 'grid-cols-2 lg:grid-cols-4'}`}>
                     {statItems.map((stat) => {
                         const Icon = stat.icon;
                         return (

@@ -1,346 +1,149 @@
 "use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    FormControl,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { sendOtp, loginWithOtp } from "@/lib/actions/auth-actions";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { toast } from "sonner";
-import { getPostAuthRedirect, UserRole } from "@/lib/auth-utils";
+import { signIn } from "next-auth/react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
-type Step = 'phone' | 'otp';
-
-// Phone validation schema with terms acceptance
-const phoneSchema = z.object({
-    fullPhone: z
-        .string()
-        .min(13, 'Please enter country code and phone number')
-        .regex(/^\+\d{1,4}\d{10}$/, 'Invalid format. Use +91 followed by 10 digits'),
-    acceptTerms: z
-        .boolean()
-        .refine((val) => val === true, {
-            message: "You must accept the terms and conditions",
-        }),
-});
-
-// OTP validation schema
-const otpSchema = z.object({
-    otp: z
-        .string()
-        .length(6, 'OTP must be 6 digits')
-        .regex(/^\d{6}$/, 'OTP must contain only digits'),
-});
-
-type PhoneFormValues = z.infer<typeof phoneSchema>;
-type OtpFormValues = z.infer<typeof otpSchema>;
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+    Configuration: "There was a problem with the server configuration. Please try again.",
+    AccessDenied: "Access was denied. You may not have permission to sign in.",
+    Verification: "The verification link has expired or has already been used.",
+    OAuthSignin: "Could not start the sign-in process. Please try again.",
+    OAuthCallback: "Something went wrong during sign-in. Please try again.",
+    OAuthAccountNotLinked: "This email is already linked to another account. Please use the original sign-in method.",
+    Default: "An unexpected error occurred. Please try again.",
+};
 
 export default function LoginAuthForm() {
+    
+    const searchParams = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
+    const [acceptTerms, setAcceptTerms] = useState(false);
+    const [showTermsError, setShowTermsError] = useState(false);
+    const [authError, setAuthError] = useState<string | null>(null);
 
-    const [step, setStep] = useState<Step>('phone');
-    const [phoneData, setPhoneData] = useState({ phone: '', countryCode: '+91' });
-    const [maskedPhone, setMaskedPhone] = useState('');
+    // Handle OAuth error callback params
+    useEffect(() => {
+        const error = searchParams.get("error");
+        if (error) {
+            setAuthError(AUTH_ERROR_MESSAGES[error] || AUTH_ERROR_MESSAGES.Default);
+        }
+    }, [searchParams]);
 
-    // Phone form
-    const phoneForm = useForm<PhoneFormValues>({
-        resolver: zodResolver(phoneSchema),
-        defaultValues: {
-            fullPhone: '+91',
-            acceptTerms: false,
-        },
-    });
+    const handleGoogleSignIn = async () => {
+        if (!acceptTerms) {
+            setShowTermsError(true);
+            return;
+        }
 
-    // OTP form
-    const otpForm = useForm<OtpFormValues>({
-        resolver: zodResolver(otpSchema),
-        defaultValues: {
-            otp: '',
-        },
-        mode: 'onChange',
-    });
-
-    const handleSendOtp = async (data: PhoneFormValues) => {
+        setAuthError(null);
         setIsLoading(true);
         try {
-            const match = data.fullPhone.match(/^(\+\d{1,4})(\d{10})$/);
-            if (!match) {
-                toast.error('Invalid phone format');
-                return;
-            }
+            const redirectParam = searchParams.get("redirect");
 
-            const [, countryCode, phone] = match;
-            const fullPhone = countryCode + phone;
-
-            const response = await sendOtp(fullPhone);
-
-            if (!response.success) {
-                toast.error(response.error || 'Failed to send OTP');
-                return;
-            }
-
-            setPhoneData({ phone, countryCode });
-            const masked = phone.replace(/(\d{2})(\d{4})(\d{4})/, '$1****$3');
-            setMaskedPhone(masked);
-
-            toast.success(response.message || 'OTP sent successfully');
-            otpForm.reset();
-            setStep('otp');
+            await signIn("google", {
+                callbackUrl: redirectParam || "/account",
+            });
         } catch (error) {
-            console.error('Send OTP error:', error);
-            toast.error('Failed to send OTP');
-        } finally {
+            console.error("Google sign-in error:", error);
+            setAuthError("Failed to initiate sign-in. Please try again.");
             setIsLoading(false);
         }
     };
-
-    const handleVerifyOtp = async (data: OtpFormValues) => {
-        setIsLoading(true);
-        try {
-            console.log('Verifying OTP for phone:', phoneData);
-            const fullPhone = phoneData.countryCode + phoneData.phone;
-            const response = await loginWithOtp(fullPhone, data.otp);
-
-            if (!response.success) {
-                toast.error('error' in response ? response.error : 'Verification failed');
-                return;
-            }
-
-            toast.success('Login successful!');
-
-            // Wait a moment for session to update
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Get user role from the response
-            console.log('🔐 [LOGIN RESPONSE]:', JSON.stringify(response, null, 2));
-
-            // Access user from the response
-            const userRole = 'user' in response && response.user?.role ? response.user.role : 'USER';
-
-            console.log('🔐 [PARSED ROLE]:', userRole);
-
-            // Get redirect from URL parameter
-            const params = new URLSearchParams(window.location.search);
-            const redirectParam = params.get('redirect');
-
-            // Use smart redirect based on role and redirect parameter
-            const redirectUrl = getPostAuthRedirect(userRole as UserRole, redirectParam);
-
-            console.log(`🔄 [LOGIN SUCCESS] Redirecting ${userRole} user to: ${redirectUrl}`);
-
-            // Use hard redirect to ensure proper session hydration
-            window.location.href = redirectUrl;
-
-        } catch (error) {
-            console.error('Verify OTP error:', error);
-            toast.error('Failed to verify OTP');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleResendOtp = async () => {
-        setIsLoading(true);
-        try {
-            const fullPhone = phoneData.countryCode + phoneData.phone;
-            const response = await sendOtp(fullPhone);
-
-            if (!response.success) {
-                toast.error(response.error || 'Failed to resend OTP');
-                return;
-            }
-
-            toast.success('OTP resent successfully');
-        } catch (error) {
-            console.error('Resend OTP error:', error);
-            toast.error('Failed to resend OTP');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
 
     return (
-        <>
-            {step === 'phone' ? (
-                <Form {...phoneForm}>
-                    <form onSubmit={phoneForm.handleSubmit(handleSendOtp)} className="space-y-6">
-                        {/* Phone Number Field */}
-                        <FormField
-                            control={phoneForm.control}
-                            name="fullPhone"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-sm font-medium text-foreground mb-2">
-                                        Phone Number
-                                    </FormLabel>
-                                    <FormControl>
-                                        <div className="relative">
-                                            {/* Country Code Prefix - Static Display */}
-                                            <div className="absolute left-0 top-0 h-11 px-3 flex items-center justify-center border-r border-border bg-muted/30 rounded-l-lg pointer-events-none z-10">
-                                                <span className="text-sm font-medium text-muted-foreground">+91</span>
-                                            </div>
-                                            {/* Phone Number Input - Slimmer and elegant */}
-                                            <Input
-                                                placeholder="9876543210"
-                                                value={field.value.replace(/^\+91/, "")}
-                                                name={field.name}
-                                                ref={field.ref}
-                                                disabled={isLoading}
-                                                onChange={(e) => {
-                                                    const digits = e.target.value.replace(/\D/g, '');
-                                                    field.onChange('+91' + digits);
-                                                }}
-                                                onBlur={field.onBlur}
-                                                maxLength={10}
-                                                className="h-11 pl-16 text-sm font-light tracking-wide border border-input bg-background focus-visible:border-primary focus-visible:ring-0 transition-colors placeholder:text-muted-foreground/60"
-                                            />
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage className="text-xs font-medium text-destructive mt-1.5" />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Terms & Conditions Checkbox */}
-                        <FormField
-                            control={phoneForm.control}
-                            name="acceptTerms"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                    <FormControl>
-                                        <Checkbox
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            className="mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                        />
-                                    </FormControl>
-                                    <div className="space-y-1">
-                                        <FormLabel className="text-[11px] font-light text-muted-foreground cursor-pointer leading-relaxed block">
-                                            By continuing, I agree to the{" "}
-                                            <Link href="/terms" className="text-primary font-medium hover:underline underline-offset-2 whitespace-nowrap">
-                                                Terms of Use
-                                            </Link>
-                                            {" "}&{" "}
-                                            <Link href="/privacy" className="text-primary font-medium hover:underline underline-offset-2 whitespace-nowrap">
-                                                Privacy Policy
-                                            </Link>
-                                        </FormLabel>
-                                        <FormMessage className="text-[10px]" />
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Submit Button */}
-                        <Button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm uppercase tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                        >
-                            {isLoading ? (
-                                <span className="flex items-center gap-2">
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span className="font-light">Sending...</span>
-                                </span>
-                            ) : (
-                                'Continue'
-                            )}
-                        </Button>
-                    </form>
-                </Form>
-            ) : (
-                <Form {...otpForm} key="otp-form" >
-                    <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="space-y-6">
-                        {/* OTP Info Header */}
-                        <div className="text-center space-y-2 pb-2">
-                            <p className="text-sm text-muted-foreground">
-                                We&apos;ve sent a verification code to
-                            </p>
-                            <p className="text-base font-semibold text-foreground">
-                                {maskedPhone}
-                            </p>
-                        </div>
-
-                        {/* OTP Input Field */}
-                        <FormField
-                            control={otpForm.control}
-                            name="otp"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Enter OTP"
-                                            value={field.value}
-                                            disabled={isLoading}
-                                            onChange={(e) => {
-                                                const value = e.target.value.replace(/\D/g, '');
-                                                field.onChange(value);
-                                            }}
-                                            maxLength={6}
-                                            type="text"
-                                            inputMode="numeric"
-                                            autoComplete="one-time-code"
-                                            className="h-11 border border-input bg-background text-lg text-center tracking-[0.5em] font-medium focus-visible:border-primary focus-visible:ring-0 transition-colors placeholder:text-muted-foreground/50 placeholder:tracking-widest placeholder:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs font-medium text-destructive mt-1.5 text-center" />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Action Links */}
-                        <div className="flex items-center justify-between text-sm pt-2">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setStep('phone');
-                                    otpForm.reset();
-                                }}
-                                disabled={isLoading}
-                                className="font-light text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 underline-offset-2 hover:underline"
-                            >
-                                ← Change number
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleResendOtp}
-                                disabled={isLoading}
-                                className="font-medium text-primary hover:text-primary/80 transition-colors disabled:opacity-50 uppercase text-xs tracking-wide underline-offset-2 hover:underline"
-                            >
-                                Resend Code
-                            </button>
-                        </div>
-
-                        {/* Submit Button */}
-                        <Button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm uppercase tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                        >
-                            {isLoading ? (
-                                <span className="flex items-center gap-2">
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span className="font-light">Verifying...</span>
-                                </span>
-                            ) : (
-                                'Verify & Continue'
-                            )}
-                        </Button>
-                    </form>
-                </Form>
+        <div className="space-y-6">
+            {/* Auth Error Banner */}
+            {authError && (
+                <div className="flex items-start gap-3 p-3.5 rounded-lg bg-destructive/5 border border-destructive/20 text-sm">
+                    <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                        <p className="text-foreground font-medium text-xs">Sign-in failed</p>
+                        <p className="text-muted-foreground text-xs font-light">{authError}</p>
+                    </div>
+                </div>
             )}
-        </>
+
+            {/* Google Sign-In Button */}
+            <Button
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                variant="outline"
+                className="w-full h-12 border-2 border-input bg-background hover:bg-accent/50 text-foreground font-medium text-sm tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm rounded-lg"
+            >
+                {isLoading ? (
+                    <span className="flex items-center gap-3">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span className="font-light">Signing in...</span>
+                    </span>
+                ) : (
+                    <span className="flex items-center gap-3">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24">
+                            <path
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                                fill="#4285F4"
+                            />
+                            <path
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                fill="#34A853"
+                            />
+                            <path
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                fill="#FBBC05"
+                            />
+                            <path
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                fill="#EA4335"
+                            />
+                        </svg>
+                        Continue with Google
+                    </span>
+                )}
+            </Button>
+
+            {/* Terms & Conditions Checkbox */}
+            <div className="flex flex-row items-start space-x-3">
+                <Checkbox
+                    id="acceptTerms"
+                    checked={acceptTerms}
+                    onCheckedChange={(checked) => {
+                        setAcceptTerms(checked === true);
+                        if (checked) setShowTermsError(false);
+                    }}
+                    className="mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                />
+                <div className="space-y-1">
+                    <Label
+                        htmlFor="acceptTerms"
+                        className="text-[11px] font-light text-muted-foreground cursor-pointer leading-relaxed block"
+                    >
+                        By continuing, I agree to the{" "}
+                        <Link
+                            href="/terms"
+                            className="text-primary font-medium hover:underline underline-offset-2 whitespace-nowrap"
+                        >
+                            Terms of Use
+                        </Link>
+                        {" "}&{" "}
+                        <Link
+                            href="/privacy"
+                            className="text-primary font-medium hover:underline underline-offset-2 whitespace-nowrap"
+                        >
+                            Privacy Policy
+                        </Link>
+                    </Label>
+                    {showTermsError && (
+                        <p className="text-[10px] font-medium text-destructive">
+                            You must accept the terms and conditions
+                        </p>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }

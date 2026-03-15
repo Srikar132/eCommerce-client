@@ -54,7 +54,7 @@ export function AccountHoverCard() {
                                         {session.user?.name || "User"}
                                     </p>
                                     <p className="text-xs text-muted-foreground truncate">
-                                        {session.user?.phone || session.user?.email || ""}
+                                        {session.user?.email || ""}
                                     </p>
                                 </div>
                             </div>

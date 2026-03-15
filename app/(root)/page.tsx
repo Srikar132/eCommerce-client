@@ -11,7 +11,7 @@ export default function HomeClient() {
 
 
   return (
-    <div className="w-full overflow-x-hidden">
+    <div className="w-full overflow-x-hidden overflow-y-hidden">
       {/* 1. HERO - First Impression & Brand Introduction */}
       <HeroSection />
 

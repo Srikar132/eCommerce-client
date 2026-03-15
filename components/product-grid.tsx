@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import ProductCardComponent from './cards/product-card';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import Link from 'next/link';
-import { ProductGridSkeleton } from '@/components/ui/skeletons';
 import { Product } from '@/types/product';
 import { useToggleWishlist, useWishlist } from '@/lib/tanstack/queries/wishlist.queries';
 import { useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { showLoginDrawer } from './ui/login-drawer';
+import { Loader2 } from 'lucide-react';
 
 interface SearchResultsProps {
     results: {
@@ -71,7 +71,11 @@ export default function ProductGrid({
     }, [status, toggleWishlist]);
 
     if (isLoading && !results.items.length) {
-        return <ProductGridSkeleton count={8} />;
+        return (
+            <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        );
     }
 
     if (!results.items.length && !isLoading) {

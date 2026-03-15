@@ -123,7 +123,7 @@ export default function CheckoutClient() {
                         Please add a delivery address to continue
                     </p>
                     <Button asChild>
-                        <Link href="/account/addresses">Add Address</Link>
+                        <Link href="/account">Add Address</Link>
                     </Button>
                 </div>
             </div>

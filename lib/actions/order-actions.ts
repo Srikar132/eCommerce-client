@@ -20,6 +20,7 @@ import Razorpay from "razorpay";
 import { CheckoutRequest, CheckoutResponse, Order, OrderItem, OrderStatus, PaymentStatus, PaymentVerificationRequest, OrderParams, OrderWithUser } from "@/types/orders";
 import { PagedResponse } from "@/types";
 import { requirePermission, UserRole } from "@/lib/auth-utils";
+import { sendEmail, orderConfirmationEmail, orderDeliveredEmail, orderShippedEmail } from "@/lib/emails";
 
 
 
@@ -454,11 +455,46 @@ export async function verifyPaymentAndConfirmOrder(
                 .where(eq(carts.id, cart.id));
         }
 
-        // 9. Revalidate paths
+        // 9. Send order confirmation email
+        if (session.user.email) {
+            try {
+                // Fetch order items with product names for email
+                const emailOrderItems = await db
+                    .select({
+                        productName: products.name,
+                        quantity: orderItems.quantity,
+                        unitPrice: orderItems.unitPrice,
+                    })
+                    .from(orderItems)
+                    .leftJoin(productVariants, eq(orderItems.productVariantId, productVariants.id))
+                    .leftJoin(products, eq(productVariants.productId, products.id))
+                    .where(eq(orderItems.orderId, order.id));
+
+                const emailItems = emailOrderItems.map(item => ({
+                    name: item.productName || "Product",
+                    quantity: item.quantity,
+                    price: `₹${Number(item.unitPrice).toLocaleString("en-IN")}`,
+                }));
+
+                const { subject, html } = orderConfirmationEmail({
+                    name: session.user.name || "there",
+                    orderNumber,
+                    totalAmount: `₹${checkoutSession.totalAmount.toLocaleString("en-IN")}`,
+                    items: emailItems,
+                });
+
+                await sendEmail({ to: session.user.email, subject, html });
+            } catch (emailError) {
+                console.error("Failed to send order confirmation email:", emailError);
+                // Don't block order creation if email fails
+            }
+        }
+
+        // 10. Revalidate paths
         revalidatePath("/orders");
         revalidatePath("/cart");
 
-        // 10. Return the created order
+        // 11. Return the created order
         return await mapOrderToResponse(order.id);
 
     } catch (error) {
@@ -840,6 +876,62 @@ export async function updateOrderStatus(orderId: string, newStatus: OrderStatus)
                 })
             })
             .where(eq(orders.id, orderId));
+
+        // Send status-specific emails
+        try {
+            const [updatedOrder] = await db
+                .select({
+                    orderNumber: orders.orderNumber,
+                    userName: users.name,
+                    userEmail: users.email,
+                    trackingNumber: orders.trackingNumber,
+                    carrier: orders.carrier,
+                })
+                .from(orders)
+                .leftJoin(users, eq(orders.userId, users.id))
+                .where(eq(orders.id, orderId))
+                .limit(1);
+
+            if (updatedOrder?.userEmail) {
+                const userName = updatedOrder.userName || "there";
+
+                if (newStatus === "DELIVERED") {
+                    const { subject, html } = orderDeliveredEmail({
+                        name: userName,
+                        orderNumber: updatedOrder.orderNumber,
+                        deliveredAt: new Date().toLocaleDateString("en-IN", {
+                            day: "numeric", month: "long", year: "numeric",
+                        }),
+                    });
+                    await sendEmail({
+                        to: updatedOrder.userEmail,
+                        subject,
+                        html,
+                        skipRateLimit: true,
+                        tags: [{ name: "type", value: "order-delivered" }, { name: "order", value: updatedOrder.orderNumber }],
+                    });
+                }
+
+                if (newStatus === "SHIPPED") {
+                    const { subject, html } = orderShippedEmail({
+                        name: userName,
+                        orderNumber: updatedOrder.orderNumber,
+                        trackingNumber: updatedOrder.trackingNumber || "N/A",
+                        carrier: updatedOrder.carrier || "N/A",
+                    });
+                    await sendEmail({
+                        to: updatedOrder.userEmail,
+                        subject,
+                        html,
+                        skipRateLimit: true,
+                        tags: [{ name: "type", value: "order-shipped" }, { name: "order", value: updatedOrder.orderNumber }],
+                    });
+                }
+            }
+        } catch (emailError) {
+            console.error("Failed to send order status email:", emailError);
+            // Don't block status update if email fails
+        }
 
         // Revalidate pages to reflect changes
         revalidatePath("/admin/orders");

@@ -136,8 +136,8 @@ export async function getAccountDetails() {
                 name: users.name,
                 email: users.email,
                 emailVerified: users.emailVerified,
+                image: users.image,
                 phone: users.phone,
-                phoneVerified: users.phoneVerified,
                 role: users.role,
                 createdAt: users.createdAt,
                 updatedAt: users.updatedAt,
@@ -191,13 +191,13 @@ export async function getUserStats() {
                 .select({ count: count() })
                 .from(orders)
                 .where(eq(orders.userId, session.user.id)),
-            
+
             // Count addresses
             db
                 .select({ count: count() })
                 .from(addresses)
                 .where(eq(addresses.userId, session.user.id)),
-            
+
             // Get active cart with item count
             db
                 .select({

@@ -2,12 +2,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Package, Heart } from 'lucide-react';
+import { Package, Heart, LayoutDashboard, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import LogoutButton from '../auth/logout-button';
+import { useAuth } from '@/hooks/use-auth';
 
 export function QuickActionsSection() {
-    const actions = [
+    const { isAdmin } = useAuth();
+
+    const userActions = [
         {
             label: 'My Orders',
             href: '/orders',
@@ -25,6 +28,27 @@ export function QuickActionsSection() {
             bgColor: 'bg-red-50',
         },
     ];
+
+    const adminActions = [
+        {
+            label: 'Admin Dashboard',
+            href: '/admin',
+            icon: LayoutDashboard,
+            description: 'Go to admin panel',
+            color: 'text-indigo-600',
+            bgColor: 'bg-indigo-50',
+        },
+        {
+            label: 'Manage Products',
+            href: '/admin/products',
+            icon: ShoppingBag,
+            description: 'Add or edit products',
+            color: 'text-orange-600',
+            bgColor: 'bg-orange-50',
+        },
+    ];
+
+    const actions = isAdmin ? adminActions : userActions;
 
     return (
         <Card className="overflow-hidden border hover:shadow-lg transition-all duration-300">

@@ -145,7 +145,7 @@ export function AuthNavigation() {
                             </Badge>
                         </div>
                         <p className="text-xs leading-none text-muted-foreground">
-                            {user?.email || user?.phone}
+                            {user?.email}
                         </p>
                     </div>
                 </DropdownMenuLabel>
