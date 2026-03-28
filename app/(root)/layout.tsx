@@ -10,18 +10,6 @@ import { LoginDrawerProvider } from "@/components/ui/login-drawer";
 import { AdminStoreBanner } from "@/components/admin-store-banner";
 import { auth } from "@/auth";
 import { OrganizationSchema, WebsiteSchema } from "@/components/shared/structured-data";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Home",
-  description: "Where beauty roars in every stitch. Discover premium customizable fashion at Nala Armoire - ethnic wear, contemporary styles, and personalized clothing handcrafted with love.",
-  openGraph: {
-    title: "Nala Armoire - Premium Customizable Fashion",
-    description: "Where beauty roars in every stitch. Discover premium customizable fashion at Nala Armoire.",
-    url: "https://nalaarmoire.com",
-    images: ["/images/og-image.png"],
-  },
-};
 
 export default async function RootLayout({
   children,

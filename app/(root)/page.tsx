@@ -21,12 +21,11 @@ export default function HomeClient() {
       {/* 3. CATEGORIES - Browse Product Types (Shop by Category) */}
       <ShopByCategories />
 
-
       {/* 5. ART OF CREATION - Explain 3-Step Customization Process */}
       <ArtOfCreation />
 
       {/* 6. OUR PROMISE - Why Choose Us Section */}
-      <OurPromise />
+      {/* <OurPromise /> */}
 
       {/* 7. TESTIMONIALS - Customer Reviews & Social Proof */}
       <Testimonials />
@@ -36,8 +35,6 @@ export default function HomeClient() {
 
       {/* 9. FEATURES - Trust Signals (Free Shipping, Quality, 24/7 Support) */}
       <Features />
-
-
     </div>
   );
 }

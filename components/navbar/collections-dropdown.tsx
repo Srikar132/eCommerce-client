@@ -32,9 +32,9 @@ export function CollectionsDropdown() {
                   key={item.title}
                   title={item.title}
                   href={item.href}
-                  className={cn(
-                    item.special && "text-destructive italic"
-                  )}
+                  // className={cn(
+                  //   item.special && "text-destructive italic"
+                  // )}
                 >
                   {item.description}
                 </ListItem>

@@ -20,28 +20,30 @@ export default async function OrdersPage({
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-foreground mb-2">Your Orders</h1>
-                <p className="text-muted-foreground">
-                    {totalElements > 0
-                        ? `${totalElements} ${totalElements === 1 ? 'order' : 'orders'} found`
-                        : 'No orders yet'
-                    }
-                </p>
-            </div>
 
             {/* Orders List */}
             {orders.length > 0 ? (
-                <div className="space-y-4">
-                    {orders.map((order) => (
-                        <OrderCard key={order.id} order={order} />
-                    ))}
+                <>
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-bold text-foreground mb-2">Your Orders</h1>
+                        <p className="text-muted-foreground">
+                            {totalElements > 0
+                                ? `${totalElements} ${totalElements === 1 ? 'order' : 'orders'} found`
+                                : 'No orders yet'
+                            }
+                        </p>
+                    </div>
+                    <div className="space-y-4">
+                        {orders.map((order) => (
+                            <OrderCard key={order.id} order={order} />
+                        ))}
 
-                    {/* Load More Button */}
-                    {hasMore && (
-                        <LoadMoreButton currentPage={page} />
-                    )}
-                </div>
+                        {/* Load More Button */}
+                        {hasMore && (
+                            <LoadMoreButton currentPage={page} />
+                        )}
+                    </div>
+                </>
             ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                     <Package className="w-16 h-16 text-muted-foreground/50 mb-4" />

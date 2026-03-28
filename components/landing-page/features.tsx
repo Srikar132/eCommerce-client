@@ -4,19 +4,19 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const Features = () => {
     return (
-        <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
+        <section className="relative section">
             
             {/* Section Header */}
-            <div className="text-center mb-12 sm:mb-16 space-y-3">
-                <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
+            <div className="relative text-center section-header">
+                <p className="p-inline">
                     Why Choose Us
                 </p>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
+                <h2>
                     Premium Quality & Service
                 </h2>
             </div>
 
-            <div className="max-w-7xl mx-auto">
+            <div className="container">
                 <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8 relative z-10">
                     {features.map((feature, i) => (
                         <Card

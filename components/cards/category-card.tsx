@@ -21,7 +21,7 @@ export default function CategoryCard({
       href={url}
       className={`block group ${className}`}
     >
-      <Card className="relative w-full h-100 sm:h-112.5 lg:h-107.5 overflow-hidden rounded-2xl border-2 border-border hover:border-primary shadow-md hover:shadow-2xl transition-all duration-500 bg-card group-hover:-translate-y-2">
+      <Card className="relative rounded-none! w-full h-100 sm:h-112.5 lg:h-107.5 overflow-hidden border-2 border-border hover:border-primary  transition-hover duration-500 bg-card group-hover:-translate-y-2">
 
         {/* Background Image */}
         <div className="absolute inset-0">
@@ -29,7 +29,7 @@ export default function CategoryCard({
             src={image}
             alt={`${title} category`}
             fill
-            className="object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-110"
+            className="object-cover transition-all duration-700 group-hover:scale-105 "
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </div>
@@ -66,10 +66,6 @@ export default function CategoryCard({
           <div className="absolute top-4 right-4 w-8 h-8 sm:w-10 sm:h-10 border-t-2 border-r-2 border-white/30 group-hover:border-primary/60 transition-colors duration-500" />
 
         </div>
-
-        {/* Animated Border Effect */}
-        <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/30 rounded-2xl transition-all duration-500" />
-
       </Card>
     </Link>
   );

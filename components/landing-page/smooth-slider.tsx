@@ -26,22 +26,24 @@ const SmoothSliderClient = ({ images }: SmoothSliderClientProps) => {
     }
 
     return (
-        <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
+        <section className="relative overflow-hidden bg-background">
 
-            {/* Section Header */}
-            <div className="text-center mb-12 space-y-3">
-                <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
+            <div className="relative text-center section-header">
+                <p className="p-inline">
                     Join Us
                 </p>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
+                <h1 className='font-bold'>
                     @THE-NALA-ARMOIRE
-                </h2>
+                </h1>
+                {/* <p className="text-sm sm:text-base md:text-lg text-muted-foreground tracking-wide p-inline">
+          Handpicked collections for everyone
+        </p> */}
             </div>
 
             {/* Marquee Container */}
             <div className="relative overflow-hidden">
                 <div
-                    className="flex gap-4 sm:gap-6"
+                    className="flex gap-2"
                     style={{
                         animation: 'marquee 30s linear infinite',
                         animationPlayState: isPaused ? 'paused' : 'running',
@@ -53,7 +55,7 @@ const SmoothSliderClient = ({ images }: SmoothSliderClientProps) => {
                     {duplicatedPosts.map((post, index) => (
                         <div
                             key={`${post.id}-${index}`}
-                            className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-card"
+                            className="shrink-0 w-52 sm:w-56 md:w-72 lg:w-80 h-64 sm:h-72 md:h-80 lg:h-96 relative group cursor-pointer overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-card"
                         >
                             <Image
                                 src={post.imageUrl}

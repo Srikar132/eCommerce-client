@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const HeroSection = () => {
     return (
-        <section id="hero-section" className="relative w-full overflow-hidden select-none bg-gradient-to-b from-background via-background to-background">
+        <section id="hero-section" className="relative container w-full overflow-hidden select-none bg-linear-to-b from-background via-background to-background">
             {/* Cloud Images at Top - Fixed positioning to prevent overlap with navbar */}
             <div className="absolute top-4 sm:top-8 md:top-12 left-[5%] w-30 h-20 sm:w-45 sm:h-30 md:w-50 md:h-33.75 z-10 opacity-70 pointer-events-none">
                 <Image
@@ -44,8 +44,8 @@ const HeroSection = () => {
             </div>
 
             {/* Content Container */}
-            <div className="relative min-h-150 sm:min-h-175 md:min-h-187.5 z-20 flex items-center justify-center py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-4xl mx-auto w-full">
+            <div className="relative min-h-150 sm:min-h-175 md:min-h-150 z-20 flex items-center justify-center">
+                <div className="text-center">
 
                     {/* Brand Name */}
                     <div className="space-y-2 mb-6 sm:mb-8">
@@ -58,7 +58,7 @@ const HeroSection = () => {
                     </div>
 
                     {/* Main Heading */}
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight leading-tight mb-8 sm:mb-10 text-foreground">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight leading-tight mb-8 sm:mb-10 text-foreground">
                         Every piece tells a story <br /> Let&apos;s make yours - together.
                     </h1>
 
@@ -137,7 +137,7 @@ const HeroSection = () => {
             </div>
 
             {/* Subtle gradient overlay for better text readability */}
-            <div className="absolute inset-0 bg-linear-to-b from-background/90 via-transparent to-background/90 z-1 pointer-events-none" />
+            {/* <div className="absolute inset-0 bg-linear-to-b from-background/90 via-transparent to-background/90 z-1 pointer-events-none" /> */}
         </section>
     );
 };

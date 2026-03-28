@@ -1,4 +1,4 @@
-import { Playfair_Display, Inter } from "next/font/google";
+import {  Lexend_Deca, Petrona } from "next/font/google";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack";
 import Script from "next/script";
@@ -112,14 +112,16 @@ export const viewport: Viewport = {
 
 
 
-const playfair = Playfair_Display({
+
+
+const petrona = Petrona({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-heading",      // headlines
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-heading",         // body + UI
   display: "swap",
 });
 
-const inter = Inter({
+const inter = Lexend_Deca({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-inter",         // body + UI
@@ -135,7 +137,7 @@ export default function Layout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased`}
+        className={`${inter.variable} ${petrona.variable} antialiased`}
       >
         {/* Page Loading Progress Bar */}
         <NextTopLoader
