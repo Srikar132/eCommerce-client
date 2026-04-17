@@ -10,8 +10,8 @@ interface SearchInputProps {
   onSearch?: (query: string) => void;
 }
 
-export function SearchInput({ 
-  placeholder = "Search for products, brands and more", 
+export function SearchInput({
+  placeholder = "What are you looking for?",
   className = "",
   onSearch,
 }: SearchInputProps) {
@@ -19,10 +19,8 @@ export function SearchInput({
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Handle search submission
   const handleSearch = (searchQuery: string = query) => {
     if (!searchQuery.trim()) return;
-    
     if (onSearch) {
       onSearch(searchQuery);
     } else {
@@ -30,46 +28,57 @@ export function SearchInput({
     }
   };
 
-  // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSearch();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); handleSearch(); }
   };
 
-  // Clear search
-  const clearSearch = () => {
-    setQuery('');
-    inputRef.current?.focus();
-  };
+  const clearSearch = () => { setQuery(''); inputRef.current?.focus(); };
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative group ${className}`}>
       <div className="relative flex items-center">
-        <div className="absolute left-4 flex items-center pointer-events-none z-10">
-          <Search className="w-5 h-5 text-muted-foreground" strokeWidth={2} />
-        </div>
-        
+
+        {/* Search icon — right side like the reference */}
         <input
           ref={inputRef}
           type="text"
-          placeholder={placeholder}
+          placeholder={placeholder}       
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full h-11 pl-12 pr-12 bg-card border border-border rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 focus:bg-card transition-all duration-300 shadow-sm hover:shadow-md"
+          className={`
+            w-full h-9 pl-4 pr-9
+            bg-transparent
+            border border-border
+            rounded-full
+            text-sm text-foreground
+            placeholder:text-muted-foreground
+            focus:outline-none
+            focus:border-foreground/30
+            focus:ring-0
+            transition-all duration-200
+          `}
         />
-        
-        {query && (
+
+        {/* Clear button when typing */}
+        {query ? (
           <button
             onClick={clearSearch}
-            className="absolute right-4 flex items-center text-muted-foreground hover:text-foreground transition-colors z-10"
+            className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Clear search"
           >
-            <X className="w-5 h-5" strokeWidth={2} />
+            <X className="w-3.5 h-3.5" strokeWidth={2} />
+          </button>
+        ) : (
+          <button
+            onClick={() => handleSearch()}
+            className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Search"
+          >
+            <Search className="w-3.5 h-3.5" strokeWidth={2} />
           </button>
         )}
+
       </div>
     </div>
   );

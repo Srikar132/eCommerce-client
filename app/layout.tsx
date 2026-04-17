@@ -1,4 +1,4 @@
-import {  Lexend_Deca, Petrona } from "next/font/google";
+import {  Lexend_Deca, Petrona , Dancing_Script } from "next/font/google";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack";
 import Script from "next/script";
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: `${SITE_NAME} - Premium Customizable Fashion`,
-    template: `%s | ${SITE_NAME}`,
+    template: `%s`,
   },
   description: SITE_DESCRIPTION,
   keywords: [
@@ -128,6 +128,13 @@ const inter = Lexend_Deca({
   display: "swap",
 });
 
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cursive",         // for handwritting
+  display: "swap",
+})
+
 
 export default function Layout({
   children,
@@ -137,7 +144,7 @@ export default function Layout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${petrona.variable} antialiased`}
+        className={`${inter.variable} ${dancingScript.variable} ${petrona.variable} antialiased`}
       >
         {/* Page Loading Progress Bar */}
         <NextTopLoader

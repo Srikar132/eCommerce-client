@@ -23,7 +23,7 @@ export default async function RootLayout({
     <main className="w-full">
       <AdminStoreBanner userRole={userRole} />
 
-      <div className="sticky top-0 z-50 w-full bg-primary text-primary-foreground text-xs flex items-center justify-center py-1 tracking-wider">
+      <div className="top-0 z-50 w-full bg-primary text-primary-foreground text-xs flex items-center justify-center py-1 tracking-wider">
         <ShoppingCart className="mr-2" size={13} />
         PREPAID ORDERS ONLY!
       </div>

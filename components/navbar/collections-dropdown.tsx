@@ -21,7 +21,7 @@ export function CollectionsDropdown() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-transparent hover:bg-primary-50/50 data-[state=open]:bg-primary/50 data-[state=open]:font-bold text-xs font-light tracking-[0.15em] uppercase text-foreground  hover:text-primary transition-colors h-8 px-3">
+          <NavigationMenuTrigger className=" text-xs tracking-[0.15em] uppercase text-foreground  h-8 px-3">
             Collections
             <ChevronDown className="ml-1.5 h-3 w-3 transition-transform duration-200" />
           </NavigationMenuTrigger>

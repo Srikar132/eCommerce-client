@@ -20,12 +20,12 @@ const WishlistButton = ({ enabled }: { enabled: boolean }) => {
 
   return (
     <Button
-      className="relative p-1 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
+      className="relative  rounded-full transition-colors border-0 bg-transparent hover:bg-transparent cursor-pointer"
       aria-label="Wishlist"
     >
       <Heart
-        className="w-5 h-5 text-foreground"
-        strokeWidth={2}
+        className="w-7 h-7 text-foreground"
+        strokeWidth={3}
       // fill="#402e27"
       // stroke="#402e27"
       />

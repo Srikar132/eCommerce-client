@@ -13,123 +13,162 @@ import WishlistButton from './wishlist-button';
 import CartButton from '../cart/cart-button';
 import { AccountHoverCard } from './account-hover-card';
 import { useSession } from 'next-auth/react';
+import { useRef } from 'react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+gsap.registerPlugin(ScrollTrigger);
 
+const SCROLL_THRESHOLD = 60;
 
 const Navbar = () => {
     const { data: session } = useSession();
     const pathname = usePathname();
+    const navRef = useRef<HTMLElement>(null);
 
-    // Scroll state
     const isHomePage = pathname === '/';
     const isProductsPage = pathname === '/products';
 
+useGSAP(() => {
+    if (!navRef.current) return;
+    const nav = navRef.current;
+
+    // Non-home: clear any residual GSAP inline styles and exit
+    if (!isHomePage) {
+        gsap.set(nav, { clearProps: 'all' });
+        ScrollTrigger.getAll().forEach(t => t.kill()); // kill any lingering triggers
+        return;
+    }
+
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 1024px)", () => {
+        // ── Desktop only: floating pill → full-width bar animation ──
+
+        const initialTop = nav.offsetTop;
+
+        const toScrolled = () => gsap.to(nav, {
+            borderRadius: '0px', maxWidth: '100%', marginTop: '0px', top: '0px',
+            duration: 0.4, ease: 'power2.out',
+        });
+
+        const toTop = () => gsap.to(nav, {
+            borderRadius: '1rem', maxWidth: '90vw', marginTop: '20px', top: `${initialTop}px`,
+            duration: 0.4, ease: 'power2.out',
+        });
+
+        gsap.set(nav, { borderRadius: '1rem', maxWidth: '90vw', marginTop: '20px', top: `${initialTop}px` });
+
+        const trigger = ScrollTrigger.create({
+            start: `top+=${SCROLL_THRESHOLD} top`,
+            onEnter: toScrolled,
+            onLeaveBack: toTop,
+        });
+
+        // matchMedia cleanup — runs when viewport drops below 1024px
+        return () => {
+            trigger.kill();
+            gsap.set(nav, { clearProps: 'borderRadius,maxWidth,marginTop,top' });
+        };
+    });
+
+    // Global cleanup — runs on unmount / dependency change
+    return () => mm.revert();
+
+}, { scope: navRef, dependencies: [isHomePage] });
+
     return (
-        <>
-            <nav
-                className={cn(
-                    "w-full bg-background z-50 transition-all duration-500 ease-in-out",
-                    isHomePage
-                        ? cn(
-                            "fixed rounded-none sm:rounded-full max-w-full sm:max-w-[96vw] lg:max-w-[92vw] left-1/2 -translate-x-1/2 sm:my-5 lg:my-6 shadow-md border border-rose-100/20 top-5",
+        <nav
+            ref={navRef}
+            className={cn(
+                "w-full bg-background z-50 border-b border-border",
+                isHomePage
+                    ? "max-sm:sticky! max-sm:top-0 sm:fixed sm:left-1/2 sm:-translate-x-1/2 shadow-sm border border-border"
+                    : "sticky top-0 shadow-sm",
+            )}
+        >
+            <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+                <div className="flex items-center h-16 lg:h-[4.5rem] gap-4">
 
-                        )
-                        : "sticky top-0",
-                )}
-            >
-                <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
-                    <div className="flex items-center justify-between h-14 sm:h-16 lg:h-18 gap-3 sm:gap-4 lg:gap-6">
-                        {/* LEFT: Logo + Collections */}
-                        <div className='flex items-center space-x-4 sm:space-x-6 lg:space-x-8'>
-
-                            {/* Mobile Menu Button */}
-                            <SidebarTrigger className="lg:hidden" />
-
-                            {/* Logo - Centered on Mobile */}
-                            <Link href="/" className="flex items-center space-x-2 group lg:flex-none flex-1 lg:flex-initial justify-center lg:justify-start">
-                                <div className="relative w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 transition-transform duration-300 group-hover:scale-105">
-                                    <Image
-                                        src="/images/logo.webp"
-                                        alt="The Nala Armoire"
-                                        fill
-                                        sizes="(max-width: 640px) 40px, (max-width: 1024px) 44px, 48px"
-                                        className="object-cover"
-                                        priority
-                                    />
-                                </div>
-                                <div className="hidden xl:block">
-                                    <p className="text-xs font-light tracking-[0.2em] uppercase text-foreground">Nala Armoire</p>
-                                    <p className="text-[10px] italic text-foreground/70 -mt-0.5">where beauty roars</p>
-                                </div>
-                            </Link>
-
-                            {/* Collections Dropdown - Desktop Only */}
-                            <div className="hidden lg:block">
-                                <CollectionsDropdown />
-                            </div>
-
-                        </div>
-
-                        {/* CENTER: Navigation Links - Desktop Only */}
-                        {isHomePage && (
-                            <div className="hidden lg:flex items-center space-x-8">
-                                <Link href="/products" className="text-sm font-light tracking-wide text-foreground hover:text-primary transition-colors">
-                                    Shop
-                                </Link>
-                                <Link href="/about" className="text-sm font-light tracking-wide text-foreground hover:text-primary transition-colors">
-                                    About
-                                </Link>
-                                <Link href="/contact" className="text-sm font-light tracking-wide text-foreground hover:text-primary transition-colors">
-                                    Contact
-                                </Link>
-                            </div>
-                        )}
-
-                        {/* Search Bar - Non-Home Pages */}
-                        {!isHomePage && (
-                            <div className="hidden lg:block flex-1 max-w-xl">
-                                <SearchInput
-                                    className="w-full"
-                                    placeholder="Search products, collections..."
-                                />
-                            </div>
-                        )}
-
-                        {/* RIGHT: Icons */}
-                        <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
-
-                            {/* Search Icon - Mobile Only, Hidden on Products Page */}
+                    {/* ── MOBILE: Hamburger | Logo | Icons ── */}
+                    <div className="flex lg:hidden items-center w-full justify-between">
+                        <SidebarTrigger />
+                        <Link href="/" className="flex items-center space-x-2">
+                            <p className="text-2xl xl:text-3xl font-bold  uppercase text-foreground "><span className='font-cursive! lowercase'>Nala</span> Armoire</p>
+                        </Link>
+                        <div className="flex items-center gap-2">
                             {!isProductsPage && (
-                                <Link href="/products" className="lg:hidden">
-                                    <Button
-                                        className="p-1 hover:bg-primary rounded-full transition-colors border-0 bg-transparent"
-                                        aria-label="Search products"
-                                    >
-                                        <Search className="w-5 h-5 text-foreground" strokeWidth={2} />
+                                <Link href="/products">
+                                    <Button className="p-1 rounded-full bg-transparent border-0 hover:bg-accent" aria-label="Search">
+                                        <Search className="w-5 h-5 text-foreground" strokeWidth={1.75} />
                                     </Button>
                                 </Link>
                             )}
-
-                            {/* Divider */}
-                            <div className="hidden sm:block h-6 w-px bg-rose-200/50"></div>
-
-                            {/* Account with Hover Card */}
                             <AccountHoverCard />
-
-
-                            <Link href="/wishlist">
-                                <WishlistButton enabled={!!session} />
-                            </Link>
-
-                            <Link href="/cart">
-                                <CartButton enabled={!!session} />
-                            </Link>
+                            {/* <Link href="/wishlist"><WishlistButton enabled={!!session} /></Link> */}
+                            <Link href="/cart"><CartButton enabled={!!session} /></Link>
                         </div>
                     </div>
+
+                    {/* ── DESKTOP: Left | Center | Right ── */}
+
+                    {/* LEFT: Nav links + Collections */}
+                    <div className="hidden lg:flex items-center gap-6 flex-1">
+                        {/* Mobile trigger hidden on desktop — SidebarTrigger only for mobile above */}
+                        <CollectionsDropdown />
+                        {isHomePage && (
+                            <>
+                                <Link href="/products" className="nav-link font-medium text-sm whitespace-nowrap">Shop</Link>
+                                <Link href="/about" className="nav-link font-medium text-sm whitespace-nowrap">About</Link>
+                                <Link href="/contact" className="nav-link font-medium text-sm whitespace-nowrap">Contact</Link>
+                            </>
+                        )}
+                        {!isHomePage && (
+                            <>
+                                <Link href="/products" className="nav-link font-medium text-sm whitespace-nowrap">Shop</Link>
+                                <Link href="/about" className="nav-link font-medium text-sm whitespace-nowrap">About</Link>
+                                <Link href="/contact" className="nav-link font-medium text-sm whitespace-nowrap">Contact</Link>
+                            </>
+                        )}
+                    </div>
+
+                    {/* CENTER: Logo — absolutely centered on desktop */}
+                    <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2">
+                        <Link href="/" className="flex items-center gap-2.5 group">
+                            {/* <div className="relative w-11 h-11 transition-transform duration-300 group-hover:scale-105">
+                                <Image
+                                    src="/images/logo.webp"
+                                    alt="The Nala Armoire"
+                                    fill
+                                    sizes="44px"
+                                    className="object-cover"
+                                />
+                            </div> */}
+                            <div>
+                                <p className="text-2xl xl:text-3xl font-bold  uppercase text-foreground "><span className='font-cursive! lowercase'>Nala</span> Armoire</p>
+                                {/* <p className="text-[9px] italic text-muted-foreground mt-0.5 tracking-wide">where beauty roars</p> */}
+                            </div>
+                        </Link>
+                    </div>
+
+                    {/* RIGHT: Search + icons */}
+                    <div className="hidden lg:flex items-center gap-3 flex-1 justify-end">
+                        {/* Search — always visible on desktop */}
+                        <SearchInput
+                            className="w-52 xl:w-64"
+                            placeholder="What are you looking for?"
+                        />
+                        <div className="h-5 w-px bg-border mx-1" />
+                        <AccountHoverCard />
+                        <Link href="/wishlist"><WishlistButton enabled={!!session} /></Link>
+                        <Link href="/cart"><CartButton enabled={!!session} /></Link>
+                    </div>
+
                 </div>
-            </nav>
-        </>
+            </div>
+        </nav>
     );
-}
+};
 
 export default Navbar;
