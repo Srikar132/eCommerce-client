@@ -96,7 +96,7 @@ export function EditAccountDialog({ open, onOpenChange, currentName, currentEmai
                                     </FormItem>
                                 )}
                             />
-                            <FormField
+                            {/* <FormField
                                 control={form.control}
                                 name="email"
                                 render={({ field }) => (
@@ -116,7 +116,7 @@ export function EditAccountDialog({ open, onOpenChange, currentName, currentEmai
                                         </p>
                                     </FormItem>
                                 )}
-                            />
+                            /> */}
                         </div>
                         <DialogFooter>
                             <Button

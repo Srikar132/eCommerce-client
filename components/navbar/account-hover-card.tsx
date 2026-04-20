@@ -16,12 +16,12 @@ export function AccountHoverCard() {
         <HoverCard openDelay={200} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <Button
-                    className="hidden sm:flex p-1 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
+                    className="hidden sm:flex  rounded-full transition-colors border-0 bg-transparent hover:bg-transparent cursor-pointer"
                     aria-label="Account"
                 >
                     <User2
-                        className="w-5 h-5 text-foreground"
-                        strokeWidth={2}
+                        className="w-5 h-5 lg:w-7 lg:h-7 text-foreground"
+                        strokeWidth={3}
                     />
                 </Button>
             </HoverCardTrigger>

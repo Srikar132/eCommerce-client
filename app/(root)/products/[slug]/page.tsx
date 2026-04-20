@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { PLACEHOLDER_IMAGE } from "@/constants";
 import { getProductBySlug, getProductVariants } from "@/lib/actions/product-actions";
 import { Product, ProductVariant } from "@/types/product";
-import { cacheLife } from "next/cache";
 import ProductReviewsSection from "@/components/product/product-reviews-section";
 import { ReviewsSkeleton } from "@/components/product/reviews-skeleton";
 import { ProductSchema, BreadcrumbSchema } from "@/components/shared/structured-data";
@@ -18,23 +17,6 @@ interface ProductPageProps {
 }
 
 
-// Cached function for fetching product data
-async function getCachedProduct(slug: string): Promise<Product | null> {
-    "use cache";
-    cacheLife("minutes");
-
-    return await getProductBySlug(slug);
-}
-
-// Cached function for fetching product variants
-async function getCachedProductVariants(productId: string): Promise<ProductVariant[]> {
-    "use cache";
-    cacheLife("minutes");
-
-    return await getProductVariants(productId);
-}
-
-
 
 export async function generateMetadata({
     params
@@ -44,7 +26,7 @@ export async function generateMetadata({
 
     try {
         const { slug } = await params;
-        const product = await getCachedProduct(slug);
+        const product = await getProductBySlug(slug);
 
         if (!product) {
             return {
@@ -95,14 +77,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     const { slug } = await params;
 
     // Fetch product data using cached function
-    const product = await getCachedProduct(slug).catch(() => null);
+    const product = await getProductBySlug(slug).catch(() => null);
 
     if (!product) {
         notFound();
     }
 
     // Fetch variants using cached function
-    const variants = await getCachedProductVariants(product.id);
+    const variants = await getProductVariants(product.id);
 
     // Prepare structured data
     const productUrl = `https://nalaarmoire.com/products/${product.slug}`;

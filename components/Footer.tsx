@@ -132,7 +132,7 @@ const Footer: React.FC = () => {
                     <p className="text-center text-xl sm:text-2xl tracking-[0.3em] uppercase text-muted-foreground mb-2">
                         Nala
                     </p>
-                    <h2 className="text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] xl:text-[220px] font-medium italic leading-none tracking-wider text-center text-foreground">
+                    <h2 className="text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] xl:text-[220px] font-medium  leading-none tracking-wider text-center text-foreground">
                         Armoire
                     </h2>
                     <p className="text-center text-xs sm:text-sm text-muted-foreground mt-4 italic">

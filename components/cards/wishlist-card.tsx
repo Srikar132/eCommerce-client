@@ -26,7 +26,7 @@ export function WishlistCard({ item, onRemove, isRemoving }: WishlistCardProps) 
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('en-IN', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -81,7 +81,7 @@ export function WishlistCard({ item, onRemove, isRemoving }: WishlistCardProps) 
           {/* Price and Category */}
           <div className="flex items-center justify-between pt-1">
             <p className="text-base font-semibold text-foreground">
-              ${item.basePrice.toFixed(2)}
+              ₹{item.basePrice.toFixed(2)}
             </p>
             {item.categoryName && (
               <span className="text-xs text-muted-foreground">

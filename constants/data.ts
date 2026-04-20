@@ -211,10 +211,10 @@ export const collections = [
         href: "/products?category=kid-girls",
         description: "Comfortable clothing for girls",
     },
-    {
-        title: "LIMITED EDITION STITCHES",
-        href: "/products?featured=limited-edition",
-        description: "Exclusive handcrafted pieces",
-        special: true,
-    },
+    // {
+    //     title: "LIMITED EDITION STITCHES",
+    //     href: "/products?featured=limited-edition",
+    //     description: "Exclusive handcrafted pieces",
+    //     special: true,
+    // },
 ];

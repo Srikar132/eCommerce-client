@@ -11,22 +11,21 @@ export default function HomeClient() {
 
 
   return (
-    <div className="w-full overflow-x-hidden overflow-y-hidden">
+    <div className="w-full bg-background min-h-screen relative">
       {/* 1. HERO - First Impression & Brand Introduction */}
       <HeroSection />
 
       {/* 2. SHOWCASE - Premium Products Display with Beautiful Background */}
-      <ShowCaseSection />
+      {/* <ShowCaseSection /> */}
 
       {/* 3. CATEGORIES - Browse Product Types (Shop by Category) */}
       <ShopByCategories />
-
 
       {/* 5. ART OF CREATION - Explain 3-Step Customization Process */}
       <ArtOfCreation />
 
       {/* 6. OUR PROMISE - Why Choose Us Section */}
-      <OurPromise />
+      {/* <OurPromise /> */}
 
       {/* 7. TESTIMONIALS - Customer Reviews & Social Proof */}
       <Testimonials />
@@ -36,8 +35,6 @@ export default function HomeClient() {
 
       {/* 9. FEATURES - Trust Signals (Free Shipping, Quality, 24/7 Support) */}
       <Features />
-
-
     </div>
   );
 }

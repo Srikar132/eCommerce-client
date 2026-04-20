@@ -19,13 +19,13 @@ const CartButton = ({ enabled }: { enabled: boolean }) => {
 
   return (
     <Button
-      className="relative p-1 hover:bg-primary/50 rounded-full transition-colors border-0 bg-transparent"
+      className="relative  rounded-full transition-colors border-0 bg-transparent hover:bg-transparent cursor-pointer"
       aria-label="Shopping cart"
 
     >
       <ShoppingBagIcon
-        className="w-5 h-5 text-foreground"
-        strokeWidth={2}
+        className="w-5 h-5 lg:w-7 lg:h-7 text-foreground"
+        strokeWidth={3}
       />
 
       {mounted && totalItems > 0 && (

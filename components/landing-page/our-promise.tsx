@@ -35,25 +35,7 @@ const promises = [
 export default function OurPromise() {
     return (
         <section className="relative w-full py-16 sm:py-20 md:py-28 overflow-hidden bg-background">
-            {/* ── Decorative Background Flowers ── */}
-            <div className="absolute top-8 sm:top-12 left-[5%] sm:left-[8%] w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 opacity-40 pointer-events-none">
-                <Image src="/images/home/flower2.webp" alt="" fill sizes="112px" className="object-contain select-none" draggable={false} />
-            </div>
-            <div className="absolute top-16 sm:top-20 right-[8%] sm:right-[12%] w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 opacity-30 pointer-events-none">
-                <Image src="/images/home/flower5.webp" alt="" fill sizes="128px" className="object-contain select-none" draggable={false} />
-            </div>
-            <div className="absolute top-1/2 -translate-y-1/2 left-[2%] sm:left-[4%] w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 opacity-25 pointer-events-none hidden sm:block">
-                <Image src="/images/home/flower4.webp" alt="" fill sizes="160px" className="object-contain select-none" draggable={false} />
-            </div>
-            <div className="absolute top-1/2 -translate-y-1/2 right-[2%] sm:right-[4%] w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 opacity-25 pointer-events-none hidden sm:block">
-                <Image src="/images/home/flower3.webp" alt="" fill sizes="144px" className="object-contain select-none" draggable={false} />
-            </div>
-            <div className="absolute bottom-12 sm:bottom-16 left-[10%] sm:left-[15%] w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 opacity-35 pointer-events-none">
-                <Image src="/images/home/flower6.webp" alt="" fill sizes="96px" className="object-contain select-none" draggable={false} />
-            </div>
-            <div className="absolute bottom-8 sm:bottom-12 right-[6%] sm:right-[10%] w-16 h-16 sm:w-22 sm:h-22 md:w-28 md:h-28 opacity-30 pointer-events-none">
-                <Image src="/images/home/flower2.webp" alt="" fill sizes="112px" className="object-contain select-none" draggable={false} />
-            </div>
+
 
             {/* ── Content ── */}
             <div className="relative z-10 w-full p-4 sm:p-6 max-w-7xl mx-auto">

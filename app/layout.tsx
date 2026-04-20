@@ -1,4 +1,4 @@
-import { Playfair_Display, Inter } from "next/font/google";
+import {  Lexend_Deca, Petrona , Dancing_Script } from "next/font/google";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack";
 import Script from "next/script";
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: `${SITE_NAME} - Premium Customizable Fashion`,
-    template: `%s | ${SITE_NAME}`,
+    template: `%s`,
   },
   description: SITE_DESCRIPTION,
   keywords: [
@@ -112,19 +112,28 @@ export const viewport: Viewport = {
 
 
 
-const playfair = Playfair_Display({
+
+
+const petrona = Petrona({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-heading",      // headlines
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-heading",         // body + UI
   display: "swap",
 });
 
-const inter = Inter({
+const inter = Lexend_Deca({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-inter",         // body + UI
   display: "swap",
 });
+
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cursive",         // for handwritting
+  display: "swap",
+})
 
 
 export default function Layout({
@@ -135,7 +144,7 @@ export default function Layout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased`}
+        className={`${inter.variable} ${dancingScript.variable} ${petrona.variable} antialiased`}
       >
         {/* Page Loading Progress Bar */}
         <NextTopLoader
@@ -149,7 +158,6 @@ export default function Layout({
           speed={200}
         />
 
-        <Suspense fallback={<PageLoadingSkeleton />}>
           <AuthProvider>
             <TanstackProvider>
               <SidebarProvider defaultOpen={false}>
@@ -166,7 +174,6 @@ export default function Layout({
             closeButton
             duration={4000}
           />
-        </Suspense>
 
         {/* Load Razorpay globally for payment gateway */}
         <Script

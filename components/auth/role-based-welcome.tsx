@@ -50,7 +50,7 @@ export default function RoleBasedWelcome() {
 
     if (!isAuthenticated || !user) {
         return (
-            <Card className="max-w-md mx-auto">
+            <Card className='w-full'>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <User className="h-5 w-5" />
@@ -71,27 +71,9 @@ export default function RoleBasedWelcome() {
 
     const welcomeMessage = getWelcomeMessage(userRole!, user.name || 'User');
 
-    const getRoleActions = () => {
-        switch (userRole) {
-            case 'ADMIN':
-                return [
-                    { label: 'Admin Dashboard', href: '/admin', icon: <Settings className="h-4 w-4" /> },
-                    { label: 'User Management', href: '/admin/users', icon: <User className="h-4 w-4" /> },
-                    { label: 'System Settings', href: '/admin/settings', icon: <Shield className="h-4 w-4" /> },
-                ];
-            default:
-                return [
-                    { label: 'My Account', href: '/account', icon: <User className="h-4 w-4" /> },
-                    { label: 'My Orders', href: '/orders', icon: <ShoppingBag className="h-4 w-4" /> },
-                    { label: 'Wishlist', href: '/wishlist', icon: <Star className="h-4 w-4" /> },
-                ];
-        }
-    };
-
-    const actions = getRoleActions();
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="space-y-6">
             {/* Welcome Card */}
             <Card>
                 <CardHeader>
@@ -111,44 +93,10 @@ export default function RoleBasedWelcome() {
                                 </CardDescription>
                             </div>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => signOut({ callbackUrl: '/' })}
-                        >
-                            <LogOut className="h-4 w-4 mr-2" />
-                            Sign Out
-                        </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground">{welcomeMessage}</p>
-                </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">Quick Actions</CardTitle>
-                    <CardDescription>
-                        Actions available based on your role and permissions
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {actions.map((action) => (
-                            <Link key={action.href} href={action.href}>
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-start h-12"
-                                    disabled={!hasRoutePermission(action.href)}
-                                >
-                                    {action.icon}
-                                    <span className="ml-2">{action.label}</span>
-                                </Button>
-                            </Link>
-                        ))}
-                    </div>
                 </CardContent>
             </Card>
 

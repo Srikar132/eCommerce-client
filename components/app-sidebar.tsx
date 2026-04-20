@@ -127,9 +127,9 @@ export default function AppSidebar() {
                         key={collection.title}
                         href={collection.href}
                         onClick={handleClose}
-                        className={`block px-6 py-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0 ${collection.special ? 'bg-destructive/10' : ''}`}
+                        className={`block px-6 py-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0 `}
                       >
-                        <p className={`text-xs font-medium tracking-wider uppercase ${collection.special ? 'text-destructive italic' : 'text-foreground'}`}>
+                        <p className={`text-xs font-medium tracking-wider uppercase `}>
                           {collection.title}
                         </p>
                         <p className="text-[10px] text-muted-foreground mt-0.5">
