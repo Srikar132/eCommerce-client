@@ -1,145 +1,316 @@
-import Image from "next/image";
+"use client"
+
+import { useCallback, useRef, useState } from "react"
+import { useGSAP } from "@gsap/react"
+import { gsap } from "gsap"
+import CustomButton from "../ui/custom-button"
 import Link from "next/link";
+import { ScrollTrigger } from "gsap/all"
 
-const HeroSection = () => {
-    return (
-        <section id="hero-section" className="relative container w-full overflow-hidden select-none bg-linear-to-b from-background via-background to-background">
-            {/* Cloud Images at Top - Fixed positioning to prevent overlap with navbar */}
-            <div className="absolute top-4 sm:top-8 md:top-12 left-[5%] w-30 h-20 sm:w-45 sm:h-30 md:w-50 md:h-33.75 z-10 opacity-70 pointer-events-none">
-                <Image
-                    src="/images/home/cloud.webp"
-                    alt=""
-                    width={200}
-                    height={135}
-                    className="object-contain select-none"
-                    style={{ width: '100%', height: 'auto' }}
-                    draggable={false}
-                    priority
-                />
-            </div>
+/* ─────────────────────────────────────────────
+   Types
+───────────────────────────────────────────── */
+export interface HeroSlide {
+  src: string
+  alt: string
+  eyebrow: string
+  heading: string
+  buttonLabel: string
+}
 
-            <div className="absolute top-8 sm:top-12 md:top-16 right-[10%] w-30 h-20 sm:w-45 sm:h-30 md:w-50 md:h-33.75 z-10 opacity-60 pointer-events-none">
-                <Image
-                    src="/images/home/cloud.webp"
-                    alt=""
-                    width={200}
-                    height={135}
-                    className="object-contain select-none"
-                    style={{ width: '100%', height: 'auto' }}
-                    draggable={false}
-                    priority
-                />
-            </div>
+interface HeroSectionProps {
+  slides?: HeroSlide[]
+  interval?: number // ms between auto-advances
+}
 
-            <div className="absolute top-24 sm:top-32 md:top-40 left-[35%] sm:left-[40%] w-30 h-20 sm:w-45 sm:h-30 md:w-50 md:h-33.75 z-10 opacity-50 hidden sm:block pointer-events-none">
-                <Image
-                    src="/images/home/cloud.webp"
-                    alt=""
-                    width={200}
-                    height={135}
-                    className="object-contain select-none"
-                    style={{ width: '100%', height: 'auto' }}
-                    draggable={false}
-                />
-            </div>
+/* ─────────────────────────────────────────────
+   Defaults
+───────────────────────────────────────────── */
+const DEFAULT_SLIDES: HeroSlide[] = [
+  {
+    src: "/images/home/hero-banner.png",
+    alt: "Campaign one",
+    eyebrow: "HANDCRAFTED ELEGANCE",
+    heading: "Wear the Art\n Of Embroidery",
+    buttonLabel: "Show Collection",
+  },
+]
 
-            {/* Content Container */}
-            <div className="relative min-h-150 sm:min-h-175 md:min-h-150 z-20 flex items-center justify-center">
-                <div className="text-center">
 
-                    {/* Brand Name */}
-                    <div className="space-y-2 mb-6 sm:mb-8">
-                        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-light tracking-[0.3em] uppercase text-muted-foreground">
-                            Nala Armoire
-                        </h2>
-                        <p className="text-xs sm:text-sm md:text-base font-light italic text-muted-foreground/80 tracking-wide">
-                            where beauty roars in every stitch
-                        </p>
-                    </div>
+gsap.registerPlugin(ScrollTrigger)
 
-                    {/* Main Heading */}
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight leading-tight mb-8 sm:mb-10 text-foreground">
-                        Every piece tells a story <br /> Let&apos;s make yours - together.
-                    </h1>
+/* ─────────────────────────────────────────────
+   Component
+───────────────────────────────────────────── */
+export default function HeroSection({
+  slides = DEFAULT_SLIDES,
+  interval = 5000,
+}: HeroSectionProps) {
+  const total = slides.length;
 
-                    {/* CTA Button */}
-                    <div className="pt-2 sm:pt-4">
-                        <Link
-                            href="/products"
-                            className="inline-block bg-primary text-primary-foreground px-8 py-3 sm:px-10 sm:py-4 rounded-full text-base sm:text-lg font-medium hover:opacity-90 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
-                        >
-                            Shop Now
-                        </Link>
-                    </div>
+  // ── State ──────────────────────────────────
+  const [current, setCurrent] = useState(0)
 
-                    {/* Decorative Floral Elements - Better responsive positioning */}
-                    {/* Top Left Flower */}
-                    <div className="absolute top-[15%] sm:top-[20%] left-[2%] sm:left-[5%] md:left-[8%] w-12 h-12 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 opacity-90 pointer-events-none">
-                        <Image
-                            src="/images/home/flower2.webp"
-                            alt=""
-                            fill
-                            sizes="(max-width: 640px) 48px, (max-width: 768px) 80px, (max-width: 1024px) 96px, 112px"
-                            className="object-contain select-none"
-                            draggable={false}
-                        />
-                    </div>
+  // ── DOM Refs ───────────────────────────────
+  const containerRef = useRef<HTMLDivElement>(null)
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([])
+  const imgRefs = useRef<(HTMLImageElement | null)[]>([])
+  const eyebrowRef = useRef<HTMLSpanElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const btnRef = useRef<HTMLDivElement>(null)
+  const progressRef = useRef<HTMLSpanElement>(null)
 
-                    {/* Bottom Right Flower */}
-                    <div className="absolute bottom-[5%] sm:bottom-[8%] right-[2%] sm:right-[5%] w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 pointer-events-none opacity-80">
-                        <Image
-                            src="/images/home/flower3.webp"
-                            alt=""
-                            fill
-                            sizes="(max-width: 640px) 80px, (max-width: 768px) 112px, (max-width: 1024px) 128px, 144px"
-                            className="object-contain select-none"
-                            draggable={false}
-                        />
-                    </div>
+  // ── Internal Refs (no re-render) ───────────
+  const currentRef = useRef(0)          // shadow of `current` for closures
+  const isAnimating = useRef(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const progressTween = useRef<gsap.core.Tween | null>(null)
 
-                    {/* Middle Right Flower */}
-                    <div className="absolute top-[50%] sm:top-[55%] right-[5%] sm:right-[8%] md:right-[12%] w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 pointer-events-none opacity-90">
-                        <Image
-                            src="/images/home/flower6.webp"
-                            alt=""
-                            fill
-                            sizes="(max-width: 640px) 64px, (max-width: 768px) 96px, (max-width: 1024px) 112px, 128px"
-                            className="object-contain select-none"
-                            draggable={false}
-                        />
-                    </div>
+  /* ── Helper: restart progress bar ─────────── */
+  const startProgress = useCallback(() => {
+    if (!progressRef.current) return
+    progressTween.current?.kill()
+    gsap.set(progressRef.current, { scaleX: 0, transformOrigin: "left center" })
+    progressTween.current = gsap.to(progressRef.current, {
+      scaleX: 1,
+      duration: interval / 1000,
+      ease: "none",
+    })
+  }, [interval])
 
-                    {/* Middle Left Flower */}
-                    <div className="absolute top-[55%] sm:top-[60%] left-[3%] sm:left-[8%] md:left-[12%] w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 pointer-events-none opacity-90">
-                        <Image
-                            src="/images/home/flower4.webp"
-                            alt=""
-                            fill
-                            sizes="(max-width: 640px) 64px, (max-width: 768px) 96px, (max-width: 1024px) 112px, 128px"
-                            className="object-contain select-none"
-                            draggable={false}
-                        />
-                    </div>
+  /* ── Core transition ───────────────────────── */
+  const goTo = useCallback(
+    (next: number) => {
+      if (isAnimating.current || next === currentRef.current) return
 
-                    {/* Bottom Left Flower */}
-                    <div className="absolute bottom-[10%] sm:bottom-[12%] left-[2%] sm:left-[5%] md:left-[8%] w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 pointer-events-none opacity-75">
-                        <Image
-                            src="/images/home/flower5.webp"
-                            alt=""
-                            width={112}
-                            height={112}
-                            className="object-contain select-none"
-                            style={{ width: '100%', height: 'auto' }}
-                            draggable={false}
-                        />
-                    </div>
-                </div>
-            </div>
+      isAnimating.current = true
+      const prev = currentRef.current
+      currentRef.current = next
 
-            {/* Subtle gradient overlay for better text readability */}
-            {/* <div className="absolute inset-0 bg-linear-to-b from-background/90 via-transparent to-background/90 z-1 pointer-events-none" /> */}
-        </section>
-    );
-};
+      // Update React state for text/counter
+      setCurrent(next)
 
-export default HeroSection;
+      const outSlide = slideRefs.current[prev]
+      const inSlide = slideRefs.current[next]
+      const inImg = imgRefs.current[next]
+
+      // Position layers
+      gsap.set(inImg, { scale: 1.08, x: 4 })
+      gsap.set(inSlide, { zIndex: 10, opacity: 1 })
+      gsap.set(outSlide, { zIndex: 5 })
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          gsap.set(outSlide, { opacity: 0, zIndex: 0 })
+          isAnimating.current = false
+        },
+      })
+
+      // Ken Burns on incoming image
+      tl.to(inImg, { scale: 1, x: 0, duration: 1.4, ease: "power2.out" }, 0)
+
+      // Fade out outgoing slide
+      tl.to(outSlide, { opacity: 0, duration: 0.65, ease: "power2.inOut" }, 0)
+
+      // Stagger text in
+      tl.fromTo(
+        [eyebrowRef.current, headingRef.current, btnRef.current],
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power3.out" },
+        0.3
+      )
+
+      // Restart auto-advance + progress
+      if (timerRef.current) clearTimeout(timerRef.current)
+      startProgress()
+      timerRef.current = setTimeout(() => {
+        goTo((next + 1) % total)
+      }, interval)
+    },
+    [interval, total, startProgress]
+  )
+
+  useGSAP(() => {
+    if (!containerRef.current) return;
+
+    const container = containerRef.current;
+    /* Scroll parallax with proper spacing handling */
+    ScrollTrigger.create({
+      trigger: container,
+      start: "top top",
+      end: "bottom top",
+      scrub: 1.2,
+      pin: true,
+      pinSpacing: false,
+      onLeaveBack: () => {
+        // Ensure no gap on scroll back
+        gsap.set(container, { clearProps: "all" })
+      }
+    });
+  } , {
+    scope : containerRef
+  })
+
+  /* ── Bootstrap (runs once, inside useGSAP) ── */
+  useGSAP(
+    () => {
+      // Hide all slides except first
+      slideRefs.current.forEach((s, i) => {
+        if (!s) return
+        gsap.set(s, { opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 5 : 0 })
+      })
+
+      // Prepare images
+      imgRefs.current.forEach((img, i) => {
+        if (!img) return
+        gsap.set(img, { scale: i === 0 ? 1 : 1.08, x: 0 })
+      })
+
+      // First-slide Ken Burns
+      gsap.to(imgRefs.current[0], {
+        scale: 1.06,
+        x: -6,
+        duration: interval / 1000,
+        ease: "none",
+      })
+
+      // Entrance text animation
+      gsap.fromTo(
+        [eyebrowRef.current, headingRef.current, btnRef.current],
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, stagger: 0.12, ease: "power3.out", delay: 0.2 }
+      )
+
+      startProgress()
+
+      timerRef.current = setTimeout(() => {
+        goTo(1 % total)
+      }, interval)
+    },
+    { scope: containerRef, dependencies: [] }
+    // empty deps → runs once; `goTo` is stable via useCallback + refs
+  )
+
+  /* ── Controls ──────────────────────────────── */
+  const handlePrev = () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    goTo((currentRef.current - 1 + total) % total)
+  }
+
+  const handleNext = () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    goTo((currentRef.current + 1) % total)
+  }
+
+  /* ── Render ────────────────────────────────── */
+  return (
+    <section
+      ref={containerRef}
+      className="relative w-full overflow-hidden select-none z-10"
+      style={{ height: "clamp(420px, 50vw, 880px)" }}
+      aria-label="Hero carousel"
+    >
+      {/* ── Slide layers ── */}
+      {slides.map((slide, i) => (
+        <div
+          key={i}
+          ref={(el) => { slideRefs.current[i] = el }}
+          className="absolute inset-0 will-change-[opacity]"
+          aria-hidden={i !== current}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            ref={(el) => { imgRefs.current[i] = el }}
+            src={slide.src}
+            alt={slide.alt}
+            className="absolute inset-0 w-full h-full object-cover will-change-transform"
+            draggable={false}
+          />
+        </div>
+      ))}
+
+      {/* ── Foreground text ── */}
+      <div className="absolute inset-0 z-10 flex flex-col justify-center max-w-7xl w-full px-8 sm:px-12 md:px-16 pointer-events-none">
+        <span
+          ref={eyebrowRef}
+          className="block mb-3 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-white"
+        >
+          {slides[current].eyebrow}
+        </span>
+
+        <h1
+          ref={headingRef}
+          className="font-black leading-none text-white mb-6 sm:mb-8"
+          style={{ fontSize: "clamp(2.8rem, 7vw, 6rem)", whiteSpace: "pre-line" }}
+        >
+          {slides[current].heading}
+        </h1>
+
+        <div ref={btnRef} className="pointer-events-auto">
+          <Link href={"/products"}>
+            <CustomButton
+              bgColor="#ffffff"
+              circleColor="#111111"
+              textColor="#111111"
+              textHoverColor="#ffffff"
+              circleSize={44}
+            >
+              {slides[current].buttonLabel}
+            </CustomButton>
+          </Link>
+        </div>
+      </div>
+
+      {/* ── Bottom controls bar ── */}
+      <div
+        className="absolute bottom-5 right-6 z-30 flex items-center gap-4"
+        role="group"
+        aria-label="Slide controls"
+      >
+        {/* Counter */}
+        <span className="text-white/90 text-sm font-medium tabular-nums">
+          {String(current + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+        </span>
+
+        {/* Progress track */}
+        <span
+          className="relative block overflow-hidden"
+          style={{ width: 64, height: 2, background: "rgba(255,255,255,0.28)" }}
+          aria-hidden="true"
+        >
+          <span
+            ref={progressRef}
+            className="absolute inset-0 bg-white"
+            style={{ transformOrigin: "left center", }}
+          />
+        </span>
+
+        {/* Prev */}
+        <button
+          onClick={handlePrev}
+          aria-label="Previous slide"
+          className="flex items-center justify-center rounded-full border border-white/50 text-white
+                     hover:bg-white/20 active:scale-95 transition-[background,transform] duration-150"
+          style={{ width: 36, height: 36 }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        {/* Next */}
+        <button
+          onClick={handleNext}
+          aria-label="Next slide"
+          className="flex items-center justify-center rounded-full border border-white/50 text-white
+                     hover:bg-white/20 active:scale-95 transition-[background,transform] duration-150"
+          style={{ width: 36, height: 36 }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </section>
+  )
+}

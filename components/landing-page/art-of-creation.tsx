@@ -2,9 +2,9 @@
 
 export default function ArtOfCreation() {
   return (
-    <section className="relative section">
+    <section className="section z-30 bg-background">
 
-      <div className="relative text-center section-header">
+      <div className="text-center section-header">
         <p className="p-inline">
           Personalize Your Style
         </p>

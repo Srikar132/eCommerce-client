@@ -158,7 +158,6 @@ export default function Layout({
           speed={200}
         />
 
-        <Suspense fallback={<PageLoadingSkeleton />}>
           <AuthProvider>
             <TanstackProvider>
               <SidebarProvider defaultOpen={false}>
@@ -175,7 +174,6 @@ export default function Layout({
             closeButton
             duration={4000}
           />
-        </Suspense>
 
         {/* Load Razorpay globally for payment gateway */}
         <Script

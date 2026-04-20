@@ -11,12 +11,12 @@ export default function HomeClient() {
 
 
   return (
-    <div className="w-full overflow-x-hidden overflow-y-hidden">
+    <div className="w-full bg-background min-h-screen relative">
       {/* 1. HERO - First Impression & Brand Introduction */}
       <HeroSection />
 
       {/* 2. SHOWCASE - Premium Products Display with Beautiful Background */}
-      <ShowCaseSection />
+      {/* <ShowCaseSection /> */}
 
       {/* 3. CATEGORIES - Browse Product Types (Shop by Category) */}
       <ShopByCategories />

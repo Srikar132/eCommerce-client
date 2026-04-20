@@ -3,10 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
 
-  // Enable component caching for better performance
-  cacheComponents: true,
-
-
   // Image optimization
   images: {
     remotePatterns: [

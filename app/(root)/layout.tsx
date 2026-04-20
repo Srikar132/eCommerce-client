@@ -23,23 +23,19 @@ export default async function RootLayout({
     <main className="w-full">
       <AdminStoreBanner userRole={userRole} />
 
-      <div className="top-0 z-50 w-full bg-primary text-primary-foreground text-xs flex items-center justify-center py-1 tracking-wider">
+      {/* <div className="top-0 z-50 w-full  text-xs flex items-center justify-center py-1 tracking-wider">
         <ShoppingCart className="mr-2" size={13} />
         PREPAID ORDERS ONLY!
-      </div>
+      </div> */}
 
 
       <div className="w-full">
         <AppSidebar />
 
-        <Suspense fallback={<NavbarSkeleton />}>
           <Navbar />
-        </Suspense>
 
         <main className="w-full relative">
-          <Suspense fallback={<PageLoadingSkeleton />}>
             {children}
-          </Suspense>
         </main>
 
         <Footer />
