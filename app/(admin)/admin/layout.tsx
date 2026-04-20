@@ -3,7 +3,7 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { redirect } from "next/navigation";
-import "@/styles/admin.css";
+import "@/styles/admin.css"
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     const session = await auth();
