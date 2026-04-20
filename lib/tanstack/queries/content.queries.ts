@@ -21,10 +21,15 @@ import {
     createSliderImage,
     updateSliderImage,
     deleteSliderImage,
+    getHeroSlides,
+    createHeroSlide,
+    updateHeroSlide,
+    deleteHeroSlide,
     type LandingCategory,
     type ShowcaseProduct,
     type LandingTestimonial,
     type SliderImage,
+    type HeroSlide,
 } from "@/lib/actions/content-actions";
 
 // ============================================================================
@@ -314,6 +319,81 @@ export const useDeleteSliderImage = () => {
 };
 
 // ============================================================================
+// HERO SLIDES
+// ============================================================================
+
+/**
+ * Fetch all hero slides
+ */
+export const useHeroSlides = () => {
+    return useQuery({
+        queryKey: queryKeys.content.hero(),
+        queryFn: getHeroSlides,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    });
+};
+
+/**
+ * Create a new hero slide
+ */
+export const useCreateHeroSlide = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: {
+            imageUrl: string;
+            altText: string;
+            eyebrow: string;
+            heading: string;
+            buttonLabel: string;
+            displayOrder?: number;
+        }) => createHeroSlide(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.content.hero() });
+        },
+    });
+};
+
+/**
+ * Update a hero slide
+ */
+export const useUpdateHeroSlide = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, data }: {
+            id: string;
+            data: Partial<{
+                imageUrl: string;
+                altText: string;
+                eyebrow: string;
+                heading: string;
+                buttonLabel: string;
+                displayOrder: number;
+                isActive: boolean;
+            }>;
+        }) => updateHeroSlide(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.content.hero() });
+        },
+    });
+};
+
+/**
+ * Delete a hero slide
+ */
+export const useDeleteHeroSlide = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => deleteHeroSlide(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.content.hero() });
+        },
+    });
+};
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -322,4 +402,5 @@ export type {
     ShowcaseProduct,
     LandingTestimonial,
     SliderImage,
+    HeroSlide,
 };

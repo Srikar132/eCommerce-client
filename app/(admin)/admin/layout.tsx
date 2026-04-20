@@ -17,9 +17,9 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
             <SidebarProvider defaultOpen={true}>
                 <div className="flex min-h-screen w-full">
                     <AdminSidebar />
-                    <SidebarInset className="flex-1 w-full">
+                    <SidebarInset className="flex-1 w-full min-w-0">
                         <AdminHeader />
-                        <main className="admin-scrollbar flex-1 overflow-y-auto bg-muted/10 p-4 md:p-6 lg:p-8 w-full">
+                        <main className="admin-scrollbar flex-1 bg-muted/10 p-4 md:p-6 lg:p-8 w-full min-w-0 overflow-x-hidden">
                             {children}
                         </main>
                     </SidebarInset>

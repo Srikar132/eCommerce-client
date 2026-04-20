@@ -1,7 +1,3 @@
-
-
-
-
 import CheckoutClient from "@/components/checkout/checkout-client";
 
 export const metadata = {

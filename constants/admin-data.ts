@@ -1,4 +1,11 @@
-import { ConciergeBell, LayoutDashboard, Package, Settings, ShoppingCart, Users } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  ShoppingBag, 
+  ReceiptText, 
+  UsersRound, 
+  MonitorPlay, 
+  Settings2 
+} from "lucide-react";
 
 export const routes = [
   {
@@ -8,27 +15,27 @@ export const routes = [
   },
   {
     label: "Products",
-    icon: Package,
+    icon: ShoppingBag,
     href: "/admin/products",
   },
   {
     label: "Orders",
-    icon: ShoppingCart,
+    icon: ReceiptText,
     href: "/admin/orders",
   },
   {
     label: "Users",
-    icon: Users,
+    icon: UsersRound,
     href: "/admin/users",
   },
   {
-    label: "Content",
-    icon: ConciergeBell,
+    label: "Landing Page",
+    icon: MonitorPlay,
     href: "/admin/content"
   },
   {
     label: "Settings",
-    icon: Settings,
+    icon: Settings2,
     href: "/admin/settings",
   },
 ];

@@ -48,148 +48,112 @@
 }
 
 :root {
-  --font-sans-fallback: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-heading-fallback: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans-fallback: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading-fallback: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --radius: 0.5rem;
 
-  /* Light theme - Soft Pastel Colors with Beautiful Blue */
-  --background: oklch(0.99 0.005 250);
-  --foreground: oklch(0.25 0.015 250);
+  /* Premium Light Theme - Lavender Accent (#BD9DEA) */
+  --background: oklch(0.98 0.005 300);
+  --foreground: oklch(0.15 0.02 280);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.015 250);
+  --card-foreground: oklch(0.15 0.02 280);
 
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.015 250);
+  --popover-foreground: oklch(0.15 0.02 280);
 
-  /* Primary - Beautiful Soft Blue (like a clear sky) */
-  --primary: oklch(0.62 0.14 235);
-  --primary-foreground: oklch(1 0 0);
+  /* Primary - Deep Purple/Slate */
+  --primary: oklch(0.35 0.12 300);
+  --primary-foreground: oklch(0.98 0 0);
 
-  /* Secondary - Soft Lavender */
-  --secondary: oklch(0.96 0.02 280);
-  --secondary-foreground: oklch(0.30 0.02 250);
+  /* Secondary - Light Lavender tint */
+  --secondary: oklch(0.95 0.025 300);
+  --secondary-foreground: oklch(0.25 0.08 300);
 
-  /* Muted - Soft Gray with hint of blue */
-  --muted: oklch(0.97 0.01 250);
-  --muted-foreground: oklch(0.50 0.02 250);
+  /* Muted - Softer lavender wash */
+  --muted: oklch(0.95 0.02 300);
+  --muted-foreground: oklch(0.45 0.03 280);
 
-  /* Accent - Soft Peach/Coral */
-  --accent: oklch(0.96 0.03 40);
-  --accent-foreground: oklch(0.30 0.02 250);
+  /* Accent - Visible lavender highlight */
+  --accent: oklch(0.93 0.04 300);
+  --accent-foreground: oklch(0.20 0.06 300);
 
-  /* Destructive - Soft Rose */
-  --destructive: oklch(0.65 0.18 15);
-  --destructive-foreground: oklch(1 0 0);
+  /* Destructive */
+  --destructive: oklch(0.55 0.18 25);
+  --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.93 0.01 250);
-  --input: oklch(0.95 0.01 250);
-  --ring: oklch(0.62 0.14 235);
+  --border: oklch(0.91 0.015 300);
+  --input: oklch(0.91 0.015 300);
+  --ring: oklch(0.55 0.12 300);
 
-  /* Chart colors - Pastel Rainbow */
-  --chart-1: oklch(0.70 0.12 160);
-  /* Soft Mint */
-  --chart-2: oklch(0.72 0.14 280);
-  /* Soft Purple */
-  --chart-3: oklch(0.68 0.16 30);
-  /* Soft Coral */
-  --chart-4: oklch(0.78 0.14 85);
-  /* Soft Yellow */
-  --chart-5: oklch(0.70 0.12 200);
-  /* Soft Cyan */
+  /* Chart colors */
+  --chart-1: oklch(0.55 0.15 300);
+  --chart-2: oklch(0.65 0.12 250);
+  --chart-3: oklch(0.75 0.10 200);
+  --chart-4: oklch(0.80 0.08 160);
+  --chart-5: oklch(0.85 0.06 80);
 
-  /* Sidebar - Clean white with soft blue accents */
+  /* Sidebar - Pure White surface */
   --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.40 0.02 250);
-  --sidebar-primary: oklch(0.62 0.14 235);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.96 0.02 235);
-  --sidebar-accent-foreground: oklch(0.30 0.02 250);
-  --sidebar-border: oklch(0.94 0.01 250);
-  --sidebar-ring: oklch(0.62 0.14 235);
+  --sidebar-foreground: oklch(0.30 0.03 280);
+  --sidebar-primary: oklch(0.35 0.12 300);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.93 0.04 300);
+  --sidebar-accent-foreground: oklch(0.20 0.06 300);
+  --sidebar-border: oklch(0.91 0.015 300);
+  --sidebar-ring: oklch(0.55 0.12 300);
 }
 
 .dark {
-  /* * Main Background: The very dark navy appearing behind the cards.
-   * Extracted approx: #0b1727
-   */
-  --background: #0b1727;
-  --foreground: #ffffff;
+  /* Premium Dark Theme - Deep Zinc */
+  --background: oklch(0.13 0.006 286);
+  --foreground: oklch(0.98 0 0);
 
-  /* * Cards: The slightly lighter blue-navy used for 'Total Earnings', 'Orders', etc.
-   * Extracted approx: #11243e
-   */
-  --card: #0C192C;
-  --card-foreground: #ffffff;
+  --card: oklch(0.17 0.006 286);
+  --card-foreground: oklch(0.98 0 0);
 
-  /* * Popovers/Dropdowns: Matching the card style or slightly elevated.
-   */
-  --popover: #1a2f4d;
-  --popover-foreground: #ffffff;
+  --popover: oklch(0.17 0.006 286);
+  --popover-foreground: oklch(0.98 0 0);
 
-  /* * Primary: The bright Blue used on the "Date" button and "Report" text.
-   * Extracted approx: #3b82f6 (Bright Royal Blue)
-   */
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
+  --primary: oklch(0.98 0 0);
+  --primary-foreground: oklch(0.13 0.006 286);
 
-  /* * Secondary: The Muted/Darker backgrounds (like the inactive sidebar items or input fields).
-   */
-  --secondary: #1f2937;
-  --secondary-foreground: #ffffff;
+  /* Secondary = zinc-800 */
+  --secondary: oklch(0.27 0.006 286);
+  --secondary-foreground: oklch(0.98 0 0);
 
-  /* * Muted: The greyish-blue text for labels like "Total Earnings" or "than last week".
-   * Extracted approx: #8c9097
-   */
-  --muted: #11243e;
-  --muted-foreground: #8c9097;
+  /* Muted = matches secondary */
+  --muted: oklch(0.27 0.006 286);
+  --muted-foreground: oklch(0.65 0.01 286);
 
-  /* * Accent: The purple used on the settings FAB (bottom right) and "Total Earnings" icon bg.
-   * Extracted approx: #7e68fa
-   */
-  --accent: #2b4c7e;
-  --accent-foreground: #e5edff;
+  /* Accent = matches secondary */
+  --accent: oklch(0.27 0.006 286);
+  --accent-foreground: oklch(0.98 0 0);
 
-  /* * Destructive: The Pinkish-Red used for the "Online Chat" button and negative trends.
-   * Extracted approx: #ff4d76
-   */
-  --destructive: #ff4d76;
-  --destructive-foreground: #ffffff;
+  --destructive: oklch(0.55 0.18 25);
+  --destructive-foreground: oklch(0.98 0 0);
 
-  /* Borders: Dark navy lines separating sections */
-  --border: #1f3655;
-  --input: #1f3655;
-  --ring: #3b82f6;
+  --border: oklch(0.30 0.006 286);
+  --input: oklch(0.30 0.006 286);
+  --ring: oklch(0.90 0.01 286);
 
-  /* * Chart Colors (The Wave Lines) 
-   * 1: Green/Teal line (Top) -> #00d284
-   * 2: Purple line (Middle) -> #7e68fa
-   * 3: Red/Pink line (Bottom) -> #ff4d76
-   * 4: Yellow/Orange (Gold icon bg) -> #f7b924
-   * 5: Cyan/Blue (Orders icon bg) -> #00c9db
-   */
-  --chart-1: #00d284;
-  --chart-2: #7e68fa;
-  --chart-3: #ff4d76;
-  --chart-4: #f7b924;
-  --chart-5: #00c9db;
+  /* Chart Colors */
+  --chart-1: oklch(0.70 0.15 250);
+  --chart-2: oklch(0.80 0.12 180);
+  --chart-3: oklch(0.85 0.10 140);
+  --chart-4: oklch(0.90 0.08 80);
+  --chart-5: oklch(0.95 0.05 40);
 
-  /* * Sidebar: The left navigation panel. 
-   * It appears slightly darker/denser than the main content area.
-   * Extracted approx: #0e1726
-   */
-  --sidebar: #0E203A;
-  --sidebar-foreground: #a0aec0;
-  /* Light grey text */
-  --sidebar-primary: #3b82f6;
-  /* Active item blue */
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #0E203A;
-  /* Hover state */
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #1f3655;
-  --sidebar-ring: #3b82f6;
+  /* Sidebar = slightly darker than card */
+  --sidebar: oklch(0.15 0.006 286);
+  --sidebar-foreground: oklch(0.70 0.01 286);
+  --sidebar-primary: oklch(0.98 0 0);
+  --sidebar-primary-foreground: oklch(0.13 0.006 286);
+  --sidebar-accent: oklch(0.27 0.006 286);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.30 0.006 286);
+  --sidebar-ring: oklch(0.90 0.01 286);
 }
 
 @layer base {
@@ -215,6 +179,18 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     width: 100%;
+  }
+
+  .admin-panel {
+    @apply flex min-h-screen w-full overflow-x-hidden;
+  }
+
+  [data-slot="sidebar-inset"] {
+    @apply min-w-0 flex-1 transition-[margin,width] duration-200 ease-linear;
+  }
+
+  main.admin-scrollbar {
+    @apply w-full max-w-full overflow-x-hidden min-w-0;
   }
 
   /* Admin panel uses professional sans-serif fonts only */
@@ -320,13 +296,17 @@
   }
 }
 
-/* Admin-specific styles for product management */
-.admin-page-title {
-  @apply text-2xl font-bold tracking-tight;
+/* ============================================================
+   Admin Design System - Reusable Utility Classes
+   ============================================================ */
+
+/* Page-level */
+.admin-page-title, .admin-titles {
+  @apply text-2xl md:text-3xl font-semibold tracking-tight;
 }
 
 .admin-page-description {
-  @apply text-muted-foreground;
+  @apply text-sm text-muted-foreground;
 }
 
 .admin-container {
@@ -334,20 +314,61 @@
 }
 
 .admin-page-header {
-  @apply flex items-start justify-between gap-4 mb-6 pb-4 border-b;
+  @apply flex items-start justify-between gap-4 mb-6 pb-4 border-b border-border;
 }
 
+/* Cards */
+.admin-card {
+  @apply bg-card border-border/40 shadow-lg rounded-2xl overflow-hidden;
+}
+
+.admin-card-header {
+  @apply bg-secondary/50 border-b border-border;
+}
+
+.admin-card-header-icon {
+  @apply flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10;
+}
+
+.admin-card [role="menuitem"]:hover {
+  @apply bg-accent text-accent-foreground;
+}
+
+/* Form Inputs */
+.admin-input {
+  @apply bg-secondary/30 h-11 border-border/60 focus-visible:ring-primary/30;
+}
+
+.admin-label {
+  @apply text-sm font-medium text-muted-foreground flex items-center gap-2;
+}
+
+/* Stat Cards */
+.admin-stat-card {
+  @apply flex items-center gap-3 p-4 rounded-xl border border-border/40 bg-card shadow-sm transition-shadow hover:shadow-md;
+}
+
+.admin-stat-icon {
+  @apply flex h-10 w-10 items-center justify-center rounded-xl;
+}
+
+/* Buttons */
 .admin-primary-button {
-  @apply bg-green-600 hover:bg-green-700 text-white transition-all duration-200 shadow-md hover:shadow-lg;
+  @apply bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 shadow-md hover:shadow-lg;
 }
 
 .admin-secondary-button {
-  @apply bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-all duration-200;
+  @apply bg-secondary hover:bg-secondary/80 text-secondary-foreground hover:text-foreground transition-all duration-200;
+}
+
+/* Settings-specific */
+.admin-settings-row {
+  @apply flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/50;
 }
 
 /* Table styles with proper padding */
 .admin-table-container {
-  @apply rounded-md border overflow-hidden;
+  @apply rounded-xl border border-border/40 bg-card overflow-hidden shadow-sm;
 }
 
 .admin-table {
@@ -355,15 +376,15 @@
 }
 
 .admin-table th {
-  @apply px-6 py-4 text-left font-medium text-muted-foreground bg-muted/30;
+  @apply px-6 py-4 text-left font-semibold text-xs uppercase tracking-wider text-muted-foreground bg-muted/30;
 }
 
 .admin-table td {
-  @apply px-6 py-4 border-t;
+  @apply px-6 py-4 border-t border-border/40 text-sm;
 }
 
 .admin-table tr:hover {
-  @apply bg-muted/20;
+  @apply bg-muted/20 transition-colors;
 }
 
 /* Data table specific styles */
@@ -372,7 +393,7 @@
 }
 
 [data-table-container] th {
-  @apply px-6 py-4 text-left font-medium text-sm text-muted-foreground bg-muted/30 border-b;
+  @apply px-6 py-4 text-left font-semibold text-xs uppercase tracking-wider text-muted-foreground bg-muted/30 border-b border-border/40;
 }
 
 [data-table-container] td {
@@ -380,43 +401,39 @@
 }
 
 [data-table-container] tbody tr:hover {
-  @apply bg-muted/20 transition-colors;
+  @apply bg-muted/30 transition-colors;
 }
 
 [data-table-container] tbody tr:last-child td {
   @apply border-b-0;
 }
 
-/* Admin action buttons with green theme */
+/* Admin action buttons with refined glow */
 .admin-glow-button {
-  @apply hover:bg-green-50 hover:text-green-700 transition-all duration-200;
+  @apply hover:bg-primary/5 hover:text-primary transition-all duration-200 border border-transparent hover:border-primary/20;
 }
 
 .dark .admin-glow-button {
-  @apply hover:bg-green-900/30 hover:text-green-400;
+  @apply hover:bg-primary/10 hover:text-primary-foreground hover:border-primary/30;
 }
 
 .admin-glow-button:hover {
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
-}
-
-.dark .admin-glow-button:hover {
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 0 0 2px var(--ring);
 }
 
 /* Admin header buttons - fix hover in dark mode */
 .admin-header [data-slot="button"][data-variant="outline"]:hover,
 .admin-header [data-slot="button"][data-variant="ghost"]:hover {
-  @apply dark:bg-white/10 dark:text-white;
+  @apply bg-accent text-accent-foreground;
 }
 
-/* Admin dropdown menu items in dark mode */
+/* Admin dropdown menu items and cards */
 .admin-card {
-  @apply dark:bg-[#1a2f4d] dark:border-[#1f3655];
+  @apply bg-card border-border/40 shadow-lg;
 }
 
 .admin-card [role="menuitem"]:hover {
-  @apply dark:bg-white/10;
+  @apply bg-accent text-accent-foreground;
 }
 
 /* Order Details Page Styles */

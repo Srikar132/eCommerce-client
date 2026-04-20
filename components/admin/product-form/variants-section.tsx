@@ -286,51 +286,217 @@ const DEFAULT_VARIANT = {
     additionalPrice: 0,
 };
 
+import { generateSKU } from "@/lib/utils";
+
+// ... (existing imports and colorPalette)
+
 export function VariantsSection({
     form,
     variantFields,
     disabled,
     onDeleteVariant,
 }: VariantsSectionProps) {
-    const { fields, append } = variantFields;
+    const { fields, append, remove } = variantFields;
+
+    // Group variants by color
+    const groupedVariants = fields.reduce((acc, field, index) => {
+        const color = form.watch(`variants.${index}.color`) || "No Color";
+        const colorHex = form.watch(`variants.${index}.colorHex`) || "";
+        
+        if (!acc[color]) {
+            acc[color] = {
+                color,
+                colorHex,
+                items: []
+            };
+        }
+        acc[color].items.push({ field, index });
+        return acc;
+    }, {} as Record<string, { color: string; colorHex: string; items: { field: any; index: number }[] }>);
+
+    const handleAddVariantForColor = (color: string, colorHex: string) => {
+        append({
+            ...DEFAULT_VARIANT,
+            color,
+            colorHex,
+            sku: generateSKU("VAR")
+        });
+    };
+
+    const handleAddNewColor = () => {
+        append({
+            ...DEFAULT_VARIANT,
+            sku: generateSKU("VAR")
+        });
+    };
 
     return (
-        <Card className="border-0 shadow-md">
-            <CardHeader className="pb-4">
+        <Card className="border-0 shadow-lg admin-card">
+            <CardHeader className="pb-4 border-b border-border/50">
                 <div className="flex items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                        <Layers className="h-4 w-4" />
-                        Variants
-                        <Badge variant="secondary" className="ml-2">
-                            {fields.length}
-                        </Badge>
-                    </CardTitle>
+                    <div>
+                        <CardTitle className="text-xl flex items-center gap-2">
+                            <Layers className="h-5 w-5 text-primary" />
+                            Product Variants
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            Group your variants by color and manage sizes/stock
+                        </p>
+                    </div>
                     <Button
                         type="button"
-                        variant="outline"
+                        variant="default"
                         size="sm"
-                        onClick={() => append(DEFAULT_VARIANT)}
+                        onClick={handleAddNewColor}
                         disabled={disabled}
+                        className="shadow-sm"
                     >
                         <Plus className="h-4 w-4 mr-1" />
-                        Add Variant
+                        Add New Color
                     </Button>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-                {fields.map((field, index) => (
-                    <VariantItem
-                        key={field.id}
-                        index={index}
-                        form={form}
-                        disabled={disabled}
-                        canDelete={fields.length > 1}
-                        onDelete={() => onDeleteVariant(index)}
-                    />
+            <CardContent className="pt-6 space-y-8">
+                {Object.values(groupedVariants).map((group, groupIndex) => (
+                    <div key={group.color} className="space-y-4 p-4 rounded-2xl bg-muted/20 border border-border/40">
+                        <div className="flex items-center justify-between border-b border-border/40 pb-3">
+                            <div className="flex items-center gap-3">
+                                {group.colorHex ? (
+                                    <div 
+                                        className="h-6 w-6 rounded-full border border-border shadow-sm" 
+                                        style={{ backgroundColor: group.colorHex }}
+                                    />
+                                ) : (
+                                    <Palette className="h-5 w-5 text-muted-foreground" />
+                                )}
+                                <h3 className="font-bold text-lg">{group.color}</h3>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleAddVariantForColor(group.color, group.colorHex)}
+                                disabled={disabled}
+                                className="h-8 text-xs font-semibold"
+                            >
+                                <Plus className="h-3 w-3 mr-1" />
+                                Add Size
+                            </Button>
+                        </div>
+
+                        <div className="space-y-3">
+                            {group.items.map(({ field, index }) => (
+                                <div key={field.id} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end p-3 rounded-xl bg-card border border-border/40 hover:shadow-md transition-shadow">
+                                    <FormField
+                                        control={form.control}
+                                        name={`variants.${index}.size`}
+                                        render={({ field }) => (
+                                            <FormItem className="md:col-span-1">
+                                                <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground">Size</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+                                                    <FormControl>
+                                                        <SelectTrigger className="h-10">
+                                                            <SelectValue placeholder="Size" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {commonSizes.map((size) => (
+                                                            <SelectItem key={size} value={size}>{size}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    {/* Only show color picker for the first item in the group */}
+                                    <FormField
+                                        control={form.control}
+                                        name={`variants.${index}.color`}
+                                        render={({ field }) => (
+                                            <FormItem className="md:col-span-1">
+                                                <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground">Color</FormLabel>
+                                                <FormControl>
+                                                    <ColorPicker
+                                                        value={field.value}
+                                                        colorHex={form.watch(`variants.${index}.colorHex`)}
+                                                        onChange={(name, hex) => {
+                                                            // Update all variants in this group to have the same color
+                                                            group.items.forEach(item => {
+                                                                form.setValue(`variants.${item.index}.color`, name);
+                                                                form.setValue(`variants.${item.index}.colorHex`, hex);
+                                                            });
+                                                        }}
+                                                        disabled={disabled}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name={`variants.${index}.stockQuantity`}
+                                        render={({ field }) => (
+                                            <FormItem className="md:col-span-1">
+                                                <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground">Stock</FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" className="h-10" {...field} disabled={disabled} />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name={`variants.${index}.additionalPrice`}
+                                        render={({ field }) => (
+                                            <FormItem className="md:col-span-1">
+                                                <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground">Extra Price</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <IndianRupee className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                        <Input type="number" className="h-10 pl-7" {...field} disabled={disabled} />
+                                                    </div>
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <div className="flex items-center gap-2 md:col-span-1">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => onDeleteVariant(index)}
+                                            disabled={disabled || fields.length === 1}
+                                            className="h-10 w-10 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                        >
+                                            <Trash2 className="h-5 w-5" />
+                                        </Button>
+                                    </div>
+                                    
+                                    <div className="md:col-span-5 flex items-center justify-between pt-1 text-[10px] text-muted-foreground font-mono">
+                                        <div className="flex items-center gap-2">
+                                            <span>SKU: {form.watch(`variants.${index}.sku`) || "Auto-generating..."}</span>
+                                            <Button 
+                                                type="button" 
+                                                variant="link" 
+                                                className="h-auto p-0 text-[10px]"
+                                                onClick={() => form.setValue(`variants.${index}.sku`, generateSKU("VAR"))}
+                                            >
+                                                Regenerate
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 ))}
 
                 {fields.length === 0 && (
-                    <EmptyVariantsState onAdd={() => append(DEFAULT_VARIANT)} disabled={disabled} />
+                    <EmptyVariantsState onAdd={handleAddNewColor} disabled={disabled} />
                 )}
             </CardContent>
         </Card>

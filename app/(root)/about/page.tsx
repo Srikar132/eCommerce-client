@@ -3,14 +3,20 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "About Us",
-    description: "Discover the story of Nala Armoire - where dreams are stitched alive and memories are tenderly woven together. Learn about our journey, craftsmanship, and passion for personalized fashion.",
+    title: "Our Story - Handcrafted Embroidered Clothing Brand",
+    description: "Discover the journey of Nala Armoire - a premium handcrafted embroidered clothing brand. Learn about our passion for family ethnic and western wear and our commitment to traditional craftsmanship.",
     openGraph: {
-        title: "About Nala Armoire - Our Story",
-        description: "Discover the story of Nala Armoire - where dreams are stitched alive and memories are tenderly woven together.",
+        title: "About Nala Armoire - Handcrafted Embroidered Excellence",
+        description: "Discover the story of Nala Armoire - where handcrafted embroidery meets contemporary fashion. Our journey of stitching dreams alive.",
         url: "https://nalaarmoire.com/about",
         images: ["/images/og-image.jpg"],
     },
+    keywords: [
+        "Nala Armoire story",
+        "handcrafted embroidered clothing brand",
+        "embroidery craftsmanship",
+        "about Nala Armoire",
+    ],
 };
 
 const About = () => {

@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { getAllCategories, getProductById } from "@/lib/actions/product-actions";
 import { useCreateProduct, useUpdateProduct } from "@/hooks/use-product-mutations";
 import { productFormSchema, ProductFormData } from "@/lib/validations";
+import { generateSKU } from "@/lib/utils";
 
 // Transform API product data to form data structure
 function transformProductToFormData(productData: Record<string, unknown>): ProductFormData {
@@ -61,7 +62,7 @@ const getDefaultFormValues = (): ProductFormData => ({
     name: "",
     description: "",
     basePrice: 0,
-    sku: "",
+    sku: generateSKU("PRD"),
     material: "",
     careInstructions: "",
     categoryId: "",
@@ -74,7 +75,7 @@ const getDefaultFormValues = (): ProductFormData => ({
         colorHex: "",
         stockQuantity: 0,
         additionalPrice: 0,
-        sku: ""
+        sku: generateSKU("VAR")
     }]
 });
 

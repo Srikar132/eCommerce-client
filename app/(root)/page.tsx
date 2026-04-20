@@ -2,8 +2,6 @@ import ArtOfCreation from "@/components/landing-page/art-of-creation";
 import Features from "@/components/landing-page/features";
 import HeroSection from "@/components/landing-page/hero-section";
 import ShopByCategories from "@/components/landing-page/main-categories";
-import OurPromise from "@/components/landing-page/our-promise";
-import ShowCaseSection from "@/components/landing-page/show-case-section";
 import SmoothSlider from "@/components/landing-page/smooth-slider-wrapper";
 import Testimonials from "@/components/landing-page/testimonials-wrapper";
 

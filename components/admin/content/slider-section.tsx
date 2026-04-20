@@ -238,39 +238,41 @@ export default function SliderSection() {
             </CardHeader>
             <CardContent className="pt-6">
                 {images.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border-2 border-dashed border-border/50 rounded-xl">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted/50 mb-4">
-                            <ImageIcon className="h-7 w-7 opacity-50" />
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border-2 border-dashed border-border/40 rounded-2xl bg-muted/20">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-card shadow-sm mb-4">
+                            <ImageIcon className="h-8 w-8 text-primary/40" />
                         </div>
-                        <p className="font-medium">No slider images yet</p>
-                        <p className="text-sm mt-1">Add images to display in the slider</p>
+                        <p className="font-semibold text-foreground">No slider images yet</p>
+                        <p className="text-sm mt-1 max-w-[200px] text-center">
+                            Upload images to display in the home page slider.
+                        </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         {images.map((img) => (
                             <div
                                 key={img.id}
-                                className={`relative group rounded-xl border overflow-hidden transition-all duration-200 ${img.isActive
-                                        ? "border-border/50 hover:border-border hover:shadow-md"
-                                        : "border-destructive/30 opacity-60"
+                                className={`relative group rounded-2xl border overflow-hidden transition-all duration-300 ${img.isActive
+                                        ? "border-border/50 hover:border-primary/30 hover:shadow-xl bg-card"
+                                        : "border-destructive/20 opacity-70 grayscale-[0.2] bg-muted/30"
                                     }`}
                             >
-                                <div className="aspect-3/4 relative bg-muted">
+                                <div className="aspect-3/4 relative bg-muted overflow-hidden">
                                     <Image
                                         src={img.imageUrl}
                                         alt={img.altText || "Slider image"}
                                         fill
-                                        className="object-cover"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
                                     />
                                     {/* Overlay on hover */}
-                                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+ 
                                     {/* Action buttons */}
-                                    <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0">
+                                    <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-[-5px] group-hover:translate-y-0">
                                         <Button
                                             size="icon"
                                             variant="secondary"
-                                            className="h-7 w-7 shadow-lg"
+                                            className="h-7 w-7 shadow-xl backdrop-blur-md bg-white/20 hover:bg-white/40 text-white border-0"
                                             onClick={() => handleOpenDialog(img)}
                                         >
                                             <Pencil className="h-3 w-3" />
@@ -278,36 +280,36 @@ export default function SliderSection() {
                                         <Button
                                             size="icon"
                                             variant="destructive"
-                                            className="h-7 w-7 shadow-lg"
+                                            className="h-7 w-7 shadow-xl"
                                             onClick={() => handleDeleteClick(img)}
                                         >
                                             <Trash2 className="h-3 w-3" />
                                         </Button>
                                     </div>
-
+ 
                                     {/* Order badge */}
                                     <div className="absolute top-2 left-2">
-                                        <Badge variant="secondary" className="bg-black/50 text-white border-0 backdrop-blur-sm text-xs px-1.5 py-0.5">
+                                        <Badge variant="secondary" className="bg-black/60 text-white border-0 backdrop-blur-md text-[10px] font-bold px-1.5 py-0.5 tracking-tighter">
                                             #{img.displayOrder}
                                         </Badge>
                                     </div>
-
+ 
                                     {/* Status indicator */}
                                     {!img.isActive && (
                                         <div className="absolute bottom-2 left-2">
-                                            <Badge variant="destructive" className="text-xs px-1.5 py-0.5">
+                                            <Badge variant="destructive" className="text-[10px] uppercase font-bold tracking-tight px-1.5 py-0">
                                                 Off
                                             </Badge>
                                         </div>
                                     )}
-
+ 
                                     {/* Toggle switch on hover */}
-                                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-md rounded-full p-1 border border-white/10">
                                         <Switch
                                             checked={img.isActive}
                                             onCheckedChange={() => handleToggleActive(img)}
                                             disabled={updateMutation.isPending}
-                                            className="data-[state=checked]:bg-green-500"
+                                            className="data-[state=checked]:bg-green-500 scale-75"
                                         />
                                     </div>
                                 </div>

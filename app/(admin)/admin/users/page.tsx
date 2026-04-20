@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useInfiniteUsers, useFlatUsers, useUserCount } from "@/lib/tanstack/queries/user.queries";
 import { buildUserParams } from "@/lib/searchparams";
-import { Users } from "lucide-react";
 import { columns } from "./columns";
 
 // Users content component
@@ -29,22 +28,15 @@ function UsersContent() {
     // Calculate total pages from totalCount
     const totalPages = Math.ceil(totalCount / (params.limit || 20));
 
-    console.log('Users data:', {
-        users,
-        params,
-        dataLength: users?.length,
-        totalElements: totalCount,
-        totalPages,
-        isLoading: infiniteQuery.isLoading,
-        isFetching: infiniteQuery.isFetching
-    });
 
     return (
         <div className="space-y-6 w-full max-w-full overflow-x-hidden">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    <h1 className="text-sm uppercase font-bold">User Management</h1>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 className="admin-page-title">User Management</h1>
+                    <p className="admin-page-description mt-1">
+                        View and manage customer accounts and permissions
+                    </p>
                 </div>
 
                 <Breadcrumb>
@@ -88,10 +80,7 @@ export default function UsersPage() {
             fallback={
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Users className="h-5 w-5" />
-                            <h1 className="text-sm uppercase font-bold">User Management</h1>
-                        </div>
+                        <h1 className="admin-page-title">User Management</h1>
                     </div>
                     <div className="flex items-center justify-center py-16">
                         <div className="flex items-center gap-2">

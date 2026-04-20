@@ -6,6 +6,7 @@ import { gsap } from "gsap"
 import CustomButton from "../ui/custom-button"
 import Link from "next/link";
 import { ScrollTrigger } from "gsap/all"
+import { useHeroSlides } from "@/lib/tanstack/queries/content.queries"
 
 /* ─────────────────────────────────────────────
    Types
@@ -29,10 +30,10 @@ interface HeroSectionProps {
 const DEFAULT_SLIDES: HeroSlide[] = [
   {
     src: "/images/home/hero-banner.png",
-    alt: "Campaign one",
+    alt: "Nala Armoire - Handcrafted Embroidered Clothing",
     eyebrow: "HANDCRAFTED ELEGANCE",
-    heading: "Wear the Art\n Of Embroidery",
-    buttonLabel: "Show Collection",
+    heading: "Handcrafted \n Embroidered Clothing",
+    buttonLabel: "Shop Collection",
   },
 ]
 
@@ -43,10 +44,24 @@ gsap.registerPlugin(ScrollTrigger)
    Component
 ───────────────────────────────────────────── */
 export default function HeroSection({
-  slides = DEFAULT_SLIDES,
+  slides: initialSlides,
   interval = 5000,
 }: HeroSectionProps) {
-  const total = slides.length;
+  const { data: dbSlides = [] } = useHeroSlides();
+  
+  // Use DB slides if available and active, otherwise use initialSlides (from props) or DEFAULT_SLIDES
+  const activeDbSlides = dbSlides.filter(s => s.isActive);
+  const slidesToUse = activeDbSlides.length > 0 
+    ? activeDbSlides.map(s => ({
+        src: s.imageUrl,
+        alt: s.altText,
+        eyebrow: s.eyebrow,
+        heading: s.heading,
+        buttonLabel: s.buttonLabel
+      }))
+    : (initialSlides || DEFAULT_SLIDES);
+
+  const total = slidesToUse.length;
 
   // ── State ──────────────────────────────────
   const [current, setCurrent] = useState(0)
@@ -211,7 +226,7 @@ export default function HeroSection({
       aria-label="Hero carousel"
     >
       {/* ── Slide layers ── */}
-      {slides.map((slide, i) => (
+      {slidesToUse.map((slide, i) => (
         <div
           key={i}
           ref={(el) => { slideRefs.current[i] = el }}
@@ -235,7 +250,7 @@ export default function HeroSection({
           ref={eyebrowRef}
           className="block mb-3 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-white"
         >
-          {slides[current].eyebrow}
+          {slidesToUse[current].eyebrow}
         </span>
 
         <h1
@@ -243,7 +258,7 @@ export default function HeroSection({
           className="font-black leading-none text-white mb-6 sm:mb-8"
           style={{ fontSize: "clamp(2.8rem, 7vw, 6rem)", whiteSpace: "pre-line" }}
         >
-          {slides[current].heading}
+          {slidesToUse[current].heading}
         </h1>
 
         <div ref={btnRef} className="pointer-events-auto">
@@ -255,7 +270,7 @@ export default function HeroSection({
               textHoverColor="#ffffff"
               circleSize={44}
             >
-              {slides[current].buttonLabel}
+              {slidesToUse[current].buttonLabel}
             </CustomButton>
           </Link>
         </div>

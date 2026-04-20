@@ -97,7 +97,7 @@ export const productVariantSchema = z.object({
     colorHex: z.string().optional(),
     stockQuantity: z.coerce.number().min(0, "Stock quantity must be non-negative"),
     additionalPrice: z.coerce.number().default(0),
-    sku: z.string().optional(), // SKU is auto-generated
+    sku: z.string().optional(),
 });
 
 // Main product form validation schema
@@ -112,9 +112,8 @@ export const productFormSchema = z.object({
         .transform(val => val ? sanitizeString(val) : val),
     basePrice: z.coerce.number().min(0, "Price must be greater than 0"),
     sku: z.string()
-        .min(3, "SKU must be at least 3 characters")
         .max(50, "SKU must be less than 50 characters")
-        .regex(/^[A-Za-z0-9-_]+$/, "SKU can only contain letters, numbers, hyphens, and underscores"),
+        .optional(),
     material: z.string()
         .max(100, "Material must be less than 100 characters")
         .optional()

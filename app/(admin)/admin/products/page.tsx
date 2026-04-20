@@ -69,22 +69,13 @@ function ProductsContent() {
     // Calculate total pages from totalCount
     const totalPages = Math.ceil(totalCount / (params.limit || 20));
 
-    console.log('Products data:', {
-        products,
-        params,
-        dataLength: products?.length,
-        totalElements: totalCount,
-        totalPages,
-        isLoading: infiniteQuery.isLoading,
-        isFetching: infiniteQuery.isFetching
-    });
 
     return (
         <div className="space-y-6 w-full max-w-full overflow-x-hidden">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="admin-page-title">Product Management</h1>
-                    <p className="admin-page-description">
+                    <p className="admin-page-description mt-1">
                         Manage your store&apos;s products, variants, and inventory
                     </p>
                 </div>
@@ -136,9 +127,7 @@ export default function ProductsPage() {
             fallback={
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-sm uppercase font-bold">Product LIST</h1>
-                        </div>
+                        <h1 className="admin-page-title">Product Management</h1>
                     </div>
                     <div className="flex items-center justify-center py-16">
                         <div className="flex items-center gap-2">

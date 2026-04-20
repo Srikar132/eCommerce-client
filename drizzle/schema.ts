@@ -555,3 +555,26 @@ export const sliderImages = pgTable(
         index("idx_slider_active").on(table.isActive),
     ]
 );
+
+// Hero Carousel Slides
+export const heroSlides = pgTable(
+    "hero_slides",
+    {
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => randomUUID()),
+        imageUrl: text("image_url").notNull(),
+        altText: text("alt_text").notNull(),
+        eyebrow: text("eyebrow").notNull(),
+        heading: text("heading").notNull(),
+        buttonLabel: text("button_label").notNull(),
+        displayOrder: integer("display_order").default(0).notNull(),
+        isActive: boolean("is_active").default(true).notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    },
+    (table) => [
+        index("idx_hero_order").on(table.displayOrder),
+        index("idx_hero_active").on(table.isActive),
+    ]
+);

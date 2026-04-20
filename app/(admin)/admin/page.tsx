@@ -109,7 +109,7 @@ export default async function AdminDashboard() {
         <div className="space-y-8">
             {/* Header */}
             <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-semibold tracking-tight">
+                <h1 className="admin-page-title">
                     {greeting}, {userName}
                 </h1>
                 <p className="text-base text-muted-foreground">

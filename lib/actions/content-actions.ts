@@ -6,6 +6,7 @@ import {
     showcaseProducts,
     landingTestimonials,
     sliderImages,
+    heroSlides,
 } from "@/drizzle/schema";
 import { eq, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -45,6 +46,17 @@ export interface SliderImage {
     id: string;
     imageUrl: string;
     altText: string | null;
+    displayOrder: number;
+    isActive: boolean;
+}
+
+export interface HeroSlide {
+    id: string;
+    imageUrl: string;
+    altText: string;
+    eyebrow: string;
+    heading: string;
+    buttonLabel: string;
     displayOrder: number;
     isActive: boolean;
 }
@@ -405,5 +417,100 @@ export async function deleteSliderImage(
     } catch (error) {
         console.error("Error deleting slider image:", error);
         return { success: false, message: "Failed to delete slider image" };
+    }
+}
+
+// ==================== HERO SLIDES ====================
+
+export async function getHeroSlides(): Promise<HeroSlide[]> {
+    try {
+        const slides = await db
+            .select()
+            .from(heroSlides)
+            .orderBy(asc(heroSlides.displayOrder));
+        return slides;
+    } catch (error) {
+        console.error("Error fetching hero slides:", error);
+        return [];
+    }
+}
+
+export async function getActiveHeroSlides(): Promise<HeroSlide[]> {
+    try {
+        const slides = await db
+            .select()
+            .from(heroSlides)
+            .where(eq(heroSlides.isActive, true))
+            .orderBy(asc(heroSlides.displayOrder));
+        return slides;
+    } catch (error) {
+        console.error("Error fetching active hero slides:", error);
+        return [];
+    }
+}
+
+export async function createHeroSlide(data: {
+    imageUrl: string;
+    altText: string;
+    eyebrow: string;
+    heading: string;
+    buttonLabel: string;
+    displayOrder?: number;
+}): Promise<{ success: boolean; message: string }> {
+    try {
+        await db.insert(heroSlides).values({
+            imageUrl: data.imageUrl,
+            altText: data.altText,
+            eyebrow: data.eyebrow,
+            heading: data.heading,
+            buttonLabel: data.buttonLabel,
+            displayOrder: data.displayOrder || 0,
+        });
+        revalidatePath("/");
+        revalidatePath("/admin/content");
+        return { success: true, message: "Hero slide created successfully" };
+    } catch (error) {
+        console.error("Error creating hero slide:", error);
+        return { success: false, message: "Failed to create hero slide" };
+    }
+}
+
+export async function updateHeroSlide(
+    id: string,
+    data: Partial<{
+        imageUrl: string;
+        altText: string;
+        eyebrow: string;
+        heading: string;
+        buttonLabel: string;
+        displayOrder: number;
+        isActive: boolean;
+    }>
+): Promise<{ success: boolean; message: string }> {
+    try {
+        await db
+            .update(heroSlides)
+            .set({ ...data, updatedAt: new Date() })
+            .where(eq(heroSlides.id, id));
+        revalidatePath("/");
+        revalidatePath("/admin/content");
+        return { success: true, message: "Hero slide updated successfully" };
+    } catch (error) {
+        console.error("Error updating hero slide:", error);
+        return { success: false, message: "Failed to update hero slide" };
+    }
+}
+
+export async function deleteHeroSlide(
+    id: string
+): Promise<{ success: boolean; message: string }> {
+    try {
+        await db.delete(heroSlides).where(eq(heroSlides.id, id));
+        revalidatePath("/");
+        revalidatePath("/admin/content");
+        return { success: true, message: "Hero slide deleted successfully" };
+    } catch (error) {
+        console.error("Error deleting hero slide:", error);
+        return { success: false, message: "Failed to delete hero slide" };
     }
 }

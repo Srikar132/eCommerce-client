@@ -1,13 +1,8 @@
 // app/layout.tsx
 import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
-import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
 import Footer from "@/components/Footer";
-import { Suspense } from "react";
-import { ShoppingCart } from "lucide-react";
-import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import { LoginDrawerProvider } from "@/components/ui/login-drawer";
-import { AdminStoreBanner } from "@/components/admin-store-banner";
 import { auth } from "@/auth";
 import { OrganizationSchema, WebsiteSchema } from "@/components/shared/structured-data";
 
@@ -21,7 +16,6 @@ export default async function RootLayout({
 
   return (
     <main className="w-full">
-      <AdminStoreBanner userRole={userRole} />
 
       {/* <div className="top-0 z-50 w-full  text-xs flex items-center justify-center py-1 tracking-wider">
         <ShoppingCart className="mr-2" size={13} />

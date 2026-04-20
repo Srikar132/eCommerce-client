@@ -16,26 +16,25 @@ import type { Metadata, Viewport } from "next";
 
 const SITE_URL = "https://nalaarmoire.com";
 const SITE_NAME = "Nala Armoire";
-const SITE_DESCRIPTION = "Where beauty roars in every stitch. Discover premium customizable fashion, handcrafted with love. Shop ethnic wear, contemporary styles, and personalized clothing at Nala Armoire.";
+const SITE_DESCRIPTION = "Nala Armoire - Premium Handcrafted Embroidered Clothing. Discover exquisite family ethnic wear, contemporary styles, and handcrafted embroidery outfits for men, women, and kids.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} - Premium Customizable Fashion`,
-    template: `%s`,
+    default: `${SITE_NAME} | Handcrafted Embroidered Clothing & Family Ethnic Wear`,
+    template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   keywords: [
     "Nala Armoire",
-    "customizable fashion",
-    "ethnic wear",
-    "handcrafted clothing",
-    "Indian fashion",
-    "personalized clothing",
-    "women's fashion",
-    "designer wear",
-    "boutique fashion",
-    "custom tailoring",
+    "handcrafted embroidered clothing",
+    "handcrafted embroidery outfits",
+    "embroidered clothing for men",
+    "embroidered clothing for women",
+    "embroidered clothing for kids",
+    "premium handcrafted fashion",
+    "customizable ethnic wear",
+    "Indian embroidered outfits",
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
@@ -50,20 +49,20 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} - Premium Customizable Fashion`,
+    title: `${SITE_NAME} | Handcrafted Embroidered Clothing`,
     description: SITE_DESCRIPTION,
     images: [
       {
         url: "/images/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} - Where beauty roars in every stitch`,
+        alt: `${SITE_NAME} - Handcrafted Embroidered Clothing`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} - Premium Customizable Fashion`,
+    title: `${SITE_NAME} | Handcrafted Embroidered Clothing`,
     description: SITE_DESCRIPTION,
     images: ["/images/og-image.jpg"],
     creator: "@nalaarmoire",
@@ -95,7 +94,6 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   verification: {
-    // Add your Google Search Console verification code here
     google: "google2475ce37e89fe0b0.html",
   },
 };

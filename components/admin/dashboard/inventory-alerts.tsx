@@ -19,26 +19,26 @@ function InventoryItem({ productId, name, sku, totalStock }: InventoryItemProps)
     const isOutOfStock = totalStock === 0;
 
     return (
-        <Link href={`/admin/products/${productId}`}>
-            <div className="flex items-center justify-between py-3 px-3 -mx-3 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer group">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${isOutOfStock ? 'bg-rose-500/10' : 'bg-amber-500/10'}`}>
+        <Link href={`/admin/products/${productId}`} className="block">
+            <div className="flex items-center justify-between py-3 px-3 -mx-3 rounded-xl hover:bg-accent/50 transition-all duration-200 cursor-pointer group">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${isOutOfStock ? 'bg-rose-500/10' : 'bg-amber-500/10'} shrink-0 group-hover:scale-105 transition-transform`}>
                         {isOutOfStock ? (
                             <Package className="h-5 w-5 text-rose-600" />
                         ) : (
                             <AlertTriangle className="h-5 w-5 text-amber-600" />
                         )}
                     </div>
-                    <div className="min-w-0">
-                        <p className="font-medium truncate max-w-45">{name}</p>
-                        <p className="text-sm text-muted-foreground font-mono">{sku}</p>
+                    <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-sm sm:text-base truncate">{name}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground font-mono font-medium">{sku}</p>
                     </div>
                 </div>
                 <Badge
                     variant="outline"
-                    className={`shrink-0 ml-2 text-sm ${isOutOfStock
-                        ? 'border-rose-500/50 text-rose-600 bg-rose-500/5'
-                        : 'border-amber-500/50 text-amber-600 bg-amber-500/5'
+                    className={`shrink-0 ml-2 text-[10px] sm:text-xs font-bold py-0.5 px-2 ${isOutOfStock
+                        ? 'border-rose-500/30 text-rose-600 bg-rose-500/5'
+                        : 'border-amber-500/30 text-amber-600 bg-amber-500/5'
                         }`}
                 >
                     {isOutOfStock ? 'Out of Stock' : `${totalStock} left`}

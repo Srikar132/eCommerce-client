@@ -9,7 +9,6 @@ import { useTheme } from "next-themes";
 import { logout } from "@/lib/actions/auth-actions";
 import { getStoreSettings, updateStoreSettings, type StoreSettingsData } from "@/lib/actions/store-settings-actions";
 import {
-    Settings2,
     Mail,
     Phone,
     Sun,
@@ -106,10 +105,7 @@ export default function SettingsPage() {
         <div className="w-full">
             {/* Header */}
             <div className="text-center mb-10">
-                <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary mb-4">
-                    <Settings2 className="h-7 w-7 text-white" />
-                </div>
-                <h1 className="admin-page-title text-3xl">Settings</h1>
+                <h1 className="admin-page-title">Settings</h1>
                 <p className="admin-page-description mt-2">
                     Manage store settings and preferences
                 </p>
@@ -119,10 +115,10 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
 
                 {/* Contact Information Card */}
-                <Card className="border-0 bg-card shadow-lg rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-primary/5 border-b border-border">
+                <Card className="admin-card">
+                    <CardHeader className="admin-card-header">
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                            <div className="admin-card-header-icon">
                                 <Phone className="h-5 w-5 text-primary" />
                             </div>
                             <div>
@@ -135,7 +131,7 @@ export default function SettingsPage() {
                     </CardHeader>
                     <CardContent className="pt-6 space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="flex items-center gap-2 text-muted-foreground">
+                            <Label htmlFor="email" className="admin-label">
                                 <Mail className="h-4 w-4" />
                                 Email Address
                             </Label>
@@ -144,12 +140,12 @@ export default function SettingsPage() {
                                 type="email"
                                 value={settings?.email || ""}
                                 onChange={(e) => updateField("email", e.target.value)}
-                                className="bg-muted/30 h-11"
+                                className="admin-input"
                                 placeholder="support@example.com"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="phone" className="flex items-center gap-2 text-muted-foreground">
+                            <Label htmlFor="phone" className="admin-label">
                                 <Phone className="h-4 w-4" />
                                 Phone Number
                             </Label>
@@ -157,7 +153,7 @@ export default function SettingsPage() {
                                 id="phone"
                                 value={settings?.phone || ""}
                                 onChange={(e) => updateField("phone", e.target.value)}
-                                className="bg-muted/30 h-11"
+                                className="admin-input"
                                 placeholder="+91 9876543210"
                             />
                         </div>
@@ -165,10 +161,10 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* Address Card */}
-                <Card className="border-0 bg-card shadow-lg rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-primary/5 border-b border-border">
+                <Card className="admin-card">
+                    <CardHeader className="admin-card-header">
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                            <div className="admin-card-header-icon">
                                 <MapPin className="h-5 w-5 text-primary" />
                             </div>
                             <div>
@@ -181,7 +177,7 @@ export default function SettingsPage() {
                     </CardHeader>
                     <CardContent className="pt-6 space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="address" className="flex items-center gap-2 text-muted-foreground">
+                            <Label htmlFor="address" className="admin-label">
                                 <Building2 className="h-4 w-4" />
                                 Street Address
                             </Label>
@@ -189,50 +185,50 @@ export default function SettingsPage() {
                                 id="address"
                                 value={settings?.address || ""}
                                 onChange={(e) => updateField("address", e.target.value)}
-                                className="bg-muted/30 h-11"
+                                className="admin-input"
                                 placeholder="123, Fashion Street"
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-2">
-                                <Label htmlFor="city" className="text-muted-foreground">City</Label>
+                                <Label htmlFor="city" className="admin-label">City</Label>
                                 <Input
                                     id="city"
                                     value={settings?.city || ""}
                                     onChange={(e) => updateField("city", e.target.value)}
-                                    className="bg-muted/30 h-11"
+                                    className="admin-input"
                                     placeholder="Mumbai"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="state" className="text-muted-foreground">State</Label>
+                                <Label htmlFor="state" className="admin-label">State</Label>
                                 <Input
                                     id="state"
                                     value={settings?.state || ""}
                                     onChange={(e) => updateField("state", e.target.value)}
-                                    className="bg-muted/30 h-11"
+                                    className="admin-input"
                                     placeholder="Maharashtra"
                                 />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-2">
-                                <Label htmlFor="pincode" className="text-muted-foreground">Pincode</Label>
+                                <Label htmlFor="pincode" className="admin-label">Pincode</Label>
                                 <Input
                                     id="pincode"
                                     value={settings?.pincode || ""}
                                     onChange={(e) => updateField("pincode", e.target.value)}
-                                    className="bg-muted/30 h-11"
+                                    className="admin-input"
                                     placeholder="400001"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="country" className="text-muted-foreground">Country</Label>
+                                <Label htmlFor="country" className="admin-label">Country</Label>
                                 <Input
                                     id="country"
                                     value={settings?.country || ""}
                                     onChange={(e) => updateField("country", e.target.value)}
-                                    className="bg-muted/30 h-11"
+                                    className="admin-input"
                                     placeholder="India"
                                 />
                             </div>
@@ -241,10 +237,10 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* Appearance Card */}
-                <Card className="border-0 bg-card shadow-lg rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-primary/5 border-b border-border">
+                <Card className="admin-card">
+                    <CardHeader className="admin-card-header">
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                            <div className="admin-card-header-icon">
                                 {mounted && theme === "dark" ? (
                                     <Moon className="h-5 w-5 text-primary" />
                                 ) : (
@@ -260,7 +256,7 @@ export default function SettingsPage() {
                         </div>
                     </CardHeader>
                     <CardContent className="pt-6">
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border">
+                        <div className="admin-settings-row">
                             <div>
                                 <p className="font-medium">Theme Mode</p>
                                 <p className="text-sm text-muted-foreground">
@@ -290,7 +286,7 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* Account Card */}
-                <Card className="border-0 bg-card shadow-lg rounded-2xl overflow-hidden">
+                <Card className="admin-card">
                     <CardHeader className="bg-destructive/5 border-b border-destructive/20">
                         <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
@@ -335,14 +331,14 @@ export default function SettingsPage() {
                 </Card>
             </div>
 
-            {/* Save Button - Fixed at bottom */}
+            {/* Save Button */}
             <div className="max-w-6xl mx-auto mt-8">
                 <div className="flex justify-center">
                     <Button
                         onClick={handleSave}
                         disabled={isSaving}
                         size="lg"
-                        className="gap-2 px-8 shadow-lg"
+                        className="admin-primary-button gap-2 px-8"
                     >
                         {isSaving ? (
                             <>

@@ -20,7 +20,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="admin-glow-button">
+      <Button variant="ghost" size="icon" className="admin-glow-button cursor-pointer">
         <Sun className="h-5 w-5" />
       </Button>
     );
