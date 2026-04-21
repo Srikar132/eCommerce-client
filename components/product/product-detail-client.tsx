@@ -1,23 +1,17 @@
 "use client";
 
 import { useCallback } from "react";
-import { useSession } from "next-auth/react";
-
-import ProductImageGallery from "@/components/product/product-image-gallery";
-import ProductActions from "@/components/product/product-actions";
-import ProductAccordion from "@/components/product/product-accordian";
-import VariantSelector from "@/components/product/variant-selector";
-import PriceDisplay from "@/components/product/price-display";
-import StockStatus from "@/components/product/stock-status";
-import VariantAvailabilityInfo from "@/components/product/variant-availability-info";
-import { toast } from "sonner";
-
-import { Separator } from "@/components/ui/separator";
+import { ShieldCheck, Truck, RotateCcw, Check } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import ProductActions from "./product-actions";
 import { useVariantSelection } from "@/hooks/use-variant-selector";
 import { Product, ProductVariant } from "@/types/product";
-import { useAddToCart, useIsInCart } from "@/lib/tanstack/queries/cart.queries";
-import { useIsInWishlist, useToggleWishlist } from "@/lib/tanstack/queries/wishlist.queries";
-import { showLoginDrawer } from "../ui/login-drawer";
+import { useCartContext } from "@/context/cart-context";
+import ProductAccordion from "./product-accordian";
+import ProductImageGallery from "./product-image-gallery";
+import ColorSelector from "./color-selector";
+import SizeSelector from "./size-selector";
+import BreadcrumbNavigation from "../breadcrumb-navigation";
 
 interface ProductDetailClientProps {
     product: Product;
@@ -25,10 +19,6 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product, variants }: ProductDetailClientProps) {
-
-    const { status } = useSession();
-
-    // Use the variant selection hook for all variant logic
     const {
         selectedColor,
         selectedSize,
@@ -37,172 +27,167 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
         sizes,
         finalPrice,
         setColor,
-        setSize
+        setSize,
     } = useVariantSelection({
         product,
         variants: variants || []
     });
 
-    const addToCart = useAddToCart();
-    const toggleWishlist = useToggleWishlist();
-    const isInCart = useIsInCart({ productId: product.id, productVariantId: selectedVariant?.id ?? '', enabled: status === "authenticated" });
-    const isInWishlist = useIsInWishlist({ productId: product.id, enabled: status === "authenticated" });
+    const { addItem, isFetching } = useCartContext();
 
-    // Handle Add to Cart with authentication check
-    const handleAddToCart = useCallback(() => {
-        // Check authentication
-        if (status !== "authenticated") {
-            showLoginDrawer({
-                description: "Please login to add items to your cart.",
-            });
-            return;
-        }
-
-        // Check if variant is selected
-        if (!selectedVariant) {
-            toast.error("Please select a variant");
-            return;
-        }
-
-        // Add to cart
-        addToCart.mutate({
+    const handleAddToCart = useCallback((quantity: number) => {
+        if (!selectedVariant) return;
+        addItem({
             productId: product.id,
-            productVariantId: selectedVariant.id
+            productVariantId: selectedVariant.id,
+            quantity: quantity,
+            unitPrice: finalPrice,
+            product: {
+                id: product.id,
+                name: product.name,
+                slug: product.slug,
+                sku: product.sku || '',
+                primaryImageUrl: product.images?.[0]?.imageUrl || ''
+            },
+            variant: {
+                id: selectedVariant.id,
+                size: selectedVariant.size || '',
+                color: selectedVariant.color || '',
+                sku: selectedVariant.sku || ''
+            }
         });
-    }, [status, selectedVariant, product.id, addToCart]);
+    }, [selectedVariant, finalPrice, addItem, product]);
 
-    // Handle Toggle Wishlist with authentication check
-    const handleToggleWishlist = useCallback(() => {
-        // Check authentication
-        if (status !== "authenticated") {
-            showLoginDrawer();
-            return;
-        }
-
-        // Toggle wishlist
-        toggleWishlist.mutate(product.id);
-    }, [status, product.id, toggleWishlist]);
+    const handleBuyNow = useCallback(async (quantity: number) => {
+        if (!selectedVariant) return;
+        await addItem({
+            productId: product.id,
+            productVariantId: selectedVariant.id,
+            quantity: quantity,
+            unitPrice: finalPrice,
+            product: {
+                id: product.id,
+                name: product.name,
+                slug: product.slug,
+                sku: product.sku || '',
+                primaryImageUrl: product.images?.[0]?.imageUrl || ''
+            },
+            variant: {
+                id: selectedVariant.id,
+                size: selectedVariant.size || '',
+                color: selectedVariant.color || '',
+                sku: selectedVariant.sku || ''
+            }
+        });
+        window.location.href = "/checkout";
+    }, [selectedVariant, finalPrice, addItem, product]);
 
     return (
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-12">
-
-            {/* Image Gallery Section */}
-            <div className="order-1 w-full">
-                <div className="overflow-hidden">
-                    <ProductImageGallery
-                        images={product.images}
-                        productName={product.name}
-                        productSlug={product.slug}
-                        onToggleWishlist={handleToggleWishlist}
-                        isInWishlist={isInWishlist}
-                        isTogglingWishlist={toggleWishlist.isPending}
-                    />
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 max-w-[1440px] mx-auto">
+            {/* ── LEFT: IMAGE GALLERY (7/12 cols) ── */}
+            <div className="lg:col-span-7">
+                <ProductImageGallery
+                    images={product.images}
+                    productName={product.name}
+                    productSlug={product.slug}
+                />
             </div>
 
-            {/* Product Details Section */}
-            <div className="order-2 w-full relative">
-                <div className="space-y-3 sm:space-y-4 pb-20 sm:pb-24 lg:pb-0">
-
-                    {/* Product Info & Price */}
-                    <div>
-                        <div className="space-y-2">
-                            <h1 className="text-2xl sm:text-3xl text-foreground tracking-tight">
+            {/* ── RIGHT: PRODUCT INFO (5/12 cols) ── */}
+            <div className="lg:col-span-5 relative">
+                <div className="lg:sticky lg:top-24 flex flex-col pt-0 lg:pt-4">
+                    {/* Breadcrumbs */}
+                    <div className="mb-6 hidden lg:block">
+                        <BreadcrumbNavigation />
+                    </div>
+                    <div className="space-y-8">
+                        {/* Badge & Title */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <span className="px-4 py-1.5 rounded-full bg-[#5FB281] text-white text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                    New Arrival
+                                </span>
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1]">
                                 {product.name}
                             </h1>
-
-                            {/* description */}
-                            <p className="text-sm text-muted-foreground line-clamp-3">
-                                {product.description || 'No description available'}
+                            <p className="text-3xl font-bold text-foreground">
+                                {formatCurrency(finalPrice)}
                             </p>
                         </div>
 
-                        <div className="mt-3">
-                            <PriceDisplay
-                                basePrice={product.basePrice}
-                                finalPrice={finalPrice}
-                                selectedVariant={selectedVariant}
-                                selectedColor={selectedColor}
-                                currency="INR"
-                                showBreakdown={true}
-                            />
+                        {/* Description */}
+                        <p className="text-muted-foreground leading-relaxed text-lg max-w-xl">
+                            {product.description || "Crafted from premium materials, this piece embodies understated elegance with its timeless design and exceptional comfort."}
+                        </p>
+
+                        {/* Variant Selectors */}
+                        <div className="space-y-10">
+                            {/* Color Selector Component */}
+                            {colors.length > 0 && (
+                                <ColorSelector
+                                    colors={colors}
+                                    selectedColor={selectedColor}
+                                    onColorChange={setColor}
+                                />
+                            )}
+
+                            {/* Size Selector Component */}
+                            {sizes.length > 0 && (
+                                <SizeSelector
+                                    sizes={sizes.map(s => ({
+                                        size: s.size,
+                                        variantId: s.variantId,
+                                        inStock: s.inStock,
+                                        priceModifier: s.priceModifier
+                                    }))}
+                                    selectedSize={selectedSize}
+                                    onSizeChange={setSize}
+                                />
+                            )}
                         </div>
 
                         {/* Stock Status */}
-                        {selectedVariant && (
-                            <div className="mt-2">
-                                <StockStatus
-                                    stockQuantity={selectedVariant.stockQuantity}
-                                    showIcon={true}
-                                />
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2 text-[#5FB281]">
+                            <Check size={18} strokeWidth={2.5} />
+                            <span className="text-sm font-semibold">In stock and ready to ship</span>
+                        </div>
+
+                        {/* Product Actions */}
+                        <div className="pt-4 max-w-md">
+                            <ProductActions
+                                onAddToCart={handleAddToCart}
+                                onBuyNow={handleBuyNow}
+                                disabled={!selectedVariant || isFetching}
+                                isAddingToCart={isFetching}
+                            />
+                        </div>
+
+                        {/* Accordion */}
+                        <div className="pt-4 border-t border-foreground/5">
+                            <ProductAccordion
+                                description={product.description}
+                                washCare={product.careInstructions}
+                                material={product.material}
+                            />
+                        </div>
+
+                        {/* Trust Badges */}
+                        <div className="grid grid-cols-3 gap-8 pt-8 border-t border-foreground/5">
+                            {[
+                                { Icon: ShieldCheck, label: "Artisan Quality" },
+                                { Icon: Truck, label: "Express Ship" },
+                                { Icon: RotateCcw, label: "Easy Returns" },
+                            ].map(({ Icon, label }) => (
+                                <div key={label} className="flex flex-col items-center text-center space-y-3">
+                                    <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center">
+                                        <Icon className="w-6 h-6 text-foreground" strokeWidth={1} />
+                                    </div>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-
-                    <Separator className="bg-border/40" />
-
-                    {/* Variant Selector */}
-                    <VariantSelector
-                        colors={colors}
-                        sizes={sizes}
-                        selectedColor={selectedColor}
-                        selectedSize={selectedSize}
-                        onColorChange={setColor}
-                        onSizeChange={setSize}
-                    />
-
-                    {/* Variant Availability Info */}
-                    {variants && (
-                        <VariantAvailabilityInfo
-                            variants={variants}
-                            selectedColor={selectedColor}
-                            selectedSize={selectedSize}
-                        />
-                    )}
-
-                    <Separator className="bg-border/40" />
-
-                    {/* Accordion Section - Above actions on mobile */}
-                    <div className="lg:hidden">
-                        <ProductAccordion
-                            washCare={product.careInstructions || 'Standard care instructions apply'}
-                        />
-                    </div>
-
-                    {/* Product Actions - Static on Desktop */}
-                    <div className="hidden lg:block pt-2">
-                        <ProductActions
-                            onAddToCart={handleAddToCart}
-                            isInCart={isInCart}
-                            disabled={!selectedVariant || addToCart.isPending || toggleWishlist.isPending}
-                            isAddingToCart={addToCart.isPending}
-                            onToggleWishlist={handleToggleWishlist}
-                            isInWishlist={isInWishlist}
-                            isTogglingWishlist={toggleWishlist.isPending}
-                        />
-                    </div>
-
-                    {/* Accordion Section - Below actions on desktop */}
-                    <div className="hidden lg:block">
-                        <Separator className="bg-border/40 mb-2" />
-                        <ProductAccordion
-                            washCare={product.careInstructions || 'Standard care instructions apply'}
-                        />
-                    </div>
-                </div>
-
-                {/* Product Actions - Fixed at Bottom on Mobile */}
-                <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background/98 backdrop-blur-md border-t border-border/50 p-3 sm:p-4 shadow-2xl z-50">
-                    <ProductActions
-                        onAddToCart={handleAddToCart}
-                        isInCart={isInCart}
-                        disabled={!selectedVariant || addToCart.isPending || toggleWishlist.isPending}
-                        isAddingToCart={addToCart.isPending}
-                        onToggleWishlist={handleToggleWishlist}
-                        isInWishlist={isInWishlist}
-                        isTogglingWishlist={toggleWishlist.isPending}
-                    />
                 </div>
             </div>
         </div>

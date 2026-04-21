@@ -1,12 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Order, OrderStatus, PaymentStatus } from "@/types/orders";
-import { Package, Calendar, CreditCard, ChevronRight, Clock, AlertCircle } from "lucide-react";
+import { Package, Calendar, CreditCard, Clock, AlertCircle } from "lucide-react";
 import { canCancelOrder } from "@/lib/utils/order-utils";
 import CancelOrderDialog from "@/components/order/cancel-order-dialog";
+import { cn } from "@/lib/utils";
+import CustomButton from "@/components/ui/custom-button";
 
 interface OrderCardProps {
     order: Order;
@@ -56,168 +58,138 @@ const formatStatus = (status: string) => {
     return status.replace(/_/g, " ");
 };
 
+
 export default function OrderCard({ order }: OrderCardProps) {
     const firstItem = order.items[0];
-    const remainingItems = order.items.length - 1;
+    // const remainingItems = order.items.length - 1;
 
     // Check if order can be cancelled
     const { canCancel, daysRemaining } = canCancelOrder(order);
 
     return (
-        <Card className="overflow-hidden hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3 bg-muted/30">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white overflow-hidden group">
+            <CardHeader className="pb-3 bg-muted/20 border-b border-muted-foreground/5 p-5 md:px-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                            <Package className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-semibold text-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                                <Package className="h-4 w-4 text-accent" />
+                            </div>
+                            <span className="h4 !text-base">
                                 Order #{order.orderNumber}
                             </span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Calendar className="h-3 w-3" />
+                        <div className="flex items-center gap-2 p-xs text-muted-foreground ml-11">
+                            <Calendar className="h-3.5 w-3.5" />
                             {formatDate(order.createdAt)}
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 sm:ml-auto">
                         <Badge
-                            variant="outline"
-                            className={statusColors[order.status]}
+                            variant="secondary"
+                            className={cn("px-4 py-1 rounded-full font-bold text-[9px] uppercase tracking-wider bg-white", statusColors[order.status])}
                         >
                             {formatStatus(order.status)}
                         </Badge>
                         <Badge
-                            variant="outline"
-                            className={paymentStatusColors[order.paymentStatus]}
+                            variant="secondary"
+                            className={cn("px-4 py-1 rounded-full font-bold text-[9px] uppercase tracking-wider bg-white", paymentStatusColors[order.paymentStatus])}
                         >
-                            <CreditCard className="h-3 w-3 mr-1" />
+                            <CreditCard className="h-3 w-3 mr-1.5" />
                             {formatPaymentStatus(order.paymentStatus)}
                         </Badge>
                     </div>
                 </div>
             </CardHeader>
 
-            <CardContent className="pt-4 pb-3">
+            <CardContent className="p-5 md:p-8 pt-5">
                 {/* First Item with Image */}
-                <div className="flex gap-3 mb-3">
+                <div className="flex gap-5 mb-4">
                     {firstItem.imageUrl && (
-                        <div className="relative h-20 w-20 shrink-0 rounded-md overflow-hidden border">
+                        <div className="relative h-20 w-20 md:h-28 md:w-28 shrink-0 rounded-2xl overflow-hidden shadow-sm">
                             <Image
                                 src={firstItem.imageUrl}
                                 alt={firstItem.productName}
                                 fill
-                                className="object-cover"
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
                             />
+                            <div className="absolute inset-0 ring-1 ring-black/5 ring-inset rounded-2xl" />
                         </div>
                     )}
 
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
                         <Link
                             href={`/products/${firstItem.productSlug}`}
-                            className="font-medium text-sm hover:underline line-clamp-2"
+                            className="h4 !text-sm md:!text-base hover:text-accent transition-colors line-clamp-2 mb-1"
                         >
                             {firstItem.productName}
                         </Link>
-                        <div className="flex gap-2 mt-1 text-xs text-muted-foreground">
-                            <span className="inline-flex items-center gap-1">
-                                <span className="font-medium">Size:</span>
-                                {firstItem.size}
+                        <div className="flex flex-wrap gap-2 p-xs text-muted-foreground">
+                            <span className="flex items-center gap-1 bg-muted/50 px-2 py-0.5 rounded-full text-[9px]">
+                                <span className="font-bold uppercase opacity-70">Size:</span>
+                                <span className="font-medium">{firstItem.size}</span>
                             </span>
-                            <span>•</span>
-                            <span className="inline-flex items-center gap-1">
-                                <span className="font-medium">Color:</span>
-                                {firstItem.color}
-                            </span>
-                            <span>•</span>
-                            <span className="inline-flex items-center gap-1">
-                                <span className="font-medium">Qty:</span>
-                                {firstItem.quantity}
+                            <span className="flex items-center gap-1 bg-muted/50 px-2 py-0.5 rounded-full text-[9px]">
+                                <span className="font-bold uppercase opacity-70">Qty:</span>
+                                <span className="font-medium">{firstItem.quantity}</span>
                             </span>
                         </div>
-                        <div className="mt-1 text-sm font-semibold">
+                        <div className="mt-2 text-base font-bold">
                             ₹{firstItem.totalPrice.toFixed(2)}
                         </div>
                     </div>
                 </div>
 
-                {/* Additional Items Count */}
-                {remainingItems > 0 && (
-                    <div className="text-xs text-muted-foreground pl-22">
-                        + {remainingItems} more {remainingItems === 1 ? "item" : "items"}
-                    </div>
-                )}
+                <Separator className="my-4 bg-muted-foreground/10" />
 
-                <Separator className="my-3" />
-
-                {/* Order Summary */}
-                <div className="space-y-1.5 text-sm">
-                    <div className="flex justify-between">
-                        <span className="text-muted-foreground">Subtotal</span>
-                        <span>₹{order.subtotal.toFixed(2)}</span>
+                {/* Order Summary & Actions */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div className="space-y-1">
+                        <p className="p-xs text-muted-foreground font-bold uppercase tracking-widest opacity-60">Total Amount</p>
+                        <p className="text-xl md:text-2xl font-bold">₹{order.totalAmount.toFixed(2)}</p>
                     </div>
-                    {order.taxAmount > 0 && (
-                        <div className="flex justify-between text-xs">
-                            <span className="text-muted-foreground">Tax (GST)</span>
-                            <span>₹{order.taxAmount.toFixed(2)}</span>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                        {canCancel && daysRemaining !== null && (
+                            <div className="flex items-center gap-2 p-xs text-orange-600 font-medium mr-1">
+                                <Clock className="h-3.5 w-3.5" />
+                                <span>
+                                    {daysRemaining === 0
+                                        ? "Last day"
+                                        : `${daysRemaining}d left`}
+                                </span>
+                            </div>
+                        )}
+
+                        <div className="flex items-center gap-3">
+                            {canCancel && <CancelOrderDialog orderNumber={order.orderNumber} order={order} />}
+
+                            <CustomButton
+                                href={`/orders/${order.orderNumber}`}
+                                circleSize={30}
+                                circleColor="#111111"
+                                textColor="#111111"
+                                textHoverColor="#ffffff"
+                                className="!px-4 !py-1 text-[10px] uppercase tracking-widest shadow-sm"
+                            >
+                                View Details
+                            </CustomButton>
                         </div>
-                    )}
-                    {order.shippingCost > 0 && (
-                        <div className="flex justify-between text-xs">
-                            <span className="text-muted-foreground">Shipping</span>
-                            <span>₹{order.shippingCost.toFixed(2)}</span>
-                        </div>
-                    )}
-                    {order.discountAmount > 0 && (
-                        <div className="flex justify-between text-xs text-green-600">
-                            <span>Discount</span>
-                            <span>-₹{order.discountAmount.toFixed(2)}</span>
-                        </div>
-                    )}
-                    <Separator className="my-2" />
-                    <div className="flex justify-between font-semibold text-base">
-                        <span>Total Amount</span>
-                        <span>₹{order.totalAmount.toFixed(2)}</span>
                     </div>
                 </div>
 
-                {/* Cancellation Info */}
-                {canCancel && daysRemaining !== null && (
-                    <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-950 rounded-md border border-amber-200 dark:border-amber-800">
-                        <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 text-xs text-amber-700 dark:text-amber-300">
-                                <Clock className="h-3 w-3" />
-                                <span>
-                                    {daysRemaining === 0
-                                        ? "Last day to cancel this order"
-                                        : `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""} left to cancel`}
-                                </span>
-                            </div>
-                            <CancelOrderDialog orderNumber={order.orderNumber} order={order} />
-                        </div>
-                    </div>
-                )}
-
                 {/* Refund Requested Notice */}
                 {order.paymentStatus === "REFUND_REQUESTED" && (
-                    <div className="mt-3 p-2 bg-orange-50 dark:bg-orange-950 rounded-md border border-orange-200 dark:border-orange-800">
-                        <div className="flex items-center gap-2 text-xs text-orange-700 dark:text-orange-300">
-                            <AlertCircle className="h-3 w-3" />
-                            <span>Refund is being processed. It may take 5-7 business days.</span>
+                    <div className="mt-4 p-3 bg-orange-50 rounded-2xl border border-orange-100 flex items-center gap-3">
+                        <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
+                            <AlertCircle className="h-3.5 w-3.5 text-orange-500" />
                         </div>
+                        <span className="p-xs text-orange-800 font-medium leading-tight">Refund is being processed. It may take 5-7 business days.</span>
                     </div>
                 )}
             </CardContent>
-
-            <CardFooter className="bg-muted/20 pt-3 pb-3">
-                <Link
-                    href={`/orders/${order.orderNumber}`}
-                    className="flex items-center justify-center gap-2 w-full text-sm font-medium hover:underline"
-                >
-                    View Order Details
-                    <ChevronRight className="h-4 w-4" />
-                </Link>
-            </CardFooter>
         </Card>
     );
 }
+

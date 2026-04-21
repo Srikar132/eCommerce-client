@@ -1,15 +1,17 @@
 // app/layout.tsx
 import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
-import NavbarSkeleton from "@/components/navbar/navbar-skeleton";
 import Footer from "@/components/Footer";
-import { Suspense } from "react";
-import { ShoppingCart } from "lucide-react";
-import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
-import { LoginDrawerProvider } from "@/components/ui/login-drawer";
+
 import { AdminStoreBanner } from "@/components/admin-store-banner";
 import { auth } from "@/auth";
 import { OrganizationSchema, WebsiteSchema } from "@/components/shared/structured-data";
+import { CartProvider } from "@/context/cart-context";
+import { CartSidebar } from "@/components/cart/cart-sidebar";
+import { ProductOptionsProvider } from "@/context/product-options-context";
+import { ProductOptionsSidebar } from "@/components/product/product-options-sidebar";
+import { getStoreSettings } from "@/lib/actions/store-settings-actions";
+import { FloatingChat } from "@/components/chat/floating-chat";
 
 export default async function RootLayout({
   children,
@@ -18,34 +20,37 @@ export default async function RootLayout({
 }) {
   const session = await auth();
   const userRole = session?.user?.role;
+  const storeSettings = await getStoreSettings();
 
   return (
-    <main className="w-full">
-      <AdminStoreBanner userRole={userRole} />
+    <ProductOptionsProvider>
+      <CartProvider>
+        <main className="w-full">
+          <AdminStoreBanner userRole={userRole} />
 
-      {/* <div className="top-0 z-50 w-full  text-xs flex items-center justify-center py-1 tracking-wider">
-        <ShoppingCart className="mr-2" size={13} />
-        PREPAID ORDERS ONLY!
-      </div> */}
+          <div className="w-full">
+            <AppSidebar />
 
+            <Navbar />
 
-      <div className="w-full">
-        <AppSidebar />
+            <main className="w-full relative">
+              {children}
+            </main>
 
-          <Navbar />
+            <Footer />
+          </div>
 
-        <main className="w-full relative">
-            {children}
+          {/* Floating Concierge Chat */}
+          <FloatingChat phoneNumber={storeSettings.phone} />
+
+          {/* Structured Data for SEO */}
+          <OrganizationSchema />
+          <WebsiteSchema />
+
+          <CartSidebar />
+          <ProductOptionsSidebar />
         </main>
-
-        <Footer />
-      </div>
-
-      {/* Structured Data for SEO */}
-      <OrganizationSchema />
-      <WebsiteSchema />
-
-      <LoginDrawerProvider />
-    </main>
+      </CartProvider>
+    </ProductOptionsProvider>
   );
 }

@@ -1,8 +1,8 @@
 import { AccountDetailsSection } from '@/components/account/account-details-section';
-import { UserStatsSection } from '@/components/account/user-stats-section';
 import { AddressesSectionClient } from '@/components/account/addresses-section';
-import { QuickActionsSection } from '@/components/account/quick-actions-section';
 import RoleBasedWelcome from '@/components/auth/role-based-welcome';
+import LogoutButton from '@/components/auth/logout-button';
+import BreadcrumbNavigation from '@/components/breadcrumb-navigation';
 
 export const metadata = {
     title: 'My Account',
@@ -11,31 +11,28 @@ export const metadata = {
 
 export default function AccountPage() {
     return (
-        <div className="container mx-auto px-4 py-6 md:py-10 max-w-7xl">
-            {/* Authentication Welcome Section */}
-
-            {/* Main Grid Layout */}
-            <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
-                {/* Left Column - Account Details & Stats */}
-                <div className="space-y-4 md:space-y-6 lg:col-span-2">
-                    
-                    <RoleBasedWelcome />
-
-                    {/* Account Details */}
-                    <AccountDetailsSection />
-
-                    {/* User Stats */}
-                    <UserStatsSection />
-
-                    {/* Addresses Section */}
-                    <AddressesSectionClient />
+        <div className="container mx-auto px-4 py-12 md:py-20 max-w-4xl">
+            <div className="mb-8">
+                <BreadcrumbNavigation />
+            </div>
+            <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="text-left">
+                    <h1 className="h1 mb-3">My Account</h1>
+                    <p className="p-base text-muted-foreground max-w-xl">
+                        Manage your personal information and delivery preferences in your private dashboard.
+                    </p>
                 </div>
+                <div className="w-full md:w-auto min-w-[160px]">
+                    <LogoutButton />
+                </div>
+            </div>
 
-                {/* Right Column - Quick Actions */}
-                <div className="lg:col-span-1">
-                    <div className="lg:sticky lg:top-6">
-                        <QuickActionsSection />
-                    </div>
+            <div className="space-y-10">
+                <RoleBasedWelcome />
+                
+                <div className="grid gap-10">
+                    <AccountDetailsSection />
+                    <AddressesSectionClient />
                 </div>
             </div>
         </div>

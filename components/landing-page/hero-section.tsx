@@ -1,15 +1,17 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useRef, useState, useEffect } from "react"
 import { useGSAP } from "@gsap/react"
 import { gsap } from "gsap"
 import CustomButton from "../ui/custom-button"
+import CustomButton2 from "../ui/custom-button-2"
 import Link from "next/link";
 import { ScrollTrigger } from "gsap/all"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 /* ─────────────────────────────────────────────
    Types
-───────────────────────────────────────────── */
+ ───────────────────────────────────────────── */
 export interface HeroSlide {
   src: string
   alt: string
@@ -25,7 +27,7 @@ interface HeroSectionProps {
 
 /* ─────────────────────────────────────────────
    Defaults
-───────────────────────────────────────────── */
+ ───────────────────────────────────────────── */
 const DEFAULT_SLIDES: HeroSlide[] = [
   {
     src: "/images/home/hero-banner.png",
@@ -41,7 +43,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 /* ─────────────────────────────────────────────
    Component
-───────────────────────────────────────────── */
+ ───────────────────────────────────────────── */
 export default function HeroSection({
   slides = DEFAULT_SLIDES,
   interval = 5000,
@@ -65,6 +67,9 @@ export default function HeroSection({
   const isAnimating = useRef(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const progressTween = useRef<gsap.core.Tween | null>(null)
+  
+  // Ref to hold the goTo function to avoid circular dependency warnings
+  const goToRef = useRef<(n: number) => void>(null);
 
   /* ── Helper: restart progress bar ─────────── */
   const startProgress = useCallback(() => {
@@ -115,8 +120,8 @@ export default function HeroSection({
       // Stagger text in
       tl.fromTo(
         [eyebrowRef.current, headingRef.current, btnRef.current],
-        { y: 28, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power3.out" },
+        { y: 28, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.1, ease: "power3.out" },
         0.3
       )
 
@@ -124,11 +129,19 @@ export default function HeroSection({
       if (timerRef.current) clearTimeout(timerRef.current)
       startProgress()
       timerRef.current = setTimeout(() => {
-        goTo((next + 1) % total)
+        // Use the ref to call the function to satisfy lint/compiler
+        if (goToRef.current) {
+          goToRef.current((next + 1) % total)
+        }
       }, interval)
     },
     [interval, total, startProgress]
   )
+
+  // Sync the ref
+  useEffect(() => {
+    goToRef.current = goTo;
+  }, [goTo]);
 
   useGSAP(() => {
     if (!containerRef.current) return;
@@ -142,13 +155,9 @@ export default function HeroSection({
       scrub: 1.2,
       pin: true,
       pinSpacing: false,
-      onLeaveBack: () => {
-        // Ensure no gap on scroll back
-        gsap.set(container, { clearProps: "all" })
-      }
     });
-  } , {
-    scope : containerRef
+  }, {
+    scope: containerRef
   })
 
   /* ── Bootstrap (runs once, inside useGSAP) ── */
@@ -177,8 +186,8 @@ export default function HeroSection({
       // Entrance text animation
       gsap.fromTo(
         [eyebrowRef.current, headingRef.current, btnRef.current],
-        { y: 24, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, stagger: 0.12, ease: "power3.out", delay: 0.2 }
+        { y: 24, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.12, ease: "power3.out", delay: 0.2 }
       )
 
       startProgress()
@@ -207,7 +216,7 @@ export default function HeroSection({
     <section
       ref={containerRef}
       className="relative w-full overflow-hidden select-none z-10"
-      style={{ height: "clamp(420px, 50vw, 880px)" }}
+      style={{ height: "clamp(640px, 95vh, 1100px)" }}
       aria-label="Hero carousel"
     >
       {/* ── Slide layers ── */}
@@ -234,6 +243,7 @@ export default function HeroSection({
         <span
           ref={eyebrowRef}
           className="block mb-3 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-white"
+          style={{ opacity: 0, visibility: "hidden" }}
         >
           {slides[current].eyebrow}
         </span>
@@ -241,12 +251,12 @@ export default function HeroSection({
         <h1
           ref={headingRef}
           className="font-black leading-none text-white mb-6 sm:mb-8"
-          style={{ fontSize: "clamp(2.8rem, 7vw, 6rem)", whiteSpace: "pre-line" }}
+          style={{ fontSize: "clamp(2.8rem, 7vw, 6rem)", whiteSpace: "pre-line", opacity: 0, visibility: "hidden" }}
         >
           {slides[current].heading}
         </h1>
 
-        <div ref={btnRef} className="pointer-events-auto">
+        <div ref={btnRef} className="pointer-events-auto" style={{ opacity: 0, visibility: "hidden" }}>
           <Link href={"/products"}>
             <CustomButton
               bgColor="#ffffff"
@@ -263,7 +273,7 @@ export default function HeroSection({
 
       {/* ── Bottom controls bar ── */}
       <div
-        className="absolute bottom-5 right-6 z-30 flex items-center gap-4"
+        className="absolute bottom-20 right-6 sm:right-12 z-30 flex items-center gap-4"
         role="group"
         aria-label="Slide controls"
       >
@@ -286,30 +296,30 @@ export default function HeroSection({
         </span>
 
         {/* Prev */}
-        <button
+        <CustomButton2
           onClick={handlePrev}
           aria-label="Previous slide"
-          className="flex items-center justify-center rounded-full border border-white/50 text-white
-                     hover:bg-white/20 active:scale-95 transition-[background,transform] duration-150"
-          style={{ width: 36, height: 36 }}
+          className="w-9 h-9 !p-0 rounded-full flex items-center justify-center border border-white/50"
+          bgColor="transparent"
+          fillColor="rgba(255,255,255,0.2)"
+          textColor="#ffffff"
+          textHoverColor="#ffffff"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+          <ChevronLeft className="w-5 h-5" strokeWidth={2} />
+        </CustomButton2>
 
         {/* Next */}
-        <button
+        <CustomButton2
           onClick={handleNext}
           aria-label="Next slide"
-          className="flex items-center justify-center rounded-full border border-white/50 text-white
-                     hover:bg-white/20 active:scale-95 transition-[background,transform] duration-150"
-          style={{ width: 36, height: 36 }}
+          className="w-9 h-9 !p-0 rounded-full flex items-center justify-center border border-white/50"
+          bgColor="transparent"
+          fillColor="rgba(255,255,255,0.2)"
+          textColor="#ffffff"
+          textHoverColor="#ffffff"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+          <ChevronRight className="w-5 h-5" strokeWidth={2} />
+        </CustomButton2>
       </div>
     </section>
   )

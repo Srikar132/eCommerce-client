@@ -43,6 +43,13 @@
       "when": 1773074772639,
       "tag": "0005_remove-phone-verified",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776719044058,
+      "tag": "0006_true_nightshade",
+      "breakpoints": true
     }
   ]
 }

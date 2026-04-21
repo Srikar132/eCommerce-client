@@ -1,146 +1,144 @@
-"use client"
-
 import React from 'react';
-import { Facebook, Instagram, Twitter } from 'lucide-react';
+import { Facebook, Instagram, Twitter, MapPin, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
+import BrandServices from './landing-page/brand-services';
+import { getStoreSettings } from '@/lib/actions/store-settings-actions';
 
-const Footer: React.FC = () => {
+const Footer = async () => {
+    const settings = await getStoreSettings();
+
     return (
-        <footer className="bg-secondary text-foreground border-t border-border">
+        <>
+            <BrandServices />
 
-            {/* Main Footer Content */}
-            <div className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
-                        {/* Products Column */}
-                        <div>
-                            <h3 className="font-semibold mb-4 text-sm tracking-widest uppercase text-foreground">Products</h3>
-                            <ul className="space-y-3 text-sm">
-                                <li>
-                                    <Link href="/products?category=mens" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Men
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/products?category=womens" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Women
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/products?category=kid-boys" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Kids Boys
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/products?category=kid-girls" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Kids Girls
-                                    </Link>
-                                </li>
+            <footer className="bg-foreground text-background rounded-t-[28px] lg:rounded-t-[40px] border-t border-white/5">
+                {/* Top Footer: Navigation & Links */}
+                <div className="py-24 md:py-32">
+                    <div className="container">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 lg:gap-24">
 
-                            </ul>
-                        </div>
-
-                        {/* Service Column */}
-                        <div>
-                            <h3 className="font-semibold mb-4 text-sm tracking-widest uppercase text-foreground">Service</h3>
-                            <ul className="space-y-3 text-sm">
-                                <li>
-                                    <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors">
-                                        FAQ
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
-                                        Contact
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Information Column */}
-                        <div>
-                            <h3 className="font-semibold mb-4 text-sm tracking-widest uppercase text-foreground">Information</h3>
-                            <ul className="space-y-3 text-sm">
-                                <li>
-                                    <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                                        About Us
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* About Us Column */}
-                        <div>
-                            <h3 className="font-semibold mb-4 text-sm tracking-widest uppercase text-foreground">About Us</h3>
-                            <p className="text-sm leading-relaxed text-muted-foreground">
-                                We craft beautiful, handmade pieces with love and care. Every stitch tells a story. Visit our{' '}
-                                <Link href="/about" className="text-primary hover:underline font-medium">
-                                    about page
+                            {/* Brand Column */}
+                            <div className="md:col-span-4 flex flex-col gap-8">
+                                <Link href="/" className="flex flex-col">
+                                    <span className="text-3xl font-bold tracking-tighter uppercase text-white">
+                                        <span className='font-cursive! lowercase text-4xl mr-1'>Nala</span>
+                                        Armoire
+                                    </span>
+                                    <span className="text-[10px] font-bold tracking-[0.4em] text-white/30 uppercase mt-2">
+                                        Crafted with Love
+                                    </span>
                                 </Link>
-                                {' '}to discover our journey.
-                            </p>
-                        </div>
-                    </div>
+                                <p className="text-white/50 text-sm leading-relaxed max-w-xs">
+                                    Redefining the artisan tradition through custom hand-stitched embroidery. Every piece is a unique story waiting to be worn.
+                                </p>
 
-                    {/* Social Icons and Payment Methods */}
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-border">
-                        {/* Language and Social Icons */}
-                        <div className="flex items-center gap-6">
-                            <select className="px-4 py-2 text-sm rounded-full border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer">
-                                <option>EN</option>
-                            </select>
-                            <div className="flex gap-4">
-                                <Link
-                                    href="https://facebook.com"
-                                    target="_blank"
-                                    className="text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <Facebook className="w-5 h-5" />
-                                </Link>
-                                <Link
-                                    href="https://twitter.com"
-                                    target="_blank"
-                                    className="text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <Twitter className="w-5 h-5" />
-                                </Link>
-                                <Link
-                                    href="https://instagram.com/the-nala-armoire"
-                                    target="_blank"
-                                    className="text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <Instagram className="w-5 h-5" />
-                                </Link>
-                                <Link
-                                    href="#"
-                                    className="text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M16.75 2h-2.5v20h2.5c7.2 0 7.2-20 0-20M13 2H6C2.5 2 2.5 22 6 22h7V2z" />
-                                    </svg>
-                                </Link>
+                                {/* Contact Info */}
+                                <div className="space-y-4">
+                                    <div className="flex items-start gap-3 group">
+                                        <MapPin className="w-4 h-4 text-white/30 mt-1 shrink-0 group-hover:text-white transition-colors" />
+                                        <div className="text-sm text-white/50 leading-relaxed group-hover:text-white transition-colors">
+                                            {settings.address},<br />
+                                            {settings.city}, {settings.state} - {settings.pincode}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 group">
+                                        <Mail className="w-4 h-4 text-white/30 shrink-0 group-hover:text-white transition-colors" />
+                                        <Link href={`mailto:${settings.email}`} className="text-sm text-white/50 hover:text-white transition-colors">
+                                            {settings.email}
+                                        </Link>
+                                    </div>
+                                    <div className="flex items-center gap-3 group">
+                                        <Phone className="w-4 h-4 text-white/30 shrink-0 group-hover:text-white transition-colors" />
+                                        <Link href={`tel:${settings.phone}`} className="text-sm text-white/50 hover:text-white transition-colors">
+                                            {settings.phone}
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-4 pt-4">
+                                    {[Facebook, Instagram, Twitter].map((Icon, i) => (
+                                        <Link
+                                            key={i}
+                                            href="#"
+                                            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
+                                        >
+                                            <Icon className="w-4 h-4" />
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Links Grid */}
+                            <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-12">
+                                {/* Shop Column */}
+                                <div className="flex flex-col gap-6">
+                                    <h3 className="text-[11px] font-bold tracking-[0.3em] text-white/30 uppercase">Shop</h3>
+                                    <ul className="flex flex-col gap-4">
+                                        {['Men', 'Women', 'Boys', 'Girls'].map((item) => (
+                                            <li key={item}>
+                                                <Link href={`/products?category=${item.toLowerCase()}`} className="text-sm font-medium text-white/70 hover:text-white transition-colors inline-block link-underline">
+                                                    {item}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Service Column */}
+                                <div className="flex flex-col gap-6">
+                                    <h3 className="text-[11px] font-bold tracking-[0.3em] text-white/30 uppercase">Service</h3>
+                                    <ul className="flex flex-col gap-4">
+                                        {['FAQ', 'Contact', 'Shipping', 'Returns'].map((item) => (
+                                            <li key={item}>
+                                                <Link href={`/${item.toLowerCase()}`} className="text-sm font-medium text-white/70 hover:text-white transition-colors inline-block link-underline">
+                                                    {item}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Company Column */}
+                                <div className="flex flex-col gap-6">
+                                    <h3 className="text-[11px] font-bold tracking-[0.3em] text-white/30 uppercase">Company</h3>
+                                    <ul className="flex flex-col gap-4">
+                                        {['About Us', 'Sustainability', 'Artisans', 'Careers'].map((item) => (
+                                            <li key={item}>
+                                                <Link href={`/${item.toLowerCase().replace(' ', '-')}`} className="text-sm font-medium text-white/70 hover:text-white transition-colors inline-block link-underline">
+                                                    {item}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
-            </div>
 
-            {/* Large Brand Name */}
-            <div className="w-full overflow-hidden bg-background border-t border-border">
-                <div className="max-w-7xl mx-auto py-12 sm:py-16 md:py-20 px-4">
-                    <p className="text-center text-xl sm:text-2xl tracking-[0.3em] uppercase text-muted-foreground mb-2">
-                        Nala
-                    </p>
-                    <h2 className="text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] xl:text-[220px] font-medium  leading-none tracking-wider text-center text-foreground">
-                        Armoire
-                    </h2>
-                    <p className="text-center text-xs sm:text-sm text-muted-foreground mt-4 italic">
-                        Where beauty roars in every stitch
-                    </p>
+                {/* Bottom: Giant Brand Marker */}
+                <div className="pb-12 overflow-hidden border-white /5">
+                    <div className="container relative">
+                        <h2 className="text-[15vw] lg:text-[220px] font-bold leading-none tracking-tighter text-white/[0.03] select-none pointer-events-none text-center">
+                            ARMOIRE
+                        </h2>
+
+                        <div className="mt-12 flex flex-col sm:flex-row justify-between items-center gap-6 pt-12 border-t border-white/5 text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase">
+                            <div className="flex gap-8">
+                                <span>© 2024 Nala Armoire</span>
+                                <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                                <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span>Made with heart</span>
+                                <div className="w-1 h-1 rounded-full bg-white/20" />
+                                <span>Worldwide Shipping</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </footer>
+            </footer>
+        </>
     );
 };
 

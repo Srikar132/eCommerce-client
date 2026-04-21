@@ -1,130 +1,286 @@
-import Image from "next/image";
-import { Heart, Sparkles, Leaf, Award } from "lucide-react";
+"use client"
 
-const promises = [
+import { useState, useRef, useEffect, useCallback } from "react"
+import Image from "next/image"
+import gsap from "gsap"
+import { cn } from "@/lib/utils"
+import CustomButton from "@/components/ui/custom-button"
+
+const COLLECTIONS = [
     {
-        icon: Heart,
-        title: "Made with Love",
-        description:
-            "Every stitch is crafted with passion and care by our skilled artisans. We believe the energy put into a garment is felt by the wearer.",
-        image: "/images/home/promise1.png", // PLACEHOLDER — replace with your image
+        id: 1,
+        label: "Stitch",
+        title: "Every Stitch Tells Your Story",
+        subtitle: "EMBROIDERY COLLECTION",
+        description: "Handcrafted embroidery placed exactly where you want it. Our artisans work stitch by stitch to bring your vision to life on any garment.",
+        image: "/images/home/promise1.png",
     },
     {
-        icon: Sparkles,
-        title: "Premium Quality",
-        description:
-            "Carefully chosen fabrics and materials for pieces that last. We source only the finest natural fibers to ensure longevity.",
-        image: "/images/home/promise2.png", // PLACEHOLDER — replace with your image
+        id: 2,
+        label: "Wear",
+        title: "Designed to Be Worn, Made to Last",
+        subtitle: "CUSTOM WARDROBE",
+        description: "We embroider your chosen motifs onto premium-quality clothing — so what you carry on your chest is a reflection of who you are.",
+        image: "/images/home/promise2.png",
     },
     {
-        icon: Leaf,
-        title: "Sustainable Craft",
-        description:
-            "Honoring tradition while caring for our planet. Our production process minimizes waste and supports local ecosystems.",
-        image: "/images/home/promise3.png", // PLACEHOLDER — replace with your image
+        id: 3,
+        label: "Craft",
+        title: "The Craft Behind Every Thread",
+        subtitle: "OUR CRAFT",
+        description: "Traditional needlework meets modern fashion. Each embroidered piece is finished by hand, ensuring no two garments are ever exactly alike.",
+        image: "/images/home/promise3.png",
     },
     {
-        icon: Award,
-        title: "Unique Designs",
-        description:
-            "One-of-a-kind pieces that tenderly knot your memories together. We create timeless heirlooms that celebrate individuality.",
-        image: "/images/home/promise4.png", // PLACEHOLDER — replace with your image
+        id: 4,
+        label: "Own",
+        title: "Wear Something Truly Yours",
+        subtitle: "MADE FOR YOU",
+        description: "Choose a garment, choose your embroidery, and we'll create it. A wardrobe that's completely personal, stitched with intention from the very first thread.",
+        image: "/images/home/promise4.png",
     },
-];
+]
 
 export default function OurPromise() {
+    const [activeIndex, setActiveIndex] = useState(0)
+
+    // Refs for the two image slots (ping-pong crossfade — no DOM remount)
+    const slotARef = useRef<HTMLDivElement>(null)
+    const slotBRef = useRef<HTMLDivElement>(null)
+    const slotAImgRef = useRef<HTMLImageElement | null>(null)
+    const slotBImgRef = useRef<HTMLImageElement | null>(null)
+
+    // Text overlay refs — queried once, never re-queried
+    const subtitleRef = useRef<HTMLSpanElement>(null)
+    const titleRef = useRef<HTMLHeadingElement>(null)
+    const buttonRef = useRef<HTMLDivElement>(null)
+
+    // Right-panel description refs
+    const descSubtitleRef = useRef<HTMLParagraphElement>(null)
+    const descBodyRef = useRef<HTMLParagraphElement>(null)
+
+    // Track which slot is currently "front"
+    const frontSlot = useRef<"A" | "B">("A")
+    // Prevent overlapping transitions
+    const isAnimating = useRef(false)
+    // Running tweens we can kill cleanly
+    const activeTweens = useRef<gsap.core.Tween[]>([])
+
+    const killActiveTweens = useCallback(() => {
+        activeTweens.current.forEach((t) => t.kill())
+        activeTweens.current = []
+    }, [])
+
+    // One-time mount: seed slot A with the initial image, slot B hidden
+    useEffect(() => {
+        if (!slotARef.current || !slotBRef.current) return
+        gsap.set(slotARef.current, { opacity: 1 })
+        gsap.set(slotBRef.current, { opacity: 0 })
+    }, [])
+
+    const runTransition = useCallback((nextIndex: number) => {
+        if (isAnimating.current) {
+            // Snap-complete any in-flight animation immediately, then proceed
+            killActiveTweens()
+            const front = frontSlot.current === "A" ? slotARef.current : slotBRef.current
+            const back = frontSlot.current === "A" ? slotBRef.current : slotARef.current
+            if (front) gsap.set(front, { opacity: 1 })
+            if (back) gsap.set(back, { opacity: 0 })
+        }
+
+        isAnimating.current = true
+
+        const frontRef = frontSlot.current === "A" ? slotARef : slotBRef
+        const backRef = frontSlot.current === "A" ? slotBRef : slotARef
+
+        // Write incoming image into the back (hidden) slot BEFORE fading
+        if (backRef.current) {
+            const img = backRef.current.querySelector("img")
+            if (img) {
+                img.src = COLLECTIONS[nextIndex].image
+                img.alt = COLLECTIONS[nextIndex].title
+            }
+        }
+
+        const tl = gsap.timeline({
+            onComplete: () => {
+                frontSlot.current = frontSlot.current === "A" ? "B" : "A"
+                isAnimating.current = false
+            },
+        })
+
+        // Crossfade: back fades in, front fades out simultaneously
+        tl.to(backRef.current, { opacity: 1, duration: 0.65, ease: "power2.inOut" }, 0)
+        tl.to(frontRef.current, { opacity: 0, duration: 0.65, ease: "power2.inOut" }, 0)
+
+        // Text overlay: quick fade+slide out, then new content fades+slides in
+        const textEls = [subtitleRef.current, titleRef.current, buttonRef.current].filter(Boolean)
+        tl.to(textEls, { opacity: 0, y: -10, duration: 0.2, ease: "power2.in" }, 0)
+        tl.call(() => {
+            // Swap text content mid-animation when it's invisible
+            if (subtitleRef.current) subtitleRef.current.textContent = COLLECTIONS[nextIndex].subtitle
+            if (titleRef.current) titleRef.current.textContent = COLLECTIONS[nextIndex].title
+        })
+        tl.fromTo(
+            textEls,
+            { opacity: 0, y: 14 },
+            { opacity: 1, y: 0, duration: 0.45, stagger: 0.07, ease: "power3.out" }
+        )
+
+        // Right panel description: fade out → swap → fade in
+        const descEls = [descSubtitleRef.current, descBodyRef.current].filter(Boolean)
+        tl.to(descEls, { opacity: 0, duration: 0.2, ease: "power2.in" }, 0)
+        tl.call(() => {
+            if (descSubtitleRef.current) descSubtitleRef.current.textContent = COLLECTIONS[nextIndex].subtitle
+            if (descBodyRef.current) descBodyRef.current.textContent = COLLECTIONS[nextIndex].description
+        })
+        tl.fromTo(
+            descEls,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.35, ease: "power2.out" }
+        )
+
+        activeTweens.current = [tl as unknown as gsap.core.Tween]
+    }, [killActiveTweens])
+
+    const handleSelect = useCallback((index: number) => {
+        if (index === activeIndex) return
+        setActiveIndex(index)
+        runTransition(index)
+    }, [activeIndex, runTransition])
+
+    // Cleanup on unmount
+    useEffect(() => () => killActiveTweens(), [killActiveTweens])
+
+    const initial = COLLECTIONS[0]
+
     return (
-        <section className="relative w-full py-16 sm:py-20 md:py-28 overflow-hidden bg-background">
+        <section className="section bg-background">
+            <div className="container">
+                <div className="flex flex-col-reverse lg:flex-row rounded-[40px] overflow-hidden min-h-[580px] lg:min-h-[760px] shadow-xl shadow-black/5 border border-black/5">
 
+                    {/* ── Left: Image Panel ── */}
+                    <div className="relative w-full lg:w-1/2 h-[480px] lg:h-auto overflow-hidden bg-muted">
 
-            {/* ── Content ── */}
-            <div className="relative z-10 w-full p-4 sm:p-6 max-w-7xl mx-auto">
-                {/* Section Header — Center aligned */}
-                <div className="mb-10 sm:mb-14 md:mb-16 space-y-3 text-center flex flex-col items-center">
-                    <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary/70 font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
-                        NaLa ARMOIRE Promise
-                    </p>
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic tracking-wide text-foreground" style={{ fontFamily: 'var(--font-heading)' }}>
-                        Why Choose Us
-                    </h2>
-                    <span className="block w-16 sm:w-20 h-0.75 bg-primary/60 rounded-full" />
-                </div>
-
-                {/* Main Layout: Hero Image + Cards Grid */}
-                <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-18">
-                    {/* Left — Large Hero Image */}
-                    <div className="relative w-full lg:w-[45%] xl:w-[42%] shrink-0">
-                        <div className="relative aspect-4/5 sm:aspect-5/6 lg:aspect-4/5 w-full rounded-xl overflow-hidden shadow-lg">
+                        {/* Slot A — starts as front, shows first image */}
+                        <div ref={slotARef} className="absolute inset-0 will-change-[opacity]">
                             <Image
-                                src="/images/home/promise-hero.png" // PLACEHOLDER — replace with your hero image
-                                alt="Our workshop"
+                                ref={slotAImgRef}
+                                src={initial.image}
+                                alt={initial.title}
+                                className="absolute inset-0 w-full h-full object-cover"
                                 fill
-                                sizes="(max-width: 1024px) 100vw, 45vw"
-                                className="object-cover"
-                                priority
                             />
                         </div>
-                        {/* Quote Overlay */}
-                        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-70 bg-card/90 backdrop-blur-sm rounded-lg p-4 sm:p-5 shadow-md border border-border/50">
-                            <p className="text-sm sm:text-base italic text-foreground/80 leading-relaxed" style={{ fontFamily: 'var(--font-heading)' }}>
-                                &ldquo;Our workshop is the heart where heritage meets contemporary soul.&rdquo;
+
+                        {/* Slot B — starts hidden, receives next image before crossfade */}
+                        <div ref={slotBRef} className="absolute inset-0 will-change-[opacity]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                ref={slotBImgRef}
+                                src={initial.image}
+                                alt={initial.title}
+                                className="absolute inset-0 w-full h-full object-cover"
+                            />
+                        </div>
+
+                        {/* Gradient overlay — always on top of both slots */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none z-10" />
+
+                        {/* Text overlay — always mounted, content swapped via refs */}
+                        <div className="absolute bottom-10 left-10 right-10 z-20 flex flex-col items-start gap-4">
+                            <span
+                                ref={subtitleRef}
+                                className="text-[11px] font-bold tracking-[0.3em] text-white/70 uppercase"
+                            >
+                                {initial.subtitle}
+                            </span>
+                            <h2
+                                ref={titleRef}
+                                className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] text-white tracking-tight max-w-md"
+                            >
+                                {initial.title}
+                            </h2>
+                            <div ref={buttonRef} className="mt-4">
+                                <CustomButton circleSize={45}>
+                                    Explore Collection
+                                </CustomButton>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── Right: Category Selector ── */}
+                    <div className="w-full lg:w-1/2 bg-[#F5F5C6] p-10 lg:p-20 flex flex-col items-center justify-center">
+                        <span className="text-[11px] font-bold tracking-[0.35em] text-black/30 uppercase mb-14 block text-center">
+                            Embroidered For
+                        </span>
+
+                        <div className="flex flex-col items-center gap-2 w-full">
+                            {COLLECTIONS.map((item, index) => {
+                                const isActive = activeIndex === index
+                                return (
+                                    <div
+                                        key={item.id}
+                                        className="w-fit cursor-pointer"
+                                        onMouseEnter={() => handleSelect(index)}
+                                    >
+                                        <span
+                                            className={cn(
+                                                "relative inline-block text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight select-none transition-colors duration-300",
+                                                isActive ? "text-black" : "text-black/20 hover:text-black/50"
+                                            )}
+                                        >
+                                            {item.label}
+
+                                            <span
+                                                className="absolute left-0 -bottom-2 w-full overflow-hidden pointer-events-none"
+                                                style={{ height: "12px" }}
+                                                aria-hidden
+                                            >
+                                                <svg
+                                                    viewBox="0 0 100 12"
+                                                    preserveAspectRatio="none"
+                                                    className="w-full h-full"
+                                                    style={{
+                                                        transform: isActive ? "scaleX(1)" : "scaleX(0)",
+                                                        transformOrigin: "left center",
+                                                        transition: "transform 0.5s cubic-bezier(0.645,0.045,0.355,1)",
+                                                    }}
+                                                >
+                                                    <path
+                                                        d="M0 8 Q 25 0 50 8 T 100 8"
+                                                        fill="none"
+                                                        stroke="black"
+                                                        strokeWidth="2.5"
+                                                        strokeLinecap="round"
+                                                    />
+                                                </svg>
+                                            </span>
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+
+                        {/* Description — always mounted, content swapped via refs */}
+                        <div className="mt-16 lg:mt-20 text-center max-w-xs space-y-3">
+                            <p
+                                ref={descSubtitleRef}
+                                className="text-[11px] font-bold uppercase tracking-[0.25em] text-black/50"
+                            >
+                                {initial.subtitle}
+                            </p>
+                            <p
+                                ref={descBodyRef}
+                                className="text-base text-black/60 leading-relaxed"
+                            >
+                                {initial.description}
                             </p>
                         </div>
                     </div>
 
-                    {/* Right — Promise Cards 2×2 */}
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 content-start">
-                        {promises.map((promise, index) => {
-                            const Icon = promise.icon;
-                            return (
-                                <div key={index} className="group relative space-y-3 sm:space-y-4 flex flex-col items-center text-center sm:items-start sm:text-left">
-                                    {/* Circular Image + Icon Badge */}
-                                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28">
-                                        <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 shadow-sm">
-                                            <Image
-                                                src={promise.image}
-                                                alt={promise.title}
-                                                fill
-                                                sizes="112px"
-                                                className="object-cover rounded-full group-hover:border-primary group-hover:scale-105 transition-transform duration-300 ease-out"
-                                            />
-                                        </div>
-                                        {/* Icon Badge */}
-                                        <div className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-card border border-border shadow-sm flex items-center justify-center">
-                                            <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" strokeWidth={1.5} />
-                                        </div>
-                                    </div>
-
-                                    {/* Title */}
-                                    <h3 className="text-lg sm:text-xl font-semibold italic text-foreground tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
-                                        {promise.title}
-                                    </h3>
-
-                                    {/* Description */}
-                                    <p className="text-sm text-muted-foreground leading-relaxed font-normal tracking-wide max-w-xs" style={{ fontFamily: 'var(--font-inter)' }}>
-                                        {promise.description}
-                                    </p>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* Bottom Quote */}
-                <div className="text-center mt-14 sm:mt-18 md:mt-24">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                        <span className="w-8 sm:w-12 h-px bg-linear-to-r from-transparent to-primary/40" />
-                        <span className="w-1.5 h-1.5 rotate-45 bg-primary/40 rounded-sm" />
-                        <span className="w-8 sm:w-12 h-px bg-linear-to-l from-transparent to-primary/40" />
-                    </div>
-                    <p className="text-lg sm:text-xl md:text-2xl text-foreground/80 italic font-semibold tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
-                        &ldquo;Every thread holds emotion, and every stitch tells a story&rdquo;
-                    </p>
                 </div>
             </div>
-
-            {/* Subtle Background Gradient */}
-            <div className="absolute inset-0 bg-linear-to-r from-primary/3 via-transparent to-accent/3 pointer-events-none" />
         </section>
-    );
+    )
 }

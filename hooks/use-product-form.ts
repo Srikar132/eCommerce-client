@@ -43,14 +43,14 @@ function transformProductToFormData(productData: Record<string, unknown>): Produ
                 color: (variant.color as string) || "",
                 colorHex: (variant.colorHex as string) || "",
                 stockQuantity: (variant.stockQuantity as number) || 0,
-                additionalPrice: parseFloat((variant.additionalPrice as string)?.toString() || "0"),
+                priceModifier: parseFloat((variant.priceModifier as string)?.toString() || "0"),
                 sku: (variant.sku as string) || ""
             })) : [{
                 size: "",
                 color: "",
                 colorHex: "",
                 stockQuantity: 0,
-                additionalPrice: 0,
+                priceModifier: 0,
                 sku: ""
             }]
     };
@@ -73,7 +73,7 @@ const getDefaultFormValues = (): ProductFormData => ({
         color: "",
         colorHex: "",
         stockQuantity: 0,
-        additionalPrice: 0,
+        priceModifier: 0,
         sku: ""
     }]
 });

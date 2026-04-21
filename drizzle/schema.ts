@@ -1,4 +1,3 @@
-// Step 3: Configure Drizzle schema
 import {
     boolean,
     timestamp,
@@ -10,58 +9,98 @@ import {
     numeric,
     index,
     uniqueIndex,
-} from "drizzle-orm/pg-core"
-import type { AdapterAccountType } from "@auth/core/adapters"
-import { randomUUID } from "crypto"
+} from "drizzle-orm/pg-core";
+import type { AdapterAccountType } from "@auth/core/adapters";
+import { randomUUID } from "crypto";
 
-// Enums
-export const roleEnum = pgEnum('role', ['ADMIN', 'USER']);
+// ============================================================================
+// ENUMS
+// ============================================================================
 
+export const roleEnum = pgEnum("role", ["ADMIN", "USER"]);
 
-export const orderStatusEnum = pgEnum('order_status', [
-    'PENDING',
-    'CONFIRMED',
-    'PROCESSING',
-    'SHIPPED',
-    'DELIVERED',
-    'CANCELLED',
-    'RETURN_REQUESTED',
-    'RETURNED',
-    'REFUNDED'
+export const orderStatusEnum = pgEnum("order_status", [
+    "PENDING",
+    "CONFIRMED",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+    "RETURN_REQUESTED",
+    "RETURNED",
+    "REFUNDED",
 ]);
 
-
-export const paymentStatusEnum = pgEnum('payment_status', [
-    'PENDING',
-    'PROCESSING',
-    'PAID',
-    'FAILED',
-    'REFUND_REQUESTED',
-    'REFUNDED',
-    'PARTIALLY_REFUNDED'
+export const paymentStatusEnum = pgEnum("payment_status", [
+    "PENDING",
+    "PROCESSING",
+    "PAID",
+    "FAILED",
+    "REFUND_REQUESTED",
+    "REFUNDED",
+    "PARTIALLY_REFUNDED",
 ]);
 
+export const addressTypeEnum = pgEnum("address_type", ["HOME", "OFFICE", "OTHER"]);
+export const productionStatusEnum = pgEnum("production_status", ["PENDING", "IN_PROGRESS", "COMPLETED"]);
 
-export const addressTypeEnum = pgEnum('address_type', ['HOME', 'OFFICE', 'OTHER']);
-export const productionStatusEnum = pgEnum('production_status', ['PENDING', 'IN_PROGRESS', 'COMPLETED']);
+/**
+ * FIX: size and color were free-text strings — nothing prevented "S", "small",
+ * "SMALL" from all existing as different variants for the same product.
+ * Now enforced at the DB level via enums.
+ *
+ * Add or remove values here as your catalogue grows; then run a migration.
+ */
+export const productSizeEnum = pgEnum("product_size", [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL",
+    "XXXL",
+    "FREE_SIZE",
+]);
+
+export const productColorEnum = pgEnum("product_color", [
+    "BLACK",
+    "WHITE",
+    "RED",
+    "BLUE",
+    "GREEN",
+    "YELLOW",
+    "ORANGE",
+    "PURPLE",
+    "PINK",
+    "BROWN",
+    "GREY",
+    "NAVY",
+    "BEIGE",
+    "MAROON",
+    "OLIVE",
+    "TEAL",
+    "CREAM",
+    "MULTICOLOR",
+]);
+
+// ============================================================================
+// AUTH TABLES (NextAuth / DrizzleAdapter — unchanged)
+// ============================================================================
 
 export const users = pgTable("user", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => randomUUID()),
-    // Required by NextAuth DrizzleAdapter
     name: text("name"),
     email: text("email").unique(),
     emailVerified: timestamp("emailVerified", { mode: "date" }),
     image: text("image"),
-    // Application fields
     phone: text("phone").unique(),
     acceptTerms: boolean("acceptTerms").default(false).notNull(),
-    role: roleEnum("role").default('USER').notNull(),
+    role: roleEnum("role").default("USER").notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
-
 
 export const accounts = pgTable(
     "account",
@@ -87,7 +126,7 @@ export const accounts = pgTable(
             }),
         },
     ]
-)
+);
 
 export const sessions = pgTable("session", {
     sessionToken: text("sessionToken").primaryKey(),
@@ -95,7 +134,7 @@ export const sessions = pgTable("session", {
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
     expires: timestamp("expires", { mode: "date" }).notNull(),
-})
+});
 
 export const authenticators = pgTable(
     "authenticator",
@@ -118,7 +157,7 @@ export const authenticators = pgTable(
             }),
         },
     ]
-)
+);
 
 export const verificationTokens = pgTable(
     "verificationToken",
@@ -134,11 +173,12 @@ export const verificationTokens = pgTable(
             }),
         },
     ]
-)
+);
 
-// ==================== ECOMMERCE TABLES ====================
+// ============================================================================
+// ECOMMERCE TABLES
+// ============================================================================
 
-// Categories Table
 export const categories = pgTable(
     "categories",
     {
@@ -162,7 +202,6 @@ export const categories = pgTable(
     ]
 );
 
-// Products Table
 export const products = pgTable(
     "products",
     {
@@ -173,6 +212,10 @@ export const products = pgTable(
         name: text("name").notNull(),
         slug: text("slug").notNull().unique(),
         description: text("description"),
+        /**
+         * Stored as numeric string in Postgres; always parse via the
+         * mappers in product-actions.ts — never read .basePrice raw.
+         */
         basePrice: numeric("base_price", { precision: 10, scale: 2 }).notNull(),
         sku: text("sku").notNull().unique(),
         material: text("material"),
@@ -189,7 +232,6 @@ export const products = pgTable(
     ]
 );
 
-// Product Images Table
 export const productImages = pgTable(
     "product_images",
     {
@@ -211,7 +253,6 @@ export const productImages = pgTable(
     ]
 );
 
-// Product Variants Table
 export const productVariants = pgTable(
     "product_variants",
     {
@@ -221,24 +262,50 @@ export const productVariants = pgTable(
         productId: text("product_id")
             .notNull()
             .references(() => products.id, { onDelete: "cascade" }),
-        size: text("size").notNull(),
-        color: text("color").notNull(),
-        colorHex: text("color_hex"),
+
+        // FIX: was free-text — now enums, prevents "S" vs "small" drift
+        size: productSizeEnum("size").notNull(),
+        color: productColorEnum("color").notNull(),
+
+        // FIX: was nullable — now required. A color swatch without a hex
+        // is half-useful. Every color must have a corresponding hex value.
+        colorHex: text("color_hex").notNull(),
+
         stockQuantity: integer("stock_quantity").default(0).notNull(),
-        additionalPrice: numeric("additional_price", { precision: 10, scale: 2 }).default("0").notNull(),
+
+        /**
+         * FIX: renamed from additionalPrice → priceModifier.
+         * Allows negative values (e.g. a smaller size at a discount).
+         * Calculation: finalPrice = product.basePrice + variant.priceModifier
+         */
+        priceModifier: numeric("price_modifier", { precision: 10, scale: 2 })
+            .default("0")
+            .notNull(),
+
         sku: text("sku").notNull().unique(),
         isActive: boolean("is_active").default(true).notNull(),
         createdAt: timestamp("created_at").defaultNow().notNull(),
-        version: integer("version").default(0).notNull(),
+
+        // FIX: version removed — was declared but never used for optimistic
+        // locking anywhere in the codebase. Removing dead schema fields.
+        // If you implement optimistic locking later, add it back then.
     },
     (table) => [
+        /**
+         * FIX: no unique constraint existed before — two "Red / Large"
+         * variants for the same product were possible. Now prevented at DB level.
+         */
+        uniqueIndex("idx_variant_product_size_color").on(
+            table.productId,
+            table.size,
+            table.color
+        ),
         index("idx_variant_product_color").on(table.productId, table.color),
         uniqueIndex("idx_variant_sku").on(table.sku),
         index("idx_variant_active").on(table.productId, table.isActive),
     ]
 );
 
-// Addresses Table
 export const addresses = pgTable(
     "addresses",
     {
@@ -264,7 +331,6 @@ export const addresses = pgTable(
     ]
 );
 
-// Carts Table
 export const carts = pgTable(
     "carts",
     {
@@ -292,7 +358,6 @@ export const carts = pgTable(
     ]
 );
 
-// Cart Items Table
 export const cartItems = pgTable(
     "cart_items",
     {
@@ -320,7 +385,6 @@ export const cartItems = pgTable(
     ]
 );
 
-// Orders Table
 export const orders = pgTable(
     "orders",
     {
@@ -331,8 +395,8 @@ export const orders = pgTable(
             .notNull()
             .references(() => users.id, { onDelete: "cascade" }),
         orderNumber: text("order_number").notNull().unique(),
-        status: orderStatusEnum("status").default('PENDING').notNull(),
-        paymentStatus: paymentStatusEnum("payment_status").default('PENDING').notNull(),
+        status: orderStatusEnum("status").default("PENDING").notNull(),
+        paymentStatus: paymentStatusEnum("payment_status").default("PENDING").notNull(),
         razorpayOrderId: text("razorpay_order_id"),
         razorpayPaymentId: text("razorpay_payment_id"),
         razorpaySignature: text("razorpay_signature"),
@@ -357,7 +421,8 @@ export const orders = pgTable(
         notes: text("notes"),
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at").defaultNow().notNull(),
-        version: integer("version").default(0).notNull(),
+        // FIX: version removed from orders too — same reason as variants.
+        // Add back when you implement optimistic locking on order updates.
     },
     (table) => [
         index("idx_order_user").on(table.userId),
@@ -371,7 +436,6 @@ export const orders = pgTable(
     ]
 );
 
-// Order Items Table
 export const orderItems = pgTable(
     "order_items",
     {
@@ -387,7 +451,7 @@ export const orderItems = pgTable(
         quantity: integer("quantity").notNull(),
         unitPrice: numeric("unit_price", { precision: 10, scale: 2 }).notNull(),
         totalPrice: numeric("total_price", { precision: 10, scale: 2 }).notNull(),
-        productionStatus: productionStatusEnum("production_status").default('PENDING'),
+        productionStatus: productionStatusEnum("production_status").default("PENDING"),
         createdAt: timestamp("created_at").defaultNow().notNull(),
     },
     (table) => [
@@ -398,7 +462,6 @@ export const orderItems = pgTable(
     ]
 );
 
-// Reviews Table
 export const reviews = pgTable(
     "reviews",
     {
@@ -430,7 +493,6 @@ export const reviews = pgTable(
     ]
 );
 
-// Wishlists Table
 export const wishlists = pgTable(
     "wishlists",
     {
@@ -452,27 +514,20 @@ export const wishlists = pgTable(
     ]
 );
 
-// Store Settings Table (singleton - only one row)
-export const storeSettings = pgTable(
-    "store_settings",
-    {
-        id: text("id")
-            .primaryKey()
-            .$defaultFn(() => "default"),
-        email: text("email").notNull().default("support@armoire.com"),
-        phone: text("phone").notNull().default("+91 9876543210"),
-        address: text("address").notNull().default("123, Fashion Street"),
-        city: text("city").notNull().default("Mumbai"),
-        state: text("state").notNull().default("Maharashtra"),
-        pincode: text("pincode").notNull().default("400001"),
-        country: text("country").notNull().default("India"),
-        updatedAt: timestamp("updated_at").defaultNow().notNull(),
-    }
-);
+export const storeSettings = pgTable("store_settings", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => "default"),
+    email: text("email").notNull().default("support@armoire.com"),
+    phone: text("phone").notNull().default("+91 9876543210"),
+    address: text("address").notNull().default("123, Fashion Street"),
+    city: text("city").notNull().default("Mumbai"),
+    state: text("state").notNull().default("Maharashtra"),
+    pincode: text("pincode").notNull().default("400001"),
+    country: text("country").notNull().default("India"),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
-// ==================== LANDING PAGE CONTENT TABLES ====================
-
-// Landing Page Categories (for Shop by Category section)
 export const landingCategories = pgTable(
     "landing_categories",
     {
@@ -493,7 +548,6 @@ export const landingCategories = pgTable(
     ]
 );
 
-// Showcase Products (for premium showcase section)
 export const showcaseProducts = pgTable(
     "showcase_products",
     {
@@ -514,7 +568,6 @@ export const showcaseProducts = pgTable(
     ]
 );
 
-// Landing Page Testimonials (admin-approved reviews for display)
 export const landingTestimonials = pgTable(
     "landing_testimonials",
     {
@@ -537,7 +590,6 @@ export const landingTestimonials = pgTable(
     ]
 );
 
-// Instagram Slider Images
 export const sliderImages = pgTable(
     "slider_images",
     {

@@ -2,7 +2,7 @@
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
-import { User2, Package, Heart, Mail, LogIn, } from "lucide-react";
+import { User2, Package, Mail, LogIn, } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Separator } from "@/components/ui/separator";
@@ -97,13 +97,6 @@ export function AccountHoverCard() {
                         >
                             <Package className="w-3.5 h-3.5 text-muted-foreground" />
                             Orders
-                        </Link>
-                        <Link
-                            href="/wishlist"
-                            className="flex items-center gap-2.5 px-2.5 py-2 text-sm hover:bg-muted/50 rounded-md transition-colors"
-                        >
-                            <Heart className="w-3.5 h-3.5 text-muted-foreground" />
-                            Wishlist
                         </Link>
 
 

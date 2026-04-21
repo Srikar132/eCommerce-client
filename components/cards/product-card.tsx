@@ -1,46 +1,33 @@
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, Eye, ShoppingCart } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { Product } from '@/types/product';
 import { PLACEHOLDER_IMAGE } from '@/constants';
 import { useMemo, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-
+import CustomButton from '../ui/custom-button';
+import CustomButton2 from '../ui/custom-button-2';
 
 type Props = {
     product: Product;
-    onToggleWishlist?: (productId: string) => void;
-    isInWishlist?: boolean;
-    isTogglingWishlist?: boolean;
+    onAddToCartClick: () => void;
+    onQuickViewClick: () => void;
+    isUpdating?: boolean;
 };
 
-
-const ProductCardComponent = ({
+const ProductCard = ({
     product,
-    onToggleWishlist,
-    isInWishlist = false,
-    isTogglingWishlist = false,
+    onAddToCartClick,
+    onQuickViewClick,
+    isUpdating,
 }: Props) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const router = useRouter();
 
     const images = product.images && product.images.length > 0
         ? product.images
         : [{ imageUrl: PLACEHOLDER_IMAGE, altText: product.name }];
 
-    const handleWishlistClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (onToggleWishlist) {
-            onToggleWishlist(product.id);
-        }
-    };
-
-    // Get unique colors from variants
     const uniqueColors = useMemo(() => {
         if (!product.variants?.length) return [];
         const seen = new Set<string>();
@@ -48,14 +35,14 @@ const ProductCardComponent = ({
             if (!v.colorHex || seen.has(v.colorHex)) return false;
             seen.add(v.colorHex);
             return true;
-        }).slice(0, 1).map(v => ({ color: v.color, hex: v.colorHex! }));
+        }).slice(0, 3).map(v => ({ color: v.color, hex: v.colorHex! }));
     }, [product.variants]);
 
     return (
-        <div className="group flex flex-col overflow-hidden">
-            {/* Image Container */}
+        <div className="group flex flex-col w-full">
+            {/* Image Container with Responsive Rounded Corners */}
             <div
-                className="relative cursor-pointer aspect-3/4 overflow-hidden bg-muted"
+                className="relative cursor-pointer aspect-[3/4] rounded-[24px] lg:rounded-[40px] overflow-hidden bg-[#F0F2F5] shadow-sm"
                 onMouseLeave={() => setCurrentImageIndex(0)}
             >
                 <Link href={`/products/${product.slug}`} className="block w-full h-full">
@@ -63,113 +50,78 @@ const ProductCardComponent = ({
                         src={images[currentImageIndex].imageUrl}
                         alt={images[currentImageIndex].altText || product.name}
                         fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
                         priority={false}
                     />
                 </Link>
 
-                {/* Invisible hover zones to switch images (desktop) */}
-                {images.length > 1 && (
-                    <div className="absolute inset-0 z-5 hidden sm:flex">
-                        {images.map((_, index) => (
-                            <div
-                                key={index}
-                                className="flex-1 h-full cursor-pointer"
-                                onMouseEnter={() => setCurrentImageIndex(index)}
-                                onClick={() => router.push(`/products/${product.slug}`)}
-                            />
-                        ))}
-                    </div>
-                )}
 
-                {/* View / Quick Look Button — eye icon on mobile, full button on hover for desktop */}
-                <Link
-                    href={`/products/${product.slug}`}
-                    className="absolute bottom-2 right-2 z-10 p-1.5 sm:hidden flex items-center text-foreground/80 hover:text-foreground transition-all duration-200"
-                >
-                    <Eye className="w-3.5 h-3.5" />
-                </Link>
-
-                {/* Quick View hover overlay (desktop) */}
-                <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hidden sm:block">
-                    <Link href={`/products/${product.slug}`}>
-                        <Button
-                            variant="default"
-                            className="w-full rounded-none h-12 text-sm font-medium uppercase tracking-wide flex items-center justify-center gap-2"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <ShoppingCart className="w-4 h-4" />
-                            Quick View
-                        </Button>
-                    </Link>
+                {/* Quick Look / Search (Top Right) - Smaller on Mobile */}
+                <div className="absolute top-4 lg:top-5 right-4 lg:right-5 z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 translate-y-0 sm:translate-y-4 sm:group-hover:translate-y-0">
+                    <CustomButton2
+                        className="w-10 h-10 lg:w-12 lg:h-12 !p-0 shadow-xl border-none bg-white"
+                        fillColor="#000000"
+                        textColor="#000000"
+                        textHoverColor="#ffffff"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onQuickViewClick();
+                        }}
+                    >
+                        <Search className="w-4 h-4 lg:w-5 lg:h-5" strokeWidth={1.5} />
+                    </CustomButton2>
                 </div>
 
-                {/* Image Navigation Dots (only if multiple images) */}
-                {images.length > 1 && (
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        {images.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setCurrentImageIndex(index);
-                                }}
-                                className={cn(
-                                    "w-1.5 h-1.5 rounded-full transition-all duration-200",
-                                    currentImageIndex === index
-                                        ? "bg-white w-5"
-                                        : "bg-white/50 hover:bg-white/75"
-                                )}
-                                aria-label={`View image ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-                )}
+                {/* Add to Cart Overlay (Bottom Center) - Optimized for Mobile */}
+                <div className="absolute bottom-4 lg:bottom-8 left-1/2 -translate-x-1/2 z-20 w-[90%] lg:w-[85%] opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 translate-y-0 sm:translate-y-4 sm:group-hover:translate-y-0">
+                    <CustomButton
+                        bgColor="#ffffff"
+                        circleColor="#000000"
+                        textColor="#000000"
+                        textHoverColor="#ffffff"
+                        className="w-full justify-between shadow-xl h-10 lg:h-12"
+                        circleSize={36}
+                        disabled={isUpdating}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onAddToCartClick();
+                        }}
+                    >
+                        <span className="text-xs lg:text-sm font-bold tracking-tight">
+                            {isUpdating ? "..." : "Add to Bag"}
+                        </span>
+                    </CustomButton>
+                </div>
             </div>
 
             {/* Product Details */}
-            <div className="pt-2.5 sm:pt-3 space-y-1.5">
-                {/* Name + Wishlist row */}
-                <div className="flex items-start gap-2">
-                    <Link href={`/products/${product.slug}`} className="flex-1 min-w-0">
-                        <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                            {product.name}
-                        </h3>
-                    </Link>
-                    <button
-                        onClick={handleWishlistClick}
-                        disabled={isTogglingWishlist}
-                        className="shrink-0 mt-0.5 p-0.5"
-                    >
-                        <Heart
-                            className={cn(
-                                "w-4 h-4 sm:w-4.5 sm:h-4.5 transition-all",
-                                isInWishlist ? "fill-red-500 text-red-500" : "text-muted-foreground hover:text-foreground"
-                            )}
-                            strokeWidth={1.5}
-                        />
-                    </button>
-                </div>
-
-                {/* Price */}
-                <Link href={`/products/${product.slug}`}>
-                    <div className="flex items-baseline gap-1.5 flex-wrap">
-                        <p className="text-sm sm:text-base font-semibold text-foreground">
-                            {formatCurrency(product.basePrice)}
-                        </p>
-                    </div>
+            <div className="pt-4 space-y-1.5 px-1">
+                <Link href={`/products/${product.slug}`} className="block group/link">
+                    <h3 className="text-[15px] lg:text-[17px] font-bold text-black tracking-tight leading-tight group-hover/link:text-accent transition-colors">
+                        {product.name}
+                    </h3>
                 </Link>
 
-                {/* Color swatch */}
+                <div className="flex items-center justify-between">
+                    <p className="text-base lg:text-lg font-bold text-black">
+                        {formatCurrency(product.basePrice)}
+                    </p>
+                </div>
+
+                {/* Color Swatches - Smaller on mobile */}
                 {uniqueColors.length > 0 && (
                     <div className="flex items-center gap-1.5 pt-0.5">
-                        <span
-                            className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border border-border"
-                            style={{ backgroundColor: uniqueColors[0].hex }}
-                            title={uniqueColors[0].color}
-                        />
+                        {uniqueColors.map((c, i) => (
+                            <span
+                                key={i}
+                                className="w-5 h-5 lg:w-6 lg:h-6 rounded-sm border border-black/5 cursor-pointer hover:ring-1 ring-black/20 transition-all"
+                                style={{ backgroundColor: c.hex }}
+                                title={c.color}
+                            />
+                        ))}
                     </div>
                 )}
             </div>
@@ -177,4 +129,4 @@ const ProductCardComponent = ({
     );
 };
 
-export default ProductCardComponent;
+export default ProductCard;

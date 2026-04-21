@@ -243,10 +243,9 @@ function VariantItem({ index, form, disabled, canDelete, onDelete }: VariantItem
                     )}
                 />
 
-                {/* Additional Price */}
                 <FormField
                     control={form.control}
-                    name={`variants.${index}.additionalPrice`}
+                    name={`variants.${index}.priceModifier`}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="text-xs">Extra Price</FormLabel>
@@ -283,7 +282,7 @@ const DEFAULT_VARIANT = {
     color: "",
     colorHex: "",
     stockQuantity: 0,
-    additionalPrice: 0,
+    priceModifier: 0,
 };
 
 export function VariantsSection({

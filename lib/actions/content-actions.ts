@@ -8,7 +8,7 @@ import {
     sliderImages,
 } from "@/drizzle/schema";
 import { eq, asc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 // ==================== TYPES ====================
 
@@ -64,7 +64,7 @@ export async function getLandingCategories(): Promise<LandingCategory[]> {
     }
 }
 
-export async function getActiveLandingCategories(): Promise<LandingCategory[]> {
+export const getActiveLandingCategories = unstable_cache(async (): Promise<LandingCategory[]> => {
     try {
         const categories = await db
             .select()
@@ -76,7 +76,12 @@ export async function getActiveLandingCategories(): Promise<LandingCategory[]> {
         console.error("Error fetching active landing categories:", error);
         return [];
     }
-}
+},
+    ["active-landing-categories"],
+    {
+        revalidate: 60 * 60 * 24 * 7 // 7 days
+    }
+)
 
 export async function createLandingCategory(data: {
     title: string;
@@ -229,7 +234,7 @@ export async function deleteShowcaseProduct(
 
 // ==================== TESTIMONIALS ====================
 
-export async function getLandingTestimonials(): Promise<LandingTestimonial[]> {
+export const getLandingTestimonials = unstable_cache(async (): Promise<LandingTestimonial[]> => {
     try {
         const testimonials = await db
             .select()
@@ -240,9 +245,14 @@ export async function getLandingTestimonials(): Promise<LandingTestimonial[]> {
         console.error("Error fetching testimonials:", error);
         return [];
     }
-}
+},
+    ["landing-testimonials"],
+    {
+        revalidate: 60 * 60 * 24 * 7 // 7 days
+    }
+)
 
-export async function getActiveTestimonials(): Promise<LandingTestimonial[]> {
+export const getActiveTestimonials = unstable_cache(async (): Promise<LandingTestimonial[]> => {
     try {
         const testimonials = await db
             .select()
@@ -254,7 +264,12 @@ export async function getActiveTestimonials(): Promise<LandingTestimonial[]> {
         console.error("Error fetching active testimonials:", error);
         return [];
     }
-}
+},
+    ["active-testimonials"],
+    {
+        revalidate: 60 * 60 * 24 * 7 // 7 days
+    }
+)
 
 export async function createTestimonial(data: {
     customerName: string;

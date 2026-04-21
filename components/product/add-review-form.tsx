@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useForm, Resolver } from "react-hook-form";
+import { useForm, useWatch, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -52,8 +52,8 @@ export function AddReviewForm({ productId, onClose }: AddReviewFormProps) {
         },
     });
 
-    const watchTitle = form.watch("title");
-    const watchComment = form.watch("comment");
+    const watchTitle = useWatch({ control: form.control, name: "title" });
+    const watchComment = useWatch({ control: form.control, name: "comment" });
 
     const onSubmit = async (data: ReviewFormValues) => {
         try {

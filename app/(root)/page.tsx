@@ -1,40 +1,45 @@
 import ArtOfCreation from "@/components/landing-page/art-of-creation";
-import Features from "@/components/landing-page/features";
 import HeroSection from "@/components/landing-page/hero-section";
+import ScrollingBanner from "@/components/landing-page/scrolling-banner";
 import ShopByCategories from "@/components/landing-page/main-categories";
 import OurPromise from "@/components/landing-page/our-promise";
-import ShowCaseSection from "@/components/landing-page/show-case-section";
+// import ShowCaseSection from "@/components/landing-page/show-case-section";
 import SmoothSlider from "@/components/landing-page/smooth-slider-wrapper";
 import Testimonials from "@/components/landing-page/testimonials-wrapper";
+import HotThisWeek from "@/components/landing-page/hot-this-week";
 
 export default function HomeClient() {
-
-
   return (
-    <div className="w-full bg-background min-h-screen relative">
-      {/* 1. HERO - First Impression & Brand Introduction */}
+    <div className="w-full bg-background min-h-screen relative overflow-hidden">
+      {/* 1. HERO - High-Impact First Impression */}
       <HeroSection />
 
-      {/* 2. SHOWCASE - Premium Products Display with Beautiful Background */}
-      {/* <ShowCaseSection /> */}
-
-      {/* 3. CATEGORIES - Browse Product Types (Shop by Category) */}
+      {/* 3. CATEGORIES - Direct Navigation Path (Men, Women, Kids) */}
       <ShopByCategories />
 
-      {/* 5. ART OF CREATION - Explain 3-Step Customization Process */}
-      <ArtOfCreation />
+      {/* 2. SCROLLING BANNER - Immediate Brand Identity & Energy */}
+      <ScrollingBanner />
 
-      {/* 6. OUR PROMISE - Why Choose Us Section */}
-      {/* <OurPromise /> */}
+      {/* 4. TRENDING - "Hot This Week" (Validation & Fast Conversion) */}
+      <HotThisWeek />
 
-      {/* 7. TESTIMONIALS - Customer Reviews & Social Proof */}
-      <Testimonials />
-
-      {/* 8. SOCIAL GALLERY - Instagram Feed / User Generated Content */}
+      {/* 5. BOUTIQUE SHOWCASE - High-End Editorial Storytelling */}
       <SmoothSlider />
 
-      {/* 9. FEATURES - Trust Signals (Free Shipping, Quality, 24/7 Support) */}
-      <Features />
+      {/* 6. ART OF CREATION - The Craftsmanship Narrative ("The Why") */}
+      <ArtOfCreation />
+
+      {/* 7. OUR PROMISE - Quality Assurance & Brand Values */}
+      <OurPromise />
+
+      {/* 8. TESTIMONIALS - Social Proof & Peer Validation */}
+      <Testimonials />
+
+      {/* 9. BRAND SERVICES - Trust Signals & Functional Reassurance */}
+
+
+      {/* Hidden Premium Section for future use */}
+      {/* <ShowCaseSection /> */}
     </div>
   );
 }

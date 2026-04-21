@@ -8,6 +8,7 @@ interface LoadMoreButtonProps {
     currentPage: number;
 }
 
+
 export default function LoadMoreButton({ currentPage }: LoadMoreButtonProps) {
     const router = useRouter();
 
@@ -16,16 +17,14 @@ export default function LoadMoreButton({ currentPage }: LoadMoreButtonProps) {
     };
 
     return (
-        <div className="flex justify-center mt-6">
-            <Button
-                onClick={handleLoadMore}
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto"
-            >
-                <ChevronDown className="mr-2 h-4 w-4" />
-                Load More Orders
-            </Button>
-        </div>
+        <Button
+            onClick={handleLoadMore}
+            variant="outline"
+            className="rounded-full px-12 py-6 h-auto font-bold border-muted-foreground/20 hover:bg-muted group transition-all"
+        >
+            <ChevronDown className="mr-2 h-4 w-4 group-hover:translate-y-0.5 transition-transform" />
+            Load More Orders
+        </Button>
     );
 }
+

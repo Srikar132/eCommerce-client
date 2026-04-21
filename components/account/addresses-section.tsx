@@ -85,141 +85,137 @@ export function AddressesSectionClient() {
         );
     }
 
+
     return (
-        <>
-            <Card className="overflow-hidden border hover:shadow-lg transition-all duration-300">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                    <CardTitle className="text-lg font-semibold">Saved Addresses</CardTitle>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsAddDialogOpen(true)}
-                        className="gap-2 hover:bg-accent"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Add
-                    </Button>
-                </CardHeader>
-                <CardContent className="pt-3">
-                    {!addresses || addresses.length === 0 ? (
-                        <div className="text-center py-8">
-                            <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                                <MapPin className="w-6 h-6 text-muted-foreground/60" />
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-3">
-                                No addresses saved yet
-                            </p>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setIsAddDialogOpen(true)}
-                                className="hover:bg-accent"
-                            >
-                                Add Your First Address
-                            </Button>
+        <Card className="rounded-[2rem] border-none shadow-sm bg-white overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between px-6 py-5 border-b border-muted/20">
+                <CardTitle className="h4 !text-xl font-bold">Delivery Addresses</CardTitle>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsAddDialogOpen(true)}
+                    className="rounded-full px-4 py-2 h-auto font-bold text-accent hover:bg-accent/5 transition-all gap-2"
+                >
+                    <Plus className="w-3.5 h-3.5" />
+                    New Address
+                </Button>
+            </CardHeader>
+            <CardContent className="p-6">
+                {!addresses || addresses.length === 0 ? (
+                    <div className="text-center py-12 bg-muted/10 rounded-[2rem]">
+                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mx-auto mb-4 shadow-sm">
+                            <MapPin className="w-6 h-6 text-accent/30" />
                         </div>
-                    ) : (
-                        <div className="grid gap-3 sm:grid-cols-2">
-                            {addresses.map((address) => (
-                                <div
-                                    key={address.id}
-                                    className="relative p-3 rounded-md border bg-card hover:bg-accent/50 transition-all duration-200 group"
-                                >
-                                    {/* Header */}
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="p-1.5 rounded-full bg-primary/10 shrink-0">
-                                                {getAddressTypeIcon(address.addressType)}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <p className="text-sm font-medium">
-                                                        {address.addressType || 'OTHER'}
-                                                    </p>
-                                                    {address.isDefault && (
-                                                        <Badge variant="default" className="text-[10px] h-4 px-1.5">
-                                                            <Star className="w-2.5 h-2.5 mr-0.5 fill-current" />
-                                                            Default
-                                                        </Badge>
-                                                    )}
-                                                </div>
+                        <p className="p-sm text-muted-foreground mb-6">No saved addresses</p>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsAddDialogOpen(true)}
+                            className="rounded-full px-6 py-2.5 h-auto font-bold border-muted-foreground/10 hover:bg-muted transition-all"
+                        >
+                            Add Address
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        {addresses.map((address) => (
+                            <div
+                                key={address.id}
+                                className="relative p-5 rounded-2xl border-none bg-muted/20 hover:bg-muted/40 transition-all duration-300 group/addr shadow-sm"
+                            >
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                                            {getAddressTypeIcon(address.addressType)}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="p-xs uppercase font-bold tracking-wider text-[10px] opacity-60">
+                                                    {address.addressType || 'OTHER'}
+                                                </p>
+                                                {address.isDefault && (
+                                                    <Badge className="px-1.5 py-0 rounded-full font-bold text-[7px] uppercase tracking-tighter bg-accent text-white border-none h-3.5">
+                                                        Default
+                                                    </Badge>
+                                                )}
                                             </div>
                                         </div>
+                                    </div>
 
-                                        {/* Actions Menu */}
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-7 w-7 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
-                                                    disabled={isDeleting || isSettingDefault}
-                                                >
-                                                    <MoreVertical className="w-3.5 h-3.5" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                {!address.isDefault && (
-                                                    <DropdownMenuItem
-                                                        onClick={() => handleSetDefault(address.id)}
-                                                    >
-                                                        <Star className="w-4 h-4 mr-2" />
-                                                        Set as Default
-                                                    </DropdownMenuItem>
-                                                )}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-7 w-7 rounded-full bg-white/50 hover:bg-white transition-all shadow-sm"
+                                                disabled={isDeleting || isSettingDefault}
+                                            >
+                                                <MoreVertical className="w-3.5 h-3.5 text-muted-foreground" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="rounded-2xl p-2 border-none shadow-xl">
+                                            {!address.isDefault && (
                                                 <DropdownMenuItem
-                                                    onClick={() => {
-                                                        setAddressToDelete(address.id);
-                                                        setDeleteDialogOpen(true);
-                                                    }}
-                                                    className="text-destructive"
+                                                    onClick={() => handleSetDefault(address.id)}
+                                                    className="rounded-xl px-4 py-2 cursor-pointer"
                                                 >
-                                                    Delete
+                                                    <Star className="w-4 h-4 mr-2" />
+                                                    Set as Default
                                                 </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-
-                                    {/* Address Details */}
-                                    <div className="space-y-0.5 text-sm pl-8">
-                                        {address.streetAddress && (
-                                            <p className="text-foreground/90">{address.streetAddress}</p>
-                                        )}
-                                        <p className="text-muted-foreground text-xs">
-                                            {address.city}, {address.state}
-                                        </p>
-                                        <p className="text-muted-foreground text-xs">
-                                            {address.country} - {address.postalCode}
-                                        </p>
-                                    </div>
+                                            )}
+                                            <DropdownMenuItem
+                                                onClick={() => {
+                                                    setAddressToDelete(address.id);
+                                                    setDeleteDialogOpen(true);
+                                                }}
+                                                className="rounded-xl px-4 py-2 text-destructive cursor-pointer"
+                                            >
+                                                Delete Address
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+
+                                <div className="space-y-0.5 pl-12">
+                                    {address.streetAddress && (
+                                        <p className="text-sm font-bold text-foreground/80 leading-snug truncate">{address.streetAddress}</p>
+                                    )}
+                                    <p className="text-[11px] text-muted-foreground">
+                                        {address.city}, {address.state}
+                                    </p>
+                                    <p className="text-[11px] text-muted-foreground">
+                                        {address.country} {address.postalCode}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </CardContent>
 
             <AddAddressDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} />
 
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl max-w-sm">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Address?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Are you sure you want to delete this address? This action cannot be undone.
+                        <AlertDialogTitle className="h4 !text-xl">Delete Address</AlertDialogTitle>
+                        <AlertDialogDescription className="p-sm text-muted-foreground">
+                            This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogFooter className="pt-4 gap-2">
+                        <AlertDialogCancel className="rounded-full px-6 h-10 font-bold border-muted-foreground/10 hover:bg-muted transition-all">
+                            Cancel
+                        </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => addressToDelete && handleDelete(addressToDelete)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="rounded-full px-6 h-10 font-bold bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all"
                         >
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </>
+        </Card>
     );
 }

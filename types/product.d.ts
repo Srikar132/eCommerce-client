@@ -2,7 +2,10 @@
 // Product Params
 export type ProductParams = {
     category?: string;        // Single category slug ?category=womens
-    size?: string;            // Single size value ?size=M
+    sizes?: string;           // Comma-separated sizes ?sizes=S,M
+    colors?: string;          // Comma-separated colors ?colors=RED,BLUE
+    minPrice?: number;
+    maxPrice?: number;
     searchQuery?: string;     // Full-text search query
     page?: number;            // 0-based page number
     limit?: number;           // Page size (items per page)
@@ -44,6 +47,11 @@ export interface Product {
 
     images: ProductImage[];
     variants?: ProductVariant[]; // Optional for relationships
+    category?: {
+        id: string;
+        name: string;
+        slug: string;
+    };
 }
 
 
@@ -57,7 +65,8 @@ export interface ProductVariant {
     colorHex?: string;   // #FFFFFF
 
     stockQuantity: number;
-    additionalPrice: number;
+
+    priceModifier: number;
 
     sku: string;
     isActive: boolean;

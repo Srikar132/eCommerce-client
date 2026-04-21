@@ -96,7 +96,7 @@ export const productVariantSchema = z.object({
     color: z.string().min(1, "Color is required"),
     colorHex: z.string().optional(),
     stockQuantity: z.coerce.number().min(0, "Stock quantity must be non-negative"),
-    additionalPrice: z.coerce.number().default(0),
+    priceModifier: z.coerce.number().default(0),
     sku: z.string().optional(), // SKU is auto-generated
 });
 

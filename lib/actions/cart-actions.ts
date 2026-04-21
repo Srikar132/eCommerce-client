@@ -198,7 +198,7 @@ export async function addItemToCart(
             ),
         });
 
-        const unitPrice = parseFloat(product.basePrice) + parseFloat(variant.additionalPrice);
+        const unitPrice = parseFloat(product.basePrice) + parseFloat(variant.priceModifier);
 
         if (existingItem) {
             // Update quantity

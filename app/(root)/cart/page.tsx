@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { LoginRequired } from "@/components/auth/login-required";
 import { CartClient } from "@/components/cart/cart-client";
 import { Metadata } from "next";
+import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
 
 export const metadata: Metadata = {
   title: "Shopping Cart | NaLa Armoire",
@@ -15,5 +16,12 @@ export default async function Cart() {
     return <LoginRequired />;
   }
 
-  return <CartClient />;
+  return (
+    <div className="container mx-auto px-4 py-12 md:py-20 max-w-5xl">
+        <div className="mb-8">
+            <BreadcrumbNavigation />
+        </div>
+        <CartClient />
+    </div>
+  );
 }

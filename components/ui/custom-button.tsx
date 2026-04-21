@@ -1,11 +1,13 @@
 "use client"
-import { useRef, useEffect } from "react"
+import { useRef } from "react"
 import { gsap } from "gsap"
 import { cn } from "@/lib/utils"
 import { ArrowRight } from "lucide-react"
 import { useGSAP } from "@gsap/react"
+import Link from "next/link"
 
 interface ArrowButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  href?: string
   bgColor?: string
   circleColor?: string
   textColor?: string
@@ -14,6 +16,7 @@ interface ArrowButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 export default function CustomButton({
+  href,
   bgColor = "#ffffff",
   circleColor = "#111111",
   textColor = "#111111",
@@ -23,15 +26,18 @@ export default function CustomButton({
   children,
   ...props
 }: ArrowButtonProps) {
-  const btnRef    = useRef<HTMLButtonElement>(null)
-  const labelRef  = useRef<HTMLSpanElement>(null)
+  // Use a generic HTMLElement ref since it can be either a Link (anchor) or button
+  const btnRef = useRef<HTMLElement>(null)
+  const labelRef = useRef<HTMLSpanElement>(null)
   const circleRef = useRef<HTMLSpanElement>(null)
-  const arrowRef  = useRef<HTMLSpanElement>(null)
-  const enterTl   = useRef<gsap.core.Timeline | null>(null)
-  const arrowTl   = useRef<gsap.core.Timeline | null>(null)
+  const arrowRef = useRef<HTMLSpanElement>(null)
+  const enterTl = useRef<gsap.core.Timeline | null>(null)
+  const arrowTl = useRef<gsap.core.Timeline | null>(null)
 
   useGSAP(() => {
-    const btn   = btnRef.current!
+    const btn = btnRef.current
+    if (!btn) return
+    
     const label = labelRef.current!
     const arrow = arrowRef.current!
     const circ  = circleRef.current!
@@ -72,34 +78,36 @@ export default function CustomButton({
 
     btn.addEventListener("mouseenter", onEnter)
     btn.addEventListener("mouseleave", onLeave)
+    btn.addEventListener("touchstart", onEnter, { passive: true })
+    btn.addEventListener("touchend", onLeave, { passive: true })
 
     return () => {
       btn.removeEventListener("mouseenter", onEnter)
       btn.removeEventListener("mouseleave", onLeave)
+      btn.removeEventListener("touchstart", onEnter)
+      btn.removeEventListener("touchend", onLeave)
       enterTl.current?.kill()
       arrowTl.current?.kill()
     }
   }, [circleColor, circleSize, textColor, textHoverColor])
 
-  return (
-    <button
-      ref={btnRef}
-      className={cn(
-        "relative inline-flex items-center overflow-hidden cursor-pointer rounded-full outline-none",
-        "focus-visible:ring-4 focus-visible:ring-black/20",
-        "disabled:pointer-events-none disabled:opacity-50",
-        className
-      )}
-      style={{
-        background: bgColor,
-        // border: `2px solid ${circleColor}`,
-        gap: "0.6rem",
-        padding: `0.5rem ${0.5 + 0.07 * circleSize}rem 0.5rem 1.25rem`,
-        minHeight: `${0.08 * circleSize}rem`
-      }}
-      {...props}
-    >
-      {/* Expanding circle — vertically centered, anchored to the right */}
+  const commonProps = {
+    className: cn(
+      "relative inline-flex items-center overflow-hidden cursor-pointer rounded-full outline-none",
+      "focus-visible:ring-4 focus-visible:ring-black/20",
+      "disabled:pointer-events-none disabled:opacity-50",
+      className
+    ),
+    style: {
+      background: bgColor,
+      gap: "0.6rem",
+      padding: `0.5rem ${0.5 + 0.07 * circleSize}rem 0.5rem 1.25rem`,
+      minHeight: `${0.08 * circleSize}rem`
+    }
+  }
+
+  const content = (
+    <>
       <span
         ref={circleRef}
         aria-hidden
@@ -114,7 +122,6 @@ export default function CustomButton({
         }}
       />
 
-      {/* Label */}
       <span
         ref={labelRef}
         className="relative z-20 whitespace-nowrap font-bold"
@@ -123,7 +130,6 @@ export default function CustomButton({
         {children}
       </span>
 
-      {/* Arrow container — fixed square, always matches circleSize */}
       <span
         className="absolute z-20 flex shrink-0 items-center justify-center rounded-full"
         style={{ width: circleSize , right : (4/22) * circleSize , height: circleSize }}
@@ -136,6 +142,29 @@ export default function CustomButton({
           <ArrowRight size={circleSize * 0.45} />
         </span>
       </span>
+    </>
+  )
+
+  if (href) {
+    return (
+      <Link 
+        href={href} 
+        ref={btnRef as React.Ref<HTMLAnchorElement>} 
+        {...commonProps} 
+        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      >
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <button 
+      ref={btnRef as React.Ref<HTMLButtonElement>} 
+      {...commonProps} 
+      {...props}
+    >
+      {content}
     </button>
   )
 }

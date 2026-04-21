@@ -1,185 +1,166 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { ProductImage } from "@/types/product";
-import { ChevronLeft, ChevronRight, Share2, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Search } from "lucide-react";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel";
+import ImageZoomModal from "./image-zoom-modal";
 
 interface ProductImageGalleryProps {
     images: ProductImage[];
     productName?: string;
     productSlug?: string;
-    onToggleWishlist?: () => void;
-    isInWishlist?: boolean;
-    isTogglingWishlist?: boolean;
 }
 
-export default function ProductImageGallery({ images, productName, productSlug, onToggleWishlist, isInWishlist = false, isTogglingWishlist = false }: ProductImageGalleryProps) {
-    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-
-    const handleShare = useCallback(() => {
-        if (!productSlug) return;
-
-        const productUrl = `https://nalaarmoire.com/products/${productSlug}`;
-        const message = productName
-            ? `Check out ${productName} from Nala Armoire! ${productUrl}`
-            : `Check out this product from Nala Armoire! ${productUrl}`;
-
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-        toast.success("Opening WhatsApp...");
-    }, [productName, productSlug]);
-
-    const handlePrevious = () => {
-        setSelectedImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-    };
-
-    const handleNext = () => {
-        setSelectedImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    };
+export default function ProductImageGallery({
+    images,
+    productName,
+}: ProductImageGalleryProps) {
+    const [zoomImage, setZoomImage] = useState<{ id: string; url: string; alt: string } | null>(null);
 
     if (!images || images.length === 0) {
         return (
-            <div className="w-full">
-                <div className="relative w-full aspect-[3/4]">
-                    <div className="absolute inset-0 flex items-center justify-center bg-muted/30">
-                        <div className="text-muted-foreground text-center">
-                            <p className="text-lg">No images available</p>
-                        </div>
-                    </div>
-                </div>
+            <div className="w-full aspect-[3/4] bg-muted/20 rounded-[32px] flex items-center justify-center">
+                <p className="text-muted-foreground">No images available</p>
             </div>
         );
     }
 
-    const hasMultipleImages = images.length > 1;
+    const scrollToImage = (id: string) => {
+        const element = document.getElementById(`image-${id}`);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
 
     return (
         <div className="w-full">
-            {/* Desktop Layout: Thumbnails Left + Main Image Right */}
-            <div className="flex flex-col lg:flex-row gap-3 lg:gap-4">
-
-                {/* Thumbnails - Left side on desktop, below on mobile */}
-                {hasMultipleImages && (
-                    <div className="order-2 lg:order-1 lg:w-20 xl:w-24 shrink-0">
-                        {/* Vertical thumbnails for desktop */}
-                        <div className="hidden lg:flex flex-col gap-2 max-h-[600px] overflow-y-auto scrollbar-thin">
-                            {images.filter(image => image.imageUrl).map((image, index) => (
-                                <button
-                                    key={image.id}
-                                    onClick={() => setSelectedImageIndex(index)}
-                                    className={cn(
-                                        "relative aspect-square w-full overflow-hidden transition-all cursor-pointer border-2 rounded-md",
-                                        selectedImageIndex === index
-                                            ? "border-primary"
-                                            : "border-transparent hover:border-primary/40"
-                                    )}
-                                >
-                                    <Image
-                                        src={image.imageUrl!}
-                                        alt={image.altText || `Product Image ${index + 1}`}
-                                        fill
-                                        className="object-cover"
-                                        sizes="96px"
-                                    />
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Horizontal thumbnails for mobile/tablet */}
-                        <div className="flex lg:hidden gap-2 overflow-x-auto pb-2 scrollbar-thin">
-                            {images.filter(image => image.imageUrl).map((image, index) => (
-                                <button
-                                    key={image.id}
-                                    onClick={() => setSelectedImageIndex(index)}
-                                    className={cn(
-                                        "relative aspect-square w-16 sm:w-20 shrink-0 overflow-hidden transition-all cursor-pointer border-2 rounded-md",
-                                        selectedImageIndex === index
-                                            ? "border-primary"
-                                            : "border-transparent hover:border-primary/40"
-                                    )}
-                                >
-                                    <Image
-                                        src={image.imageUrl!}
-                                        alt={image.altText || `Product Image ${index + 1}`}
-                                        fill
-                                        className="object-cover"
-                                        sizes="80px"
-                                    />
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Main Image Container */}
-                <div className="order-1 lg:order-2 flex-1 relative">
-                    <div className="relative w-full aspect-square sm:aspect-4/5 lg:aspect-3/4 overflow-hidden group">
-                        {!!images[selectedImageIndex]?.imageUrl ? (
+            <div className="flex gap-6">
+                {/* Desktop Thumbnails Sidebar */}
+                <div className="hidden lg:flex flex-col gap-4 sticky top-32 h-fit min-w-[80px]">
+                    {images.map((image, index) => (
+                        <button
+                            key={`thumb-${image.id}`}
+                            onClick={() => scrollToImage(image.id)}
+                            className="relative w-20 aspect-[3/4] rounded-2xl overflow-hidden bg-muted hover:ring-2 hover:ring-accent transition-all group"
+                        >
                             <Image
-                                src={images[selectedImageIndex].imageUrl}
-                                alt={images[selectedImageIndex].altText || `Product Image ${selectedImageIndex + 1}`}
+                                src={image.imageUrl}
+                                alt={`Thumbnail ${index + 1}`}
                                 fill
-                                className="object-cover"
-                                priority={selectedImageIndex === 0}
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                                className="object-cover opacity-60 group-hover:opacity-100 transition-opacity"
+                                sizes="80px"
                             />
-                        ) : (
+                        </button>
+                    ))}
+                </div>
+
+                {/* Desktop: Vertical Stack of Images */}
+                <div className="hidden lg:flex flex-col gap-8 flex-1">
+                    {images.map((image, index) => (
+                        <div
+                            id={`image-${image.id}`}
+                            key={image.id}
+                            className="relative w-full aspect-[3/4] rounded-[32px] overflow-hidden bg-muted group"
+                        >
                             <Image
-                                src="/images/image-not-found.webp"
-                                alt="Image not found"
+                                src={image.imageUrl}
+                                alt={image.altText || productName || `Product image ${index + 1}`}
                                 fill
-                                className="object-cover"
+                                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                                priority={index === 0}
+                                sizes="(min-width: 1024px) 60vw, 1000px"
                             />
-                        )}
 
-                        {/* Navigation Arrows - Only show if multiple images */}
-                        {hasMultipleImages && (
-                            <>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={handlePrevious}
-                                    className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                    aria-label="Previous image"
-                                >
-                                    <ChevronLeft className="h-5 w-5" />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={handleNext}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                    aria-label="Next image"
-                                >
-                                    <ChevronRight className="h-5 w-5" />
-                                </Button>
-
-                                {/* Image Counter */}
-                                <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">
-                                    {selectedImageIndex + 1} / {images.length}
-                                </div>
-                            </>
-                        )}
-
-                        {/* Share & Like Buttons */}
-                        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
-                            {productSlug && (
-                                <button
-                                    onClick={handleShare}
-                                    className="p-2.5 rounded-full bg-white/90 hover:bg-primary cursor-pointer hover:text-white transition-all duration-200"
-                                    aria-label="Share on WhatsApp"
-                                >
-                                    <Share2 className="h-5 w-5" />
-                                </button>
-                            )}
+                            {/* Zoom Button - Clickable trigger */}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setZoomImage({
+                                        id: image.id,
+                                        url: image.imageUrl,
+                                        alt: image.altText || productName || `Product image ${index + 1}`
+                                    });
+                                }}
+                                className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-foreground shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 hover:bg-white hover:scale-110 active:scale-95"
+                                aria-label="Zoom image"
+                            >
+                                <Search size={20} strokeWidth={1.5} />
+                            </button>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
+
+            {/* Mobile: Carousel */}
+            <div className="lg:hidden relative group">
+                <Carousel className="w-full">
+                    <CarouselContent>
+                        {images.map((image, index) => (
+                            <CarouselItem key={image.id}>
+                                <div className="relative aspect-[3/4] w-full rounded-[32px] overflow-hidden bg-muted">
+                                    <Image
+                                        src={image.imageUrl}
+                                        alt={image.altText || productName || `Product image ${index + 1}`}
+                                        fill
+                                        className="object-cover"
+                                        priority={index === 0}
+                                        sizes="100vw"
+                                    />
+
+                                    {/* Mobile Zoom Trigger */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setZoomImage({
+                                                id: image.id,
+                                                url: image.imageUrl,
+                                                alt: image.altText || productName || `Product image ${index + 1}`
+                                            });
+                                        }}
+                                        className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-foreground shadow-sm z-10 active:scale-90 transition-transform"
+                                        aria-label="Zoom image"
+                                    >
+                                        <Search size={18} strokeWidth={1.5} />
+                                    </button>
+
+                                    {/* Mobile Indicator */}
+                                    <div className="absolute bottom-6 right-6 px-3 py-1 bg-black/40 backdrop-blur-md rounded-full text-white text-[10px] font-bold">
+                                        {index + 1} / {images.length}
+                                    </div>
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+
+                    {/* Navigation Arrows for Mobile Prompting */}
+                    {images.length > 1 && (
+                        <>
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+                                <CarouselPrevious className="relative left-0 translate-y-0 w-10 h-10 border-none bg-white/40 backdrop-blur-sm text-foreground hover:bg-white/60 transition-colors" />
+                            </div>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
+                                <CarouselNext className="relative right-0 translate-y-0 w-10 h-10 border-none bg-white/40 backdrop-blur-sm text-foreground hover:bg-white/60 transition-colors" />
+                            </div>
+                        </>
+                    )}
+                </Carousel>
+            </div>
+
+            {/* Zoom Modal */}
+            {zoomImage && (
+                <ImageZoomModal
+                    image={zoomImage}
+                    onClose={() => setZoomImage(null)}
+                />
+            )}
         </div>
     );
 }

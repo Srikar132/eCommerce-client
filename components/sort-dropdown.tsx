@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { Check, ChevronsUpDown, ListFilter, Loader2 } from "lucide-react";
+import { ListFilter } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { ProductParams } from "@/types/product";
 
@@ -36,52 +36,42 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
   onChange,
   isLoading = false
 }) => {
-  const currentOption = sortOptions.find((opt) => opt.value === value);
-  const currentLabel = currentOption?.label || "Newest First";
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild className="z-40!">
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-2"
-          disabled={isLoading}
-        >
-          {/* Desktop: Show full text */}
-          <span className="hidden lg:inline text-sm">Sort: {currentLabel}</span>
-          {isLoading ? (
-            <Loader2 className="hidden lg:block h-4 w-4 animate-spin" />
-          ) : (
-            <ChevronsUpDown className="hidden lg:block h-4 w-4 opacity-50" />
-          )}
-
-          {/* Mobile: Show only icon */}
-          {isLoading ? (
-            <Loader2 className="lg:hidden h-5 w-5 animate-spin" />
-          ) : (
-            <ListFilter className="lg:hidden h-5 w-5" />
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-50 z-40">
+    <Select 
+      value={value} 
+      onValueChange={(val) => onChange(val as ProductParams["sortBy"])} 
+      disabled={isLoading}
+    >
+      <SelectTrigger 
+        className={cn(
+          "!h-12 px-8 rounded-full border-foreground/10 bg-background",
+          "focus:ring-accent/10 focus:border-accent transition-all duration-300",
+          "w-fit min-w-[140px] lg:min-w-[220px]"
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <ListFilter className="h-4 w-4 lg:hidden" strokeWidth={1.5} />
+          <span className="hidden lg:inline text-xs font-bold uppercase tracking-[0.2em] text-foreground/60">
+            Sort: 
+          </span>
+          <div className="hidden lg:block text-xs font-bold uppercase tracking-[0.2em]">
+            <SelectValue placeholder="Sort By" />
+          </div>
+        </div>
+      </SelectTrigger>
+      
+      <SelectContent className="rounded-[24px] shadow-2xl border-border/40 backdrop-blur-md bg-background/95 z-50 p-2">
         {sortOptions.map((option) => (
-          <DropdownMenuItem
+          <SelectItem
             key={option.value}
-            onClick={() => onChange(option.value)}
-            className={cn(
-              "cursor-pointer flex items-center justify-between",
-              value === option.value && "bg-accent"
-            )}
+            value={option.value || ""}
+            className="cursor-pointer px-4 py-3 rounded-full mb-1 last:mb-0 focus:bg-foreground focus:text-background transition-colors"
           >
-            <span>{option.label}</span>
-            {value === option.value && (
-              <Check className="h-4 w-4" />
-            )}
-          </DropdownMenuItem>
+            <span className="text-xs uppercase tracking-widest font-medium">{option.label}</span>
+          </SelectItem>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </SelectContent>
+    </Select>
   );
 };
 

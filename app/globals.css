@@ -47,59 +47,59 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 1.5rem;
 
   /* ───── Base ───── */
   --background: #ffffff;
-  --foreground: oklch(0.22 0.025 35);        /* deep warm brown — rich, readable */
+  --foreground: #000000;
 
   /* ───── Cards / Surfaces ───── */
-  --card: oklch(0.985 0.005 30);              /* barely-there blush white */
-  --card-foreground: oklch(0.22 0.025 35);
+  --card: #ffffff;
+  --card-foreground: #000000;
 
-  --popover: oklch(0.985 0.005 30);           /* matches card — consistent */
-  --popover-foreground: oklch(0.22 0.025 35);
+  --popover: #ffffff;
+  --popover-foreground: #000000;
 
   /* ───── Primary (CTA — Shop Now) ───── */
-  --primary: oklch(0.62 0.175 14);            /* confident rose — not too light */
-  --primary-foreground: oklch(0.98 0.006 30); /* near-white cream */
+  --primary: #000000;
+  --primary-foreground: #ffffff;
 
-  /* ───── Secondary ───── */
-  --secondary: oklch(0.97 0.008 25);          /* very light rosy white */
-  --secondary-foreground: oklch(0.22 0.025 35);
+  /* ───── Secondary (Soft Yellow Accent) ───── */
+  --secondary: #F5F5C6;
+  --secondary-foreground: #000000;
 
-  /* ───── Muted ───── */
-  --muted: oklch(0.975 0.005 25);             /* whisper pink-white */
-  --muted-foreground: oklch(0.52 0.02 35);    /* soft warm grey */
+  /* ───── Muted (Soft Grey) ───── */
+  --muted: #F5F5F5;
+  --muted-foreground: #737373;
 
-  /* ───── Accent (hover states, tags, badges) ───── */
-  --accent: oklch(0.96 0.012 15);             /* faint blush pink */
-  --accent-foreground: oklch(0.22 0.025 35);
+  /* ───── Accent (Sage Green - Pebble Signature) ───── */
+  --accent: #9BA88B;
+  --accent-foreground: #ffffff;
 
   /* ───── Destructive ───── */
-  --destructive: oklch(0.62 0.18 25);         /* muted coral */
+  --destructive: oklch(0.602 0.199 27.362);
 
   /* ───── Borders / Inputs ───── */
-  --border: oklch(0.92 0.01 30);              /* soft warm white border */
-  --input: oklch(0.92 0.01 30);
-  --ring: oklch(0.72 0.13 14);                /* rose focus ring */
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #000000;
 
   /* ───── Charts ───── */
-  --chart-1: oklch(0.68 0.14 14);             /* deep rose */
-  --chart-2: oklch(0.74 0.09 200);            /* dusty blue */
-  --chart-3: oklch(0.78 0.07 80);             /* warm gold */
-  --chart-4: oklch(0.78 0.06 320);            /* lavender */
-  --chart-5: oklch(0.78 0.08 50);             /* peach */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 184.436);
+  --chart-5: oklch(0.769 0.188 70.08);
 
   /* ───── Sidebar ───── */
-  --sidebar: oklch(0.985 0.005 30);
-  --sidebar-foreground: oklch(0.22 0.025 35);
-  --sidebar-primary: oklch(0.62 0.175 14);
-  --sidebar-primary-foreground: oklch(0.98 0.006 30);
-  --sidebar-accent: oklch(0.96 0.012 15);
-  --sidebar-accent-foreground: oklch(0.22 0.025 35);
-  --sidebar-border: oklch(0.92 0.01 30);
-  --sidebar-ring: oklch(0.72 0.13 14);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #000000;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F5F5F5;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #000000;
 }
 
 @layer base {
@@ -116,10 +116,9 @@
   h3,
   h4,
   h5 {
-    font-family: var(--font-heading) !important;
+    font-family: var(--font-inter) !important;
+    letter-spacing: -0.02em;
   }
-
-
 }
 
 @layer utilities {
@@ -146,6 +145,30 @@
     scrollbar-width: none;
   } */
 
+  .link-underline {
+    position: relative;
+    display: inline-block;
+    text-decoration: none !important;
+  }
+
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1.5px;
+    bottom: -1px;
+    left: 0;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.45s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  .link-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
 }
 
 
@@ -154,11 +177,11 @@
 
   /* ─── Layout ─── */
   .container {
-    @apply max-w-7xl! w-full! mx-auto! px-4! sm:px-6! lg:px-8! lg:max-w-360!;
+    @apply max-w-7xl w-full mx-auto px-6 sm:px-10 lg:px-12;
   }
 
   .section {
-    @apply py-12 md:py-16 relative bg-background;
+    @apply py-24 md:py-32 relative bg-background;
   }
 
   .section-header {
@@ -167,13 +190,13 @@
 
   /* ─── Typography ─── */
   h1 {
-    @apply font-semibold text-[2.25rem] leading-[2.875rem]
+    @apply font-bold text-[2.25rem] leading-[2.875rem]
            md:text-[3rem] md:leading-[3.75rem]
            lg:text-[3.75rem] lg:leading-[4.5rem];
   }
 
   h2 {
-    @apply font-semibold text-[1.75rem] leading-[2.25rem]
+    @apply font-bold text-[1.75rem] leading-[2.25rem]
            md:text-[2.25rem] md:leading-[2.875rem]
            lg:text-[2.75rem] lg:leading-[3.5rem];
   }

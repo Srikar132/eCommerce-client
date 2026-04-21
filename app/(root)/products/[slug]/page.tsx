@@ -4,10 +4,12 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import { PLACEHOLDER_IMAGE } from "@/constants";
 import { getProductBySlug, getProductVariants } from "@/lib/actions/product-actions";
-import { Product, ProductVariant } from "@/types/product";
 import ProductReviewsSection from "@/components/product/product-reviews-section";
 import { ReviewsSkeleton } from "@/components/product/reviews-skeleton";
 import { ProductSchema, BreadcrumbSchema } from "@/components/shared/structured-data";
+import ScrollingBanner from "@/components/landing-page/scrolling-banner";
+import ProductRecommendations from "@/components/product/product-recommendations";
+import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
 
 
 interface ProductPageProps {
@@ -113,17 +115,31 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             <BreadcrumbSchema items={breadcrumbItems} />
 
             {/* BREADCRUMB  */}
-
-
+            <div className="px-4 sm:px-6 lg:px-8 pt-6 lg:hidden">
+                <BreadcrumbNavigation />
+            </div>
             <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
                 <ProductDetailClient product={product} variants={variants} />
 
-                {/* Reviews Section - Server Component with its own prefetching */}
+                {/* Reviews Section - Moved up */}
                 <Suspense fallback={<ReviewsSkeleton />}>
-                    <div className="sm:mt-10 lg:mt-12">
+                    <div className="mt-20">
                         <ProductReviewsSection productId={product.id} />
                     </div>
                 </Suspense>
+
+                {/* Scrolling Banner */}
+                <div className="mt-20 -mx-4 sm:-mx-6 lg:-mx-8">
+                    <ScrollingBanner />
+                </div>
+
+                {/* You May Also Like Section */}
+                <div className="mt-20">
+                    <ProductRecommendations
+                        excludeProductId={product.id}
+                        categorySlug={product.category?.slug}
+                    />
+                </div>
             </div>
         </div>
     );

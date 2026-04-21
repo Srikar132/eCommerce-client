@@ -3,6 +3,7 @@
 import { getOrderDetails } from "@/lib/actions/order-actions";
 import { notFound } from "next/navigation";
 import OrderTrackingClient from "@/components/order/order-tracking-client";
+import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
 
 export default async function OrderPage({
     params
@@ -19,6 +20,9 @@ export default async function OrderPage({
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl">
+            <div className="mb-6">
+                <BreadcrumbNavigation />
+            </div>
             <OrderTrackingClient order={order} />
         </div>
     );

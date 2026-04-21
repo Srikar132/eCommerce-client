@@ -1,206 +1,191 @@
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from 'lucide-react';
-import Header from '@/components/header';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Mail, Phone, Clock, ChevronRight } from 'lucide-react';
 import { getStoreSettings } from '@/lib/actions/store-settings-actions';
 import type { Metadata } from "next";
+import CustomButton from '@/components/ui/custom-button';
+import BreadcrumbNavigation from '@/components/breadcrumb-navigation';
+import ScrollingBanner from '@/components/landing-page/scrolling-banner';
 
 export const metadata: Metadata = {
   title: "Contact Us",
-  description: "Get in touch with Nala Armoire for any questions, feedback, or support. We're here to help you with your shopping experience.",
-  openGraph: {
-    title: "Contact Us - Nala Armoire",
-    description: "Get in touch with Nala Armoire for any questions, feedback, or support.",
-    url: "https://nalaarmoire.com/contact",
-  },
+  description: "Get in touch with Nala Armoire. Wanna say hi? Here&apos;s where to find us &amp; when we&apos;re around!",
 };
 
 export default async function ContactPage() {
   const settings = await getStoreSettings();
+
   return (
     <main className="min-h-screen bg-background">
-      {/* Header Section */}
-      <Header
-        title="Get In Touch"
-        subtitle="We'd love to hear from you. Send us a message and we'll respond as soon as possible."
-      />
+      <div className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
+        <BreadcrumbNavigation />
+        {/* Hero Section */}
+        <div className="mb-16">
+          <h1 className="h1 mb-4">Wanna Say Hi?</h1>
+          <p className="p-base text-muted-foreground/70">
+            Here&apos;s where to find us &amp; when we&apos;re around!
+          </p>
+        </div>
 
-      {/* Main Content */}
-      <section className="py-12 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20">
+          {/* Contact Form Column */}
+          <div className="lg:col-span-8">
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Name */}
+              <div className="space-y-3">
+                <label htmlFor="name" className="text-sm font-bold pl-1">Name</label>
+                <Input
+                  id="name"
+                  placeholder=""
+                  className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus-visible:ring-1 focus-visible:ring-accent/20"
+                />
+              </div>
 
-            {/* Contact Form */}
-            <div className="lg:col-span-3 order-2 lg:order-1">
-              <Card className="border-border bg-card shadow-sm">
-                <CardContent className="p-6 lg:p-8">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-serif font-light text-foreground">
-                        Send a Message
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        Fill out the form below
-                      </p>
-                    </div>
+              {/* Email */}
+              <div className="space-y-3">
+                <label htmlFor="email" className="text-sm font-bold pl-1">Email*</label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder=""
+                  className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus-visible:ring-1 focus-visible:ring-accent/20"
+                />
+              </div>
+
+              {/* Phone Number */}
+              <div className="space-y-3">
+                <label htmlFor="phone" className="text-sm font-bold pl-1">Phone Number</label>
+                <Input
+                  id="phone"
+                  placeholder=""
+                  className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus-visible:ring-1 focus-visible:ring-accent/20"
+                />
+              </div>
+
+              {/* Order Number */}
+              <div className="space-y-3">
+                <label htmlFor="order" className="text-sm font-bold pl-1">Order Number</label>
+                <Input
+                  id="order"
+                  placeholder=""
+                  className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus-visible:ring-1 focus-visible:ring-accent/20"
+                />
+              </div>
+
+              {/* Country */}
+              <div className="md:col-span-2 space-y-3">
+                <label htmlFor="country" className="text-sm font-bold pl-1">Country</label>
+                <Select defaultValue="austria">
+                  <SelectTrigger className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus:ring-1 focus:ring-accent/20">
+                    <SelectValue placeholder="Select Country" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl border-none shadow-xl">
+                    <SelectItem value="austria">Austria</SelectItem>
+                    <SelectItem value="germany">Germany</SelectItem>
+                    <SelectItem value="switzerland">Switzerland</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+
+              {/* Message */}
+              <div className="md:col-span-2 space-y-3">
+                <label htmlFor="message" className="text-sm font-bold pl-1">Your Message</label>
+                <Textarea
+                  id="message"
+                  placeholder=""
+                  className="min-h-[180px] rounded-[2rem] border-none bg-[#F5F5F5] p-6 focus-visible:ring-1 focus-visible:ring-accent/20 resize-none"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="md:col-span-2 pt-4">
+                <CustomButton
+                  bgColor="#000000"
+                  circleColor="#ffffff"
+                  textColor="#ffffff"
+                  textHoverColor="#000000"
+                  circleSize={44}
+                  className="min-w-[200px]"
+                >
+                  Send Message
+                </CustomButton>
+              </div>
+            </form>
+          </div>
+
+          {/* Information Column */}
+          <div className="lg:col-span-4 lg:border-l lg:border-muted/30 lg:pl-16">
+            <div className="space-y-12">
+              <div>
+                <h2 className="h2 !text-3xl mb-4">Information</h2>
+                <p className="p-sm text-muted-foreground leading-relaxed max-w-xs">
+                  Our location, phone number & business hours —right at your fingertips.
+                </p>
+              </div>
+
+              <div className="space-y-10">
+                {/* Support */}
+                <div className="flex gap-5 group">
+                  <div className="w-12 h-12 rounded-2xl bg-muted/20 flex items-center justify-center shrink-0 group-hover:bg-accent/10 transition-colors">
+                    <Mail className="w-6 h-6 text-foreground" />
                   </div>
-
-                  <form className="space-y-5">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                        Full Name
-                      </label>
-                      <Input
-                        type="text"
-                        id="name"
-                        name="name"
-                        required
-                        className="w-full h-11 border-border bg-background focus:border-primary focus:ring-primary/20"
-                        placeholder="Enter your full name"
-                      />
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-lg">Support</h4>
+                    <div className="flex items-center gap-2 text-muted-foreground hover:text-accent transition-colors cursor-pointer group/link">
+                      <span className="text-sm border-b border-muted-foreground/30 group-hover/link:border-accent">
+                        {settings.email || 'pebble@mystore.com'}
+                      </span>
+                      <div className="w-6 h-6 rounded-full bg-muted/20 flex items-center justify-center group-hover/link:bg-accent/20 transition-all">
+                        <ChevronRight className="w-3 h-3" />
+                      </div>
                     </div>
-
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                        Email Address
-                      </label>
-                      <Input
-                        type="email"
-                        id="email"
-                        name="email"
-                        required
-                        className="w-full h-11 border-border bg-background focus:border-primary focus:ring-primary/20"
-                        placeholder="your.email@example.com"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="query" className="block text-sm font-medium text-foreground mb-2">
-                        Your Message
-                      </label>
-                      <textarea
-                        id="query"
-                        name="query"
-                        rows={5}
-                        required
-                        className="w-full px-3 py-3 border border-border rounded-lg bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none transition-colors"
-                        placeholder="Tell us how we can help you..."
-                      />
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 font-medium flex items-center justify-center gap-2 shadow-sm"
-                    >
-                      <Send className="w-4 h-4" />
-                      Send Message
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Contact Information */}
-            <div className="lg:col-span-2 order-1 lg:order-2">
-              <div className="space-y-6">
-
-                <div>
-                  <h2 className="text-2xl font-serif font-light text-foreground mb-6">
-                    Visit Us
-                  </h2>
-
-                  <div className="space-y-5">
-                    <Card className="border-border bg-card hover:shadow-md transition-shadow duration-300">
-                      <CardContent className="p-5">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                            <MapPin className="w-5 h-5 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-foreground text-sm mb-2">Address</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                              NALA ARMOIRE<br />
-                              {settings.address}<br />
-                              {settings.city}, {settings.state} {settings.pincode}<br />
-                              {settings.country}
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="border-border bg-card hover:shadow-md transition-shadow duration-300">
-                      <CardContent className="p-5">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                            <Phone className="w-5 h-5 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-foreground text-sm mb-2">Phone</h3>
-                            <p className="text-sm text-muted-foreground">{settings.phone}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="border-border bg-card hover:shadow-md transition-shadow duration-300">
-                      <CardContent className="p-5">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                            <Mail className="w-5 h-5 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-foreground text-sm mb-2">Email</h3>
-                            <p className="text-sm text-muted-foreground">{settings.email}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="border-border bg-card hover:shadow-md transition-shadow duration-300">
-                      <CardContent className="p-5">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                            <Clock className="w-5 h-5 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-foreground text-sm mb-2">Business Hours</h3>
-                            <div className="text-sm text-muted-foreground space-y-1">
-                              <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                              <p>Saturday: 10:00 AM - 4:00 PM</p>
-                              <p>Sunday: Closed</p>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
                   </div>
                 </div>
 
-                {/* Customer Service Info */}
-                <Card className="border-border bg-primary text-primary-foreground">
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-serif font-light mb-3">Customer Service</h3>
-                    <p className="text-sm opacity-90 mb-3 leading-relaxed">
-                      Our dedicated team is here to assist you with any inquiries about products,
-                      orders, returns, or general questions.
+                {/* Call Us */}
+                <div className="flex gap-5">
+                  <div className="w-12 h-12 rounded-2xl bg-muted/20 flex items-center justify-center shrink-0">
+                    <Phone className="w-6 h-6 text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-lg">Call Us</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {settings.phone || '+1 888-234-1234 (tool-free)'}
                     </p>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="w-4 h-4" />
-                      <span className="font-medium">Response Time: Within 24 hours</span>
+                  </div>
+                </div>
+
+                {/* Working Hours */}
+                <div className="flex gap-5">
+                  <div className="w-12 h-12 rounded-2xl bg-muted/20 flex items-center justify-center shrink-0">
+                    <Clock className="w-6 h-6 text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-lg">Working Hour</h4>
+                    <div className="text-sm text-muted-foreground space-y-1.5 pt-1">
+                      <p>Mon – Fri, 7:30 AM – 4:00 PM PT</p>
+                      <p>Sat, 8:00 AM – 1:00 PM PT</p>
+                      <p>Sun, Closed</p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </div>
             </div>
-
           </div>
         </div>
-      </section>
+      </div>
+
+
+      <ScrollingBanner />
     </main>
   );
 }

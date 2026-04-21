@@ -1,167 +1,166 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import ScrollingBanner from "@/components/landing-page/scrolling-banner";
+import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
+import CustomButton from "@/components/ui/custom-button";
 
 export const metadata: Metadata = {
     title: "About Us",
-    description: "Discover the story of Nala Armoire - where dreams are stitched alive and memories are tenderly woven together. Learn about our journey, craftsmanship, and passion for personalized fashion.",
-    openGraph: {
-        title: "About Nala Armoire - Our Story",
-        description: "Discover the story of Nala Armoire - where dreams are stitched alive and memories are tenderly woven together.",
-        url: "https://nalaarmoire.com/about",
-        images: ["/images/og-image.jpg"],
-    },
+    description: "Discover the story of Nala Armoire - where dreams are stitched alive and memories are tenderly woven together.",
 };
 
-const About = () => {
+const AboutPage = () => {
     return (
         <div className="min-h-screen bg-background">
-            {/* Hero Section */}
-            <section className="relative w-full py-20 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
-                <div className="max-w-5xl mx-auto text-center">
-                    <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground mb-4">
-                        Our Journey
-                    </p>
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium italic tracking-tight text-foreground mb-6">
-                        About Us
-                    </h1>
-                    <p className="text-base sm:text-lg md:text-xl text-muted-foreground italic max-w-2xl mx-auto">
-                        Where dreams are stitched alive, and memories are tenderly woven together
-                    </p>
-                </div>
- 
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none z-0" />
-            </section>
- 
-            {/* The NaLa Story Section */}
-            <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
-                <div className="max-w-5xl mx-auto">
- 
-                    <div className="text-center mb-12 sm:mb-16 space-y-3">
-                        <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
-                            Our Beginning
-                        </p>
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
-                            The NaLa Story
-                        </h2>
+
+
+            {/* Section 3: The NaLa Story (Image 3 Style) */}
+            <section className="mt-10">
+                <div className="container relative mx-auto max-w-7xl">
+
+                    <div className="w-full mb-10 md:mb-14">
+                        <BreadcrumbNavigation />
                     </div>
- 
-                    <div className="space-y-8 text-center">
-                        <p className="text-base sm:text-lg md:text-xl text-foreground/90 leading-relaxed">
-                            I've always had a dream — a place where my talent could truly breathe. With no clear path, I followed faith, trusting that the way would reveal itself.
-                        </p>
- 
-                        <p className="text-base sm:text-lg md:text-xl text-foreground/90 leading-relaxed">
-                            That journey became <span className="font-medium italic text-foreground">NaLa Armoire</span>: a little world where my dreams are stitched alive, and where I can also tenderly knot your memories together through stitches.
-                        </p>
- 
-                        <div className="pt-4">
-                            <p className="text-lg sm:text-xl md:text-2xl font-serif italic text-foreground/80 leading-relaxed">
-                                Because every thread holds emotion,<br className="hidden sm:block" /> and every stitch tells a story.
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start space-y-10">
+
+                        {/* Left: Heading & Main Paragraph */}
+                        <div className="lg:col-span-4 space-y-10 lg:sticky lg:top-10">
+                            <div className="space-y-4">
+                                <p className="text-xs tracking-[0.2em] uppercase text-accent font-bold">
+                                    Our Beginning
+                                </p>
+                                <h2 className="h1 !text-5xl">The NaLa Story</h2>
+                            </div>
+
+                            <p className="p-base text-muted-foreground leading-relaxed">
+                                I&apos;ve always had a dream — a place where my talent could truly breathe.
+                                With no clear path, I followed faith, trusting that the way would reveal itself.
+                                That journey became <span className="text-foreground font-bold italic">NaLa Armoire</span>.
+                            </p>
+
+                            <div className="pt-6">
+                                <CustomButton
+                                    href="/products"
+                                    bgColor="#000000"
+                                    circleColor="#ffffff"
+                                    textColor="#ffffff"
+                                    textHoverColor="#000000"
+                                >
+                                    Shop Now
+                                </CustomButton>
+                            </div>
+                        </div>
+
+                        {/* Center: Image Grid */}
+                        <div className="lg:col-span-4 grid grid-cols-1 gap-6">
+                            <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl">
+                                <Image
+                                    src="/images/home/promise3.png"
+                                    alt="Artisan Craftsmanship"
+                                    fill
+                                    className="object-cover hover:scale-105 transition-transform duration-700"
+                                />
+                            </div>
+                            <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-xl">
+                                <Image
+                                    src="/images/home/promise4.png"
+                                    alt="Embroidered Detail"
+                                    fill
+                                    className="object-cover hover:scale-105 transition-transform duration-700"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Right: Detailed Blocks */}
+                        <div className="lg:col-span-4 space-y-16 lg:pt-12">
+                            {/* Mission 1 */}
+                            <div className="space-y-4">
+                                <p className="text-sm font-black text-muted-foreground/30">01.</p>
+                                <h3 className="h3 !text-2xl">Premium Quality</h3>
+                                <p className="p-sm text-muted-foreground leading-relaxed">
+                                    Every piece is crafted with meticulous attention to detail,
+                                    using only the finest materials. We ensure that every thread
+                                    meets our highest standards of excellence.
+                                </p>
+                            </div>
+
+                            {/* Mission 2 */}
+                            <div className="space-y-4">
+                                <p className="text-sm font-black text-muted-foreground/30">02.</p>
+                                <h3 className="h3 !text-2xl">Personal Touch</h3>
+                                <p className="p-sm text-muted-foreground leading-relaxed">
+                                    Your stories, your memories — we bring them to life through
+                                    custom designs that reflect you. We tenderly knot your
+                                    memories together through every stitch.
+                                </p>
+                            </div>
+
+                            {/* Mission 3 */}
+                            <div className="space-y-4">
+                                <p className="text-sm font-black text-muted-foreground/30">03.</p>
+                                <h3 className="h3 !text-2xl">Made With Love</h3>
+                                <p className="p-sm text-muted-foreground leading-relaxed">
+                                    Each stitch carries emotion, each creation is infused with
+                                    passion and dedication. Because every thread holds emotion,
+                                    and every stitch tells a story.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+            {/* Section 2: Our Mission (Image 2 Style) */}
+            <section className="relative w-full py-32 bg-[#F0F7F7] overflow-hidden">
+                {/* Floating Background Text */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
+                    <span className="text-[15vw] font-black whitespace-nowrap tracking-tighter">
+                        OUR MISSION
+                    </span>
+                </div>
+
+                <div className="container mx-auto max-w-6xl relative z-10">
+                    <div className="flex flex-col items-center text-center">
+                        {/* Circle Portraits */}
+                        <div className="flex -space-x-4 mb-12">
+                            {[1, 2].map((i) => (
+                                <div key={i} className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white overflow-hidden shadow-xl relative">
+                                    <Image
+                                        src={`/images/home/slide-image${i}.webp`}
+                                        alt="Artisan"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        <h2 className="h2 max-w-2xl mb-8">
+                            A story of stitches, designed for your memories
+                        </h2>
+
+                        <div className="space-y-6 max-w-xl mx-auto">
+                            <p className="p-base text-muted-foreground">
+                                We believe clothing should feel as good as the memories it holds. That&apos;s why we focus on
+                                thoughtful details, soft artisanal fabrics, and hand-stitched patterns made for life&apos;s most
+                                meaningful moments.
+                            </p>
+                            <p className="p-sm text-muted-foreground/70 font-medium">
+                                Each piece is created to support your journey, your imagination, and your joyful growing moments.
                             </p>
                         </div>
                     </div>
- 
-                    {/* Decorative Flowers */}
-                    <div className="absolute top-20 left-[5%] w-16 h-16 sm:w-24 sm:h-24 opacity-30 pointer-events-none">
-                        <Image src="/images/home/flower2.webp" alt="" fill sizes="(max-width: 640px) 64px, 96px" className="object-contain select-none" draggable={false} />
-                    </div>
-                    <div className="absolute bottom-20 right-[5%] w-20 h-20 sm:w-28 sm:h-28 opacity-30 pointer-events-none">
-                        <Image src="/images/home/flower3.webp" alt="" fill sizes="(max-width: 640px) 80px, 112px" className="object-contain select-none" draggable={false} />
-                    </div>
                 </div>
             </section>
- 
-            {/* Our Mission Section */}
-            <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 bg-muted/30">
-                <div className="max-w-5xl mx-auto">
- 
-                    <div className="text-center mb-12 sm:mb-16 space-y-3">
-                        <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground">
-                            What We Stand For
-                        </p>
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium italic tracking-tight text-foreground">
-                            Our Mission
-                        </h2>
-                    </div>
- 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
- 
-                        <div className="group relative bg-background p-6 sm:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-border/50">
-                            <div className="text-center space-y-4">
-                                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-xl sm:text-2xl font-medium text-foreground">Premium Quality</h3>
-                                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                    Every piece is crafted with meticulous attention to detail, using only the finest materials.
-                                </p>
-                            </div>
-                        </div>
- 
-                        <div className="group relative bg-background p-6 sm:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-border/50">
-                            <div className="text-center space-y-4">
-                                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-xl sm:text-2xl font-medium text-foreground">Personal Touch</h3>
-                                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                    Your stories, your memories — we bring them to life through custom designs that reflect you.
-                                </p>
-                            </div>
-                        </div>
- 
-                        <div className="group relative bg-background p-6 sm:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-border/50">
-                            <div className="text-center space-y-4">
-                                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-xl sm:text-2xl font-medium text-foreground">Made With Love</h3>
-                                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                    Each stitch carries emotion, each creation is infused with passion and dedication.
-                                </p>
-                            </div>
-                        </div>
- 
-                    </div>
-                </div>
-            </section>
- 
-            {/* Call to Action */}
-            <section className="relative w-full py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
-                <div className="max-w-5xl mx-auto space-y-8">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium italic tracking-tight text-foreground">
-                        Let's Stitch Your Story Together
-                    </h2>
-                    <p className="text-base sm:text-lg text-muted-foreground">
-                        Explore our collections and discover pieces that speak to your soul
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-                        <Link
-                            href="/products"
-                            className="inline-block bg-primary text-primary-foreground px-8 py-3 sm:px-10 sm:py-4 rounded-full text-base sm:text-lg font-medium hover:opacity-90 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
-                        >
-                            Shop Now
-                        </Link>
-                        <Link
-                            href="/contact"
-                            className="inline-block bg-background text-foreground border-2 border-border px-8 py-3 sm:px-10 sm:py-4 rounded-full text-base sm:text-lg font-medium hover:bg-muted transition-all duration-300 hover:scale-105 active:scale-95"
-                        >
-                            Contact Us
-                        </Link>
-                    </div>
-                </div>
- 
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none z-0" />
-            </section>
+
+
+            {/* Footer Scrolling Banner */}
+            <ScrollingBanner />
         </div>
     );
-}
- 
-export default About;
+};
+
+export default AboutPage;

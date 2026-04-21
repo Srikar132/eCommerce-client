@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
-import { Loader2, ChevronDown, PenSquare } from "lucide-react";
+import { useSession } from "next-auth/react"
 import { AddReviewForm } from "./add-review-form";
-import { ReviewCard } from "./review-card";
-import { EmptyReviews } from "./empty-reviews";
 import { useInfiniteProductReviews } from "@/lib/tanstack/queries/product.queries";
 import { canUserReviewProduct } from "@/lib/actions/product-actions";
+import CustomButton from "@/components/ui/custom-button";
+import { ReviewCard } from "./review-card";
 
 interface ProductReviewsClientProps {
     productId: string;
@@ -54,45 +52,41 @@ export default function ProductReviewsClient({ productId }: ProductReviewsClient
     // Flatten reviews from all pages
     const allReviews = data?.pages.flatMap(page => page.data) ?? [];
 
-
     if (error) {
         return (
-            <div className="flex justify-center items-center py-12">
-                <p className="text-muted-foreground">Error loading reviews</p>
+            <div className="flex justify-center items-center py-20">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Error loading reviews</p>
             </div>
         )
     }
 
     return (
-        <>
+        <div className="py-12 border-t border-foreground/5">
             {/* Header with Write Review Button */}
-            <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-                    Customer Reviews
-                </h2>
+            <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-6 mb-12">
+                {/* <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-foreground leading-none">
+                    Reviews
+                </h2> */}
 
                 {/* Only show review button if user is eligible */}
                 {canReview && !checkingEligibility && (
-                    <Button
+                    <CustomButton
                         onClick={() => setShowReviewForm(!showReviewForm)}
-                        variant={showReviewForm ? "outline" : "default"}
-                        className="gap-2"
+                        bgColor="transparent"
+                        circleColor="#000000"
+                        textColor="#000000"
+                        textHoverColor="#ffffff"
+                        circleSize={48}
+                        className="h-14 border-2 border-foreground/10"
                     >
-                        {showReviewForm ? (
-                            <>Cancel</>
-                        ) : (
-                            <>
-                                <PenSquare className="h-4 w-4" />
-                                Write a Review
-                            </>
-                        )}
-                    </Button>
+                        {showReviewForm ? "Cancel" : "Write a review"}
+                    </CustomButton>
                 )}
             </div>
 
             {/* Review Form */}
             {showReviewForm && (
-                <div className="mb-8">
+                <div className="mb-20">
                     <AddReviewForm
                         productId={productId}
                         onClose={() => setShowReviewForm(false)}
@@ -101,47 +95,41 @@ export default function ProductReviewsClient({ productId }: ProductReviewsClient
             )}
 
             {/* Reviews List */}
-            <div className="space-y-4">
-                {allReviews.length === 0 ? (
-                    <EmptyReviews />
-                ) : (
+            <div className="space-y-0">
+                {allReviews.length > 0 && (
                     <>
-                        {allReviews.map((review) => (
-                            <ReviewCard key={review.id} review={review} />
-                        ))}
+                        <div className="divide-y divide-foreground/5">
+                            {allReviews.map((review) => (
+                                <ReviewCard key={review.id} review={review} />
+                            ))}
+                        </div>
 
                         {/* View More Button */}
                         {hasNextPage && (
-                            <div className="flex justify-center py-8">
-                                <Button
-                                    variant="outline"
+                            <div className="flex justify-center pt-16">
+                                <CustomButton
                                     onClick={() => fetchNextPage()}
                                     disabled={isFetchingNextPage}
-                                    className="gap-2"
+                                    bgColor="transparent"
+                                    circleColor="#000000"
+                                    textColor="#000000"
+                                    textHoverColor="#ffffff"
+                                    circleSize={48}
+                                    className="h-14 border-2 border-foreground/10"
                                 >
-                                    {isFetchingNextPage ? (
-                                        <>
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                            Loading...
-                                        </>
-                                    ) : (
-                                        <>
-                                            View More Reviews
-                                            <ChevronDown className="h-4 w-4" />
-                                        </>
-                                    )}
-                                </Button>
+                                    {isFetchingNextPage ? "Loading..." : "View more reviews"}
+                                </CustomButton>
                             </div>
                         )}
 
                         {!hasNextPage && allReviews.length > 5 && (
-                            <p className="text-center text-sm text-muted-foreground py-4">
+                            <p className="text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground pt-12">
                                 You&apos;ve reached the end of reviews
                             </p>
                         )}
                     </>
                 )}
             </div>
-        </>
+        </div>
     );
 }
