@@ -1,7 +1,7 @@
 "use client";
 
 import { Cart } from "@/types/cart";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import CustomButton2 from "@/components/ui/custom-button-2";
 
@@ -24,62 +24,63 @@ export default function CheckoutOrderSummary({
     const total = subtotal + taxAmount + shippingCost;
 
     return (
-        <Card className="sticky top-24  overflow-hidden">
-            <CardHeader className="pb-6 ">
-                <h4 className="italic tracking-normal font-black">Summary.</h4>
+        <Card className="lg:sticky lg:top-24 bg-accent/5 rounded-[32px] border-border/10 shadow-none overflow-hidden">
+            <CardHeader className="p-6 pb-2 space-y-1">
+                <CardTitle className="text-xl font-bold tracking-tight">Order Summary</CardTitle>
+                <CardDescription className="text-[10px] text-muted-foreground tracking-wide uppercase font-bold opacity-60">
+                    Final totals including taxes & shipping
+                </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6 pt-4 space-y-6">
                 {/* Price Breakdown */}
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <span className="text-base  tracking-[0.2em] font-medium">
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
                             Subtotal
                         </span>
-                        <span className="p-base font-bold">₹{subtotal.toLocaleString()}</span>
+                        <span className="font-bold tracking-tight">₹{subtotal.toLocaleString()}</span>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <span className=" text-muted-foreground uppercase tracking-[0.2em] font-medium">Tax (GST 18%)</span>
-                        <span className=" font-bold">₹{taxAmount.toLocaleString()}</span>
+                    <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Tax (GST 18%)</span>
+                        <span className="font-bold tracking-tight">₹{taxAmount.toLocaleString()}</span>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <div className="flex flex-col gap-1">
-                            <span className=" text-muted-foreground uppercase tracking-[0.2em] font-medium">Shipping</span>
+                    <div className="flex items-center justify-between text-sm">
+                        <div className="flex flex-col">
+                            <span className="text-muted-foreground">Shipping</span>
                             {shippingCost === 0 && (
                                 <span className="text-[9px] font-black uppercase tracking-[0.2em] text-accent">Complimentary</span>
                             )}
                         </div>
                         {shippingCost === 0 ? (
-                            <span className="p-base font-bold text-accent italic">Free</span>
+                            <span className="font-bold text-accent uppercase tracking-widest text-[10px]">Free</span>
                         ) : (
-                            <span className="p-base font-bold">₹{shippingCost.toFixed(2)}</span>
+                            <span className="font-bold tracking-tight">₹{shippingCost.toFixed(2)}</span>
                         )}
                     </div>
 
                     {subtotal < 1000 && shippingCost > 0 && (
-                        <div className="bg-secondary/20 p-6 rounded-[1.5rem] border border-secondary/30">
-                            <p className="p-xs font-medium text-foreground/70 leading-relaxed">
-                                Add <span className="font-bold text-foreground">₹{(1000 - subtotal).toLocaleString()}</span> more to unlock <span className="italic">complimentary delivery</span>.
+                        <div className="bg-secondary/10 p-4 rounded-2xl border border-secondary/20 mt-2">
+                            <p className="text-[10px] font-medium text-foreground/70 leading-relaxed">
+                                Add <span className="font-bold">₹{(1000 - subtotal).toLocaleString()}</span> more for <span className="italic">complimentary delivery</span>.
                             </p>
                         </div>
                     )}
 
-                    <div className="pt-4">
-                        <div className="h-[1px] w-full bg-foreground/[0.08]" />
-                    </div>
-
-                    <div className="flex items-end justify-between">
-                        <span className="font-bold  text-muted-foreground">Total</span>
-                        <div className="flex flex-col items-end">
-                            <h3 className="italic font-black text-xl">₹{total.toLocaleString()}</h3>
-                            <span className="text-[9px] font-bold text-foreground/20 uppercase tracking-[0.2em] mt-2">Net Payable</span>
+                    <div className="pt-4 border-t border-border/20">
+                        <div className="flex items-center justify-between">
+                            <span className="text-base font-bold tracking-tight">Total</span>
+                            <div className="flex flex-col items-end">
+                                <span className="text-xl font-bold tracking-tighter">₹{total.toLocaleString()}</span>
+                                <span className="text-[8px] font-bold text-foreground/20 uppercase tracking-[0.2em]">Net Payable</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Place Order Button */}
-                <div className="pt-4">
+                <div className="space-y-3 pt-2">
                     <CustomButton2
                         onClick={onCheckout}
                         disabled={!isAddressSelected || isProcessing}
@@ -92,29 +93,29 @@ export default function CheckoutOrderSummary({
                         {isProcessing ? (
                             <div className="flex items-center gap-3">
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                <span className="p-base italic">Processing...</span>
+                                <span className="text-xs font-bold uppercase tracking-[0.2em] italic">Processing...</span>
                             </div>
                         ) : (
-                            <span className="p-base font-bold flex items-center gap-2">
-                                Place Order <ArrowRight size={18} />
+                            <span className="text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+                                Place Order <ArrowRight size={16} />
                             </span>
                         )}
                     </CustomButton2>
+
+                    {!isAddressSelected && (
+                        <div className="flex items-center justify-center gap-2 py-1">
+                            <div className="w-1 h-1 rounded-full bg-destructive animate-pulse" />
+                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-destructive/80">
+                                Select Delivery Address
+                            </p>
+                        </div>
+                    )}
                 </div>
 
-                {!isAddressSelected && (
-                    <div className="flex items-center justify-center gap-3 py-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" />
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-destructive/80">
-                            Select Delivery Address
-                        </p>
-                    </div>
-                )}
-
                 {/* Security Badge */}
-                <div className="flex items-center justify-center gap-3 py-4 bg-white/50 rounded-2xl border border-foreground/[0.04] backdrop-blur-sm">
-                    <ShieldCheck size={14} className="text-foreground/20" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/20">Secure White-glove Checkout</span>
+                <div className="flex items-center justify-center gap-2.5 py-3 bg-white/40 rounded-2xl border border-border/5">
+                    <ShieldCheck size={12} className="text-muted-foreground/30" />
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">Secure White-glove Checkout</span>
                 </div>
             </CardContent>
         </Card>

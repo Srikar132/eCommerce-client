@@ -4,7 +4,7 @@ import { useCartContext } from "@/context/cart-context";
 import { CartItemCard } from "./cart-item-card";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import PageLoadingSkeleton from "../ui/skeletons/page-loading-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import CustomButton from "../ui/custom-button";
 import {
     Card,
@@ -13,6 +13,68 @@ import {
     CardHeader,
     CardTitle
 } from "../ui/card";
+
+function CartSkeleton() {
+    return (
+        <div className="space-y-10">
+            {/* Header Skeleton */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border/40">
+                <div className="space-y-2">
+                    <Skeleton className="h-10 w-48 md:w-64" />
+                    <Skeleton className="h-4 w-64 md:w-80" />
+                </div>
+                <Skeleton className="h-4 w-24" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                {/* Items Skeleton */}
+                <div className="lg:col-span-7 space-y-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="p-4 border border-border/40 rounded-[2rem] flex gap-4 items-center">
+                            <Skeleton className="w-24 h-32 rounded-2xl shrink-0" />
+                            <div className="flex-1 space-y-3">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                                <div className="flex gap-2">
+                                    <Skeleton className="h-6 w-12 rounded-md" />
+                                    <Skeleton className="h-6 w-12 rounded-md" />
+                                </div>
+                            </div>
+                            <Skeleton className="w-20 h-6" />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Summary Skeleton */}
+                <div className="lg:col-span-5">
+                    <Card className="bg-accent/5 rounded-[32px] border-border/10 shadow-none overflow-hidden">
+                        <CardHeader className="p-6 pb-2 space-y-2">
+                            <Skeleton className="h-7 w-40" />
+                            <Skeleton className="h-3 w-48" />
+                        </CardHeader>
+                        <CardContent className="p-6 pt-4 space-y-6">
+                            <div className="space-y-4">
+                                <div className="flex justify-between">
+                                    <Skeleton className="h-4 w-20" />
+                                    <Skeleton className="h-4 w-24" />
+                                </div>
+                                <div className="flex justify-between">
+                                    <Skeleton className="h-4 w-20" />
+                                    <Skeleton className="h-4 w-24" />
+                                </div>
+                                <div className="pt-4 border-t border-border/20 flex justify-between">
+                                    <Skeleton className="h-6 w-20" />
+                                    <Skeleton className="h-7 w-28" />
+                                </div>
+                            </div>
+                            <Skeleton className="h-12 w-full rounded-full" />
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export function CartClient() {
     const {
@@ -28,7 +90,7 @@ export function CartClient() {
 
     // Loading state
     if (isLoading) {
-        return <PageLoadingSkeleton />;
+        return <CartSkeleton />;
     }
 
     // Empty cart state

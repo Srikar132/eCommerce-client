@@ -208,25 +208,27 @@ export default function CheckoutClient() {
     };
 
     return (
-        <div>
+        <div className="space-y-10">
             {/* Header */}
-            {/* <div className="mb-20 space-y-6">
-                <div className="flex items-center gap-4">
-                    <span className="w-12 h-[1px] bg-foreground/10" />
-                    <span className="p-xs font-medium uppercase tracking-[0.4em] text-foreground/30">
-                        Final steps
-                    </span>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border/40">
+                <div className="space-y-1">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tighter italic">Checkout</h1>
+                    <p className="text-sm text-muted-foreground tracking-tight">
+                        Complete your purchase and secure your handcrafted pieces.
+                    </p>
                 </div>
-                <h2 className="italic leading-tight">
-                    Checkout.
-                </h2>
-            </div> */}
+                <div className="text-right">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+                        Securing {totalItems} {totalItems === 1 ? 'Item' : 'Items'}
+                    </p>
+                </div>
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                 {/* Left: Address + Items + Notes */}
-                <div className="lg:col-span-2 space-y-12">
+                <div className="lg:col-span-7 space-y-10">
                     {/* Delivery Address */}
-                    <div className="space-y-8">
+                    <div className="space-y-6">
                         <div className="flex items-center justify-between pb-4 border-b border-foreground/5">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center">
@@ -357,7 +359,7 @@ export default function CheckoutClient() {
                 </div>
 
                 {/* Right: Order Summary */}
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-5">
                     <div className="sticky top-24 space-y-6">
                         <CheckoutOrderSummary
                             cart={cartForSummary}

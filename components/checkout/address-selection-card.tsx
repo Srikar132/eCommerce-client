@@ -18,7 +18,7 @@ export default function AddressSelectionCard({
     return (
         <div
             className={cn(
-                "p-8 cursor-pointer transition-all duration-500 rounded-[2.5rem] border-2 relative overflow-hidden group",
+                "p-6 md:p-8 cursor-pointer transition-all duration-500 rounded-[1.5rem] md:rounded-[2.5rem] border-2 relative overflow-hidden group",
                 isSelected
                     ? "border-black bg-white shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
                     : "border-foreground/5 bg-foreground/[0.01] hover:border-foreground/10 hover:bg-white"
@@ -30,7 +30,7 @@ export default function AddressSelectionCard({
                 <div className="absolute -top-12 -right-12 w-32 h-32 bg-accent/5 rounded-full blur-3xl" />
             )}
 
-            <div className="absolute top-8 right-8">
+            <div className="absolute top-6 right-6 md:top-8 md:right-8">
                 <div className={cn(
                     "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                     isSelected ? "border-black bg-black" : "border-foreground/10"

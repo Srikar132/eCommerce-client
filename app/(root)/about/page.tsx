@@ -15,7 +15,7 @@ const AboutPage = () => {
 
 
             {/* Section 3: The NaLa Story (Image 3 Style) */}
-            <section className="mt-10">
+            <section className="my-10">
                 <div className="container relative mx-auto max-w-7xl">
 
                     <div className="w-full mb-10 md:mb-14">
