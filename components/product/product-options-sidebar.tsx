@@ -39,7 +39,7 @@ import { PLACEHOLDER_IMAGE } from "@/constants";
 
 function ProductOptionsInner({ product }: { product: Product }) {
     const { closeOptions } = useProductOptions();
-    const { addItem, isFetching } = useCartContext();
+    const { addItem, isAdding } = useCartContext();
     const router = useRouter();
 
     const variants: ProductVariant[] = product.variants ?? [];
@@ -242,8 +242,8 @@ function ProductOptionsInner({ product }: { product: Product }) {
                 <ProductActions
                     onAddToCart={handleAddToCart}
                     onBuyNow={handleBuyNow}
-                    disabled={!selectedVariant || isFetching}
-                    isAddingToCart={isFetching}
+                    disabled={!selectedVariant || isAdding}
+                    isAddingToCart={isAdding}
                 />
             </div>
         </div>
@@ -261,7 +261,7 @@ export function ProductOptionsSidebar() {
         <Sheet open={isOpen} onOpenChange={(open) => !open && closeOptions()}>
             <SheetContent
                 showCloseButton={false}
-                className="w-full sm:max-w-md p-0 flex flex-col bg-background shadow-2xl !inset-y-0 !right-0 !h-full !rounded-none border-none sm:!inset-y-4 sm:!right-4 sm:!h-[calc(100vh-2rem)] sm:!rounded-[28px] sm:border sm:border-border overflow-hidden"
+                className="w-full sm:max-w-md p-0 flex flex-col bg-background shadow-2xl transition-all duration-500 ease-in-out border-none sm:inset-y-4 sm:right-4 sm:h-[calc(100vh-2rem)] sm:rounded-[28px] sm:border sm:border-border overflow-hidden"
             >
                 {selectedProduct && (
                     <ProductOptionsInner product={selectedProduct} />

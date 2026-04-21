@@ -20,7 +20,7 @@ const SHOWCASE_DATA = [
     tag: "New In",
     description: "Hand-stitched motifs and durable fabrics designed for every little explorer's adventure.",
     image: "/images/home/promise1.png",
-    link: "/shop?category=boy",
+    link: "/products?category=boy",
     aspect: "aspect-[1.5/1]"
   },
   {
@@ -29,7 +29,7 @@ const SHOWCASE_DATA = [
     tag: "Premium",
     description: "Sophisticated, minimalist embroidery for the modern man who appreciates quiet luxury.",
     image: "/images/home/promise3.png",
-    link: "/shop?category=men",
+    link: "/products?category=men",
     aspect: "aspect-[0.9/1]"
   },
   {
@@ -38,7 +38,7 @@ const SHOWCASE_DATA = [
     tag: "Trending",
     description: "Delicate embroidery and playful patterns that bring a touch of magic to her everyday wardrobe.",
     image: "/images/home/promise2.png",
-    link: "/shop?category=girl",
+    link: "/products?category=girl",
     aspect: "aspect-[1.2/1]"
   },
   {
@@ -47,7 +47,7 @@ const SHOWCASE_DATA = [
     tag: "Exclusive",
     description: "Timeless silhouettes elevated with intricate, hand-crafted details for effortless elegance.",
     image: "/images/home/promise4.png",
-    link: "/shop?category=women",
+    link: "/products?category=women",
     aspect: "aspect-[1.4/1]"
   }
 ]

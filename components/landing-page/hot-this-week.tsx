@@ -22,7 +22,7 @@ export default async function HotThisWeek() {
         {/* Mobile-only button */}
         <div className="mt-12 flex md:hidden justify-center">
           <CustomButton2
-            href="/shop"
+            href="/products"
             fillColor="#000000"
             textColor="#000000"
             textHoverColor="#ffffff"

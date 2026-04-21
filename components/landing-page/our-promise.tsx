@@ -202,7 +202,7 @@ export default function OurPromise() {
                                 {initial.title}
                             </h2>
                             <div ref={buttonRef} className="mt-4">
-                                <CustomButton circleSize={45}>
+                                <CustomButton href="/products" circleSize={45}>
                                     Explore Collection
                                 </CustomButton>
                             </div>

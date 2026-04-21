@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CartItem } from "@/types/cart";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -97,8 +97,9 @@ export function CartItemCard({
                         <button
                             onClick={() => onRemove(item.id)}
                             disabled={isRemoving}
-                            className="text-[11px] font-bold text-muted-foreground hover:text-black underline underline-offset-4 transition-colors"
+                            className="text-[11px] font-bold text-muted-foreground hover:text-black underline underline-offset-4 transition-colors flex items-center gap-1"
                         >
+                            {isRemoving && <Loader2 size={10} className="animate-spin" />}
                             Remove
                         </button>
                     </div>
@@ -184,8 +185,12 @@ export function CartItemCard({
                         disabled={isRemoving}
                         className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-black transition-colors"
                     >
-                        <X className="w-4 h-4" />
-                        <span>Remove</span>
+                        {isRemoving ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <X className="w-4 h-4" />
+                        )}
+                        <span>{isRemoving ? "Removing..." : "Remove"}</span>
                     </button>
                 </div>
             </div>

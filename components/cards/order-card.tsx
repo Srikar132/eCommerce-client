@@ -171,7 +171,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                                 circleColor="#111111"
                                 textColor="#111111"
                                 textHoverColor="#ffffff"
-                                className="!px-4 !py-1 text-[10px] uppercase tracking-widest shadow-sm"
+                                className="!pl-5 !pr-10 !py-2 text-[10px] uppercase tracking-widest shadow-sm"
                             >
                                 View Details
                             </CustomButton>

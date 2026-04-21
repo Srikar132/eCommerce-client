@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { ShieldCheck, Truck, RotateCcw, Check } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, cn } from "@/lib/utils";
 import ProductActions from "./product-actions";
 import { useVariantSelection } from "@/hooks/use-variant-selector";
 import { Product, ProductVariant } from "@/types/product";
@@ -12,6 +12,7 @@ import ProductImageGallery from "./product-image-gallery";
 import ColorSelector from "./color-selector";
 import SizeSelector from "./size-selector";
 import BreadcrumbNavigation from "../breadcrumb-navigation";
+import ProductShare from "./product-share";
 
 interface ProductDetailClientProps {
     product: Product;
@@ -19,6 +20,7 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product, variants }: ProductDetailClientProps) {
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
     const {
         selectedColor,
         selectedSize,
@@ -33,7 +35,7 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
         variants: variants || []
     });
 
-    const { addItem, isFetching } = useCartContext();
+    const { addItem, isAdding } = useCartContext();
 
     const handleAddToCart = useCallback((quantity: number) => {
         if (!selectedVariant) return;
@@ -103,10 +105,11 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
                     <div className="space-y-8">
                         {/* Badge & Title */}
                         <div className="space-y-4">
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-between gap-3">
                                 <span className="px-4 py-1.5 rounded-full bg-[#5FB281] text-white text-[10px] font-bold uppercase tracking-widest shadow-sm">
                                     New Arrival
                                 </span>
+                                <ProductShare productName={product.name} productSlug={product.slug} />
                             </div>
                             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1]">
                                 {product.name}
@@ -117,9 +120,22 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
                         </div>
 
                         {/* Description */}
-                        <p className="text-muted-foreground leading-relaxed text-lg max-w-xl">
-                            {product.description || "Crafted from premium materials, this piece embodies understated elegance with its timeless design and exceptional comfort."}
-                        </p>
+                        <div className="space-y-2">
+                            <p className={cn(
+                                "text-muted-foreground leading-relaxed text-lg max-w-xl transition-all duration-300",
+                                !isDescriptionExpanded && "line-clamp-3"
+                            )}>
+                                {product.description || "Crafted from premium materials, this piece embodies understated elegance with its timeless design and exceptional comfort."}
+                            </p>
+                            {(product.description?.length ?? 0) > 150 && (
+                                <button
+                                    onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                                    className="text-sm font-bold text-foreground hover:text-accent transition-colors underline-offset-4 hover:underline"
+                                >
+                                    {isDescriptionExpanded ? "Show less" : "Read more"}
+                                </button>
+                            )}
+                        </div>
 
                         {/* Variant Selectors */}
                         <div className="space-y-10">
@@ -158,8 +174,8 @@ export default function ProductDetailClient({ product, variants }: ProductDetail
                             <ProductActions
                                 onAddToCart={handleAddToCart}
                                 onBuyNow={handleBuyNow}
-                                disabled={!selectedVariant || isFetching}
-                                isAddingToCart={isFetching}
+                                disabled={!selectedVariant || isAdding}
+                                isAddingToCart={isAdding}
                             />
                         </div>
 

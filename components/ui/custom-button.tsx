@@ -37,32 +37,34 @@ export default function CustomButton({
   useGSAP(() => {
     const btn = btnRef.current
     if (!btn) return
-    
+
     const label = labelRef.current!
     const arrow = arrowRef.current!
-    const circ  = circleRef.current!
+    const circ = circleRef.current!
 
-    const getExpandedSize = () => {
-      const { width, height } = btn.getBoundingClientRect()
-      return { width, height}
-    }
+    // const getExpandedSize = () => {
+    //   const { width, height } = btn.getBoundingClientRect()
+    //   return { width, height }
+    // }
 
     enterTl.current = gsap.timeline({ paused: true })
       .to(circ, {
-        width:  () => getExpandedSize().width,
-        height: () => getExpandedSize().height,
-        duration: 0.3,
+        scale: () => {
+          const { width, height } = btn.getBoundingClientRect()
+          // circle starts at circleSize px, needs to cover full btn
+          return Math.ceil(Math.max(width, height) / circleSize) * 2.2
+        },
+        duration: 0.38,
         ease: "power3.inOut",
-        right: 0
       }, 0)
       .to(label, { color: textHoverColor, duration: 0.22 }, 0.18)
 
     const startArrow = () => {
       arrowTl.current = gsap.timeline({ repeat: -1 })
         .to(arrow, { opacity: 0, x: 10, duration: 0.28, ease: "power2.in" })
-        .set(arrow,  { x: -10 })
-        .to(arrow,   { opacity: 1, x: 0, duration: 0.28, ease: "power2.out" })
-        .to(arrow,   {}, "+=0.45")
+        .set(arrow, { x: -10 })
+        .to(arrow, { opacity: 1, x: 0, duration: 0.28, ease: "power2.out" })
+        .to(arrow, {}, "+=0.45")
     }
 
     const onEnter = () => {
@@ -73,7 +75,7 @@ export default function CustomButton({
     const onLeave = () => {
       enterTl.current!.reverse()
       arrowTl.current?.kill()
-      gsap.to(arrow, { opacity: 1, x: 0 , duration: 0.2 })
+      gsap.to(arrow, { opacity: 1, x: 0, duration: 0.2 })
     }
 
     btn.addEventListener("mouseenter", onEnter)
@@ -113,11 +115,11 @@ export default function CustomButton({
         aria-hidden
         className="absolute z-0 rounded-full"
         style={{
-          width:     circleSize,
-          height:    circleSize,
+          width: circleSize,
+          height: circleSize,
           background: circleColor,
-          right:     (4/22) * circleSize,
-          top:       "50%",
+          right: (4 / 22) * circleSize,
+          top: "50%",
           transform: "translateY(-50%)",
         }}
       />
@@ -132,7 +134,7 @@ export default function CustomButton({
 
       <span
         className="absolute z-20 flex shrink-0 items-center justify-center rounded-full"
-        style={{ width: circleSize , right : (4/22) * circleSize , height: circleSize }}
+        style={{ width: circleSize, right: (4 / 22) * circleSize, height: circleSize }}
       >
         <span
           ref={arrowRef}
@@ -147,10 +149,10 @@ export default function CustomButton({
 
   if (href) {
     return (
-      <Link 
-        href={href} 
-        ref={btnRef as React.Ref<HTMLAnchorElement>} 
-        {...commonProps} 
+      <Link
+        href={href}
+        ref={btnRef as React.Ref<HTMLAnchorElement>}
+        {...commonProps}
         {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       >
         {content}
@@ -159,9 +161,9 @@ export default function CustomButton({
   }
 
   return (
-    <button 
-      ref={btnRef as React.Ref<HTMLButtonElement>} 
-      {...commonProps} 
+    <button
+      ref={btnRef as React.Ref<HTMLButtonElement>}
+      {...commonProps}
       {...props}
     >
       {content}

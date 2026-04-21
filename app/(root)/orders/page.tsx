@@ -27,7 +27,7 @@ export default async function OrdersPage({
             {/* Orders List */}
             {orders.length > 0 ? (
                 <div className="max-w-4xl mx-auto">
-                    <div className="mb-12 md:mb-16 text-center">
+                    <div className="mb-12 md:mb-16 text-left">
                         <h1 className="h1 mb-3">Your Orders</h1>
                         <p className="p-base text-muted-foreground">
                             {totalElements > 0

@@ -28,7 +28,11 @@ export const CartSidebar = () => {
         closeCart,
         removeItem,
         updateQuantity,
-        isFetching
+        isFetching,
+        isAdding,
+        isRemoving,
+        isUpdating,
+        isPending
     } = useCartContext();
 
     const router = useRouter();
@@ -41,7 +45,7 @@ export const CartSidebar = () => {
         <Sheet open={isOpen} onOpenChange={(open) => !open && closeCart()}>
             <SheetContent
                 showCloseButton={false}
-                className="w-full sm:max-w-md p-0 flex flex-col bg-background shadow-2xl !inset-y-0 !right-0 !h-full !rounded-none border-none sm:!inset-y-4 sm:!right-4 sm:!h-[calc(100vh-2rem)] sm:!rounded-[28px] sm:border sm:border-border overflow-hidden"
+                className="w-full sm:max-w-md p-0 flex flex-col bg-background shadow-2xl transition-all duration-500 ease-in-out border-none sm:inset-y-4 sm:right-4 sm:h-[calc(100vh-2rem)] sm:rounded-[28px] sm:border sm:border-border overflow-hidden"
             >
                 {/* ── Header ─────────────────────────────────────────── */}
                 <SheetHeader className="px-6 pt-8 pb-4 space-y-0 flex-row items-center justify-between shrink-0">
@@ -93,7 +97,8 @@ export const CartSidebar = () => {
                                     variant="sidebar"
                                     onRemove={removeItem}
                                     onUpdateQuantity={updateQuantity}
-                                    isUpdating={isFetching}
+                                    isUpdating={isUpdating}
+                                    isRemoving={isRemoving}
                                 />
                             ))}
                         </div>
@@ -165,12 +170,13 @@ export const CartSidebar = () => {
                                 textHoverColor="#ffffff"
                                 circleSize={44}
                                 className="w-full h-12"
+                                disabled={isPending}
                                 onClick={() => {
                                     closeCart();
                                     router.push("/checkout");
                                 }}
                             >
-                                Check Out
+                                {isPending ? "Processing..." : "Check Out"}
                             </CustomButton>
                         </div>
                     </div>

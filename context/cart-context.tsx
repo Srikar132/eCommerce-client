@@ -60,6 +60,10 @@ export interface CartContextValue {
     total: number;
     isLoading: boolean;
     isFetching: boolean;
+    isPending: boolean; // Any mutation in progress
+    isAdding: boolean;
+    isRemoving: boolean;
+    isUpdating: boolean;
     isOpen: boolean;
 
     // ── Actions ────────────────────────────────────────────────────────────
@@ -315,6 +319,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
             total: serverCart?.total ?? 0,
             isLoading: serverLoading || isMerging,
             isFetching: serverFetching || isMerging,
+            isPending: addMutation.isPending || removeMutation.isPending || updateMutation.isPending || isMerging,
+            isAdding: addMutation.isPending,
+            isRemoving: removeMutation.isPending,
+            isUpdating: updateMutation.isPending,
             isOpen,
             openCart,
             closeCart,
@@ -333,6 +341,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
             total: guestTotal,
             isLoading: false,
             isFetching: false,
+            isPending: addMutation.isPending || removeMutation.isPending || updateMutation.isPending,
+            isAdding: addMutation.isPending,
+            isRemoving: removeMutation.isPending,
+            isUpdating: updateMutation.isPending,
             isOpen,
             openCart,
             closeCart,

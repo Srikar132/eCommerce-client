@@ -102,7 +102,7 @@ export default function CancelOrderDialog({ orderNumber, order }: CancelOrderDia
                         textColor="#ef4444"
                         textHoverColor="#ffffff"
                         disabled={!canCancel}
-                        className={cn("!px-4 !py-1 text-[10px] uppercase tracking-widest", !canCancel && "opacity-50 grayscale")}
+                        className={cn("!pl-5 !pr-10 !py-2 text-[10px] uppercase tracking-widest", !canCancel && "opacity-50 grayscale")}
                     >
                         Cancel Order
                     </CustomButton>

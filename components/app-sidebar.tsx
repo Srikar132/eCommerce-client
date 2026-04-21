@@ -10,6 +10,7 @@ import {
     useSidebar
 } from "@/components/ui/sidebar";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 import {
     ChevronDown,
     User,
@@ -20,7 +21,8 @@ import {
     Info,
     Package,
     HelpCircle,
-    X
+    X,
+    ClipboardList
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -30,18 +32,6 @@ import Image from "next/image";
 
 export default function AppSidebar() {
     const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
-
-    // Lock scrolling when sidebar is open
-    useEffect(() => {
-        if (open) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-        }
-        return () => {
-            document.body.style.overflow = 'auto';
-        };
-    }, [open]);
 
     const handleClose = () => {
         if (isMobile) {
@@ -54,13 +44,14 @@ export default function AppSidebar() {
     return (
         <>
             {/* Backdrop Blur Overlay */}
-            {open && (
-                <div
-                    className="fixed inset-0 backdrop-blur-md bg-black/20 z-[9998] transition-all duration-500"
-                    onClick={handleClose}
-                    aria-hidden="true"
-                />
-            )}
+            <div
+                className={cn(
+                    "fixed inset-0 backdrop-blur-sm bg-black/10 z-[9998] transition-all duration-500 ease-in-out hidden md:block",
+                    open ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+                )}
+                onClick={handleClose}
+                aria-hidden="true"
+            />
 
             <Sidebar
                 collapsible="offcanvas"
@@ -166,6 +157,7 @@ export default function AppSidebar() {
                             {/* Secondary Links */}
                             {[
                                 { icon: ShoppingCart, label: "Shopping Bag", href: "/cart" },
+                                { icon: ClipboardList, label: "My Orders", href: "/orders" },
                             ].map((item) => (
                                 <SidebarMenuItem key={item.label}>
                                     <SidebarMenuButton
