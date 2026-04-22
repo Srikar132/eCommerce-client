@@ -2,26 +2,71 @@
 // QUERY HOOKS
 // ============================================================================
 
-import { addReviewToProduct, getAllProducts, getReviewsByProductId } from "@/lib/actions/product-actions";
-import { PagedResponse } from "@/types";
+import {
+  addReviewToProduct,
+  getAllProducts,
+  getReviewsByProductId,
+  getAllCategories,
+} from "@/lib/actions/product-actions";
+import { PagedResponse, Category } from "@/types";
 import { AddReviewRequest, Product, ProductParams, Review } from "@/types/product";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../query-keys";
+import { updateCategory } from "@/lib/actions/content-actions";
+
+
+/**
+ * Fetch all categories
+ */
+export const useCategories = () => {
+  return useQuery({
+    queryKey: queryKeys.categories.all(),
+    queryFn: async () => {
+      const response = await getAllCategories();
+      return response as { success: boolean; data: Category[] };
+    },
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+};
+
+/**
+ * Update a category
+ */
+export const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: {
+      id: string;
+      data: Partial<{
+        name: string;
+        slug: string;
+        description: string;
+        imageUrl: string;
+        isActive: boolean;
+        displayOrder: number;
+      }>
+    }) => updateCategory(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() });
+    },
+  });
+};
 
 /**
  * Infinite scroll product list with filters, pagination, and sorting
  */
 export const useInfiniteProducts = (params: ProductParams) => {
-  const { 
-    category, 
-    sizes, 
-    colors, 
-    minPrice, 
-    maxPrice, 
-    searchQuery, 
-    page = 0, 
-    limit = 20, 
-    sortBy = 'CREATED_AT_DESC' 
+  const {
+    category,
+    sizes,
+    colors,
+    minPrice,
+    maxPrice,
+    searchQuery,
+    page = 0,
+    limit = 20,
+    sortBy = 'CREATED_AT_DESC'
   } = params;
 
   return useInfiniteQuery({

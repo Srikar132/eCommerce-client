@@ -1,4 +1,4 @@
-import { resendSendEmail, EMAIL_FROM } from "./resend";
+import { resendSendEmail } from "./resend";
 import { checkEmailRateLimit } from "@/lib/upstash";
 
 // ==================== TYPES ====================
@@ -61,7 +61,6 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
 
     // Send via Resend
     const { data, error } = await resendSendEmail({
-        from: EMAIL_FROM,
         to: recipients,
         subject,
         html,

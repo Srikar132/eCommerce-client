@@ -9,6 +9,7 @@ interface ImagesSectionProps {
     onImagesChange: (images: UploadedImage[]) => void;
     maxImages?: number;
     disabled: boolean;
+    folder?: string;
 }
 
 export function ImagesSection({
@@ -16,6 +17,7 @@ export function ImagesSection({
     onImagesChange,
     maxImages = 8,
     disabled,
+    folder,
 }: ImagesSectionProps) {
     return (
         <Card className="border-0 shadow-md">
@@ -31,8 +33,10 @@ export function ImagesSection({
                     onImagesChange={onImagesChange}
                     maxImages={maxImages}
                     disabled={disabled}
+                    folder={folder}
                 />
             </CardContent>
         </Card>
     );
 }
+

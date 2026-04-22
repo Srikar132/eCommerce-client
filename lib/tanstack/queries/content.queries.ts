@@ -5,169 +5,17 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../query-keys";
 import {
-    getLandingCategories,
-    createLandingCategory,
-    updateLandingCategory,
-    deleteLandingCategory,
-    getShowcaseProducts,
-    createShowcaseProduct,
-    updateShowcaseProduct,
-    deleteShowcaseProduct,
     getLandingTestimonials,
     createTestimonial,
     updateTestimonial,
     deleteTestimonial,
-    getSliderImages,
-    createSliderImage,
-    updateSliderImage,
-    deleteSliderImage,
-    type LandingCategory,
-    type ShowcaseProduct,
+    getHeroSlides,
+    createHeroSlide,
+    updateHeroSlide,
+    deleteHeroSlide,
     type LandingTestimonial,
-    type SliderImage,
+    type HeroSlide,
 } from "@/lib/actions/content-actions";
-
-// ============================================================================
-// LANDING CATEGORIES
-// ============================================================================
-
-/**
- * Fetch all landing categories
- */
-export const useLandingCategories = () => {
-    return useQuery({
-        queryKey: queryKeys.content.categories(),
-        queryFn: getLandingCategories,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-    });
-};
-
-/**
- * Create a new landing category
- */
-export const useCreateLandingCategory = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: {
-            title: string;
-            imageUrl: string;
-            linkUrl: string;
-            displayOrder?: number;
-        }) => createLandingCategory(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.categories() });
-        },
-    });
-};
-
-/**
- * Update a landing category
- */
-export const useUpdateLandingCategory = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ id, data }: {
-            id: string;
-            data: Partial<{
-                title: string;
-                imageUrl: string;
-                linkUrl: string;
-                displayOrder: number;
-                isActive: boolean;
-            }>;
-        }) => updateLandingCategory(id, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.categories() });
-        },
-    });
-};
-
-/**
- * Delete a landing category
- */
-export const useDeleteLandingCategory = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (id: string) => deleteLandingCategory(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.categories() });
-        },
-    });
-};
-
-// ============================================================================
-// SHOWCASE PRODUCTS
-// ============================================================================
-
-/**
- * Fetch all showcase products
- */
-export const useShowcaseProducts = () => {
-    return useQuery({
-        queryKey: queryKeys.content.showcase(),
-        queryFn: getShowcaseProducts,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-    });
-};
-
-/**
- * Create a new showcase product
- */
-export const useCreateShowcaseProduct = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: {
-            title: string;
-            price: string;
-            imageUrl: string;
-            displayOrder?: number;
-        }) => createShowcaseProduct(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.showcase() });
-        },
-    });
-};
-
-/**
- * Update a showcase product
- */
-export const useUpdateShowcaseProduct = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ id, data }: {
-            id: string;
-            data: Partial<{
-                title: string;
-                price: string;
-                imageUrl: string;
-                displayOrder: number;
-                isActive: boolean;
-            }>;
-        }) => updateShowcaseProduct(id, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.showcase() });
-        },
-    });
-};
-
-/**
- * Delete a showcase product
- */
-export const useDeleteShowcaseProduct = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (id: string) => deleteShowcaseProduct(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.showcase() });
-        },
-    });
-};
 
 // ============================================================================
 // TESTIMONIALS
@@ -245,42 +93,46 @@ export const useDeleteTestimonial = () => {
 };
 
 // ============================================================================
-// SLIDER IMAGES
+// HERO SLIDES
 // ============================================================================
 
 /**
- * Fetch all slider images
+ * Fetch all hero slides
  */
-export const useSliderImages = () => {
+export const useHeroSlides = () => {
     return useQuery({
-        queryKey: queryKeys.content.slider(),
-        queryFn: getSliderImages,
+        queryKey: queryKeys.content.hero(),
+        queryFn: getHeroSlides,
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
 };
 
 /**
- * Create a new slider image
+ * Create a new hero slide
  */
-export const useCreateSliderImage = () => {
+export const useCreateHeroSlide = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: (data: {
             imageUrl: string;
-            altText?: string;
+            altText: string;
+            eyebrow: string;
+            heading: string;
+            textColor: string;
+            buttonLabel: string;
             displayOrder?: number;
-        }) => createSliderImage(data),
+        }) => createHeroSlide(data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.slider() });
+            queryClient.invalidateQueries({ queryKey: queryKeys.content.hero() });
         },
     });
 };
 
 /**
- * Update a slider image
+ * Update a hero slide
  */
-export const useUpdateSliderImage = () => {
+export const useUpdateHeroSlide = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -289,26 +141,30 @@ export const useUpdateSliderImage = () => {
             data: Partial<{
                 imageUrl: string;
                 altText: string;
+                eyebrow: string;
+                heading: string;
+                textColor: string;
+                buttonLabel: string;
                 displayOrder: number;
                 isActive: boolean;
             }>;
-        }) => updateSliderImage(id, data),
+        }) => updateHeroSlide(id, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.slider() });
+            queryClient.invalidateQueries({ queryKey: queryKeys.content.hero() });
         },
     });
 };
 
 /**
- * Delete a slider image
+ * Delete a hero slide
  */
-export const useDeleteSliderImage = () => {
+export const useDeleteHeroSlide = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (id: string) => deleteSliderImage(id),
+        mutationFn: (id: string) => deleteHeroSlide(id),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.content.slider() });
+            queryClient.invalidateQueries({ queryKey: queryKeys.content.hero() });
         },
     });
 };
@@ -318,8 +174,6 @@ export const useDeleteSliderImage = () => {
 // ============================================================================
 
 export type {
-    LandingCategory,
-    ShowcaseProduct,
     LandingTestimonial,
-    SliderImage,
+    HeroSlide,
 };

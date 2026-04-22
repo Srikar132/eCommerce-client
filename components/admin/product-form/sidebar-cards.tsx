@@ -15,26 +15,26 @@ interface StatusCardProps {
 
 export function StatusCard({ control, disabled }: StatusCardProps) {
     return (
-        <Card className="border-0 shadow-md">
-            <CardHeader className="pb-4">
-                <CardTitle className="text-base flex items-center gap-2">
-                    <Settings className="h-4 w-4" />
-                    Status
+        <Card className="border border-border/50 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="pb-4 border-b border-border/40 bg-muted/20">
+                <CardTitle className="text-base flex items-center gap-2.5 font-semibold">
+                    <Settings className="h-4 w-4 text-primary/80" />
+                    Publishing Status
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-4 space-y-4">
                 <StatusToggle
                     control={control}
                     name="isActive"
                     label="Active"
-                    description="Product visible to customers"
+                    description="Visible to customers"
                     disabled={disabled}
                 />
                 <StatusToggle
                     control={control}
                     name="isDraft"
                     label="Draft"
-                    description="Save for later editing"
+                    description="Save for later"
                     disabled={disabled}
                 />
             </CardContent>
@@ -56,16 +56,17 @@ function StatusToggle({ control, name, label, description, disabled }: StatusTog
             control={control}
             name={name}
             render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                    <div>
-                        <FormLabel className="text-sm font-medium">{label}</FormLabel>
-                        <p className="text-xs text-muted-foreground">{description}</p>
+                <FormItem className="flex items-center justify-between rounded-xl border border-border/40 p-3.5 bg-muted/10 hover:bg-muted/20 transition-colors">
+                    <div className="space-y-0.5">
+                        <FormLabel className="text-sm font-semibold">{label}</FormLabel>
+                        <p className="text-[10px] text-muted-foreground font-medium">{description}</p>
                     </div>
                     <FormControl>
                         <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
                             disabled={disabled}
+                            className="scale-90"
                         />
                     </FormControl>
                 </FormItem>
@@ -82,14 +83,16 @@ interface SummaryCardProps {
 
 export function SummaryCard({ imageCount, variantCount, totalStock }: SummaryCardProps) {
     return (
-        <Card className="border-0 shadow-md bg-primary/5">
-            <CardHeader className="pb-3">
-                <CardTitle className="text-base">Summary</CardTitle>
+        <Card className="border border-border/50 shadow-sm bg-primary/5 overflow-hidden">
+            <CardHeader className="pb-3 border-b border-primary/10">
+                <CardTitle className="text-base font-semibold">Inventory Summary</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-                <SummaryItem label="Images" value={imageCount} />
-                <SummaryItem label="Variants" value={variantCount} />
-                <SummaryItem label="Total Stock" value={totalStock} />
+            <CardContent className="p-5 space-y-4">
+                <SummaryItem label="Uploaded Images" value={imageCount} />
+                <SummaryItem label="Product Variants" value={variantCount} />
+                <div className="pt-2 border-t border-primary/5">
+                    <SummaryItem label="Total Stock Available" value={totalStock} isHighlight />
+                </div>
             </CardContent>
         </Card>
     );
@@ -98,13 +101,16 @@ export function SummaryCard({ imageCount, variantCount, totalStock }: SummaryCar
 interface SummaryItemProps {
     label: string;
     value: number;
+    isHighlight?: boolean;
 }
 
-function SummaryItem({ label, value }: SummaryItemProps) {
+function SummaryItem({ label, value, isHighlight }: SummaryItemProps) {
     return (
-        <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{label}</span>
-            <Badge variant="secondary">{value}</Badge>
+        <div className="flex justify-between items-center text-sm">
+            <span className={isHighlight ? "font-semibold" : "text-muted-foreground font-medium"}>{label}</span>
+            <Badge variant={isHighlight ? "default" : "secondary"} className="rounded-full px-2.5">
+                {value}
+            </Badge>
         </div>
     );
 }

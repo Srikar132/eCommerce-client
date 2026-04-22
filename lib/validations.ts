@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { PRODUCT_SIZES, PRODUCT_COLORS } from '@/lib/constants/enums';
+
+export { PRODUCT_SIZES, PRODUCT_COLORS };
 
 // Enhanced phone schema with additional security
 export const phoneSchema = z.object({
@@ -7,7 +10,7 @@ export const phoneSchema = z.object({
         .min(13, 'Please enter country code and phone number')
         .max(17, 'Phone number is too long')
         .regex(/^\+\d{1,4}\d{10}$/, 'Invalid format. Use +91 followed by 10 digits')
-        .transform(phone => phone.trim().replace(/\s+/g, '')), // Sanitize input
+        .transform(phone => phone.trim().replace(/\s+/g, '')),
     acceptTerms: z
         .boolean()
         .refine((val) => val === true, {
@@ -35,7 +38,7 @@ export const loginSchema = z.object({
         .min(10, 'Phone number is required')
         .max(17, 'Phone number is too long')
         .regex(/^\+\d{1,4}\d{10}$/, 'Invalid phone format')
-        .transform(phone => phone.trim().replace(/[^\d+]/g, '')), // Sanitize
+        .transform(phone => phone.trim().replace(/[^\d+]/g, '')),
     otp: z
         .string()
         .length(6, 'OTP must be exactly 6 digits')
@@ -80,7 +83,9 @@ export const addressSchema = z.object({
     isDefault: z.boolean().optional(),
 });
 
-// Product-related validation schemas
+// ============================================================================
+// PRODUCT SCHEMAS
+// ============================================================================
 
 // Product image schema
 export const productImageSchema = z.object({
@@ -91,13 +96,18 @@ export const productImageSchema = z.object({
 });
 
 // Product variant schema
+// FIX: `as const` makes PRODUCT_SIZES/PRODUCT_COLORS a readonly tuple, but
+// z.enum() expects a mutable tuple [string, ...string[]].
+// Spreading with [...PRODUCT_SIZES] converts readonly → mutable while keeping
+// the exact literal types so Zod's type inference still works correctly.
 export const productVariantSchema = z.object({
-    size: z.string().min(1, "Size is required"),
-    color: z.string().min(1, "Color is required"),
+    size: z.enum(PRODUCT_SIZES),
+    color: z.enum(PRODUCT_COLORS),
     colorHex: z.string().optional(),
     stockQuantity: z.coerce.number().min(0, "Stock quantity must be non-negative"),
     priceModifier: z.coerce.number().default(0),
-    sku: z.string().optional(), // SKU is auto-generated
+    sku: z.string().optional(),
+    isActive: z.boolean().default(true),
 });
 
 // Main product form validation schema
@@ -111,17 +121,10 @@ export const productFormSchema = z.object({
         .optional()
         .transform(val => val ? sanitizeString(val) : val),
     basePrice: z.coerce.number().min(0, "Price must be greater than 0"),
-    sku: z.string()
-        .min(3, "SKU must be at least 3 characters")
-        .max(50, "SKU must be less than 50 characters")
-        .regex(/^[A-Za-z0-9-_]+$/, "SKU can only contain letters, numbers, hyphens, and underscores"),
-    material: z.string()
-        .max(100, "Material must be less than 100 characters")
-        .optional()
+    sku: z.string().min(1, "SKU is required").max(50, "SKU must be less than 50 characters"),
+    material: z.string().max(100, "Material must be less than 100 characters").optional()
         .transform(val => val ? sanitizeString(val) : val),
-    careInstructions: z.string()
-        .max(1000, "Care instructions must be less than 1000 characters")
-        .optional()
+    careInstructions: z.string().max(1000, "Care instructions must be less than 1000 characters").optional()
         .transform(val => val ? sanitizeString(val) : val),
     categoryId: z.string().min(1, "Category is required"),
     isActive: z.boolean().default(true),
@@ -131,3 +134,29 @@ export const productFormSchema = z.object({
 });
 
 export type ProductFormData = z.infer<typeof productFormSchema>;
+
+// Contact form validation schema
+export const contactFormSchema = z.object({
+    name: z.string()
+        .min(2, "Name must be at least 2 characters")
+        .max(100, "Name must be less than 100 characters")
+        .transform(sanitizeString),
+    email: z.string()
+        .email("Please enter a valid email address")
+        .max(254, "Email is too long")
+        .transform(email => email.toLowerCase().trim()),
+    phone: z.string()
+        .max(20, "Phone number is too long")
+        .optional()
+        .transform(val => val ? sanitizeString(val) : val),
+    orderNumber: z.string()
+        .max(50, "Order number is too long")
+        .optional()
+        .transform(val => val ? sanitizeString(val) : val),
+    message: z.string()
+        .min(10, "Message must be at least 10 characters")
+        .max(2000, "Message must be less than 2000 characters")
+        .transform(sanitizeString),
+});
+
+export type ContactFormData = z.infer<typeof contactFormSchema>;

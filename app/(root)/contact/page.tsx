@@ -1,18 +1,11 @@
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Mail, Phone, Clock, ChevronRight } from 'lucide-react';
 import { STORE_SETTINGS } from '@/constants';
 import type { Metadata } from "next";
-import CustomButton from '@/components/ui/custom-button';
 import BreadcrumbNavigation from '@/components/breadcrumb-navigation';
 import ScrollingBanner from '@/components/landing-page/scrolling-banner';
+
+import ContactForm from '@/components/contact/contact-form';
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -35,89 +28,7 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-20">
           {/* Contact Form Column */}
           <div className="lg:col-span-8">
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Name */}
-              <div className="space-y-3">
-                <label htmlFor="name" className="text-sm font-bold pl-1">Name</label>
-                <Input
-                  id="name"
-                  placeholder=""
-                  className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus-visible:ring-1 focus-visible:ring-accent/20"
-                />
-              </div>
-
-              {/* Email */}
-              <div className="space-y-3">
-                <label htmlFor="email" className="text-sm font-bold pl-1">Email*</label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder=""
-                  className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus-visible:ring-1 focus-visible:ring-accent/20"
-                />
-              </div>
-
-              {/* Phone Number */}
-              <div className="space-y-3">
-                <label htmlFor="phone" className="text-sm font-bold pl-1">Phone Number</label>
-                <Input
-                  id="phone"
-                  placeholder=""
-                  className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus-visible:ring-1 focus-visible:ring-accent/20"
-                />
-              </div>
-
-              {/* Order Number */}
-              <div className="space-y-3">
-                <label htmlFor="order" className="text-sm font-bold pl-1">Order Number</label>
-                <Input
-                  id="order"
-                  placeholder=""
-                  className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus-visible:ring-1 focus-visible:ring-accent/20"
-                />
-              </div>
-
-              {/* Country */}
-              <div className="md:col-span-2 space-y-3">
-                <label htmlFor="country" className="text-sm font-bold pl-1">Country</label>
-                <Select defaultValue="austria">
-                  <SelectTrigger className="h-14 rounded-full border-none bg-[#F5F5F5] px-6 focus:ring-1 focus:ring-accent/20">
-                    <SelectValue placeholder="Select Country" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-none shadow-xl">
-                    <SelectItem value="austria">Austria</SelectItem>
-                    <SelectItem value="germany">Germany</SelectItem>
-                    <SelectItem value="switzerland">Switzerland</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-
-              {/* Message */}
-              <div className="md:col-span-2 space-y-3">
-                <label htmlFor="message" className="text-sm font-bold pl-1">Your Message</label>
-                <Textarea
-                  id="message"
-                  placeholder=""
-                  className="min-h-[180px] rounded-[2rem] border-none bg-[#F5F5F5] p-6 focus-visible:ring-1 focus-visible:ring-accent/20 resize-none"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div className="md:col-span-2 pt-4">
-                <CustomButton
-                  bgColor="#000000"
-                  circleColor="#ffffff"
-                  textColor="#ffffff"
-                  textHoverColor="#000000"
-                  circleSize={44}
-                  className="min-w-[200px]"
-                >
-                  Send Message
-                </CustomButton>
-              </div>
-            </form>
+            <ContactForm />
           </div>
 
           {/* Information Column */}
@@ -181,7 +92,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-
 
       <ScrollingBanner />
     </main>

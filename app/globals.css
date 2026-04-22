@@ -50,8 +50,10 @@
   --radius: 1.5rem;
 
   /* ───── Base ───── */
-  --background: #FCFAF7; /* Premium Linen */
-  --foreground: #1A1A1A; /* Soft Charcoal */
+  --background: #FCFAF7;
+  /* Premium Linen */
+  --foreground: #1A1A1A;
+  /* Soft Charcoal */
 
   /* ───── Cards / Surfaces ───── */
   --card: #FFFFFF;
@@ -196,7 +198,7 @@
   }
 
   .section {
-    @apply py-24 md:py-32 relative bg-background;
+    @apply py-16 md:py-24 relative bg-background;
   }
 
   .section-header {

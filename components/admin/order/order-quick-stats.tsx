@@ -33,14 +33,14 @@ interface StatCardProps {
 
 function StatCard({ icon, iconBg, label, value, valueClassName }: StatCardProps) {
     return (
-        <div className="bg-card rounded-xl border border-border p-4">
-            <div className="flex items-center gap-3">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${iconBg}`}>
+        <div className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 p-5 shadow-sm hover:shadow-md transition-all hover:scale-[1.02]">
+            <div className="flex items-center gap-4">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-full shadow-sm ${iconBg}`}>
                     {icon}
                 </div>
                 <div>
-                    <p className="text-xs text-muted-foreground font-medium">{label}</p>
-                    <p className={valueClassName || "text-lg font-bold"}>{value}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{label}</p>
+                    <p className={valueClassName || "text-lg font-bold text-foreground/90"}>{value}</p>
                 </div>
             </div>
         </div>

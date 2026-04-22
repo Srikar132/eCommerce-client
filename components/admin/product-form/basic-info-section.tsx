@@ -5,6 +5,9 @@ import { Package } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { ProductFormData } from "@/lib/validations";
 import { FormInput, FormTextarea, FormSelect, PriceInput } from "./form-fields";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
+import { generateSKU } from "@/lib/utils";
 
 interface BasicInfoSectionProps {
     form: UseFormReturn<ProductFormData>;
@@ -19,14 +22,14 @@ export function BasicInfoSection({ form, categories, disabled }: BasicInfoSectio
     }));
 
     return (
-        <Card className="border-0 shadow-md">
-            <CardHeader className="pb-4">
-                <CardTitle className="text-base flex items-center gap-2">
-                    <Package className="h-4 w-4" />
+        <Card className="border border-border/50 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="pb-4 border-b border-border/40 bg-muted/20">
+                <CardTitle className="text-xl flex items-center gap-2.5 font-semibold">
+                    <Package className="h-5 w-5 text-primary/80" />
                     Basic Information
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-6 space-y-6">
                 <FormInput
                     control={form.control}
                     name="name"
@@ -42,29 +45,44 @@ export function BasicInfoSection({ form, categories, disabled }: BasicInfoSectio
                     label="Description"
                     placeholder="Describe your product..."
                     disabled={disabled}
-                    minHeight="min-h-25"
+                    minHeight="min-h-32"
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                    <FormInput
-                        control={form.control}
-                        name="sku"
-                        label="SKU"
-                        placeholder="e.g., DRESS-001"
-                        disabled={disabled}
-                        required
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <FormInput
+                            control={form.control}
+                            name="sku"
+                            label="Product SKU"
+                            placeholder="Auto-generating..."
+                            disabled={disabled}
+                            required
+                        />
+                        <div className="flex justify-end">
+                            <Button 
+                                type="button" 
+                                variant="link" 
+                                size="sm" 
+                                className="h-auto p-0 text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center"
+                                onClick={() => form.setValue("sku", generateSKU("PRD"))}
+                                disabled={disabled}
+                            >
+                                <RefreshCw className="h-3 w-3 mr-1.5" />
+                                Regenerate SKU
+                            </Button>
+                        </div>
+                    </div>
 
                     <PriceInput
                         control={form.control}
                         name="basePrice"
-                        label="Price"
+                        label="Base Price (INR)"
                         disabled={disabled}
                         required
                     />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormInput
                         control={form.control}
                         name="material"
@@ -90,7 +108,7 @@ export function BasicInfoSection({ form, categories, disabled }: BasicInfoSectio
                     label="Care Instructions"
                     placeholder="e.g., Machine wash cold, tumble dry low..."
                     disabled={disabled}
-                    minHeight="min-h-20"
+                    minHeight="min-h-24"
                 />
             </CardContent>
         </Card>

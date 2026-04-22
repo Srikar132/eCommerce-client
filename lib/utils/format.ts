@@ -1,13 +1,13 @@
 /**
  * Format a number as currency
  * @param amount The amount to format
- * @param currency The currency code (default: USD)
- * @param locale The locale (default: en-US)
+ * @param currency The currency code (default: INR)
+ * @param locale The locale (default: en-IN)
  */
 export function formatCurrency(
     amount: number,
-    currency = "USD",
-    locale = "en-US"
+    currency = "INR",
+    locale = "en-IN"
 ): string {
     return new Intl.NumberFormat(locale, {
         style: "currency",

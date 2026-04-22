@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/admin/data-table-column-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Eye, Edit, Trash2, Package, Copy, DollarSign } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Package, Copy } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -81,17 +81,6 @@ const ProductRowActions = ({ product }: { product: Product }) => {
     return (
         <>
             <div className="flex items-center gap-1">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 admin-glow-button"
-                    asChild
-                >
-                    <Link href={`/products/${product.slug}?admin_browse=true`} target="_blank">
-                        <Eye className="w-4 h-4" />
-                        <span className="sr-only">View product</span>
-                    </Link>
-                </Button>
                 <Button
                     variant="ghost"
                     size="sm"
@@ -258,7 +247,6 @@ export const columns: ColumnDef<Product>[] = [
             const price = row.original.basePrice;
             return (
                 <div className="flex items-center font-semibold text-lg">
-                    <DollarSign className="mr-1 h-4 w-4 text-muted-foreground" />
                     {formatCurrency(price)}
                 </div>
             );

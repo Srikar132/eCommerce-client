@@ -39,6 +39,19 @@ export enum PaymentStatus {
     PARTIALLY_REFUNDED = "PARTIALLY_REFUNDED"
 };
 
+export interface Address {
+    id: string;
+    fullName: string;
+    phone: string;
+    addressLine1: string;
+    addressLine2?: string | null;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    isDefault?: boolean;
+}
+
 export interface Order {
     id: string;
 
@@ -59,8 +72,8 @@ export interface Order {
     discountAmount: number;
     totalAmount: number;
 
-    //   shippingAddress?: Address;
-    //   billingAddress?: Address;
+    shippingAddress?: Address | null;
+    billingAddress?: Address | null;
 
     trackingNumber?: string;
     carrier?: string;

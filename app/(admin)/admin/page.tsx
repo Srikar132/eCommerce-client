@@ -106,15 +106,22 @@ export default async function AdminDashboard() {
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-10 py-2 md:py-6">
             {/* Header */}
-            <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-semibold tracking-tight">
-                    {greeting}, {userName}
-                </h1>
-                <p className="text-base text-muted-foreground">
-                    Here&apos;s an overview of your store today
-                </p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-border/60">
+                <div className="space-y-1.5">
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground/90 uppercase">
+                        {greeting}, {userName}
+                    </h1>
+                    <p className="text-sm md:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
+                        Welcome back to your command center. Here is a high-level overview of your store&apos;s performance and critical tasks for today.
+                    </p>
+                </div>
+                
+                <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-primary/5 border border-primary/10">
+                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Live Dashboard</span>
+                </div>
             </div>
 
             {/* Dashboard Content */}

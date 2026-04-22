@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -54,25 +54,25 @@ function OrderRow({ id, orderNumber, customerName, totalAmount, status, createdA
     };
 
     return (
-        <Link href={`/admin/orders/${id}`}>
-            <div className="flex items-center justify-between py-3 px-3 -mx-3 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer group">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${config.bg} shrink-0`}>
+        <Link href={`/admin/orders/${id}`} className="block">
+            <div className="flex items-center justify-between py-3 px-3 -mx-3 rounded-lg hover:bg-accent/50 transition-all duration-200 cursor-pointer group">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${config.bg} shrink-0 transition-transform group-hover:scale-105`}>
                         <StatusIcon className={`h-5 w-5 ${config.text}`} />
                     </div>
-                    <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                            <p className="font-medium truncate">{orderNumber}</p>
-                            <Badge variant="outline" className={`text-xs px-2 py-0.5 ${config.bg} ${config.text} border-0`}>
+                    <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 mb-0.5">
+                            <p className="font-semibold truncate text-sm sm:text-base">{orderNumber}</p>
+                            <Badge variant="outline" className={`text-[10px] sm:text-xs px-2 py-0.5 ${config.bg} ${config.text} border-0 font-medium shrink-0`}>
                                 {config.label}
                             </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground truncate">{customerName}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">{customerName}</p>
                     </div>
                 </div>
                 <div className="text-right shrink-0 ml-3">
-                    <p className="font-semibold">{formatCurrency(totalAmount)}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-bold text-sm sm:text-base">{formatCurrency(totalAmount)}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">
                         {formatRelativeTime(createdAt)}
                     </p>
                 </div>
@@ -103,17 +103,17 @@ export function RecentOrders() {
     const { data: orders, isLoading, error } = useRecentOrders(6);
 
     return (
-        <Card className="border border-border/40 bg-card shadow-sm">
-            <CardHeader className="pb-4 border-b border-border/40">
+        <Card className="border border-border/50 bg-card/50 backdrop-blur-sm shadow-sm rounded-3xl overflow-hidden">
+            <CardHeader className="pb-4 border-b border-border/40 bg-muted/20">
                 <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                        <ShoppingCart className="h-5 w-5 text-primary" />
-                        Recent Orders
-                    </CardTitle>
-                    <Button variant="ghost" size="sm" asChild className="text-sm h-8 gap-1 text-muted-foreground hover:text-primary">
+                    <div>
+                        <CardTitle className="text-lg font-bold tracking-tight">Recent Orders</CardTitle>
+                        <CardDescription className="text-[10px] uppercase tracking-widest font-black opacity-70">Latest Transactional Flow</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" asChild className="rounded-full h-8 px-4 admin-glow-button text-[10px] font-black uppercase tracking-widest">
                         <Link href="/admin/orders">
                             View All
-                            <ExternalLink className="h-4 w-4" />
+                            <ExternalLink className="ml-2 h-3 w-3" />
                         </Link>
                     </Button>
                 </div>

@@ -302,3 +302,21 @@ export function orderShippedEmail({
     html: emailLayout(content),
   };
 }
+
+
+// emails/contact.ts
+export function contactFormEmail({ name, email, message }: {
+  name: string;
+  email: string;
+  message: string;
+}) {
+  return {
+    subject: `New Contact Form Submission from ${name}`,
+    html: `
+            <h2>New message from ${name}</h2>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message}</p>
+        `,
+  };
+}

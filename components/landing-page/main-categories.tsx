@@ -1,19 +1,16 @@
 import CategoryCard from '@/components/cards/category-card';
-import { getActiveLandingCategories } from '@/lib/actions/content-actions';
 
-export default async function ShopByCategories() {
-    // Handle data fetching outside of render logic to avoid try/catch JSX violation
-    const categories = await getActiveLandingCategories().catch((error) => {
-        console.error("Failed to fetch landing categories:", error);
-        return [];
-    });
+interface ShopByCategoriesProps {
+    categories: any[];
+}
 
+export default function ShopByCategories({ categories }: ShopByCategoriesProps) {
     if (!categories || categories.length === 0) {
         return null;
     }
 
     return (
-        <section className="section bg-background relative   z-30 rounded-t-[20px] lg:rounded-t-[60px]">
+        <section className="section bg-background">
             <div className="container mb-16">
                 <span className="text-[11px] font-bold tracking-[0.35em] text-foreground/30 uppercase mb-4 block">
                     Our Collections
@@ -29,9 +26,9 @@ export default async function ShopByCategories() {
                     {categories.map((category) => (
                         <div key={category.id}>
                             <CategoryCard
-                                title={category.title}
-                                image={category.imageUrl}
-                                url={category.linkUrl}
+                                title={category.name}
+                                image={category.imageUrl || ""}
+                                url={`/products?category=${category.slug}`}
                                 className="aspect-[4/5]"
                             />
                         </div>

@@ -5,6 +5,11 @@ import { users, orders, orderItems } from "@/drizzle/schema";
 import { PagedResponse } from "@/types";
 import { UserParams, UserWithStats } from "@/types/auth";
 import { and, count, desc, asc, or, ilike, eq, sql } from "drizzle-orm";
+// In your contact form server action
+import { sendEmail } from "@/lib/emails";
+import { contactFormEmail } from "@/lib/emails";
+import { contactFormSchema } from "@/lib/validations";
+
 
 /**
  * Get all users with pagination, filtering, and stats
@@ -167,5 +172,72 @@ export async function updateUserRole(userId: string, newRole: 'ADMIN' | 'USER'):
     } catch (error) {
         console.error("Error updating user role:", error);
         throw error;
+    }
+}
+
+
+
+export async function submitContactForm(prevState: any, formData: FormData) {
+    // 1. Convert FormData to object
+    const rawData = {
+        name: formData.get("name") as string,
+        email: formData.get("email") as string,
+        phone: formData.get("phone") as string || undefined,
+        orderNumber: formData.get("orderNumber") as string || undefined,
+        message: formData.get("message") as string,
+    };
+
+    // 2. Validate with Zod
+    const validated = contactFormSchema.safeParse(rawData);
+
+    if (!validated.success) {
+        return {
+            success: false,
+            errors: validated.error.flatten().fieldErrors,
+            message: "Please fix the errors below.",
+        };
+    }
+
+    const data = validated.data;
+
+    // 3. Prepare email content
+    const { subject, html } = contactFormEmail({
+        ...data,
+        // Include extra fields in the message body for the template if needed
+        message: `
+            ${data.message}
+            ${data.phone ? `\n\nPhone: ${data.phone}` : ""}
+            ${data.orderNumber ? `\nOrder Number: ${data.orderNumber}` : ""}
+        `.trim()
+    });
+
+    try {
+        const result = await sendEmail({
+            to: "support@nalaarmoire.com", // → goes TO your support inbox
+            subject,
+            html,
+            replyTo: data.email,          // → hitting Reply goes back to the user
+            skipRateLimit: false,          // rate limit by user's email
+            rateLimitKey: data.email,
+            tags: [{ name: "type", value: "contact-form" }],
+        });
+
+        if (result.error) {
+            return {
+                success: false,
+                message: result.error || "Failed to send email.",
+            };
+        }
+
+        return {
+            success: true,
+            message: "Thank you for your message! We'll get back to you shortly.",
+        };
+    } catch (error) {
+        console.error("Contact form error:", error);
+        return {
+            success: false,
+            message: "An unexpected error occurred. Please try again later.",
+        };
     }
 }

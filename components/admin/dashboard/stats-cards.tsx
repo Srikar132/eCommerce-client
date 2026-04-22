@@ -25,32 +25,32 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, changeType, icon, iconBg, subtitle }: StatCardProps) {
     return (
-        <Card className="relative overflow-hidden border border-border/40 bg-card shadow-sm">
+        <Card className="relative overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm shadow-sm rounded-3xl transition-all duration-300 hover:shadow-xl hover:border-primary/20 group">
             <CardContent className="p-6">
                 <div className="flex items-start justify-between">
-                    <div className="space-y-3">
-                        <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">{title}</p>
-                        <h3 className="text-3xl font-bold tracking-tight">{value}</h3>
+                    <div className="space-y-4">
+                        <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase ml-0.5">{title}</p>
+                        <h3 className="text-3xl font-black tracking-tight text-foreground/90">{value}</h3>
                         <div className="flex items-center gap-2">
                             {changeType === "increase" ? (
-                                <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-0 gap-1 text-sm font-medium">
-                                    <TrendingUp className="h-3.5 w-3.5" />
+                                <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-0 gap-1 text-[10px] font-bold uppercase tracking-tight py-0.5">
+                                    <TrendingUp className="h-3 w-3" />
                                     {change}
                                 </Badge>
                             ) : changeType === "decrease" ? (
-                                <Badge variant="secondary" className="bg-rose-500/10 text-rose-600 dark:text-rose-400 border-0 gap-1 text-sm font-medium">
-                                    <TrendingDown className="h-3.5 w-3.5" />
+                                <Badge variant="secondary" className="bg-rose-500/10 text-rose-600 dark:text-rose-400 border-0 gap-1 text-[10px] font-bold uppercase tracking-tight py-0.5">
+                                    <TrendingDown className="h-3 w-3" />
                                     {change}
                                 </Badge>
                             ) : (
-                                <Badge variant="secondary" className="text-sm font-medium">
+                                <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-tight py-0.5">
                                     {change}
                                 </Badge>
                             )}
-                            <span className="text-sm text-muted-foreground">{subtitle}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{subtitle}</span>
                         </div>
                     </div>
-                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${iconBg}`}>
+                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-inner transition-transform duration-300 group-hover:scale-110 ${iconBg}`}>
                         {icon}
                     </div>
                 </div>

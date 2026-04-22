@@ -234,3 +234,14 @@ export const formatRelativeTime = (date: Date | string): string => {
   const diffInYears = Math.floor(diffInMonths / 12);
   return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
 };
+
+/**
+ * Generate a unique SKU for products or variants
+ * @param prefix - Optional prefix (e.g., "PRD", "VAR")
+ * @returns A unique SKU string
+ */
+export const generateSKU = (prefix: string = "NAL"): string => {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 5).toUpperCase();
+  return `${prefix}-${timestamp}-${random}`;
+};

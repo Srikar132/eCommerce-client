@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { OrderStatus, PaymentStatus } from "@/types/orders";
+import { Order, OrderStatus, PaymentStatus } from "@/types/orders";
 
 // Modular Components
 import { OrderHeader } from "@/components/admin/order/order-header";
@@ -14,73 +14,14 @@ import { OrderNotes } from "@/components/admin/order/order-notes";
 import { OrderTimeline } from "@/components/admin/order/order-timeline";
 import { CustomerDetails } from "@/components/admin/order/customer-details";
 import { PaymentDetails } from "@/components/admin/order/payment-details";
-
-// ============================================================================
-// TYPES
-// ============================================================================
-
-interface Address {
-    id: string;
-    fullName: string;
-    phone: string;
-    addressLine1: string;
-    addressLine2?: string | null;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-    isDefault?: boolean;
-}
-
-interface OrderItem {
-    id: string;
-    productId: string;
-    productName: string;
-    productSlug: string;
-    variantId: string;
-    size: string;
-    color: string;
-    quantity: number;
-    unitPrice: number;
-    totalPrice: number;
-    productionStatus: string;
-    imageUrl?: string | null;
-}
-
-interface Order {
-    id: string;
-    orderNumber: string;
-    status: string;
-    paymentStatus: string;
-    paymentMethod?: string | null;
-    razorpayOrderId?: string | null;
-    razorpayPaymentId?: string | null;
-    subtotal: number;
-    taxAmount: number;
-    shippingCost: number;
-    discountAmount: number;
-    totalAmount: number;
-    shippingAddress?: Address | null;
-    billingAddress?: Address | null;
-    trackingNumber?: string | null;
-    carrier?: string | null;
-    estimatedDeliveryDate?: string | null;
-    deliveredAt?: string | null;
-    cancelledAt?: string | null;
-    cancellationReason?: string | null;
-    returnRequestedAt?: string | null;
-    returnReason?: string | null;
-    notes?: string | null;
-    createdAt: string;
-    updatedAt: string;
-    items: OrderItem[];
-    userName?: string | null;
-    userEmail?: string | null;
-    userPhone?: string | null;
-}
+import { DeliveryDetails } from "@/components/admin/order/delivery-details";
 
 interface OrderDetailsClientProps {
-    order: Order;
+    order: Order & { 
+        userName?: string | null; 
+        userEmail?: string | null; 
+        userPhone?: string | null; 
+    };
 }
 
 // ============================================================================
@@ -104,7 +45,7 @@ export function OrderDetailsClient({ order }: OrderDetailsClientProps) {
                 totalAmount={order.totalAmount}
                 itemCount={order.items.length}
                 paymentStatus={order.paymentStatus as PaymentStatus}
-                customerName={order.userName}
+                customerName={order.userName || "Customer"}
             />
 
             {/* Status Progress & Update */}
@@ -155,6 +96,14 @@ export function OrderDetailsClient({ order }: OrderDetailsClientProps) {
                         userPhone={order.userPhone}
                     />
 
+                    <DeliveryDetails
+                        status={currentStatus}
+                        trackingNumber={order.trackingNumber}
+                        carrier={order.carrier}
+                        estimatedDeliveryDate={order.estimatedDeliveryDate}
+                        deliveredAt={order.deliveredAt}
+                    />
+
                     <PaymentDetails
                         orderId={order.id}
                         orderNumber={order.orderNumber}
@@ -168,3 +117,4 @@ export function OrderDetailsClient({ order }: OrderDetailsClientProps) {
         </div>
     );
 }
+

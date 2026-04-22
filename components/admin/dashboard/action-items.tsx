@@ -30,21 +30,21 @@ function ActionItem({ icon, iconBg, title, description, count, href, priority }:
     };
 
     return (
-        <Link href={href}>
-            <div className={`flex items-center gap-4 p-4 rounded-lg border border-border/40 bg-card hover:bg-accent/50 transition-colors cursor-pointer border-l-4 ${priorityColors[priority]}`}>
-                <div className={`flex h-11 w-11 items-center justify-center rounded-lg ${iconBg}`}>
+        <Link href={href} className="block">
+            <div className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border border-border/40 bg-card hover:bg-accent/50 transition-all duration-200 cursor-pointer border-l-4 shadow-sm hover:shadow-md ${priorityColors[priority]}`}>
+                <div className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl ${iconBg} shrink-0`}>
                     {icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <p className="font-medium">{title}</p>
-                        <span className="inline-flex items-center justify-center h-6 min-w-6 px-2 text-sm font-semibold bg-primary/10 text-primary rounded-full">
+                    <div className="flex items-center gap-2 mb-0.5">
+                        <p className="font-semibold text-sm sm:text-base truncate">{title}</p>
+                        <span className="inline-flex items-center justify-center h-5 min-w-5 sm:h-6 sm:min-w-6 px-1.5 sm:px-2 text-[10px] sm:text-xs font-bold bg-primary text-primary-foreground rounded-full shrink-0">
                             {count}
                         </span>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">{description}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate leading-tight">{description}</p>
                 </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0" />
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 ml-1" />
             </div>
         </Link>
     );

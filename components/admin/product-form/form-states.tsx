@@ -63,40 +63,51 @@ interface FormHeaderProps {
 
 export function FormHeader({ isEditing, isSubmitting }: FormHeaderProps) {
     return (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-border/60 mb-6">
             <div className="flex items-center gap-4">
-                <Button type="button" variant="ghost" size="icon" asChild className="shrink-0">
+                <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="icon" 
+                    asChild 
+                    className="shrink-0 rounded-full h-10 w-10 border-border/50 hover:bg-muted/50 transition-all hover:scale-105"
+                >
                     <Link href="/admin/products">
                         <ArrowLeft className="h-5 w-5" />
                     </Link>
                 </Button>
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">
-                        {isEditing ? "Edit Product" : "New Product"}
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground/90">
+                        {isEditing ? "Edit Product" : "Create Product"}
                     </h1>
-                    <p className="text-sm text-muted-foreground">
-                        {isEditing ? "Update product details" : "Add a new product to your store"}
+                    <p className="text-sm text-muted-foreground font-medium mt-0.5">
+                        {isEditing ? "Modify your product's details and inventory" : "Launch a new item to your collection"}
                     </p>
                 </div>
             </div>
-            <div className="flex gap-3 sm:ml-auto">
-                <Button type="button" variant="outline" asChild>
+            <div className="flex items-center gap-3 sm:ml-auto">
+                <Button 
+                    type="button" 
+                    variant="ghost" 
+                    asChild
+                    className="text-muted-foreground hover:text-foreground font-medium transition-colors"
+                >
                     <Link href="/admin/products">Cancel</Link>
                 </Button>
                 <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-primary hover:bg-primary/90 min-w-30"
+                    className="bg-primary hover:bg-primary/90 min-w-[120px] h-11 rounded-full shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                     {isSubmitting ? (
                         <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            <Loader2 className="h-4 w-4 mr-2.25 animate-spin" />
                             Saving...
                         </>
                     ) : (
                         <>
-                            <Package className="h-4 w-4 mr-2" />
-                            {isEditing ? "Update" : "Create"}
+                            <Package className="h-4 w-4 mr-2.25" />
+                            {isEditing ? "Save Changes" : "Create Product"}
                         </>
                     )}
                 </Button>

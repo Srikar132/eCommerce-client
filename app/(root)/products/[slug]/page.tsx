@@ -41,13 +41,27 @@ export async function generateMetadata({
         }
 
         const productImage = product.images?.[0]?.imageUrl || PLACEHOLDER_IMAGE;
-        const description = product.description?.slice(0, 160) || `Shop ${product.name} at Nala Armoire. Premium customizable fashion, handcrafted with love.`;
+        
+        // Construct a richer SEO description
+        const baseDescription = product.description?.replace(/<[^>]*>?/gm, '').slice(0, 160);
+        const description = baseDescription || `Shop the exquisite ${product.name} at Nala Armoire. Premium handcrafted embroidered clothing made with the finest fabrics.`;
+
+        // SEO Title: Product Type + Brand
+        const seoTitle = `${product.name} | Handcrafted Embroidered Clothing | Nala Armoire`;
 
         return {
-            title: product.name,
+            title: seoTitle,
             description,
+            keywords: [
+                product.name,
+                "handcrafted embroidered clothing",
+                "premium fabric outfits",
+                "handcrafted embroidery",
+                "Nala Armoire clothing",
+                "family ethnic wear",
+            ],
             openGraph: {
-                title: `${product.name} | Nala Armoire`,
+                title: seoTitle,
                 description,
                 url: `${URL}/products/${slug}`,
                 images: [
@@ -62,7 +76,7 @@ export async function generateMetadata({
             },
             twitter: {
                 card: "summary_large_image",
-                title: `${product.name} | Nala Armoire`,
+                title: seoTitle,
                 description,
                 images: [productImage],
             },

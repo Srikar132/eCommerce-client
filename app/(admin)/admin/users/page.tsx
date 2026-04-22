@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useInfiniteUsers, useFlatUsers, useUserCount } from "@/lib/tanstack/queries/user.queries";
 import { buildUserParams } from "@/lib/searchparams";
-import { Users } from "lucide-react";
 import { columns } from "./columns";
 
 // Users content component
@@ -29,32 +28,27 @@ function UsersContent() {
     // Calculate total pages from totalCount
     const totalPages = Math.ceil(totalCount / (params.limit || 20));
 
-    console.log('Users data:', {
-        users,
-        params,
-        dataLength: users?.length,
-        totalElements: totalCount,
-        totalPages,
-        isLoading: infiniteQuery.isLoading,
-        isFetching: infiniteQuery.isFetching
-    });
 
     return (
         <div className="space-y-6 w-full max-w-full overflow-x-hidden">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    <h1 className="text-sm uppercase font-bold">User Management</h1>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
+                <div className="space-y-1.5">
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground/90 uppercase">
+                        User Management
+                    </h1>
+                    <p className="text-sm md:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
+                        Oversee your customer base, manage administrative permissions, and track user engagement across the platform.
+                    </p>
                 </div>
 
-                <Breadcrumb>
+                <Breadcrumb className="hidden md:block">
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+                            <BreadcrumbLink href="/admin" className="text-[10px] font-black uppercase tracking-widest opacity-70">Dashboard</BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator />
+                        <BreadcrumbSeparator className="opacity-30" />
                         <BreadcrumbItem>
-                            <BreadcrumbPage>All Users</BreadcrumbPage>
+                            <BreadcrumbPage className="text-[10px] font-black uppercase tracking-widest text-primary">All Users</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
@@ -88,10 +82,7 @@ export default function UsersPage() {
             fallback={
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Users className="h-5 w-5" />
-                            <h1 className="text-sm uppercase font-bold">User Management</h1>
-                        </div>
+                        <h1 className="admin-page-title">User Management</h1>
                     </div>
                     <div className="flex items-center justify-center py-16">
                         <div className="flex items-center gap-2">

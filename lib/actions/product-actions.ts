@@ -9,6 +9,7 @@ import { products, productImages, categories, productVariants, reviews, orders, 
 import { eq, and, or, ilike, sql, desc, asc, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { productFormSchema, ProductFormData } from "@/lib/validations";
+import { ProductSize, ProductColor } from "@/lib/constants/enums";
 
 // ============================================================================
 // PERFORMANCE: Per-request deduplication with React cache()
@@ -31,8 +32,8 @@ function parseVariant(variant: typeof productVariants.$inferSelect): ProductVari
     return {
         id: variant.id,
         productId: variant.productId,
-        size: variant.size,
-        color: variant.color,
+        size: variant.size as ProductSize,
+        color: variant.color as ProductColor,
         colorHex: variant.colorHex,
         stockQuantity: variant.stockQuantity,
         priceModifier: parseFloat(variant.priceModifier),
@@ -67,9 +68,9 @@ function parseImage(img: typeof productImages.$inferSelect): ProductImage {
  * separately — that was 2 DB round-trips. Now getProductBySlug returns variants
  * already, so getProductVariants() should NOT be called again on the product page.
  */
-export const getProductBySlug = cache(async (slug: string): Promise<Product | null> => {
-    return unstable_cache(
-        async () => {
+export const getProductBySlug = cache(
+    unstable_cache(
+        async (slug: string): Promise<Product | null> => {
             const productResults = await db
                 .select({
                     product: products,
@@ -128,22 +129,23 @@ export const getProductBySlug = cache(async (slug: string): Promise<Product | nu
                     : undefined,
             };
         },
-        [`product-slug-${slug}`],
+        // Cache key parts — slug is automatically handled by Next.js from arguments
+        ["product-by-slug"],
         {
             revalidate: 60 * 10, // 10 minutes
-            tags: [`product-${slug}`, "products"],
+            tags: ["products"],
         }
-    )();
-});
+    )
+);
 
 /**
  * PERFORMANCE FIX: getProductVariants is now a thin wrapper that reuses the
  * already-cached product data instead of firing a new DB query.
  * Only call this if you genuinely need variants without a full product.
  */
-export const getProductVariants = cache(async (productId: string): Promise<ProductVariant[]> => {
-    return unstable_cache(
-        async () => {
+export const getProductVariants = cache(
+    unstable_cache(
+        async (productId: string): Promise<ProductVariant[]> => {
             const variantsResults = await db
                 .select()
                 .from(productVariants)
@@ -152,210 +154,202 @@ export const getProductVariants = cache(async (productId: string): Promise<Produ
 
             return variantsResults.map(parseVariant);
         },
-        [`product-variants-${productId}`],
+        ["product-variants"],
         {
             revalidate: 60 * 10,
-            tags: [`product-${productId}`, "products"],
+            tags: ["products"],
         }
-    )();
-});
+    )
+);
 
 /**
  * PERFORMANCE FIX: getAllProducts is now cached at the Next.js data cache level.
  * Same filter params = same cache entry. Cache is busted when products are
  * created/updated/deleted via revalidateTag("products").
  */
-export async function getAllProducts(params: ProductParams): Promise<PagedResponse<Product>> {
-    return unstable_cache(
-        async (): Promise<PagedResponse<Product>> => {
-            const {
-                category,
-                sizes,
-                colors,
-                minPrice,
-                maxPrice,
-                searchQuery,
-                page = 0,
-                limit = 20,
-                sortBy = "CREATED_AT_DESC",
-            } = params;
+const getCachedProducts = unstable_cache(
+    async (params: ProductParams): Promise<PagedResponse<Product>> => {
+        const {
+            category,
+            sizes,
+            colors,
+            minPrice,
+            maxPrice,
+            searchQuery,
+            page = 0,
+            limit = 20,
+            sortBy = "CREATED_AT_DESC",
+        } = params;
 
-            const conditions = [];
+        const conditions = [];
 
-            if (category) {
-                const categoryRecord = await db
-                    .select({ id: categories.id })
-                    .from(categories)
-                    .where(eq(categories.slug, category))
-                    .limit(1);
+        if (category) {
+            const categoryRecord = await db
+                .select({ id: categories.id })
+                .from(categories)
+                .where(eq(categories.slug, category))
+                .limit(1);
 
-                if (categoryRecord.length > 0) {
-                    conditions.push(eq(products.categoryId, categoryRecord[0].id));
-                } else {
-                    return { data: [], page, size: limit, totalElements: 0, totalPages: 0 };
-                }
+            if (categoryRecord.length > 0) {
+                conditions.push(eq(products.categoryId, categoryRecord[0].id));
+            } else {
+                return { data: [], page, size: limit, totalElements: 0, totalPages: 0 };
             }
+        }
 
-            if (minPrice !== undefined) conditions.push(sql`${products.basePrice} >= ${minPrice}`);
-            if (maxPrice !== undefined) conditions.push(sql`${products.basePrice} <= ${maxPrice}`);
+        if (minPrice !== undefined) conditions.push(sql`${products.basePrice} >= ${minPrice}`);
+        if (maxPrice !== undefined) conditions.push(sql`${products.basePrice} <= ${maxPrice}`);
 
-            if (sizes || colors) {
-                const variantConditions = [];
-                if (sizes) {
-                    const sizeList = sizes.split(",").map((s) => s.trim());
-                    variantConditions.push(
-                        inArray(productVariants.size, sizeList as (typeof productVariants.size.enumValues[number])[])
-                    );
-                }
-                if (colors) {
-                    const colorList = colors.split(",").map((c) => c.trim());
-                    variantConditions.push(
-                        inArray(productVariants.color, colorList as (typeof productVariants.color.enumValues[number])[])
-                    );
-                }
-
-                const productsWithVariants = await db
-                    .selectDistinct({ productId: productVariants.productId })
-                    .from(productVariants)
-                    .where(and(...variantConditions, eq(productVariants.isActive, true)));
-
-                if (productsWithVariants.length > 0) {
-                    conditions.push(inArray(products.id, productsWithVariants.map((p) => p.productId)));
-                } else {
-                    return { data: [], page, size: limit, totalElements: 0, totalPages: 0 };
-                }
+        if (sizes || colors) {
+            const variantConditions = [];
+            if (sizes) {
+                const sizeList = sizes.split(",").map((s) => s.trim());
+                variantConditions.push(
+                    inArray(productVariants.size, sizeList as (typeof productVariants.size.enumValues[number])[])
+                );
             }
-
-            if (searchQuery) {
-                conditions.push(
-                    or(
-                        ilike(products.name, `%${searchQuery}%`),
-                        ilike(products.description, `%${searchQuery}%`),
-                        ilike(products.sku, `%${searchQuery}%`)
-                    )
+            if (colors) {
+                const colorList = colors.split(",").map((c) => c.trim());
+                variantConditions.push(
+                    inArray(productVariants.color, colorList as (typeof productVariants.color.enumValues[number])[])
                 );
             }
 
-            // Only show active, non-draft products in storefront
-            conditions.push(eq(products.isActive, true));
-            conditions.push(eq(products.isDraft, false));
+            const productsWithVariants = await db
+                .selectDistinct({ productId: productVariants.productId })
+                .from(productVariants)
+                .where(and(...variantConditions, eq(productVariants.isActive, true)));
 
-            const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-            // Count + products in parallel
-            const [countResult, productResults] = await Promise.all([
-                db
-                    .select({ count: sql<number>`count(*)::int` })
-                    .from(products)
-                    .where(whereClause),
-                db
-                    .select({
-                        product: products,
-                        category: {
-                            id: categories.id,
-                            name: categories.name,
-                            slug: categories.slug,
-                        },
-                    })
-                    .from(products)
-                    .leftJoin(categories, eq(products.categoryId, categories.id))
-                    .where(whereClause)
-                    .orderBy(
-                        sortBy === "NAME_ASC" ? asc(products.name)
-                            : sortBy === "NAME_DESC" ? desc(products.name)
-                                : sortBy === "PRICE_ASC" ? asc(products.basePrice)
-                                    : sortBy === "PRICE_DESC" ? desc(products.basePrice)
-                                        : sortBy === "CREATED_AT_ASC" ? asc(products.createdAt)
-                                            : desc(products.createdAt)
-                    )
-                    .limit(limit)
-                    .offset(page * limit),
-            ]);
-
-            const totalItems = countResult[0]?.count || 0;
-            const totalPages = Math.ceil(totalItems / limit);
-            const productIds = productResults.map((p) => p.product.id);
-
-            // PERFORMANCE: Batch fetch images + variants in parallel (no N+1)
-            const [imagesResults, variantsResults] = await Promise.all([
-                productIds.length > 0
-                    ? db
-                        .select()
-                        .from(productImages)
-                        .where(inArray(productImages.productId, productIds))
-                        .orderBy(desc(productImages.isPrimary), productImages.displayOrder)
-                    : [],
-                productIds.length > 0
-                    ? db
-                        .select()
-                        .from(productVariants)
-                        .where(
-                            and(
-                                inArray(productVariants.productId, productIds),
-                                eq(productVariants.isActive, true)
-                            )
-                        )
-                    : [],
-            ]);
-
-            const imagesByProduct = imagesResults.reduce(
-                (acc, img) => { (acc[img.productId] ??= []).push(parseImage(img)); return acc; },
-                {} as Record<string, ProductImage[]>
-            );
-            const variantsByProduct = variantsResults.reduce(
-                (acc, v) => { (acc[v.productId] ??= []).push(parseVariant(v)); return acc; },
-                {} as Record<string, ProductVariant[]>
-            );
-
-            const data: Product[] = productResults.map(({ product, category }) => ({
-                id: product.id,
-                categoryId: product.categoryId ?? "",
-                name: product.name,
-                slug: product.slug,
-                description: product.description ?? undefined,
-                basePrice: parseFloat(product.basePrice),
-                sku: product.sku,
-                material: product.material ?? undefined,
-                careInstructions: product.careInstructions ?? undefined,
-                isActive: product.isActive,
-                isDraft: product.isDraft,
-                createdAt: product.createdAt.toISOString(),
-                updatedAt: product.updatedAt.toISOString(),
-                images: imagesByProduct[product.id] ?? [],
-                variants: variantsByProduct[product.id] ?? [],
-                category: category
-                    ? { id: category.id, name: category.name, slug: category.slug }
-                    : undefined,
-            }));
-
-            return { data, page, size: limit, totalElements: totalItems, totalPages };
-        },
-        [
-            `products-list`,
-            params.category ?? "",
-            params.sizes ?? "",
-            params.colors ?? "",
-            String(params.minPrice ?? ""),
-            String(params.maxPrice ?? ""),
-            params.searchQuery ?? "",
-            String(params.page ?? 0),
-            String(params.limit ?? 20),
-            params.sortBy ?? "CREATED_AT_DESC",
-        ],
-        {
-            revalidate: 60 * 5, // 5 minutes
-            tags: ["products"],
+            if (productsWithVariants.length > 0) {
+                conditions.push(inArray(products.id, productsWithVariants.map((p) => p.productId)));
+            } else {
+                return { data: [], page, size: limit, totalElements: 0, totalPages: 0 };
+            }
         }
-    )();
+
+        if (searchQuery) {
+            conditions.push(
+                or(
+                    ilike(products.name, `%${searchQuery}%`),
+                    ilike(products.description, `%${searchQuery}%`),
+                    ilike(products.sku, `%${searchQuery}%`)
+                )
+            );
+        }
+
+        // Only show active, non-draft products in storefront
+        conditions.push(eq(products.isActive, true));
+        conditions.push(eq(products.isDraft, false));
+
+        const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+        // Count + products in parallel
+        const [countResult, productResults] = await Promise.all([
+            db
+                .select({ count: sql<number>`count(*)::int` })
+                .from(products)
+                .where(whereClause),
+            db
+                .select({
+                    product: products,
+                    category: {
+                        id: categories.id,
+                        name: categories.name,
+                        slug: categories.slug,
+                    },
+                })
+                .from(products)
+                .leftJoin(categories, eq(products.categoryId, categories.id))
+                .where(whereClause)
+                .orderBy(
+                    sortBy === "NAME_ASC" ? asc(products.name)
+                        : sortBy === "NAME_DESC" ? desc(products.name)
+                            : sortBy === "PRICE_ASC" ? asc(products.basePrice)
+                                : sortBy === "PRICE_DESC" ? desc(products.basePrice)
+                                    : sortBy === "CREATED_AT_ASC" ? asc(products.createdAt)
+                                        : desc(products.createdAt)
+                )
+                .limit(limit)
+                .offset(page * limit),
+        ]);
+
+        const totalItems = countResult[0]?.count || 0;
+        const totalPages = Math.ceil(totalItems / limit);
+        const productIds = productResults.map((p) => p.product.id);
+
+        // PERFORMANCE: Batch fetch images + variants in parallel (no N+1)
+        const [imagesResults, variantsResults] = await Promise.all([
+            productIds.length > 0
+                ? db
+                    .select()
+                    .from(productImages)
+                    .where(inArray(productImages.productId, productIds))
+                    .orderBy(desc(productImages.isPrimary), productImages.displayOrder)
+                : [],
+            productIds.length > 0
+                ? db
+                    .select()
+                    .from(productVariants)
+                    .where(
+                        and(
+                            inArray(productVariants.productId, productIds),
+                            eq(productVariants.isActive, true)
+                        )
+                    )
+                : [],
+        ]);
+
+        const imagesByProduct = imagesResults.reduce(
+            (acc, img) => { (acc[img.productId] ??= []).push(parseImage(img)); return acc; },
+            {} as Record<string, ProductImage[]>
+        );
+        const variantsByProduct = variantsResults.reduce(
+            (acc, v) => { (acc[v.productId] ??= []).push(parseVariant(v)); return acc; },
+            {} as Record<string, ProductVariant[]>
+        );
+
+        const data: Product[] = productResults.map(({ product, category }) => ({
+            id: product.id,
+            categoryId: product.categoryId ?? "",
+            name: product.name,
+            slug: product.slug,
+            description: product.description ?? undefined,
+            basePrice: parseFloat(product.basePrice),
+            sku: product.sku,
+            material: product.material ?? undefined,
+            careInstructions: product.careInstructions ?? undefined,
+            isActive: product.isActive,
+            isDraft: product.isDraft,
+            createdAt: product.createdAt.toISOString(),
+            updatedAt: product.updatedAt.toISOString(),
+            images: imagesByProduct[product.id] ?? [],
+            variants: variantsByProduct[product.id] ?? [],
+            category: category
+                ? { id: category.id, name: category.name, slug: category.slug }
+                : undefined,
+        }));
+
+        return { data, page, size: limit, totalElements: totalItems, totalPages };
+    },
+    // Cache key parts — params are automatically handled by Next.js
+    ["products-list"],
+    {
+        revalidate: 60 * 5, // 5 minutes
+        tags: ["products"],
+    }
+);
+
+export async function getAllProducts(params: ProductParams): Promise<PagedResponse<Product>> {
+    return getCachedProducts(params);
 }
 
 // ============================================================================
 // RECOMMENDATIONS — cached separately since they appear on product pages
 // ============================================================================
 
-export const getProductRecommendations = cache(async (excludeProductId: string, categorySlug?: string, limit = 4): Promise<Product[]> => {
-    return unstable_cache(
-        async (): Promise<Product[]> => {
+export const getProductRecommendations = cache(
+    unstable_cache(
+        async (excludeProductId: string, categorySlug?: string, limit = 4): Promise<Product[]> => {
             const conditions = [
                 eq(products.isActive, true),
                 eq(products.isDraft, false),
@@ -419,10 +413,10 @@ export const getProductRecommendations = cache(async (excludeProductId: string, 
                 category: category ? { id: category.id, name: category.name, slug: category.slug } : undefined,
             }));
         },
-        [`product-recs-${excludeProductId}-${categorySlug}-${limit}`],
+        ["product-recommendations"],
         { revalidate: 60 * 15, tags: ["products"] }
-    )();
-});
+    )
+);
 
 // ============================================================================
 // HOT THIS WEEK — cached with longer TTL since it rarely changes
@@ -582,28 +576,57 @@ export async function updateProduct(productId: string, formData: ProductFormData
             updatedAt: new Date(),
         }).where(eq(products.id, productId));
 
+        // 1. Sync Images (Safe to delete-and-reinsert as they aren't referenced by orders)
         await db.delete(productImages).where(eq(productImages.productId, productId));
-        await db.delete(productVariants).where(eq(productVariants.productId, productId));
-
         if (validatedData.images.length > 0) {
             await db.insert(productImages).values(
                 validatedData.images.map((image, index) => ({
-                    productId, imageUrl: image.imageUrl, altText: image.altText || validatedData.name,
-                    isPrimary: image.isPrimary || index === 0, displayOrder: image.displayOrder || index,
+                    productId,
+                    imageUrl: image.imageUrl,
+                    altText: image.altText || validatedData.name,
+                    isPrimary: image.isPrimary || index === 0,
+                    displayOrder: image.displayOrder || index,
                 }))
             );
         }
-        if (validatedData.variants.length > 0) {
-            await db.insert(productVariants).values(
-                validatedData.variants.map((variant) => ({
+
+        // 2. Sync Variants (MUST NOT delete if referenced by orders)
+        // Get existing variants
+        const existingVariants = await db.select().from(productVariants).where(eq(productVariants.productId, productId));
+
+        // Mark all existing as inactive initially (we will reactivate the ones we keep)
+        await db.update(productVariants)
+            .set({ isActive: false })
+            .where(eq(productVariants.productId, productId));
+
+        for (const variant of validatedData.variants) {
+            const existing = existingVariants.find(
+                v => v.size === variant.size && v.color === variant.color
+            );
+
+            if (existing) {
+                // Update existing variant
+                await db.update(productVariants)
+                    .set({
+                        colorHex: variant.colorHex || "#000000",
+                        stockQuantity: variant.stockQuantity,
+                        priceModifier: variant.priceModifier.toString(),
+                        isActive: true, // Reactivate
+                    })
+                    .where(eq(productVariants.id, existing.id));
+            } else {
+                // Insert new variant
+                await db.insert(productVariants).values({
                     productId,
                     size: variant.size as typeof productVariants.size.enumValues[number],
                     color: variant.color as typeof productVariants.color.enumValues[number],
-                    colorHex: variant.colorHex || "#000000", stockQuantity: variant.stockQuantity,
+                    colorHex: variant.colorHex || "#000000",
+                    stockQuantity: variant.stockQuantity,
                     priceModifier: variant.priceModifier.toString(),
-                    sku: generateVariantSku(validatedData.sku, variant.size, variant.color), isActive: true,
-                }))
-            );
+                    sku: generateVariantSku(validatedData.sku, variant.size, variant.color),
+                    isActive: true,
+                });
+            }
         }
 
         revalidatePath("/admin/products");
@@ -736,8 +759,15 @@ export async function getProductById(productId: string) {
 
 export async function getAllCategories() {
     try {
-        const result = await db.select({ id: categories.id, name: categories.name, slug: categories.slug })
-            .from(categories).where(eq(categories.isActive, true)).orderBy(categories.displayOrder, categories.name);
+        const result = await db.select({ 
+            id: categories.id, 
+            name: categories.name, 
+            slug: categories.slug,
+            imageUrl: categories.imageUrl,
+            isActive: categories.isActive,
+            displayOrder: categories.displayOrder
+        })
+            .from(categories).orderBy(categories.displayOrder, categories.name);
         return { success: true, data: result };
     } catch (error) {
         console.error("Get categories error:", error);
@@ -749,9 +779,9 @@ export async function getAllCategories() {
 // REVIEWS
 // ============================================================================
 
-export const getReviewsByProductId = cache(async (productId: string, page = 0, size = 10): Promise<PagedResponse<Review>> => {
-    return unstable_cache(
-        async (): Promise<PagedResponse<Review>> => {
+export const getReviewsByProductId = cache(
+    unstable_cache(
+        async (productId: string, page = 0, size = 10): Promise<PagedResponse<Review>> => {
             const [countResult, reviewRows] = await Promise.all([
                 db.select({ count: sql<number>`count(*)::int` }).from(reviews).where(eq(reviews.productId, productId)),
                 db.select({
@@ -774,10 +804,10 @@ export const getReviewsByProductId = cache(async (productId: string, page = 0, s
                 page, size, totalElements: totalItems, totalPages: Math.ceil(totalItems / size),
             };
         },
-        [`reviews-${productId}-${page}-${size}`],
-        { revalidate: 60 * 5, tags: [`reviews-${productId}`] }
-    )();
-});
+        ["reviews"],
+        { revalidate: 60 * 5, tags: ["products"] }
+    )
+);
 
 export async function canUserReviewProduct(userId: string, productId: string): Promise<boolean> {
     try {

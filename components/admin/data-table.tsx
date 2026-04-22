@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { DataTablePagination } from "./data-table-pagination";
+import { TableSkeleton } from "./table-skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -123,15 +124,16 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-6 w-full max-w-full overflow-hidden">
       {/* Table - Horizontal Scroll Container */}
-      <div className="w-full overflow-x-auto rounded-md border" data-table-container>
-        <Table className="min-w-full">
+      <div className="w-full overflow-x-auto rounded-3xl border border-border/50 bg-card/30 backdrop-blur-sm shadow-sm" data-table-container>
+        <Table className="min-w-full border-collapse">
           <TableHeader className={cn(
+            "bg-muted/40",
             isFetching && "animate-pulse"
           )}>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="border-b border-border/40 hover:bg-transparent">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="whitespace-nowrap">
+                  <TableHead key={header.id} className="h-14 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -145,21 +147,20 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Loading...
-                </TableCell>
-              </TableRow>
+              <TableSkeleton columns={columns.length} rows={10} />
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => onRowClick?.(row.original)}
-                  className={cn(onRowClick && "cursor-pointer hover:bg-muted/50")}
+                  className={cn(
+                    "border-b border-border/30 transition-colors last:border-0",
+                    onRowClick && "cursor-pointer hover:bg-muted/30"
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="whitespace-nowrap">
+                    <TableCell key={cell.id} className="px-6 py-4 text-sm font-medium text-foreground/80 whitespace-nowrap">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -167,8 +168,11 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                <TableCell colSpan={columns.length} className="h-40 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                    <p className="font-semibold text-foreground">No records found</p>
+                    <p className="text-xs uppercase tracking-widest opacity-60">Try adjusting your filters or search terms</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

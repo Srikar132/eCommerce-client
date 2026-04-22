@@ -1,34 +1,16 @@
 "use server";
 
+
 import { db } from "@/drizzle/db";
 import {
-    landingCategories,
-    showcaseProducts,
+    categories,
+    heroSlides,
     landingTestimonials,
-    sliderImages,
 } from "@/drizzle/schema";
 import { eq, asc } from "drizzle-orm";
 import { revalidatePath, unstable_cache } from "next/cache";
 
 // ==================== TYPES ====================
-
-export interface LandingCategory {
-    id: string;
-    title: string;
-    imageUrl: string;
-    linkUrl: string;
-    displayOrder: number;
-    isActive: boolean;
-}
-
-export interface ShowcaseProduct {
-    id: string;
-    title: string;
-    price: string;
-    imageUrl: string;
-    displayOrder: number;
-    isActive: boolean;
-}
 
 export interface LandingTestimonial {
     id: string;
@@ -41,167 +23,16 @@ export interface LandingTestimonial {
     isActive: boolean;
 }
 
-export interface SliderImage {
+export interface HeroSlide {
     id: string;
     imageUrl: string;
-    altText: string | null;
+    altText: string;
+    eyebrow: string;
+    heading: string;
+    textColor: string;
+    buttonLabel: string;
     displayOrder: number;
     isActive: boolean;
-}
-
-// ==================== LANDING CATEGORIES ====================
-
-/**
- * PERFORMANCE: Admin version — always fresh (no cache)
- */
-export async function getLandingCategories(): Promise<LandingCategory[]> {
-    try {
-        return await db.select().from(landingCategories).orderBy(asc(landingCategories.displayOrder));
-    } catch (error) {
-        console.error("Error fetching landing categories:", error);
-        return [];
-    }
-}
-
-/**
- * PERFORMANCE: Storefront version — cached for 7 days, busted on admin edit
- */
-export const getActiveLandingCategories = unstable_cache(
-    async (): Promise<LandingCategory[]> => {
-        try {
-            return await db
-                .select()
-                .from(landingCategories)
-                .where(eq(landingCategories.isActive, true))
-                .orderBy(asc(landingCategories.displayOrder));
-        } catch (error) {
-            console.error("Error fetching active landing categories:", error);
-            return [];
-        }
-    },
-    ["active-landing-categories"],
-    { revalidate: 60 * 60 * 24 * 7, tags: ["landing-categories"] }
-);
-
-export async function createLandingCategory(data: {
-    title: string;
-    imageUrl: string;
-    linkUrl: string;
-    displayOrder?: number;
-}): Promise<{ success: boolean; message: string }> {
-    try {
-        await db.insert(landingCategories).values({
-            title: data.title, imageUrl: data.imageUrl, linkUrl: data.linkUrl,
-            displayOrder: data.displayOrder || 0,
-        });
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Category created successfully" };
-    } catch (error) {
-        console.error("Error creating landing category:", error);
-        return { success: false, message: "Failed to create category" };
-    }
-}
-
-export async function updateLandingCategory(
-    id: string,
-    data: Partial<{ title: string; imageUrl: string; linkUrl: string; displayOrder: number; isActive: boolean }>
-): Promise<{ success: boolean; message: string }> {
-    try {
-        await db.update(landingCategories).set({ ...data, updatedAt: new Date() }).where(eq(landingCategories.id, id));
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Category updated successfully" };
-    } catch (error) {
-        console.error("Error updating landing category:", error);
-        return { success: false, message: "Failed to update category" };
-    }
-}
-
-export async function deleteLandingCategory(id: string): Promise<{ success: boolean; message: string }> {
-    try {
-        await db.delete(landingCategories).where(eq(landingCategories.id, id));
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Category deleted successfully" };
-    } catch (error) {
-        console.error("Error deleting landing category:", error);
-        return { success: false, message: "Failed to delete category" };
-    }
-}
-
-// ==================== SHOWCASE PRODUCTS ====================
-
-export async function getShowcaseProducts(): Promise<ShowcaseProduct[]> {
-    try {
-        return await db.select().from(showcaseProducts).orderBy(asc(showcaseProducts.displayOrder));
-    } catch (error) {
-        console.error("Error fetching showcase products:", error);
-        return [];
-    }
-}
-
-export const getActiveShowcaseProducts = unstable_cache(
-    async (): Promise<ShowcaseProduct[]> => {
-        try {
-            return await db
-                .select()
-                .from(showcaseProducts)
-                .where(eq(showcaseProducts.isActive, true))
-                .orderBy(asc(showcaseProducts.displayOrder));
-        } catch (error) {
-            console.error("Error fetching active showcase products:", error);
-            return [];
-        }
-    },
-    ["active-showcase-products"],
-    { revalidate: 60 * 60 * 24, tags: ["showcase-products"] }
-);
-
-export async function createShowcaseProduct(data: {
-    title: string;
-    price: string;
-    imageUrl: string;
-    displayOrder?: number;
-}): Promise<{ success: boolean; message: string }> {
-    try {
-        await db.insert(showcaseProducts).values({
-            title: data.title, price: data.price, imageUrl: data.imageUrl, displayOrder: data.displayOrder || 0,
-        });
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Showcase product created successfully" };
-    } catch (error) {
-        console.error("Error creating showcase product:", error);
-        return { success: false, message: "Failed to create showcase product" };
-    }
-}
-
-export async function updateShowcaseProduct(
-    id: string,
-    data: Partial<{ title: string; price: string; imageUrl: string; displayOrder: number; isActive: boolean }>
-): Promise<{ success: boolean; message: string }> {
-    try {
-        await db.update(showcaseProducts).set({ ...data, updatedAt: new Date() }).where(eq(showcaseProducts.id, id));
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Showcase product updated successfully" };
-    } catch (error) {
-        console.error("Error updating showcase product:", error);
-        return { success: false, message: "Failed to update showcase product" };
-    }
-}
-
-export async function deleteShowcaseProduct(id: string): Promise<{ success: boolean; message: string }> {
-    try {
-        await db.delete(showcaseProducts).where(eq(showcaseProducts.id, id));
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Showcase product deleted successfully" };
-    } catch (error) {
-        console.error("Error deleting showcase product:", error);
-        return { success: false, message: "Failed to delete showcase product" };
-    }
 }
 
 // ==================== TESTIMONIALS ====================
@@ -235,6 +66,7 @@ export const getActiveTestimonials = unstable_cache(
     ["active-testimonials"],
     { revalidate: 60 * 60 * 24 * 7, tags: ["testimonials"] }
 );
+
 
 export async function createTestimonial(data: {
     customerName: string;
@@ -289,3 +121,206 @@ export async function deleteTestimonial(id: string): Promise<{ success: boolean;
     }
 }
 
+// ==================== HERO SLIDES ====================
+
+export const getHeroSlides = unstable_cache(
+    async (): Promise<HeroSlide[]> => {
+        try {
+            const slides = await db
+                .select()
+                .from(heroSlides)
+                .orderBy(asc(heroSlides.displayOrder));
+            return slides as HeroSlide[];
+        } catch (error) {
+            console.error("Error fetching hero slides:", error);
+            return [];
+        }
+    },
+    ["hero-slides"],
+    { revalidate: 60 * 60 * 24 * 7, tags: ["hero-slides"] }
+);
+
+export const getActiveHeroSlides = unstable_cache(
+    async (): Promise<HeroSlide[]> => {
+        try {
+            const slides = await db
+                .select()
+                .from(heroSlides)
+                .where(eq(heroSlides.isActive, true))
+                .orderBy(asc(heroSlides.displayOrder));
+            return slides as HeroSlide[];
+        } catch (error) {
+            console.error("Error fetching active hero slides:", error);
+            return [];
+        }
+    },
+    ["active-hero-slides"],
+    { revalidate: 60 * 60 * 24 * 7, tags: ["hero-slides"] }
+);
+
+export async function createHeroSlide(data: {
+    imageUrl: string;
+    altText: string;
+    eyebrow: string;
+    heading: string;
+    textColor: string;
+    buttonLabel: string;
+    displayOrder?: number;
+}): Promise<{ success: boolean; message: string }> {
+    try {
+        await db.insert(heroSlides).values({
+            imageUrl: data.imageUrl,
+            altText: data.altText,
+            eyebrow: data.eyebrow,
+            heading: data.heading,
+            textColor: data.textColor,
+            buttonLabel: data.buttonLabel,
+            displayOrder: data.displayOrder || 0,
+        });
+        revalidatePath("/");
+        revalidatePath("/admin/content");
+        return { success: true, message: "Hero slide created successfully" };
+    } catch (error) {
+        console.error("Error creating hero slide:", error);
+        return { success: false, message: "Failed to create hero slide" };
+    }
+}
+
+export async function updateHeroSlide(
+    id: string,
+    data: Partial<{
+        imageUrl: string;
+        altText: string;
+        eyebrow: string;
+        heading: string;
+        textColor: string;
+        buttonLabel: string;
+        displayOrder: number;
+        isActive: boolean;
+    }>
+): Promise<{ success: boolean; message: string }> {
+    try {
+        // Image cleanup
+        if (data.imageUrl) {
+            const [existing] = await db
+                .select({ imageUrl: heroSlides.imageUrl })
+                .from(heroSlides)
+                .where(eq(heroSlides.id, id))
+                .limit(1);
+
+            if (existing?.imageUrl && existing.imageUrl !== data.imageUrl) {
+                const { extractPublicId, deleteImage } = await import("@/lib/cloudinary");
+                const publicId = extractPublicId(existing.imageUrl);
+                if (publicId) {
+                    deleteImage(publicId).catch(err =>
+                        console.error("Cloudinary hero image delete failed:", err)
+                    );
+                }
+            }
+        }
+
+        await db
+            .update(heroSlides)
+            .set({ ...data, updatedAt: new Date() })
+            .where(eq(heroSlides.id, id));
+        revalidatePath("/");
+        revalidatePath("/admin/content");
+        return { success: true, message: "Hero slide updated successfully" };
+    } catch (error) {
+        console.error("Error updating hero slide:", error);
+        return { success: false, message: "Failed to update hero slide" };
+    }
+}
+
+export async function deleteHeroSlide(
+    id: string
+): Promise<{ success: boolean; message: string }> {
+    try {
+        const [existing] = await db
+            .select({ imageUrl: heroSlides.imageUrl })
+            .from(heroSlides)
+            .where(eq(heroSlides.id, id))
+            .limit(1);
+
+        if (existing?.imageUrl) {
+            const { extractPublicId, deleteImage } = await import("@/lib/cloudinary");
+            const publicId = extractPublicId(existing.imageUrl);
+            if (publicId) {
+                deleteImage(publicId).catch(err =>
+                    console.error("Cloudinary hero image delete failed:", err)
+                );
+            }
+        }
+
+        await db.delete(heroSlides).where(eq(heroSlides.id, id));
+        revalidatePath("/");
+        revalidatePath("/admin/content");
+        return { success: true, message: "Hero slide deleted successfully" };
+    } catch (error) {
+        console.error("Error deleting hero slide:", error);
+        return { success: false, message: "Failed to delete hero slide" };
+    }
+}
+
+
+// =======================================
+// Ctaory Managemtnt
+// ======================================
+export const getActiveCategories = unstable_cache(
+    async () => {
+        try {
+            const results = await db
+                .select()
+                .from(categories)
+                .where(eq(categories.isActive, true))
+                .orderBy(asc(categories.displayOrder), asc(categories.name));
+            return results;
+        } catch (error) {
+            console.error("Error fetching active categories:", error);
+            return [];
+        }
+    },
+    ["active-categories"],
+    { revalidate: 60 * 60 * 24 * 7, tags: ["categories"] }
+);
+
+export async function updateCategory(
+    id: string,
+    data: Partial<{
+        name: string;
+        slug: string;
+        description: string;
+        imageUrl: string;
+        isActive: boolean;
+        displayOrder: number;
+    }>
+) {
+    try {
+        if (data.imageUrl) {
+            const [existing] = await db
+                .select({ imageUrl: categories.imageUrl })
+                .from(categories)
+                .where(eq(categories.id, id))
+                .limit(1);
+
+            if (existing?.imageUrl && existing.imageUrl !== data.imageUrl) {
+                const { extractPublicId, deleteImage } = await import("@/lib/cloudinary");
+                const publicId = extractPublicId(existing.imageUrl);
+                if (publicId) {
+                    deleteImage(publicId).catch((err) =>
+                        console.error("Cloudinary category image delete failed:", err)
+                    );
+                }
+            }
+        }
+
+        await db.update(categories).set(data).where(eq(categories.id, id));
+
+        revalidatePath("/admin/products");
+        revalidatePath("/");
+        return { success: true, message: "Category updated successfully" };
+    } catch (error) {
+        console.error("Error updating category:", error);
+        return { success: false, message: "Failed to update category" };
+    }
+}

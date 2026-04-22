@@ -22,6 +22,7 @@ export {
     orderConfirmationEmail,
     orderDeliveredEmail,
     orderShippedEmail,
+    contactFormEmail
 } from "./templates";
 export type {
     WelcomeEmailProps,

@@ -69,34 +69,27 @@ function ProductsContent() {
     // Calculate total pages from totalCount
     const totalPages = Math.ceil(totalCount / (params.limit || 20));
 
-    console.log('Products data:', {
-        products,
-        params,
-        dataLength: products?.length,
-        totalElements: totalCount,
-        totalPages,
-        isLoading: infiniteQuery.isLoading,
-        isFetching: infiniteQuery.isFetching
-    });
 
     return (
         <div className="space-y-6 w-full max-w-full overflow-x-hidden">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="admin-page-title">Product Management</h1>
-                    <p className="admin-page-description">
-                        Manage your store&apos;s products, variants, and inventory
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
+                <div className="space-y-1.5">
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground/90 uppercase">
+                        Product Management
+                    </h1>
+                    <p className="text-sm md:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
+                        Curate your collection, manage inventory levels, and organize variants for a seamless shopping experience.
                     </p>
                 </div>
 
-                <Breadcrumb>
+                <Breadcrumb className="hidden md:block">
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+                            <BreadcrumbLink href="/admin" className="text-[10px] font-black uppercase tracking-widest opacity-70">Dashboard</BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator />
+                        <BreadcrumbSeparator className="opacity-30" />
                         <BreadcrumbItem>
-                            <BreadcrumbPage>Products</BreadcrumbPage>
+                            <BreadcrumbPage className="text-[10px] font-black uppercase tracking-widest text-primary">Products</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
@@ -104,7 +97,7 @@ function ProductsContent() {
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-2">
-                    <Link href="/admin/products/create">
+                    <Link href="/admin/products/new">
                         <Button className="admin-primary-button">
                             <Plus className="mr-2 h-4 w-4" />
                             Create Product
@@ -136,9 +129,7 @@ export default function ProductsPage() {
             fallback={
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-sm uppercase font-bold">Product LIST</h1>
-                        </div>
+                        <h1 className="admin-page-title">Product Management</h1>
                     </div>
                     <div className="flex items-center justify-center py-16">
                         <div className="flex items-center gap-2">

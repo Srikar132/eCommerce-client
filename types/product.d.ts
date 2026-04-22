@@ -1,3 +1,4 @@
+import { ProductSize, ProductColor } from "@/lib/constants/enums";
 
 // Product Params
 export type ProductParams = {
@@ -60,8 +61,8 @@ export interface ProductVariant {
     id: string;
     productId: string;  // May be null in some responses
 
-    size: string;        // S, M, L, XL
-    color: string;
+    size: ProductSize;        // S, M, L, XL
+    color: ProductColor;
     colorHex?: string;   // #FFFFFF
 
     stockQuantity: number;
@@ -127,5 +128,5 @@ export interface ProductResponse {
     sku: string;
     images: ProductImage[];
     variants: ProductVariant[];
-    reviews: ProductReview[];
+    reviews: Review[];
 }

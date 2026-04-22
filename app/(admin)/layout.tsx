@@ -12,18 +12,9 @@ const inter = Inter({
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
-        <html lang="en" suppressHydrationWarning className="dark">
-            <body className={`${inter.variable} font-sans`}>
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="dark"
-                    enableSystem={false}
-                    disableTransitionOnChange
-                >
-                    {children}
-                </ThemeProvider>
-            </body>
-        </html>
+        <div className={`${inter.variable} font-sans admin-layout-wrapper min-h-screen`}>
+            {children}
+        </div>
     );
 }
 

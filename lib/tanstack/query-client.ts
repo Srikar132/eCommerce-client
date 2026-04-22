@@ -1,42 +1,30 @@
-import { QueryClient, defaultShouldDehydrateQuery, isServer } from '@tanstack/react-query';
+// lib/tanstack/query-client.ts
+import { QueryClient, defaultShouldDehydrateQuery, isServer } from "@tanstack/react-query";
 
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000, // 1 minute
-        gcTime: 10 * 60 * 1000, // 10 minutes - Increased to reduce memory churn
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        refetchOnMount: false,
-        retry: 1,
+        // Data from SSR is considered fresh for 60s — no immediate client refetch
+        staleTime: 60 * 1000,
       },
       dehydrate: {
-        // Only dehydrate successful queries to reduce server memory
+        // Also dehydrate pending queries (for streaming/Suspense)
         shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) &&
-          query.state.status === 'success',
+          defaultShouldDehydrateQuery(query) || query.state.status === "pending",
       },
     },
   });
 }
 
-let browserQueryClient: QueryClient | undefined = undefined;
+let browserQueryClient: QueryClient | undefined;
 
-/**
- * Get or create QueryClient
- * - Server: Creates new instance per request (required by Next.js)
- * - Client: Reuses single instance (singleton)
- */
 export function getQueryClient() {
   if (isServer) {
-    // Server: Always create new client per request
+    // Server: always new instance (no shared state between requests)
     return makeQueryClient();
-  } else {
-    // Client: Reuse singleton for better caching
-    if (!browserQueryClient) {
-      browserQueryClient = makeQueryClient();
-    }
-    return browserQueryClient;
   }
+  // Browser: reuse the same instance so the cache persists across navigations
+  if (!browserQueryClient) browserQueryClient = makeQueryClient();
+  return browserQueryClient;
 }

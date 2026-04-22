@@ -379,6 +379,11 @@ export const queryKeys = {
      * Slider images
      */
     slider: () => ['content', 'slider'] as const,
+
+    /**
+     * Hero carousel slides
+     */
+    hero: () => ['content', 'hero'] as const,
   },
 
   /**

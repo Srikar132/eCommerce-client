@@ -8,17 +8,21 @@ import { IndianRupee } from "lucide-react";
 import { Control, FieldPath } from "react-hook-form";
 import { ProductFormData } from "@/lib/validations";
 
-// Type for scalar fields only (excludes arrays like images and variants)
-type ScalarFieldNames = Exclude<FieldPath<ProductFormData>, `images` | `images.${number}` | `images.${number}.${string}` | `variants` | `variants.${number}` | `variants.${number}.${string}`>;
+// Type for scalar fields (including nested variant fields)
+type ScalarFieldNames = FieldPath<ProductFormData>;
 
-interface FormInputProps {
+interface BaseFieldProps {
     control: Control<ProductFormData>;
     name: ScalarFieldNames;
     label: string;
     placeholder?: string;
     disabled?: boolean;
-    type?: "text" | "number";
     required?: boolean;
+    labelClassName?: string;
+}
+
+interface FormInputProps extends BaseFieldProps {
+    type?: "text" | "number";
     icon?: React.ReactNode;
 }
 
@@ -31,6 +35,7 @@ export function FormInput({
     type = "text",
     required,
     icon,
+    labelClassName,
 }: FormInputProps) {
     return (
         <FormField
@@ -38,17 +43,19 @@ export function FormInput({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>{label}{required && " *"}</FormLabel>
+                    <FormLabel className={labelClassName}>{label}{required && " *"}</FormLabel>
                     <FormControl>
                         {icon ? (
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                                    {icon}
-                                </span>
+                            <div className="relative group">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10">
+                                    <span className="text-muted-foreground group-focus-within:text-primary transition-colors">
+                                        {icon}
+                                    </span>
+                                </div>
                                 <Input
                                     type={type}
                                     placeholder={placeholder}
-                                    className="pl-9"
+                                    className="pl-10 h-11 transition-all focus:ring-1 focus:ring-primary/20 border-border/60"
                                     disabled={disabled}
                                     {...field}
                                     value={field.value as string | number ?? ""}
@@ -58,6 +65,7 @@ export function FormInput({
                             <Input
                                 type={type}
                                 placeholder={placeholder}
+                                className="h-11 transition-all focus:ring-1 focus:ring-primary/20 border-border/60"
                                 disabled={disabled}
                                 {...field}
                                 value={field.value as string | number ?? ""}
@@ -71,12 +79,7 @@ export function FormInput({
     );
 }
 
-interface FormTextareaProps {
-    control: Control<ProductFormData>;
-    name: ScalarFieldNames;
-    label: string;
-    placeholder?: string;
-    disabled?: boolean;
+interface FormTextareaProps extends BaseFieldProps {
     minHeight?: string;
 }
 
@@ -87,6 +90,7 @@ export function FormTextarea({
     placeholder,
     disabled,
     minHeight = "min-h-25",
+    labelClassName,
 }: FormTextareaProps) {
     return (
         <FormField
@@ -94,11 +98,11 @@ export function FormTextarea({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>{label}</FormLabel>
+                    <FormLabel className={labelClassName}>{label}</FormLabel>
                     <FormControl>
                         <Textarea
                             placeholder={placeholder}
-                            className={`${minHeight} resize-none`}
+                            className={`${minHeight} resize-none transition-all focus:ring-1 focus:ring-primary/20 border-border/60`}
                             disabled={disabled}
                             {...field}
                             value={field.value as string}
@@ -111,13 +115,7 @@ export function FormTextarea({
     );
 }
 
-interface FormSelectProps {
-    control: Control<ProductFormData>;
-    name: ScalarFieldNames;
-    label: string;
-    placeholder?: string;
-    disabled?: boolean;
-    required?: boolean;
+interface FormSelectProps extends BaseFieldProps {
     options: { value: string; label: string }[];
 }
 
@@ -129,6 +127,7 @@ export function FormSelect({
     disabled,
     required,
     options,
+    labelClassName,
 }: FormSelectProps) {
     return (
         <FormField
@@ -136,14 +135,14 @@ export function FormSelect({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>{label}{required && " *"}</FormLabel>
+                    <FormLabel className={labelClassName}>{label}{required && " *"}</FormLabel>
                     <Select
                         onValueChange={field.onChange}
                         value={field.value as string}
                         disabled={disabled}
                     >
                         <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="h-11 transition-all focus:ring-1 focus:ring-primary/20 border-border/60">
                                 <SelectValue placeholder={placeholder} />
                             </SelectTrigger>
                         </FormControl>
@@ -162,15 +161,6 @@ export function FormSelect({
     );
 }
 
-interface PriceInputProps {
-    control: Control<ProductFormData>;
-    name: ScalarFieldNames;
-    label: string;
-    placeholder?: string;
-    disabled?: boolean;
-    required?: boolean;
-}
-
 export function PriceInput({
     control,
     name,
@@ -178,21 +168,24 @@ export function PriceInput({
     placeholder = "0",
     disabled,
     required,
-}: PriceInputProps) {
+    labelClassName,
+}: BaseFieldProps) {
     return (
         <FormField
             control={control}
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>{label}{required && " *"}</FormLabel>
+                    <FormLabel className={labelClassName}>{label}{required && " *"}</FormLabel>
                     <FormControl>
-                        <div className="relative">
-                            <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <div className="relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10">
+                                <IndianRupee className="h-3.5 w-3.5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                            </div>
                             <Input
                                 type="number"
                                 placeholder={placeholder}
-                                className="pl-9"
+                                className="pl-9 h-11 transition-all focus:ring-1 focus:ring-primary/20 border-border/60"
                                 disabled={disabled}
                                 {...field}
                                 value={field.value as string | number ?? ""}

@@ -44,6 +44,10 @@ export const paymentStatusEnum = pgEnum("payment_status", [
 export const addressTypeEnum = pgEnum("address_type", ["HOME", "OFFICE", "OTHER"]);
 export const productionStatusEnum = pgEnum("production_status", ["PENDING", "IN_PROGRESS", "COMPLETED"]);
 
+import { PRODUCT_SIZES, PRODUCT_COLORS } from "@/lib/constants/enums";
+
+// ... (existing code)
+
 /**
  * FIX: size and color were free-text strings — nothing prevented "S", "small",
  * "SMALL" from all existing as different variants for the same product.
@@ -51,37 +55,10 @@ export const productionStatusEnum = pgEnum("production_status", ["PENDING", "IN_
  *
  * Add or remove values here as your catalogue grows; then run a migration.
  */
-export const productSizeEnum = pgEnum("product_size", [
-    "XS",
-    "S",
-    "M",
-    "L",
-    "XL",
-    "XXL",
-    "XXXL",
-    "FREE_SIZE",
-]);
+export const productSizeEnum = pgEnum("product_size", PRODUCT_SIZES as unknown as [string, ...string[]]);
 
-export const productColorEnum = pgEnum("product_color", [
-    "BLACK",
-    "WHITE",
-    "RED",
-    "BLUE",
-    "GREEN",
-    "YELLOW",
-    "ORANGE",
-    "PURPLE",
-    "PINK",
-    "BROWN",
-    "GREY",
-    "NAVY",
-    "BEIGE",
-    "MAROON",
-    "OLIVE",
-    "TEAL",
-    "CREAM",
-    "MULTICOLOR",
-]);
+export const productColorEnum = pgEnum("product_color", PRODUCT_COLORS as unknown as [string, ...string[]]);
+
 
 // ============================================================================
 // AUTH TABLES (NextAuth / DrizzleAdapter — unchanged)
@@ -493,26 +470,10 @@ export const reviews = pgTable(
     ]
 );
 
-export const wishlists = pgTable(
-    "wishlists",
-    {
-        id: text("id")
-            .primaryKey()
-            .$defaultFn(() => randomUUID()),
-        userId: text("user_id")
-            .notNull()
-            .references(() => users.id, { onDelete: "cascade" }),
-        productId: text("product_id")
-            .notNull()
-            .references(() => products.id, { onDelete: "cascade" }),
-        createdAt: timestamp("created_at").defaultNow().notNull(),
-    },
-    (table) => [
-        index("idx_user_wishlist").on(table.userId),
-        index("idx_product_wishlist").on(table.productId),
-        uniqueIndex("uk_user_product").on(table.userId, table.productId),
-    ]
-);
+
+// =======================================================
+// 
+// =======================================================
 
 export const storeSettings = pgTable("store_settings", {
     id: text("id")
@@ -527,46 +488,6 @@ export const storeSettings = pgTable("store_settings", {
     country: text("country").notNull().default("India"),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-
-export const landingCategories = pgTable(
-    "landing_categories",
-    {
-        id: text("id")
-            .primaryKey()
-            .$defaultFn(() => randomUUID()),
-        title: text("title").notNull(),
-        imageUrl: text("image_url").notNull(),
-        linkUrl: text("link_url").notNull(),
-        displayOrder: integer("display_order").default(0).notNull(),
-        isActive: boolean("is_active").default(true).notNull(),
-        createdAt: timestamp("created_at").defaultNow().notNull(),
-        updatedAt: timestamp("updated_at").defaultNow().notNull(),
-    },
-    (table) => [
-        index("idx_landing_cat_order").on(table.displayOrder),
-        index("idx_landing_cat_active").on(table.isActive),
-    ]
-);
-
-export const showcaseProducts = pgTable(
-    "showcase_products",
-    {
-        id: text("id")
-            .primaryKey()
-            .$defaultFn(() => randomUUID()),
-        title: text("title").notNull(),
-        price: numeric("price", { precision: 10, scale: 2 }).notNull(),
-        imageUrl: text("image_url").notNull(),
-        displayOrder: integer("display_order").default(0).notNull(),
-        isActive: boolean("is_active").default(true).notNull(),
-        createdAt: timestamp("created_at").defaultNow().notNull(),
-        updatedAt: timestamp("updated_at").defaultNow().notNull(),
-    },
-    (table) => [
-        index("idx_showcase_order").on(table.displayOrder),
-        index("idx_showcase_active").on(table.isActive),
-    ]
-);
 
 export const landingTestimonials = pgTable(
     "landing_testimonials",
@@ -590,20 +511,26 @@ export const landingTestimonials = pgTable(
     ]
 );
 
-export const sliderImages = pgTable(
-    "slider_images",
+// Hero Carousel Slides
+export const heroSlides = pgTable(
+    "hero_slides",
     {
         id: text("id")
             .primaryKey()
             .$defaultFn(() => randomUUID()),
         imageUrl: text("image_url").notNull(),
-        altText: text("alt_text").default("Fashion image"),
+        altText: text("alt_text").notNull(),
+        eyebrow: text("eyebrow").notNull(),
+        heading: text("heading").notNull(),
+        textColor: text("text_color").default("#000000").notNull(),
+        buttonLabel: text("button_label").notNull(),
         displayOrder: integer("display_order").default(0).notNull(),
         isActive: boolean("is_active").default(true).notNull(),
         createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
     },
     (table) => [
-        index("idx_slider_order").on(table.displayOrder),
-        index("idx_slider_active").on(table.isActive),
+        index("idx_hero_order").on(table.displayOrder),
+        index("idx_hero_active").on(table.isActive),
     ]
 );

@@ -175,12 +175,12 @@ const ProductsClient = (params: ProductParams) => {
 
             {/* Mobile Header - Improved Alignment */}
             <div className="lg:hidden px-2 py-6 space-y-6 bg-background">
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                     <SearchInput
                         placeholder="Search your wardrobe..."
                         className="flex-1 rounded-full h-12 bg-muted/30 border-none"
                     />
-                </div>
+                </div> */}
                 <div className="flex items-start justify-between gap-4">
                     <ProductFilters
                         activeSizes={activeSizes}

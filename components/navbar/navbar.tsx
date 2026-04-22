@@ -5,7 +5,6 @@ import { SidebarTrigger } from '../ui/sidebar';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { SearchInput } from '../search-input';
 import { cn } from '@/lib/utils';
 import { CollectionsDropdown } from './collections-dropdown';
 import { Search } from 'lucide-react';
@@ -119,7 +118,7 @@ const Navbar = () => {
                 <div className="flex items-center h-16 lg:h-[4.5rem] gap-4">
 
                     {/* ── MOBILE: Hamburger | Logo | Icons ── */}
-                    <div className="flex lg:hidden items-center w-full justify-between">
+                    <div className="flex xl:hidden items-center w-full justify-between">
                         <SidebarTrigger />
                         <Link href="/" className="flex items-center space-x-2 group">
                             <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-105">
@@ -152,7 +151,7 @@ const Navbar = () => {
                     {/* ── DESKTOP: Left | Center | Right ── */}
 
                     {/* LEFT: Nav links + Collections */}
-                    <div className="hidden lg:flex items-center gap-6 flex-1">
+                    <div className="hidden xl:flex items-center gap-6 flex-1">
                         {/* Mobile trigger hidden on desktop — SidebarTrigger only for mobile above */}
                         <CollectionsDropdown />
                         {isHomePage && (
@@ -196,10 +195,10 @@ const Navbar = () => {
                     {/* RIGHT: Search + icons */}
                     <div className="hidden lg:flex items-center gap-3 flex-1 justify-end">
                         {/* Search — always visible on desktop */}
-                        <SearchInput
+                        {/* <SearchInput
                             className="w-52 xl:w-64"
                             placeholder="What are you looking for?"
-                        />
+                        /> */}
                         <div className="h-5 w-px bg-border mx-1" />
                         <AccountHoverCard />
                         <CartButton />

@@ -26,14 +26,14 @@ export function OrderStatusCard({
     onStatusUpdate,
 }: OrderStatusCardProps) {
     return (
-        <Card className="border border-border bg-card rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-border pb-4">
+        <Card className="border border-border/50 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="pb-4 border-b border-border/40 bg-muted/20">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                            <Truck className="h-4 w-4 text-white" />
+                    <CardTitle className="text-xl font-bold flex items-center gap-2.5">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-sm border border-primary/10">
+                            <Truck className="h-5 w-5" />
                         </div>
-                        Order Status
+                        Fulfillment Status
                     </CardTitle>
                     <OrderStatusUpdate
                         orderId={orderId}
@@ -42,7 +42,7 @@ export function OrderStatusCard({
                     />
                 </div>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="p-8">
                 <OrderStatusProgress currentStatus={currentStatus} />
             </CardContent>
         </Card>

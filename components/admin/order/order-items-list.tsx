@@ -34,19 +34,19 @@ interface OrderItemsListProps {
 
 export function OrderItemsList({ items }: OrderItemsListProps) {
     return (
-        <Card className="border border-border bg-card rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-border">
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500">
-                        <Package className="h-4 w-4 text-white" />
+        <Card className="border border-border/50 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="pb-4 border-b border-border/40 bg-muted/20">
+                <CardTitle className="text-xl font-bold flex items-center gap-2.5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10 text-blue-500 shadow-sm border border-blue-500/10">
+                        <Package className="h-5 w-5" />
                     </div>
                     Order Items
-                    <Badge variant="secondary" className="ml-2 rounded-full px-3">
-                        {items.length}
+                    <Badge variant="secondary" className="ml-auto rounded-full px-3 py-1 font-bold text-[10px] uppercase tracking-wider bg-blue-500/10 text-blue-600 border-0">
+                        {items.length} {items.length === 1 ? "Item" : "Items"}
                     </Badge>
                 </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 divide-y divide-border">
+            <CardContent className="p-0 divide-y divide-border/30">
                 {items.map((item) => (
                     <OrderItemCard key={item.id} item={item} />
                 ))}

@@ -87,52 +87,12 @@ export async function proxy(request: NextRequest) {
     }`);
   console.log(`└─ Redirect Param: ${redirectParam || 'None'}`);
 
-  // ADMIN STORE BROWSING LOGIC
-  // - Admin accessing "/" redirects to "/admin" by default
-  // - Admin can browse store via "Visit Store" button (sets secure cookie)
-  // - Cookie allows admin to navigate store freely
-  // - "Return to Admin" clears cookie and redirects back
   if (isAuthenticated && userRole === 'ADMIN') {
-    // Allow access to admin routes (and clear browse cookie if present)
     if (isAdmin) {
-      const browseCookie = request.cookies.get('admin_store_browse')?.value;
-      if (browseCookie) {
-        const response = addSecurityHeaders(NextResponse.next());
-        response.cookies.delete('admin_store_browse');
-        console.log(`🔄 [ADMIN] Returned to admin panel, cleared store browse cookie`);
-        return response;
-      }
       console.log(`✅ [AUTHORIZED] Admin granted access to ${pathname}`);
       return addSecurityHeaders(NextResponse.next());
     }
-
-    // Check for store browsing permission
-    const browseParam = searchParams.get('admin_browse') === 'true';
-    const browseCookie = request.cookies.get('admin_store_browse')?.value === 'true';
-
-    if (browseParam) {
-      // Admin clicked "Visit Store" - set HttpOnly cookie and redirect to clean URL
-      const cleanUrl = new URL(pathname, request.url);
-      // Remove the admin_browse param for clean URL
-      const response = NextResponse.redirect(cleanUrl);
-      response.cookies.set('admin_store_browse', 'true', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/',
-        maxAge: 60 * 60 * 4, // 4 hours max - prevents indefinite access
-      });
-      console.log(`🟢 [ADMIN BROWSE] Admin started browsing store, redirecting to clean URL`);
-      return addSecurityHeaders(response);
-    }
-
-    if (browseCookie) {
-      // Admin has valid browse cookie - allow store navigation
-      console.log(`🟢 [ADMIN BROWSE] Admin browsing store at ${pathname}`);
-      return addSecurityHeaders(NextResponse.next());
-    }
-
-    // No browse permission - redirect to admin panel
+    // Force admins to remain in the admin dashboard
     console.log(`🔄 [REDIRECT] Admin redirected from ${pathname} to /admin`);
     return NextResponse.redirect(new URL('/admin', request.url));
   }

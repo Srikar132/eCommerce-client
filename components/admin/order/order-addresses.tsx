@@ -37,22 +37,26 @@ interface AddressCardProps {
 
 function AddressCard({ address, title, icon }: AddressCardProps) {
     return (
-        <div className="p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
-            <div className="flex items-center gap-2 mb-3">
-                {icon}
-                <h4 className="font-medium text-sm">{title}</h4>
+        <div className="p-5 rounded-2xl bg-muted/10 border border-border/40 hover:bg-muted/20 transition-colors">
+            <div className="flex items-center gap-2.5 mb-4">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    {icon}
+                </div>
+                <h4 className="font-bold text-[11px] uppercase tracking-wider text-muted-foreground">{title}</h4>
             </div>
-            <div className="space-y-1 text-sm">
-                <p className="font-medium">{address.fullName}</p>
-                <p className="text-muted-foreground">{address.phone}</p>
-                <p className="text-muted-foreground">{address.addressLine1}</p>
-                {address.addressLine2 && (
-                    <p className="text-muted-foreground">{address.addressLine2}</p>
-                )}
-                <p className="text-muted-foreground">
-                    {address.city}, {address.state} {address.postalCode}
-                </p>
-                <p className="text-muted-foreground">{address.country}</p>
+            <div className="space-y-1.5 text-sm">
+                <p className="font-bold text-foreground/90 text-base">{address.fullName}</p>
+                <p className="text-muted-foreground font-medium">{address.phone}</p>
+                <div className="pt-2 space-y-1">
+                    <p className="text-muted-foreground leading-relaxed">{address.addressLine1}</p>
+                    {address.addressLine2 && (
+                        <p className="text-muted-foreground leading-relaxed">{address.addressLine2}</p>
+                    )}
+                    <p className="text-muted-foreground leading-relaxed">
+                        {address.city}, {address.state} {address.postalCode}
+                    </p>
+                    <p className="text-muted-foreground font-semibold mt-1">{address.country}</p>
+                </div>
             </div>
         </div>
     );
@@ -68,29 +72,29 @@ export function OrderAddresses({ shippingAddress, billingAddress }: OrderAddress
     }
 
     return (
-        <Card className="border border-border bg-card rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-border">
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                        <MapPin className="h-4 w-4 text-white" />
+        <Card className="border border-border/50 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="pb-4 border-b border-border/40 bg-muted/20">
+                <CardTitle className="text-xl font-bold flex items-center gap-2.5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-sm border border-primary/10">
+                        <MapPin className="h-5 w-5" />
                     </div>
                     Addresses
                 </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="p-6">
                 <div className="grid gap-6 sm:grid-cols-2">
                     {shippingAddress && (
                         <AddressCard
                             address={shippingAddress}
                             title="Shipping Address"
-                            icon={<Home className="h-4 w-4 text-muted-foreground" />}
+                            icon={<Home className="h-3.5 w-3.5" />}
                         />
                     )}
                     {billingAddress && (
                         <AddressCard
                             address={billingAddress}
                             title="Billing Address"
-                            icon={<Building2 className="h-4 w-4 text-muted-foreground" />}
+                            icon={<Building2 className="h-3.5 w-3.5" />}
                         />
                     )}
                 </div>

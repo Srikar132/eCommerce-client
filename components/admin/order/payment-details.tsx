@@ -51,57 +51,57 @@ export function PaymentDetails({
     const PaymentIcon = paymentConfig.icon;
 
     return (
-        <Card className="border border-border bg-card rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-border">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${paymentConfig.bg}`}>
-                        <PaymentIcon className={`h-4 w-4 ${paymentConfig.text}`} />
+        <Card className="border border-border/50 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="pb-4 border-b border-border/40 bg-muted/20">
+                <CardTitle className="text-base font-bold flex items-center gap-2.5">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-full shadow-sm border border-primary/5 ${paymentConfig.bg}`}>
+                        <PaymentIcon className={`h-5 w-5 ${paymentConfig.text}`} />
                     </div>
-                    Payment Details
+                    Financial Details
                 </CardTitle>
             </CardHeader>
-            <CardContent className="pt-4 space-y-3">
+            <CardContent className="p-5 space-y-3">
                 {/* Payment Status */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
-                    <span className="text-sm text-muted-foreground">Status</span>
-                    <Badge className={`${getPaymentBadgeStyle(paymentStatus)} border-0`}>
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/10 border border-border/40 hover:bg-muted/20 transition-colors">
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Status</span>
+                    <Badge className={`${getPaymentBadgeStyle(paymentStatus)} border-0 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest`}>
                         {getPaymentStatusLabel(paymentStatus)}
                     </Badge>
                 </div>
 
                 {/* Payment Method */}
                 {paymentMethod && (
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
-                        <span className="text-sm text-muted-foreground flex items-center gap-2">
-                            <CreditCard className="h-4 w-4" />
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/10 border border-border/40 hover:bg-muted/20 transition-colors">
+                        <span className="text-xs font-bold text-muted-foreground flex items-center gap-2 uppercase tracking-wider">
+                            <CreditCard className="h-3.5 w-3.5" />
                             Method
                         </span>
-                        <span className="font-medium capitalize">{paymentMethod}</span>
+                        <span className="text-sm font-bold capitalize text-foreground/90">{paymentMethod}</span>
                     </div>
                 )}
 
                 {/* Razorpay Payment ID */}
                 {razorpayPaymentId && (
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
-                        <span className="text-sm text-muted-foreground flex items-center gap-2">
-                            <Hash className="h-4 w-4" />
-                            Payment ID
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/10 border border-border/40 hover:bg-muted/20 transition-colors">
+                        <span className="text-xs font-bold text-muted-foreground flex items-center gap-2 uppercase tracking-wider">
+                            <Hash className="h-3.5 w-3.5" />
+                            Ref ID
                         </span>
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-auto p-1 px-2 text-xs font-mono rounded-lg hover:bg-primary/10"
+                            className="h-auto p-1.5 px-3 text-[11px] font-bold font-mono rounded-full bg-primary/5 hover:bg-primary/10 text-primary border border-primary/10 transition-all"
                             onClick={() => copyToClipboard(razorpayPaymentId, "Payment ID")}
                         >
-                            {razorpayPaymentId.slice(0, 12)}...
-                            <Copy className="ml-1 h-3 w-3" />
+                            {razorpayPaymentId.slice(0, 12)}
+                            <Copy className="ml-1.5 h-3 w-3" />
                         </Button>
                     </div>
                 )}
 
                 {/* Refund Button for REFUND_REQUESTED orders */}
                 {paymentStatus === "REFUND_REQUESTED" && (
-                    <div className="pt-3 border-t border-border">
+                    <div className="pt-3">
                         <RefundOrderDialog
                             orderId={orderId}
                             orderNumber={orderNumber}

@@ -31,11 +31,11 @@ interface SummaryRowProps {
 function SummaryRow({ label, value, className, highlight }: SummaryRowProps) {
     return (
         <div
-            className={`flex justify-between p-2 rounded-lg transition-colors ${highlight ? "" : "hover:bg-muted/30"
+            className={`flex justify-between items-center p-2.5 rounded-xl transition-all ${highlight ? "" : "hover:bg-muted/40"
                 } ${className || ""}`}
         >
-            <span className="text-sm text-muted-foreground">{label}</span>
-            <span className="font-medium">{value}</span>
+            <span className="text-sm font-medium text-muted-foreground">{label}</span>
+            <span className="font-bold text-foreground/90">{value}</span>
         </div>
     );
 }
@@ -52,23 +52,23 @@ export function OrderSummary({
     totalAmount,
 }: OrderSummaryProps) {
     return (
-        <Card className="border border-border bg-card rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-border">
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
-                        <IndianRupee className="h-4 w-4 text-white" />
+        <Card className="border border-border/50 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="pb-4 border-b border-border/40 bg-muted/20">
+                <CardTitle className="text-xl font-bold flex items-center gap-2.5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 shadow-sm border border-emerald-500/10">
+                        <IndianRupee className="h-5 w-5" />
                     </div>
                     Order Summary
                 </CardTitle>
             </CardHeader>
-            <CardContent className="pt-4 space-y-3">
+            <CardContent className="p-6 space-y-2">
                 <SummaryRow label="Subtotal" value={formatCurrency(subtotal)} />
-                <SummaryRow label="Tax (GST)" value={formatCurrency(taxAmount)} />
+                <SummaryRow label="Estimated Tax (GST)" value={formatCurrency(taxAmount)} />
                 <SummaryRow
-                    label="Shipping"
+                    label="Shipping & Handling"
                     value={
                         shippingCost === 0 ? (
-                            <span className="text-emerald-400">Free</span>
+                            <span className="text-emerald-600 font-bold">Free</span>
                         ) : (
                             formatCurrency(shippingCost)
                         )
@@ -77,21 +77,21 @@ export function OrderSummary({
 
                 {discountAmount > 0 && (
                     <SummaryRow
-                        label="Discount"
+                        label="Applied Discount"
                         value={
-                            <span className="text-emerald-400">
+                            <span className="text-emerald-600">
                                 -{formatCurrency(discountAmount)}
                             </span>
                         }
-                        className="bg-emerald-500/20"
+                        className="bg-emerald-500/5 text-emerald-700"
                     />
                 )}
 
-                <Separator className="my-2" />
+                <Separator className="my-4 opacity-50" />
 
-                <div className="flex justify-between p-3 rounded-xl bg-emerald-500/20">
-                    <span className="font-semibold">Total</span>
-                    <span className="font-bold text-lg text-emerald-400">
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/10 shadow-inner">
+                    <span className="font-bold text-emerald-900">Final Total</span>
+                    <span className="font-black text-2xl text-emerald-600">
                         {formatCurrency(totalAmount)}
                     </span>
                 </div>

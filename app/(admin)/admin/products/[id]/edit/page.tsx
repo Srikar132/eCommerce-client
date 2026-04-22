@@ -42,8 +42,8 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
 
     return (
         <ProductForm
-            initialData={initialData}
-            isEditing={true}
+            initialData={initialData as any}
+            isEditing={true} 
             productId={id}
         />
     );
