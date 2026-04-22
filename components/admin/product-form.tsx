@@ -12,7 +12,12 @@ import { BasicInfoSection } from "./product-form/basic-info-section";
 import { ImagesSection } from "./product-form/images-section";
 import { VariantsSection } from "./product-form/variants-section";
 import { StatusCard, SummaryCard } from "./product-form/sidebar-cards";
-import { LoadingState, ErrorState, NotFoundState, FormHeader } from "./product-form/form-states";
+import {
+    LoadingState,
+    ErrorState,
+    NotFoundState,
+    FormHeader,
+} from "./product-form/form-states";
 
 // ============================================================================
 // Types
@@ -34,8 +39,12 @@ interface DeleteDialogState {
 // Main Component
 // ============================================================================
 
-export function ProductForm({ initialData, isEditing = false, productId }: ProductFormProps) {
-    // Form hook
+export function ProductForm({
+    initialData,
+    isEditing = false,
+    productId,
+}: ProductFormProps) {
+    // FIX: destructure productData (added to hook return) alongside other values
     const {
         form,
         imageFields,
@@ -45,7 +54,7 @@ export function ProductForm({ initialData, isEditing = false, productId }: Produ
         isLoadingProduct,
         isFormDisabled,
         productError,
-        productData,
+        productData,        // FIX: was missing — hook now returns fetchedProduct as productData
         refetchProduct,
     } = useProductForm({ isEditing, productId, initialData });
 
@@ -60,22 +69,22 @@ export function ProductForm({ initialData, isEditing = false, productId }: Produ
     // Image handling
     // ========================================================================
 
-    const handleImagesChange = useCallback((newImages: UploadedImage[]) => {
-        // Use replace instead of multiple remove/append calls to avoid UI freeze
-        const formattedImages = newImages
-            .filter(img => img.url)
-            .map((img, index) => ({
-                imageUrl: img.url,
-                altText: img.altText || "",
-                isPrimary: img.isPrimary || index === 0,
-                displayOrder: index,
-            }));
+    const handleImagesChange = useCallback(
+        (newImages: UploadedImage[]) => {
+            const formattedImages = newImages
+                .filter((img) => img.url)
+                .map((img, index) => ({
+                    imageUrl: img.url,
+                    altText: img.altText || "",
+                    isPrimary: img.isPrimary || index === 0,
+                    displayOrder: index,
+                }));
 
-        // Replace entire array in one operation
-        imageFields.replace(formattedImages);
-    }, [imageFields]);
+            imageFields.replace(formattedImages);
+        },
+        [imageFields]
+    );
 
-    // Watch for changes in the images field array
     const watchedImages = form.watch("images");
 
     const currentImages: UploadedImage[] = useMemo(() => {
@@ -88,7 +97,7 @@ export function ProductForm({ initialData, isEditing = false, productId }: Produ
                 isPrimary: img?.isPrimary || index === 0,
                 displayOrder: img?.displayOrder || index,
             }))
-            .filter(img => img.url);
+            .filter((img) => img.url);
     }, [watchedImages]);
 
     // ========================================================================
@@ -107,7 +116,7 @@ export function ProductForm({ initialData, isEditing = false, productId }: Produ
     }, [deleteDialog, variantFields]);
 
     const closeDeleteDialog = useCallback((open: boolean) => {
-        setDeleteDialog(prev => ({ ...prev, open }));
+        setDeleteDialog((prev) => ({ ...prev, open }));
     }, []);
 
     // ========================================================================
@@ -130,12 +139,14 @@ export function ProductForm({ initialData, isEditing = false, productId }: Produ
     }
 
     if (isEditing && productError) {
-        const message = productError instanceof Error
-            ? productError.message
-            : "Failed to load product";
+        const message =
+            productError instanceof Error
+                ? productError.message
+                : "Failed to load product";
         return <ErrorState message={message} onRetry={refetchProduct} />;
     }
 
+    // FIX: productData now comes from the hook (was previously undefined)
     if (isEditing && productData && !productData.success) {
         return <NotFoundState />;
     }
@@ -148,7 +159,10 @@ export function ProductForm({ initialData, isEditing = false, productId }: Produ
         <>
             <Form {...form}>
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <form onSubmit={form.handleSubmit(handleSubmit as any)} className="space-y-6">
+                <form
+                    onSubmit={form.handleSubmit(handleSubmit as any)}
+                    className="space-y-6"
+                >
                     <FormHeader isEditing={isEditing} isSubmitting={isFormDisabled} />
 
                     <div className="grid gap-6 lg:grid-cols-3">
