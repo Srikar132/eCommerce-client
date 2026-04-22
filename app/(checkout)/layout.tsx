@@ -10,7 +10,7 @@ export default function CheckoutLayout({
     return (
         <div className="min-h-screen bg-background flex flex-col font-san w-full">
             {/* ── MINIMALIST CHECKOUT HEADER ── */}
-            <header className="bg-white border-b border-border/40 sticky top-0 z-50">
+            <header className="bg-background border-b border-border/40 sticky top-0 z-50">
                 <div className="container mx-auto h-20 px-4 flex items-center justify-between max-w-5xl">
                     {/* Back to Shop */}
                     <Link
@@ -51,7 +51,7 @@ export default function CheckoutLayout({
             </main>
 
             {/* ── REFINED CHECKOUT FOOTER ── */}
-            <footer className="border-t border-border/40 py-12 bg-white">
+            <footer className="border-t border-border/40 py-12 bg-background">
                 <div className="container mx-auto px-4 max-w-5xl">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-10">
                         {/* Trust Info */}

@@ -89,7 +89,7 @@ export default function ProductImageGallery({
                                         alt: image.altText || productName || `Product image ${index + 1}`
                                     });
                                 }}
-                                className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-foreground shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 hover:bg-white hover:scale-110 active:scale-95"
+                                className="absolute top-8 right-8 w-12 h-12 rounded-full bg-background/80 backdrop-blur-md flex items-center justify-center text-foreground shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 hover:bg-background hover:scale-110 active:scale-95"
                                 aria-label="Zoom image"
                             >
                                 <Search size={20} strokeWidth={1.5} />
@@ -125,7 +125,7 @@ export default function ProductImageGallery({
                                                 alt: image.altText || productName || `Product image ${index + 1}`
                                             });
                                         }}
-                                        className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-foreground shadow-sm z-10 active:scale-90 transition-transform"
+                                        className="absolute top-6 right-6 w-10 h-10 rounded-full bg-background/80 backdrop-blur-md flex items-center justify-center text-foreground shadow-sm z-10 active:scale-90 transition-transform"
                                         aria-label="Zoom image"
                                     >
                                         <Search size={18} strokeWidth={1.5} />
@@ -144,10 +144,10 @@ export default function ProductImageGallery({
                     {images.length > 1 && (
                         <>
                             <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-                                <CarouselPrevious className="relative left-0 translate-y-0 w-10 h-10 border-none bg-white/40 backdrop-blur-sm text-foreground hover:bg-white/60 transition-colors" />
+                                <CarouselPrevious className="relative left-0 translate-y-0 w-10 h-10 border-none bg-background/40 backdrop-blur-sm text-foreground hover:bg-background/60 transition-colors" />
                             </div>
                             <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
-                                <CarouselNext className="relative right-0 translate-y-0 w-10 h-10 border-none bg-white/40 backdrop-blur-sm text-foreground hover:bg-white/60 transition-colors" />
+                                <CarouselNext className="relative right-0 translate-y-0 w-10 h-10 border-none bg-background/40 backdrop-blur-sm text-foreground hover:bg-background/60 transition-colors" />
                             </div>
                         </>
                     )}

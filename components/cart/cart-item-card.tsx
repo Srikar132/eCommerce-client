@@ -55,7 +55,7 @@ export function CartItemCard({
                 <div className="flex-1 flex flex-col justify-between py-0.5">
                     <div className="space-y-1">
                         <div className="flex justify-between items-start gap-2">
-                            <h3 className="font-bold text-sm text-black leading-tight">
+                            <h3 className="font-bold text-sm text-foreground leading-tight">
                                 {item.product.name}
                             </h3>
                             <div className="text-right shrink-0">
@@ -79,25 +79,25 @@ export function CartItemCard({
                             <button
                                 onClick={handleDecrement}
                                 disabled={item.quantity <= 1 || isUpdating}
-                                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all disabled:opacity-30"
+                                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-background hover:shadow-sm transition-all disabled:opacity-30"
                             >
-                                <Minus size={12} className="text-black" />
+                                <Minus size={12} className="text-foreground" />
                             </button>
-                            <span className="w-8 text-center text-xs font-bold text-black">
+                            <span className="w-8 text-center text-xs font-bold text-foreground">
                                 {item.quantity}
                             </span>
                             <button
                                 onClick={handleIncrement}
                                 disabled={isUpdating}
-                                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all"
+                                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-background hover:shadow-sm transition-all"
                             >
-                                <Plus size={12} className="text-black" />
+                                <Plus size={12} className="text-foreground" />
                             </button>
                         </div>
                         <button
                             onClick={() => onRemove(item.id)}
                             disabled={isRemoving}
-                            className="text-[11px] font-bold text-muted-foreground hover:text-black underline underline-offset-4 transition-colors flex items-center gap-1"
+                            className="text-[11px] font-bold text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors flex items-center gap-1"
                         >
                             {isRemoving && <Loader2 size={10} className="animate-spin" />}
                             Remove
@@ -148,7 +148,7 @@ export function CartItemCard({
                         </div>
 
                         <div className="text-right">
-                             <p className="font-bold text-lg md:text-2xl text-black">
+                            <p className="font-bold text-lg md:text-2xl text-foreground">
                                 {formatCurrency(item.itemTotal)}
                             </p>
                         </div>
@@ -162,7 +162,7 @@ export function CartItemCard({
                             size="icon"
                             onClick={handleDecrement}
                             disabled={item.quantity <= 1 || isUpdating}
-                            className="h-8 w-8 rounded-full hover:bg-white hover:shadow-sm transition-all"
+                            className="h-8 w-8 rounded-full hover:bg-background hover:shadow-sm transition-all"
                         >
                             <Minus className="h-3.5 w-3.5" />
                         </Button>
@@ -174,7 +174,7 @@ export function CartItemCard({
                             size="icon"
                             onClick={handleIncrement}
                             disabled={isUpdating}
-                            className="h-8 w-8 rounded-full hover:bg-white hover:shadow-sm transition-all"
+                            className="h-8 w-8 rounded-full hover:bg-background hover:shadow-sm transition-all"
                         >
                             <Plus className="h-3.5 w-3.5" />
                         </Button>
@@ -183,7 +183,7 @@ export function CartItemCard({
                     <button
                         onClick={() => onRemove(item.id)}
                         disabled={isRemoving}
-                        className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-black transition-colors"
+                        className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
                     >
                         {isRemoving ? (
                             <Loader2 className="w-4 h-4 animate-spin" />

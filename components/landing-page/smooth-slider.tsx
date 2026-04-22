@@ -67,12 +67,12 @@ export default function SmoothSliderClient() {
   }, [api])
 
   return (
-    <section className="bg-white">
+    <section className="bg-background relative z-30">
       <div className="container overflow-visible mb-5" >
-        <span className="text-[11px] font-bold tracking-[0.35em] text-black/30 uppercase mb-4 block">
+        <span className="text-[11px] font-bold tracking-[0.35em] text-foreground/30 uppercase mb-4 block">
           Featured Collections
         </span>
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-black">
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground">
           Artisan <span className="italic font-serif font-light text-accent">Showcase</span>
         </h2>
       </div>
@@ -113,10 +113,10 @@ export default function SmoothSliderClient() {
 
                   {/* Text Content below Image */}
                   <div className="flex flex-col items-start gap-3 pr-4">
-                    <h3 className="text-2xl md:text-3xl font-bold text-black tracking-tight">
+                    <h3 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-black/50 leading-relaxed max-w-[340px]">
+                    <p className="text-sm text-foreground/50 leading-relaxed max-w-[340px]">
                       {item.description}
                     </p>
                     <CustomButton2

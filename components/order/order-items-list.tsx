@@ -34,7 +34,7 @@ export default function OrderItemsList({ items }: OrderItemsListProps) {
         <Card className="rounded-3xl border-none shadow-sm bg-muted/20 overflow-hidden">
             <CardHeader className="bg-muted/30 border-b border-muted-foreground/5 p-content py-4">
                 <CardTitle className="text-lg font-bold flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center shadow-sm">
                         <Package className="w-5 h-5 text-accent" />
                     </div>
                     Order Items ({items.length})
@@ -71,13 +71,13 @@ export default function OrderItemsList({ items }: OrderItemsListProps) {
                                 </Link>
 
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    <Badge variant="secondary" className="px-3 py-1 text-[10px] uppercase tracking-wider font-bold bg-white/80">
+                                    <Badge variant="secondary" className="px-3 py-1 text-[10px] uppercase tracking-wider font-bold bg-background/80">
                                         {item.color}
                                     </Badge>
-                                    <Badge variant="secondary" className="px-3 py-1 text-[10px] uppercase tracking-wider font-bold bg-white/80">
+                                    <Badge variant="secondary" className="px-3 py-1 text-[10px] uppercase tracking-wider font-bold bg-background/80">
                                         Size: {item.size}
                                     </Badge>
-                                    <Badge variant="secondary" className="px-3 py-1 text-[10px] uppercase tracking-wider font-bold bg-white/80">
+                                    <Badge variant="secondary" className="px-3 py-1 text-[10px] uppercase tracking-wider font-bold bg-background/80">
                                         Qty: {item.quantity}
                                     </Badge>
                                 </div>

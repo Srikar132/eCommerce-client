@@ -211,7 +211,7 @@ export default function OurPromise() {
 
                     {/* ── Right: Category Selector ── */}
                     <div className="w-full lg:w-1/2 bg-[#F5F5C6] p-10 lg:p-20 flex flex-col items-center justify-center">
-                        <span className="text-[11px] font-bold tracking-[0.35em] text-black/30 uppercase mb-14 block text-center">
+                        <span className="text-[11px] font-bold tracking-[0.35em] text-foreground/30 uppercase mb-14 block text-center">
                             Embroidered For
                         </span>
 
@@ -227,7 +227,7 @@ export default function OurPromise() {
                                         <span
                                             className={cn(
                                                 "relative inline-block text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight select-none transition-colors duration-300",
-                                                isActive ? "text-black" : "text-black/20 hover:text-black/50"
+                                                isActive ? "text-foreground" : "text-foreground/20 hover:text-foreground/50"
                                             )}
                                         >
                                             {item.label}
@@ -266,13 +266,13 @@ export default function OurPromise() {
                         <div className="mt-16 lg:mt-20 text-center max-w-xs space-y-3">
                             <p
                                 ref={descSubtitleRef}
-                                className="text-[11px] font-bold uppercase tracking-[0.25em] text-black/50"
+                                className="text-[11px] font-bold uppercase tracking-[0.25em] text-foreground/50"
                             >
                                 {initial.subtitle}
                             </p>
                             <p
                                 ref={descBodyRef}
-                                className="text-base text-black/60 leading-relaxed"
+                                className="text-base text-foreground/60 leading-relaxed"
                             >
                                 {initial.description}
                             </p>

@@ -9,4 +9,6 @@ export {
     collections
 } from './data';
 
+export { STORE_SETTINGS } from './settings';
+
 export const PLACEHOLDER_IMAGE = '/images/image-not-found.webp';

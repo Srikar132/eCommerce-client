@@ -238,7 +238,7 @@ export default function OrderTrackingClient({ order }: OrderTrackingClientProps)
                                         }
                                     </span>
                                 </div>
-                                <div className="bg-white/50 p-4 rounded-2xl">
+                                <div className="bg-background/50 p-4 rounded-2xl">
                                     <p className="p-xs text-muted-foreground mb-1 uppercase tracking-wider font-semibold">Reason</p>
                                     <p className="p-base">{order.cancellationReason || order.returnReason}</p>
                                 </div>

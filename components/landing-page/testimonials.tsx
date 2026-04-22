@@ -22,7 +22,7 @@ interface TestimonialsClientProps {
 
 const TestimonialCard = ({ testimonial, className }: { testimonial: Testimonial, className?: string }) => (
   <div className={cn(
-    "bg-white p-8 md:p-10 rounded-[40px] shadow-xl shadow-black/5 flex flex-col gap-6 w-full",
+    "bg-background p-8 md:p-10 rounded-[40px] shadow-xl shadow-black/5 flex flex-col gap-6 w-full",
     className
   )}>
     {/* Quote Icon */}

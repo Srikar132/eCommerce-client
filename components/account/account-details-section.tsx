@@ -42,7 +42,7 @@ export function AccountDetailsSection() {
     }
 
     return (
-        <Card className="rounded-[2rem] border-none shadow-sm bg-white overflow-hidden">
+        <Card className="rounded-[2rem] border-none shadow-sm bg-background overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between px-6 py-5 border-b border-muted/20">
                 <CardTitle className="h4 !text-xl font-bold">Personal Details</CardTitle>
                 <Button
@@ -59,7 +59,7 @@ export function AccountDetailsSection() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Name */}
                     <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
-                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center shadow-sm shrink-0">
                             <Shield className="w-4 h-4 text-accent" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -72,7 +72,7 @@ export function AccountDetailsSection() {
 
                     {/* Email */}
                     <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
-                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center shadow-sm shrink-0">
                             <Mail className="w-4 h-4 text-accent" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -92,7 +92,7 @@ export function AccountDetailsSection() {
 
                     {/* Phone */}
                     <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
-                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center shadow-sm shrink-0">
                             <Phone className="w-4 h-4 text-accent" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -105,7 +105,7 @@ export function AccountDetailsSection() {
 
                     {/* Member Since */}
                     <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
-                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center shadow-sm shrink-0">
                             <Calendar className="w-4 h-4 text-accent" />
                         </div>
                         <div className="flex-1 min-w-0">

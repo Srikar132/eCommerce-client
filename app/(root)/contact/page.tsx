@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Mail, Phone, Clock, ChevronRight } from 'lucide-react';
-import { getStoreSettings } from '@/lib/actions/store-settings-actions';
+import { STORE_SETTINGS } from '@/constants';
 import type { Metadata } from "next";
 import CustomButton from '@/components/ui/custom-button';
 import BreadcrumbNavigation from '@/components/breadcrumb-navigation';
@@ -19,9 +19,7 @@ export const metadata: Metadata = {
   description: "Get in touch with Nala Armoire. Wanna say hi? Here&apos;s where to find us &amp; when we&apos;re around!",
 };
 
-export default async function ContactPage() {
-  const settings = await getStoreSettings();
-
+export default function ContactPage() {
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
@@ -142,7 +140,7 @@ export default async function ContactPage() {
                     <h4 className="font-bold text-lg">Support</h4>
                     <div className="flex items-center gap-2 text-muted-foreground hover:text-accent transition-colors cursor-pointer group/link">
                       <span className="text-sm border-b border-muted-foreground/30 group-hover/link:border-accent">
-                        {settings.email || 'pebble@mystore.com'}
+                        {STORE_SETTINGS.email}
                       </span>
                       <div className="w-6 h-6 rounded-full bg-muted/20 flex items-center justify-center group-hover/link:bg-accent/20 transition-all">
                         <ChevronRight className="w-3 h-3" />
@@ -159,7 +157,7 @@ export default async function ContactPage() {
                   <div className="space-y-1">
                     <h4 className="font-bold text-lg">Call Us</h4>
                     <p className="text-sm text-muted-foreground">
-                      {settings.phone || '+1 888-234-1234 (tool-free)'}
+                      {STORE_SETTINGS.phone}
                     </p>
                   </div>
                 </div>

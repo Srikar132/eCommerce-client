@@ -7,7 +7,7 @@
 /* @plugin ""; */
 
 @theme inline {
-  --font-cursive : var(--font-cursive);
+  --font-cursive: var(--font-cursive);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -43,22 +43,22 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  
+
 }
 
 :root {
   --radius: 1.5rem;
 
   /* ───── Base ───── */
-  --background: #ffffff;
-  --foreground: #000000;
+  --background: #FCFAF7; /* Premium Linen */
+  --foreground: #1A1A1A; /* Soft Charcoal */
 
   /* ───── Cards / Surfaces ───── */
-  --card: #ffffff;
-  --card-foreground: #000000;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
 
-  --popover: #ffffff;
-  --popover-foreground: #000000;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
 
   /* ───── Primary (CTA — Shop Now) ───── */
   --primary: #000000;
@@ -109,6 +109,21 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    position: relative;
+  }
+
+  /* Premium Textile Grain Overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    z-index: 100;
   }
 
   h1,
@@ -126,7 +141,7 @@
   /* ============================================
      GLOBAL UTILITY CLASSES
      ============================================ */
-    /* For inline/small elements: badges, tags, pill buttons, inputs */
+  /* For inline/small elements: badges, tags, pill buttons, inputs */
   .p-inline {
     @apply px-3 py-1.5;
   }
@@ -190,54 +205,43 @@
 
   /* ─── Typography ─── */
   h1 {
-    @apply font-bold text-[2.25rem] leading-[2.875rem]
-           md:text-[3rem] md:leading-[3.75rem]
-           lg:text-[3.75rem] lg:leading-[4.5rem];
+    @apply font-bold text-[2.25rem] leading-[2.875rem] md:text-[3rem] md:leading-[3.75rem] lg:text-[3.75rem] lg:leading-[4.5rem];
   }
 
   h2 {
-    @apply font-bold text-[1.75rem] leading-[2.25rem]
-           md:text-[2.25rem] md:leading-[2.875rem]
-           lg:text-[2.75rem] lg:leading-[3.5rem];
+    @apply font-bold text-[1.75rem] leading-[2.25rem] md:text-[2.25rem] md:leading-[2.875rem] lg:text-[2.75rem] lg:leading-[3.5rem];
   }
 
   h3 {
-    @apply font-medium text-[1.375rem] leading-[1.875rem]
-           md:text-[1.75rem] md:leading-[2.25rem];
+    @apply font-medium text-[1.375rem] leading-[1.875rem] md:text-[1.75rem] md:leading-[2.25rem];
   }
 
   h4 {
-    @apply font-medium text-[1.125rem] leading-[1.625rem]
-           md:text-[1.25rem] md:leading-[1.75rem];
+    @apply font-medium text-[1.125rem] leading-[1.625rem] md:text-[1.25rem] md:leading-[1.75rem];
   }
 
   /* Body / Paragraph sizes */
   .p-xl {
-    @apply text-[1.125rem] leading-[1.875rem]
-           md:text-[1.25rem] md:leading-[2rem];
+    @apply text-[1.125rem] leading-[1.875rem] md:text-[1.25rem] md:leading-[2rem];
   }
 
   /* Default body text — use this most of the time */
   .p-base {
-    @apply text-[0.9375rem] leading-[1.625rem]
-           md:text-[1rem] md:leading-[1.75rem];
+    @apply text-[0.9375rem] leading-[1.625rem] md:text-[1rem] md:leading-[1.75rem];
   }
 
   .p-sm {
-    @apply text-[0.8125rem] leading-[1.375rem]
-           md:text-[0.875rem] md:leading-[1.5rem];
+    @apply text-[0.8125rem] leading-[1.375rem] md:text-[0.875rem] md:leading-[1.5rem];
   }
 
   .p-xs {
-    @apply text-[0.75rem] leading-[1.25rem]
-           md:text-[0.8125rem] md:leading-[1.375rem];
+    @apply text-[0.75rem] leading-[1.25rem] md:text-[0.8125rem] md:leading-[1.375rem];
   }
 
 
   /* ─── Page hero ─── */
   .hero {
-    @apply relative flex items-center overflow-hidden
-           min-h-[60vh] md:min-h-[80vh];
+    @apply relative flex items-center overflow-hidden min-h-[60vh] md:min-h-[80vh];
   }
 
   .hero-content {
@@ -246,17 +250,12 @@
 
   /* ─── Product grid ─── */
   .product-grid {
-    @apply grid grid-cols-2 gap-3
-           md:grid-cols-3 md:gap-5
-           lg:grid-cols-4 lg:gap-6;
+    @apply grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6;
   }
 
   /* ─── Nav ─── */
   .nav-link {
-    @apply text-sm font-medium text-muted-foreground
-           hover:text-foreground transition-colors duration-150;
+    @apply text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-150;
   }
 
 }
-
-

@@ -17,23 +17,25 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { STORE_SETTINGS } from "@/constants";
+
 interface FloatingChatProps {
-    phoneNumber: string;
+    // phoneNumber?: string;
 }
 
-export const FloatingChat: React.FC<FloatingChatProps> = ({ phoneNumber }) => {
+export const FloatingChat: React.FC<FloatingChatProps> = () => {
     const [message, setMessage] = useState("");
     const [open, setOpen] = useState(false);
 
     const handleSend = () => {
         if (!message.trim()) return;
-        
-        const cleanNumber = phoneNumber.replace(/\D/g, "");
+
+        const phoneNumber = STORE_SETTINGS.whatsapp.replace(/\D/g, "");
         const encodedMessage = encodeURIComponent(message);
-        
-        const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
         window.open(whatsappUrl, "_blank");
-        
+
         setMessage("");
         setOpen(false);
     };
@@ -60,24 +62,24 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ phoneNumber }) => {
                                 </button>
                             </PopoverTrigger>
                         </TooltipTrigger>
-                        <TooltipContent 
-                            side="left" 
-                            className="bg-white text-foreground border-border shadow-xl rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-widest mb-2 mr-2"
+                        <TooltipContent
+                            side="left"
+                            className="bg-background text-foreground border-border shadow-xl rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-widest mb-2 mr-2"
                         >
                             Chat with our artisan
                         </TooltipContent>
                     </Tooltip>
 
                     {/* Chat Window Content */}
-                    <PopoverContent 
-                        side="top" 
-                        align="end" 
+                    <PopoverContent
+                        side="top"
+                        align="end"
                         sideOffset={20}
                         className="w-[320px] p-0 bg-transparent border-none shadow-none focus:ring-0"
                     >
-                        <div 
+                        <div
                             className={cn(
-                                "w-full bg-background border border-border shadow-2xl rounded-[32px] overflow-hidden backdrop-blur-xl bg-white/95 dark:bg-black/95",
+                                "w-full bg-background border border-border shadow-2xl rounded-[32px] overflow-hidden backdrop-blur-xl bg-background/95 dark:bg-black/95",
                                 "animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300"
                             )}
                         >
@@ -88,7 +90,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ phoneNumber }) => {
                                         <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Concierge</span>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => setOpen(false)}
                                         className="hover:rotate-90 transition-transform duration-300"
                                     >
@@ -104,14 +106,14 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ phoneNumber }) => {
                                     Tell us what you&apos;re looking for, and we&apos;ll guide you through our artisan sanctuary via WhatsApp.
                                 </p>
                                 <div className="relative">
-                                    <Textarea 
+                                    <Textarea
                                         placeholder="Type your message..."
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         className="min-h-[100px] bg-muted/30 border-none rounded-2xl resize-none focus-visible:ring-1 focus-visible:ring-accent/30 text-sm py-4"
                                     />
                                 </div>
-                                <Button 
+                                <Button
                                     onClick={handleSend}
                                     disabled={!message.trim()}
                                     className="w-full bg-accent hover:bg-accent/90 text-white rounded-full py-6 h-auto text-[10px] font-bold uppercase tracking-[0.2em] group transition-all"

@@ -10,7 +10,7 @@ export default function ProductDetailLoading() {
                         <div className="space-y-4">
                             {/* Main Image */}
                             <Skeleton className="w-full aspect-square rounded-lg" />
-                            
+
                             {/* Thumbnail Images */}
                             <div className="grid grid-cols-4 gap-2">
                                 <Skeleton className="aspect-square rounded-md" />
@@ -53,7 +53,7 @@ export default function ProductDetailLoading() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="sticky bottom-0 bg-white border-t border-gray-100 pt-4 pb-4 px-4 sm:pb-0 sm:px-0 sm:static sm:border-0 sm:pt-0 z-10">
+                        <div className="sticky bottom-0 bg-background border-t border-gray-100 pt-4 pb-4 px-4 sm:pb-0 sm:px-0 sm:static sm:border-0 sm:pt-0 z-10">
                             <div className="space-y-3">
                                 <Skeleton className="h-12 w-full rounded-md" />
                                 <Skeleton className="h-12 w-full rounded-md" />

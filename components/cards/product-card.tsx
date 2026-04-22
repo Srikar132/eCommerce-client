@@ -60,7 +60,7 @@ const ProductCard = ({
                 {/* Quick Look / Search (Top Right) - Smaller on Mobile */}
                 <div className="absolute top-4 lg:top-5 right-4 lg:right-5 z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 translate-y-0 sm:translate-y-4 sm:group-hover:translate-y-0">
                     <CustomButton2
-                        className="w-10 h-10 lg:w-12 lg:h-12 !p-0 shadow-xl border-none bg-white"
+                        className="w-10 h-10 lg:w-12 lg:h-12 !p-0 shadow-xl border-none bg-background"
                         fillColor="#000000"
                         textColor="#000000"
                         textHoverColor="#ffffff"
@@ -100,13 +100,13 @@ const ProductCard = ({
             {/* Product Details */}
             <div className="pt-4 space-y-1.5 px-1">
                 <Link href={`/products/${product.slug}`} className="block group/link">
-                    <h3 className="text-[15px] lg:text-[17px] font-bold text-black tracking-tight leading-tight group-hover/link:text-accent transition-colors">
+                    <h3 className="text-[15px] lg:text-[17px] font-bold text-foreground tracking-tight leading-tight group-hover/link:text-accent transition-colors">
                         {product.name}
                     </h3>
                 </Link>
 
                 <div className="flex items-center justify-between">
-                    <p className="text-base lg:text-lg font-bold text-black">
+                    <p className="text-base lg:text-lg font-bold text-foreground">
                         {formatCurrency(product.basePrice)}
                     </p>
                 </div>

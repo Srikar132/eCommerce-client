@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { SidebarTrigger } from '../ui/sidebar';
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SearchInput } from '../search-input';
 import { cn } from '@/lib/utils';
 import { CollectionsDropdown } from './collections-dropdown';
@@ -120,8 +121,20 @@ const Navbar = () => {
                     {/* ── MOBILE: Hamburger | Logo | Icons ── */}
                     <div className="flex lg:hidden items-center w-full justify-between">
                         <SidebarTrigger />
-                        <Link href="/" className="flex items-center space-x-2">
-                            <p className="text-2xl xl:text-3xl font-bold  uppercase text-foreground "><span className='font-cursive! lowercase'>Nala</span> Armoire</p>
+                        <Link href="/" className="flex items-center space-x-2 group">
+                            <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-105">
+                                <Image
+                                    src="/images/logo.webp"
+                                    alt="The Nala Armoire"
+                                    fill
+                                    sizes="32px"
+                                    className="object-cover rounded-full"
+                                    priority
+                                />
+                            </div>
+                            <p className="text-xl font-bold uppercase text-foreground">
+                                <span className='font-cursive! lowercase'>Nala</span> Armoire
+                            </p>
                         </Link>
                         <div className="flex items-center gap-2">
                             {!isProductsPage && (
@@ -160,21 +173,22 @@ const Navbar = () => {
                         )}
                     </div>
 
-                    {/* CENTER: Logo — absolutely centered on desktop */}
                     <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2">
-                        <Link href="/" className="flex items-center gap-2.5 group">
-                            {/* <div className="relative w-11 h-11 transition-transform duration-300 group-hover:scale-105">
+                        <Link href="/" className="flex items-center gap-3 group">
+                            <div className="relative w-11 h-11 transition-transform duration-300 group-hover:scale-105">
                                 <Image
                                     src="/images/logo.webp"
                                     alt="The Nala Armoire"
                                     fill
                                     sizes="44px"
-                                    className="object-cover"
+                                    className="object-cover rounded-full"
+                                    priority
                                 />
-                            </div> */}
+                            </div>
                             <div>
-                                <p className="text-2xl xl:text-3xl font-bold  uppercase text-foreground "><span className='font-cursive! lowercase'>Nala</span> Armoire</p>
-                                {/* <p className="text-[9px] italic text-muted-foreground mt-0.5 tracking-wide">where beauty roars</p> */}
+                                <p className="text-2xl xl:text-3xl font-bold  text-foreground tracking-tight">
+                                    NaLa ARMOIRE
+                                </p>
                             </div>
                         </Link>
                     </div>

@@ -5,8 +5,9 @@ import { useGSAP } from "@gsap/react"
 import { gsap } from "gsap"
 import CustomButton from "../ui/custom-button"
 import CustomButton2 from "../ui/custom-button-2"
+import Image from "next/image";
 import Link from "next/link";
-import { ScrollTrigger } from "gsap/all"
+// import { ScrollTrigger } from "gsap/all"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 /* ─────────────────────────────────────────────
@@ -39,7 +40,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
 ]
 
 
-gsap.registerPlugin(ScrollTrigger)
+// gsap.registerPlugin(ScrollTrigger)
 
 /* ─────────────────────────────────────────────
    Component
@@ -67,7 +68,7 @@ export default function HeroSection({
   const isAnimating = useRef(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const progressTween = useRef<gsap.core.Tween | null>(null)
-  
+
   // Ref to hold the goTo function to avoid circular dependency warnings
   const goToRef = useRef<(n: number) => void>(null);
 
@@ -143,22 +144,22 @@ export default function HeroSection({
     goToRef.current = goTo;
   }, [goTo]);
 
-  useGSAP(() => {
-    if (!containerRef.current) return;
+  // useGSAP(() => {
+  //   if (!containerRef.current) return;
 
-    const container = containerRef.current;
-    /* Scroll parallax with proper spacing handling */
-    ScrollTrigger.create({
-      trigger: container,
-      start: "top top",
-      end: "bottom top",
-      scrub: 1.2,
-      pin: true,
-      pinSpacing: false,
-    });
-  }, {
-    scope: containerRef
-  })
+  //   const container = containerRef.current;
+  //   /* Scroll parallax with proper spacing handling */
+  //   ScrollTrigger.create({
+  //     trigger: container,
+  //     start: "top top",
+  //     end: "bottom top",
+  //     scrub: 1.2,
+  //     pin: true,
+  //     pinSpacing: false,
+  //   });
+  // }, {
+  //   scope: containerRef
+  // })
 
   /* ── Bootstrap (runs once, inside useGSAP) ── */
   useGSAP(
@@ -227,11 +228,14 @@ export default function HeroSection({
           className="absolute inset-0 will-change-[opacity]"
           aria-hidden={i !== current}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             ref={(el) => { imgRefs.current[i] = el }}
             src={slide.src}
             alt={slide.alt}
+            fill
+            priority={i == 0}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            // quality={1}
             className="absolute inset-0 w-full h-full object-cover will-change-transform"
             draggable={false}
           />
@@ -290,7 +294,7 @@ export default function HeroSection({
         >
           <span
             ref={progressRef}
-            className="absolute inset-0 bg-white"
+            className="absolute inset-0 bg-background"
             style={{ transformOrigin: "left center", }}
           />
         </span>

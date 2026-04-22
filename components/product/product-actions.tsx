@@ -29,7 +29,7 @@ export default function ProductActions({
             {/* ROW 1: Quantity + Add to Cart */}
             <div className="flex items-center gap-3 w-full">
                 {/* Quantity Selector */}
-                <div className="flex items-center justify-between px-4 h-12 bg-white border border-border rounded-full min-w-[110px] shadow-sm">
+                <div className="flex items-center justify-between px-4 h-12 bg-background border border-border rounded-full min-w-[110px] shadow-sm">
                     <button
                         onClick={decrement}
                         disabled={disabled || quantity <= 1}

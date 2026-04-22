@@ -33,12 +33,12 @@ export default function BrandServices() {
           {SERVICES.map((service, index) => (
             <div key={index} className="flex flex-col items-center text-center group">
               <div className="mb-6 p-4 rounded-full bg-secondary/30 group-hover:bg-secondary/50 transition-colors duration-300">
-                <service.icon className="w-8 h-8 text-black/80" strokeWidth={1.5} />
+                <service.icon className="w-8 h-8 text-foreground/80" strokeWidth={1.5} />
               </div>
-              <h3 className="text-lg font-bold text-black mb-2 tracking-tight">
+              <h3 className="text-lg font-bold text-foreground mb-2 tracking-tight">
                 {service.title}
               </h3>
-              <p className="text-sm text-black/50 leading-relaxed max-w-[200px]">
+              <p className="text-sm text-foreground/50 leading-relaxed max-w-[200px]">
                 {service.description}
               </p>
             </div>

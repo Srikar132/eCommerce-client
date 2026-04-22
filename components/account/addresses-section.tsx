@@ -87,7 +87,7 @@ export function AddressesSectionClient() {
 
 
     return (
-        <Card className="rounded-[2rem] border-none shadow-sm bg-white overflow-hidden">
+        <Card className="rounded-[2rem] border-none shadow-sm bg-background overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between px-6 py-5 border-b border-muted/20">
                 <CardTitle className="h4 !text-xl font-bold">Delivery Addresses</CardTitle>
                 <Button
@@ -103,7 +103,7 @@ export function AddressesSectionClient() {
             <CardContent className="p-6">
                 {!addresses || addresses.length === 0 ? (
                     <div className="text-center py-12 bg-muted/10 rounded-[2rem]">
-                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mx-auto mb-4 shadow-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-background flex items-center justify-center mx-auto mb-4 shadow-sm">
                             <MapPin className="w-6 h-6 text-accent/30" />
                         </div>
                         <p className="p-sm text-muted-foreground mb-6">No saved addresses</p>
@@ -125,7 +125,7 @@ export function AddressesSectionClient() {
                             >
                                 <div className="flex items-start justify-between mb-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                                        <div className="w-9 h-9 rounded-xl bg-background flex items-center justify-center shadow-sm">
                                             {getAddressTypeIcon(address.addressType)}
                                         </div>
                                         <div>
@@ -147,7 +147,7 @@ export function AddressesSectionClient() {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-7 w-7 rounded-full bg-white/50 hover:bg-white transition-all shadow-sm"
+                                                className="h-7 w-7 rounded-full bg-background/50 hover:bg-background transition-all shadow-sm"
                                                 disabled={isDeleting || isSettingDefault}
                                             >
                                                 <MoreVertical className="w-3.5 h-3.5 text-muted-foreground" />

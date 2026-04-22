@@ -2,11 +2,9 @@ import React from 'react';
 import { Facebook, Instagram, Twitter, MapPin, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
 import BrandServices from './landing-page/brand-services';
-import { getStoreSettings } from '@/lib/actions/store-settings-actions';
+import { STORE_SETTINGS } from '@/constants';
 
-const Footer = async () => {
-    const settings = await getStoreSettings();
-
+const Footer = () => {
     return (
         <>
             <BrandServices />
@@ -37,20 +35,20 @@ const Footer = async () => {
                                     <div className="flex items-start gap-3 group">
                                         <MapPin className="w-4 h-4 text-white/30 mt-1 shrink-0 group-hover:text-white transition-colors" />
                                         <div className="text-sm text-white/50 leading-relaxed group-hover:text-white transition-colors">
-                                            {settings.address},<br />
-                                            {settings.city}, {settings.state} - {settings.pincode}
+                                            {STORE_SETTINGS.address},<br />
+                                            {STORE_SETTINGS.city}, {STORE_SETTINGS.state} - {STORE_SETTINGS.zipCode}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 group">
                                         <Mail className="w-4 h-4 text-white/30 shrink-0 group-hover:text-white transition-colors" />
-                                        <Link href={`mailto:${settings.email}`} className="text-sm text-white/50 hover:text-white transition-colors">
-                                            {settings.email}
+                                        <Link href={`mailto:${STORE_SETTINGS.email}`} className="text-sm text-white/50 hover:text-white transition-colors">
+                                            {STORE_SETTINGS.email}
                                         </Link>
                                     </div>
                                     <div className="flex items-center gap-3 group">
                                         <Phone className="w-4 h-4 text-white/30 shrink-0 group-hover:text-white transition-colors" />
-                                        <Link href={`tel:${settings.phone}`} className="text-sm text-white/50 hover:text-white transition-colors">
-                                            {settings.phone}
+                                        <Link href={`tel:${STORE_SETTINGS.phone}`} className="text-sm text-white/50 hover:text-white transition-colors">
+                                            {STORE_SETTINGS.phone}
                                         </Link>
                                     </div>
                                 </div>
@@ -60,7 +58,7 @@ const Footer = async () => {
                                         <Link
                                             key={i}
                                             href="#"
-                                            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
+                                            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-background hover:text-foreground transition-all duration-300"
                                         >
                                             <Icon className="w-4 h-4" />
                                         </Link>
@@ -131,7 +129,7 @@ const Footer = async () => {
                             </div>
                             <div className="flex items-center gap-2">
                                 <span>Made with heart</span>
-                                <div className="w-1 h-1 rounded-full bg-white/20" />
+                                <div className="w-1 h-1 rounded-full bg-background/20" />
                                 <span>Worldwide Shipping</span>
                             </div>
                         </div>

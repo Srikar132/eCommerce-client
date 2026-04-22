@@ -72,7 +72,7 @@ export default function AppSidebar() {
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold tracking-tighter text-foreground leading-none">
-                                        <span className="font-cursive! lowercase text-3xl normal-case">nala</span> Armoire
+                                        NaLa ARMOIRE
                                     </p>
                                     <p className="text-xs italic text-muted-foreground tracking-wide mt-1 opacity-60">
                                         where beauty roars

@@ -51,37 +51,37 @@ export interface SliderImage {
 
 // ==================== LANDING CATEGORIES ====================
 
+/**
+ * PERFORMANCE: Admin version — always fresh (no cache)
+ */
 export async function getLandingCategories(): Promise<LandingCategory[]> {
     try {
-        const categories = await db
-            .select()
-            .from(landingCategories)
-            .orderBy(asc(landingCategories.displayOrder));
-        return categories;
+        return await db.select().from(landingCategories).orderBy(asc(landingCategories.displayOrder));
     } catch (error) {
         console.error("Error fetching landing categories:", error);
         return [];
     }
 }
 
-export const getActiveLandingCategories = unstable_cache(async (): Promise<LandingCategory[]> => {
-    try {
-        const categories = await db
-            .select()
-            .from(landingCategories)
-            .where(eq(landingCategories.isActive, true))
-            .orderBy(asc(landingCategories.displayOrder));
-        return categories;
-    } catch (error) {
-        console.error("Error fetching active landing categories:", error);
-        return [];
-    }
-},
+/**
+ * PERFORMANCE: Storefront version — cached for 7 days, busted on admin edit
+ */
+export const getActiveLandingCategories = unstable_cache(
+    async (): Promise<LandingCategory[]> => {
+        try {
+            return await db
+                .select()
+                .from(landingCategories)
+                .where(eq(landingCategories.isActive, true))
+                .orderBy(asc(landingCategories.displayOrder));
+        } catch (error) {
+            console.error("Error fetching active landing categories:", error);
+            return [];
+        }
+    },
     ["active-landing-categories"],
-    {
-        revalidate: 60 * 60 * 24 * 7 // 7 days
-    }
-)
+    { revalidate: 60 * 60 * 24 * 7, tags: ["landing-categories"] }
+);
 
 export async function createLandingCategory(data: {
     title: string;
@@ -91,9 +91,7 @@ export async function createLandingCategory(data: {
 }): Promise<{ success: boolean; message: string }> {
     try {
         await db.insert(landingCategories).values({
-            title: data.title,
-            imageUrl: data.imageUrl,
-            linkUrl: data.linkUrl,
+            title: data.title, imageUrl: data.imageUrl, linkUrl: data.linkUrl,
             displayOrder: data.displayOrder || 0,
         });
         revalidatePath("/");
@@ -107,19 +105,10 @@ export async function createLandingCategory(data: {
 
 export async function updateLandingCategory(
     id: string,
-    data: Partial<{
-        title: string;
-        imageUrl: string;
-        linkUrl: string;
-        displayOrder: number;
-        isActive: boolean;
-    }>
+    data: Partial<{ title: string; imageUrl: string; linkUrl: string; displayOrder: number; isActive: boolean }>
 ): Promise<{ success: boolean; message: string }> {
     try {
-        await db
-            .update(landingCategories)
-            .set({ ...data, updatedAt: new Date() })
-            .where(eq(landingCategories.id, id));
+        await db.update(landingCategories).set({ ...data, updatedAt: new Date() }).where(eq(landingCategories.id, id));
         revalidatePath("/");
         revalidatePath("/admin/content");
         return { success: true, message: "Category updated successfully" };
@@ -129,9 +118,7 @@ export async function updateLandingCategory(
     }
 }
 
-export async function deleteLandingCategory(
-    id: string
-): Promise<{ success: boolean; message: string }> {
+export async function deleteLandingCategory(id: string): Promise<{ success: boolean; message: string }> {
     try {
         await db.delete(landingCategories).where(eq(landingCategories.id, id));
         revalidatePath("/");
@@ -147,30 +134,29 @@ export async function deleteLandingCategory(
 
 export async function getShowcaseProducts(): Promise<ShowcaseProduct[]> {
     try {
-        const products = await db
-            .select()
-            .from(showcaseProducts)
-            .orderBy(asc(showcaseProducts.displayOrder));
-        return products;
+        return await db.select().from(showcaseProducts).orderBy(asc(showcaseProducts.displayOrder));
     } catch (error) {
         console.error("Error fetching showcase products:", error);
         return [];
     }
 }
 
-export async function getActiveShowcaseProducts(): Promise<ShowcaseProduct[]> {
-    try {
-        const products = await db
-            .select()
-            .from(showcaseProducts)
-            .where(eq(showcaseProducts.isActive, true))
-            .orderBy(asc(showcaseProducts.displayOrder));
-        return products;
-    } catch (error) {
-        console.error("Error fetching active showcase products:", error);
-        return [];
-    }
-}
+export const getActiveShowcaseProducts = unstable_cache(
+    async (): Promise<ShowcaseProduct[]> => {
+        try {
+            return await db
+                .select()
+                .from(showcaseProducts)
+                .where(eq(showcaseProducts.isActive, true))
+                .orderBy(asc(showcaseProducts.displayOrder));
+        } catch (error) {
+            console.error("Error fetching active showcase products:", error);
+            return [];
+        }
+    },
+    ["active-showcase-products"],
+    { revalidate: 60 * 60 * 24, tags: ["showcase-products"] }
+);
 
 export async function createShowcaseProduct(data: {
     title: string;
@@ -180,10 +166,7 @@ export async function createShowcaseProduct(data: {
 }): Promise<{ success: boolean; message: string }> {
     try {
         await db.insert(showcaseProducts).values({
-            title: data.title,
-            price: data.price,
-            imageUrl: data.imageUrl,
-            displayOrder: data.displayOrder || 0,
+            title: data.title, price: data.price, imageUrl: data.imageUrl, displayOrder: data.displayOrder || 0,
         });
         revalidatePath("/");
         revalidatePath("/admin/content");
@@ -196,19 +179,10 @@ export async function createShowcaseProduct(data: {
 
 export async function updateShowcaseProduct(
     id: string,
-    data: Partial<{
-        title: string;
-        price: string;
-        imageUrl: string;
-        displayOrder: number;
-        isActive: boolean;
-    }>
+    data: Partial<{ title: string; price: string; imageUrl: string; displayOrder: number; isActive: boolean }>
 ): Promise<{ success: boolean; message: string }> {
     try {
-        await db
-            .update(showcaseProducts)
-            .set({ ...data, updatedAt: new Date() })
-            .where(eq(showcaseProducts.id, id));
+        await db.update(showcaseProducts).set({ ...data, updatedAt: new Date() }).where(eq(showcaseProducts.id, id));
         revalidatePath("/");
         revalidatePath("/admin/content");
         return { success: true, message: "Showcase product updated successfully" };
@@ -218,9 +192,7 @@ export async function updateShowcaseProduct(
     }
 }
 
-export async function deleteShowcaseProduct(
-    id: string
-): Promise<{ success: boolean; message: string }> {
+export async function deleteShowcaseProduct(id: string): Promise<{ success: boolean; message: string }> {
     try {
         await db.delete(showcaseProducts).where(eq(showcaseProducts.id, id));
         revalidatePath("/");
@@ -234,42 +206,35 @@ export async function deleteShowcaseProduct(
 
 // ==================== TESTIMONIALS ====================
 
-export const getLandingTestimonials = unstable_cache(async (): Promise<LandingTestimonial[]> => {
-    try {
-        const testimonials = await db
-            .select()
-            .from(landingTestimonials)
-            .orderBy(asc(landingTestimonials.displayOrder));
-        return testimonials;
-    } catch (error) {
-        console.error("Error fetching testimonials:", error);
-        return [];
-    }
-},
+export const getLandingTestimonials = unstable_cache(
+    async (): Promise<LandingTestimonial[]> => {
+        try {
+            return await db.select().from(landingTestimonials).orderBy(asc(landingTestimonials.displayOrder));
+        } catch (error) {
+            console.error("Error fetching testimonials:", error);
+            return [];
+        }
+    },
     ["landing-testimonials"],
-    {
-        revalidate: 60 * 60 * 24 * 7 // 7 days
-    }
-)
+    { revalidate: 60 * 60 * 24 * 7, tags: ["testimonials"] }
+);
 
-export const getActiveTestimonials = unstable_cache(async (): Promise<LandingTestimonial[]> => {
-    try {
-        const testimonials = await db
-            .select()
-            .from(landingTestimonials)
-            .where(eq(landingTestimonials.isActive, true))
-            .orderBy(asc(landingTestimonials.displayOrder));
-        return testimonials;
-    } catch (error) {
-        console.error("Error fetching active testimonials:", error);
-        return [];
-    }
-},
+export const getActiveTestimonials = unstable_cache(
+    async (): Promise<LandingTestimonial[]> => {
+        try {
+            return await db
+                .select()
+                .from(landingTestimonials)
+                .where(eq(landingTestimonials.isActive, true))
+                .orderBy(asc(landingTestimonials.displayOrder));
+        } catch (error) {
+            console.error("Error fetching active testimonials:", error);
+            return [];
+        }
+    },
     ["active-testimonials"],
-    {
-        revalidate: 60 * 60 * 24 * 7 // 7 days
-    }
-)
+    { revalidate: 60 * 60 * 24 * 7, tags: ["testimonials"] }
+);
 
 export async function createTestimonial(data: {
     customerName: string;
@@ -281,12 +246,9 @@ export async function createTestimonial(data: {
 }): Promise<{ success: boolean; message: string }> {
     try {
         await db.insert(landingTestimonials).values({
-            customerName: data.customerName,
-            customerRole: data.customerRole || "Verified Customer",
-            reviewText: data.reviewText,
-            rating: data.rating || 5,
-            isVerifiedPurchase: data.isVerifiedPurchase || false,
-            displayOrder: data.displayOrder || 0,
+            customerName: data.customerName, customerRole: data.customerRole || "Verified Customer",
+            reviewText: data.reviewText, rating: data.rating || 5,
+            isVerifiedPurchase: data.isVerifiedPurchase || false, displayOrder: data.displayOrder || 0,
         });
         revalidatePath("/");
         revalidatePath("/admin/content");
@@ -300,20 +262,12 @@ export async function createTestimonial(data: {
 export async function updateTestimonial(
     id: string,
     data: Partial<{
-        customerName: string;
-        customerRole: string;
-        reviewText: string;
-        rating: number;
-        isVerifiedPurchase: boolean;
-        displayOrder: number;
-        isActive: boolean;
+        customerName: string; customerRole: string; reviewText: string;
+        rating: number; isVerifiedPurchase: boolean; displayOrder: number; isActive: boolean;
     }>
 ): Promise<{ success: boolean; message: string }> {
     try {
-        await db
-            .update(landingTestimonials)
-            .set({ ...data, updatedAt: new Date() })
-            .where(eq(landingTestimonials.id, id));
+        await db.update(landingTestimonials).set({ ...data, updatedAt: new Date() }).where(eq(landingTestimonials.id, id));
         revalidatePath("/");
         revalidatePath("/admin/content");
         return { success: true, message: "Testimonial updated successfully" };
@@ -323,9 +277,7 @@ export async function updateTestimonial(
     }
 }
 
-export async function deleteTestimonial(
-    id: string
-): Promise<{ success: boolean; message: string }> {
+export async function deleteTestimonial(id: string): Promise<{ success: boolean; message: string }> {
     try {
         await db.delete(landingTestimonials).where(eq(landingTestimonials.id, id));
         revalidatePath("/");
@@ -337,88 +289,3 @@ export async function deleteTestimonial(
     }
 }
 
-// ==================== SLIDER IMAGES ====================
-
-export async function getSliderImages(): Promise<SliderImage[]> {
-    try {
-        const images = await db
-            .select()
-            .from(sliderImages)
-            .orderBy(asc(sliderImages.displayOrder));
-        return images;
-    } catch (error) {
-        console.error("Error fetching slider images:", error);
-        return [];
-    }
-}
-
-export async function getActiveSliderImages(): Promise<SliderImage[]> {
-    try {
-        const images = await db
-            .select()
-            .from(sliderImages)
-            .where(eq(sliderImages.isActive, true))
-            .orderBy(asc(sliderImages.displayOrder));
-        return images;
-    } catch (error) {
-        console.error("Error fetching active slider images:", error);
-        return [];
-    }
-}
-
-export async function createSliderImage(data: {
-    imageUrl: string;
-    altText?: string;
-    displayOrder?: number;
-}): Promise<{ success: boolean; message: string }> {
-    try {
-        await db.insert(sliderImages).values({
-            imageUrl: data.imageUrl,
-            altText: data.altText || "Fashion image",
-            displayOrder: data.displayOrder || 0,
-        });
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Slider image added successfully" };
-    } catch (error) {
-        console.error("Error creating slider image:", error);
-        return { success: false, message: "Failed to add slider image" };
-    }
-}
-
-export async function updateSliderImage(
-    id: string,
-    data: Partial<{
-        imageUrl: string;
-        altText: string;
-        displayOrder: number;
-        isActive: boolean;
-    }>
-): Promise<{ success: boolean; message: string }> {
-    try {
-        await db
-            .update(sliderImages)
-            .set(data)
-            .where(eq(sliderImages.id, id));
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Slider image updated successfully" };
-    } catch (error) {
-        console.error("Error updating slider image:", error);
-        return { success: false, message: "Failed to update slider image" };
-    }
-}
-
-export async function deleteSliderImage(
-    id: string
-): Promise<{ success: boolean; message: string }> {
-    try {
-        await db.delete(sliderImages).where(eq(sliderImages.id, id));
-        revalidatePath("/");
-        revalidatePath("/admin/content");
-        return { success: true, message: "Slider image deleted successfully" };
-    } catch (error) {
-        console.error("Error deleting slider image:", error);
-        return { success: false, message: "Failed to delete slider image" };
-    }
-}

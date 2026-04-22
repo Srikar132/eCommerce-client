@@ -13,12 +13,12 @@ export default async function ShopByCategories() {
     }
 
     return (
-        <section className="section bg-white relative   z-30 rounded-t-[20px] lg:rounded-t-[60px] -mt-12">
+        <section className="section bg-background relative   z-30 rounded-t-[20px] lg:rounded-t-[60px]">
             <div className="container mb-16">
-                <span className="text-[11px] font-bold tracking-[0.35em] text-black/30 uppercase mb-4 block">
+                <span className="text-[11px] font-bold tracking-[0.35em] text-foreground/30 uppercase mb-4 block">
                     Our Collections
                 </span>
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-black">
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground">
                     Shop by Category
                 </h2>
             </div>

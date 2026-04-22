@@ -131,7 +131,7 @@ export default function CheckoutClient() {
                 <div className="flex flex-col items-center justify-center text-center space-y-10">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl scale-150 transition-transform duration-500 group-hover:scale-[2]" />
-                        <div className="relative w-32 h-32 rounded-full bg-white shadow-xl flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-2">
+                        <div className="relative w-32 h-32 rounded-full bg-background shadow-xl flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-2">
                             <ShoppingBag className="w-12 h-12 text-foreground" strokeWidth={1.5} />
                             <div className="absolute top-0 right-0 w-4 h-4 bg-black rounded-full animate-ping" />
                         </div>
@@ -167,7 +167,7 @@ export default function CheckoutClient() {
                 <div className="flex flex-col items-center justify-center text-center space-y-10">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-secondary/20 rounded-full blur-3xl scale-150 transition-transform duration-500 group-hover:scale-[2]" />
-                        <div className="relative w-32 h-32 rounded-full bg-white shadow-xl flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-2">
+                        <div className="relative w-32 h-32 rounded-full bg-background shadow-xl flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-2">
                             <MapPin className="w-12 h-12 text-foreground" strokeWidth={1.5} />
                         </div>
                     </div>
@@ -238,7 +238,7 @@ export default function CheckoutClient() {
                             </div>
                             <Link
                                 href="/account"
-                                className="group flex items-center gap-2 p-xs font-bold uppercase tracking-widest text-foreground/40 hover:text-black transition-colors"
+                                className="group flex items-center gap-2 p-xs font-bold uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors"
                             >
                                 Manage
                                 <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
@@ -258,7 +258,7 @@ export default function CheckoutClient() {
                     </div>
 
                     {/* Order Items Preview */}
-                    <div className="bg-white border border-foreground/5 rounded-[2rem] p-content shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+                    <div className="bg-background border border-foreground/5 rounded-[2rem] p-content shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
                         <div className="flex items-center justify-between mb-10">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center">
@@ -313,7 +313,7 @@ export default function CheckoutClient() {
                             {items.length > 3 && (
                                 <Link
                                     href="/cart"
-                                    className="flex items-center justify-center gap-2 py-5 text-[10px] font-bold uppercase tracking-widest text-foreground/40 hover:text-black transition-colors bg-foreground/[0.02] rounded-2xl hover:bg-foreground/[0.05]"
+                                    className="flex items-center justify-center gap-2 py-5 text-[10px] font-bold uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors bg-foreground/[0.02] rounded-2xl hover:bg-foreground/[0.05]"
                                 >
                                     + {items.length - 3} more {items.length - 3 === 1 ? 'item' : 'items'}
                                     <ChevronRight size={12} />
@@ -323,7 +323,7 @@ export default function CheckoutClient() {
                     </div>
 
                     {/* Order Notes */}
-                    <div className="bg-white border border-foreground/5 rounded-[2rem] p-content shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+                    <div className="bg-background border border-foreground/5 rounded-[2rem] p-content shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
                         <div className="flex items-center gap-3 mb-8">
                             <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center">
                                 <MessageSquare size={16} className="text-foreground/60" />
@@ -343,7 +343,7 @@ export default function CheckoutClient() {
                                     onChange={(e) => setOrderNotes(e.target.value)}
                                     rows={4}
                                     maxLength={500}
-                                    className="resize-none rounded-[1.5rem]  border-foreground/5 focus:bg-white focus:ring-black/5 transition-all p-8 text-base placeholder:text-foreground/20"
+                                    className="resize-none rounded-[1.5rem]  border-foreground/5 focus:bg-background focus:ring-black/5 transition-all p-8 text-base placeholder:text-foreground/20"
                                 />
                                 <div className="absolute bottom-6 right-8">
                                     <span className={cn(
@@ -389,13 +389,13 @@ export default function CheckoutClient() {
 
             {/* Processing Overlay */}
             {isProcessing && (
-                <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[100] flex flex-col items-center justify-center text-center p-6 animate-in fade-in duration-500">
+                <div className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[100] flex flex-col items-center justify-center text-center p-6 animate-in fade-in duration-500">
                     <div className="space-y-6 max-w-sm">
                         <div className="relative w-24 h-24 mx-auto">
                             <div className="absolute inset-0 border-4 border-foreground/5 rounded-full" />
                             <div className="absolute inset-0 border-4 border-black rounded-full border-t-transparent animate-spin" />
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <CreditCard className="w-8 h-8 text-black" />
+                                <CreditCard className="w-8 h-8 text-foreground" />
                             </div>
                         </div>
                         <div className="space-y-4">

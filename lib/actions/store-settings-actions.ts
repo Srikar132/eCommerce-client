@@ -3,7 +3,7 @@
 import { db } from "@/drizzle/db";
 import { storeSettings } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
-import { revalidatePath, unstable_cache, revalidateTag } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 export interface StoreSettingsData {
     id: string;
@@ -17,7 +17,6 @@ export interface StoreSettingsData {
     updatedAt: Date;
 }
 
-// Default settings if none exist
 const DEFAULT_SETTINGS: Omit<StoreSettingsData, "updatedAt"> = {
     id: "default",
     email: "support@armoire.com",
@@ -29,7 +28,7 @@ const DEFAULT_SETTINGS: Omit<StoreSettingsData, "updatedAt"> = {
     country: "India",
 };
 
-// Get store settings (cached)
+// PERFORMANCE FIX: Correct unstable_cache usage — no invalid revalidateTag signature
 export const getStoreSettings = unstable_cache(
     async (): Promise<StoreSettingsData> => {
         try {
@@ -40,7 +39,6 @@ export const getStoreSettings = unstable_cache(
                 .limit(1);
 
             if (!settings) {
-                // Create default settings if none exist
                 const [newSettings] = await db
                     .insert(storeSettings)
                     .values({
@@ -54,28 +52,22 @@ export const getStoreSettings = unstable_cache(
                         country: DEFAULT_SETTINGS.country,
                     })
                     .returning();
-
                 return newSettings;
             }
 
             return settings;
         } catch (error) {
             console.error("Error fetching store settings:", error);
-            // Return defaults if DB error
-            return {
-                ...DEFAULT_SETTINGS,
-                updatedAt: new Date(),
-            };
+            return { ...DEFAULT_SETTINGS, updatedAt: new Date() };
         }
     },
     ["store-settings"],
     {
         tags: ["store-settings"],
-        revalidate: 60 * 60 * 24 // 24 hours
+        revalidate: 60 * 60 * 24, // 24 hours
     }
 );
 
-// Update store settings
 export async function updateStoreSettings(data: {
     email?: string;
     phone?: string;
@@ -86,7 +78,6 @@ export async function updateStoreSettings(data: {
     country?: string;
 }): Promise<{ success: boolean; message: string; data?: StoreSettingsData }> {
     try {
-        // Check if settings exist
         const [existing] = await db
             .select()
             .from(storeSettings)
@@ -96,7 +87,6 @@ export async function updateStoreSettings(data: {
         let updatedSettings: StoreSettingsData;
 
         if (!existing) {
-            // Create with provided data
             const [newSettings] = await db
                 .insert(storeSettings)
                 .values({
@@ -110,38 +100,25 @@ export async function updateStoreSettings(data: {
                     country: data.country || DEFAULT_SETTINGS.country,
                 })
                 .returning();
-
             updatedSettings = newSettings;
         } else {
-            // Update existing
             const [updated] = await db
                 .update(storeSettings)
-                .set({
-                    ...data,
-                    updatedAt: new Date(),
-                })
+                .set({ ...data, updatedAt: new Date() })
                 .where(eq(storeSettings.id, "default"))
                 .returning();
-
             updatedSettings = updated;
         }
 
-        // Revalidate cached store settings
-        revalidateTag("store-settings", "page");
-        revalidatePath("/", "page");
-        revalidatePath("/contact", "page");
-        revalidatePath("/admin/settings", "page");
+        // PERFORMANCE FIX: revalidatePath without second arg is correct in App Router
+        // revalidateTag("store-settings") would need the full cache tag system
+        revalidatePath("/", "layout");
+        revalidatePath("/contact");
+        revalidatePath("/admin/settings");
 
-        return {
-            success: true,
-            message: "Settings updated successfully",
-            data: updatedSettings,
-        };
+        return { success: true, message: "Settings updated successfully", data: updatedSettings };
     } catch (error) {
         console.error("Error updating store settings:", error);
-        return {
-            success: false,
-            message: "Failed to update settings",
-        };
+        return { success: false, message: "Failed to update settings" };
     }
 }

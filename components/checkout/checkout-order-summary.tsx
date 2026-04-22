@@ -113,7 +113,7 @@ export default function CheckoutOrderSummary({
                 </div>
 
                 {/* Security Badge */}
-                <div className="flex items-center justify-center gap-2.5 py-3 bg-white/40 rounded-2xl border border-border/5">
+                <div className="flex items-center justify-center gap-2.5 py-3 bg-background/40 rounded-2xl border border-border/5">
                     <ShieldCheck size={12} className="text-muted-foreground/30" />
                     <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">Secure White-glove Checkout</span>
                 </div>

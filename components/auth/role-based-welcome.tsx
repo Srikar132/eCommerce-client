@@ -74,7 +74,7 @@ export default function RoleBasedWelcome() {
                 <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                            <div className="w-12 h-12 rounded-2xl bg-background flex items-center justify-center shadow-sm shrink-0">
                                 <RoleIcon role={userRole} />
                             </div>
                             <div>
@@ -82,7 +82,7 @@ export default function RoleBasedWelcome() {
                                     Hello, {user.name?.split(' ')[0] || 'Member'}
                                 </h3>
                                 <div className="flex items-center gap-2">
-                                    <Badge variant="secondary" className="px-2 py-0 rounded-full font-bold text-[8px] uppercase tracking-wider bg-white border-none h-4">
+                                    <Badge variant="secondary" className="px-2 py-0 rounded-full font-bold text-[8px] uppercase tracking-wider bg-background border-none h-4">
                                         {getRoleDisplayName()}
                                     </Badge>
                                     <span className="text-muted-foreground/30">•</span>

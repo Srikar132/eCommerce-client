@@ -11,7 +11,7 @@ export default async function HotThisWeek() {
   if (!products || products.length === 0) return null
 
   return (
-    <section className="section bg-white overflow-hidden">
+    <section className="section relative z-30 bg-background overflow-hidden">
       <div className="container">
         {/* Header with Title on Left and Button on Right */}
 

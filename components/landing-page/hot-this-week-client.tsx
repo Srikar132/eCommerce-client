@@ -22,8 +22,8 @@ interface HotThisWeekClientProps {
   showButton?: boolean;
 }
 
-export default function HotThisWeekClient({ 
-  products, 
+export default function HotThisWeekClient({
+  products,
   title = "Hot This Week",
   showButton = true
 }: HotThisWeekClientProps) {
@@ -57,14 +57,14 @@ export default function HotThisWeekClient({
           <span className="text-xs font-bold tracking-widest text-primary/60">
             Curated collection
           </span>
-          <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-black leading-none">
+          <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground leading-none">
             {title}
           </h2>
         </div>
-        
+
         {showButton && (
           <div className="hidden md:block">
-            <CustomButton2 
+            <CustomButton2
               href="/products"
               bgColor="#000000"
               fillColor="#ffffff"
@@ -88,12 +88,12 @@ export default function HotThisWeekClient({
       >
         <CarouselContent className="-ml-6 md:-ml-8">
           {products.map((product) => (
-            <CarouselItem 
-              key={product.id} 
+            <CarouselItem
+              key={product.id}
               className="pl-6 md:pl-8 basis-full sm:basis-1/2 lg:basis-1/4"
             >
-              <ProductCard 
-                product={product} 
+              <ProductCard
+                product={product}
                 onAddToCartClick={() => handleAddToCart(product)}
                 onQuickViewClick={() => handleQuickView(product.slug)}
                 isUpdating={isCartFetching}
@@ -107,27 +107,27 @@ export default function HotThisWeekClient({
       <div className="mt-16 flex items-center justify-between gap-12">
         {/* Progress Slider (Left) */}
         <div className="flex-1 max-w-[200px]">
-          <Slider 
-            value={[progress]} 
-            max={100} 
+          <Slider
+            value={[progress]}
+            max={100}
             step={0.1}
-            className="cursor-default" 
+            className="cursor-default"
             disabled
           />
         </div>
 
         {/* Navigation Arrows (Right) */}
         <div className="flex items-center gap-3">
-          <CustomButton2 
-            onClick={() => api?.scrollPrev()} 
+          <CustomButton2
+            onClick={() => api?.scrollPrev()}
             className="w-14 h-14 !px-0 rounded-full flex items-center justify-center border border-black/10"
             bgColor="transparent"
             aria-label="Previous slide"
           >
             <ChevronLeft className="w-6 h-6" strokeWidth={1.5} />
           </CustomButton2>
-          <CustomButton2 
-            onClick={() => api?.scrollNext()} 
+          <CustomButton2
+            onClick={() => api?.scrollNext()}
             className="w-14 h-14 !px-0 rounded-full flex items-center justify-center border border-black/10"
             bgColor="transparent"
             aria-label="Next slide"

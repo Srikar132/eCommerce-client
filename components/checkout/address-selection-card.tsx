@@ -20,8 +20,8 @@ export default function AddressSelectionCard({
             className={cn(
                 "p-6 md:p-8 cursor-pointer transition-all duration-500 rounded-[1.5rem] md:rounded-[2.5rem] border-2 relative overflow-hidden group",
                 isSelected
-                    ? "border-black bg-white shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
-                    : "border-foreground/5 bg-foreground/[0.01] hover:border-foreground/10 hover:bg-white"
+                    ? "border-black bg-background shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
+                    : "border-foreground/5 bg-foreground/[0.01] hover:border-foreground/10 hover:bg-background"
             )}
             onClick={onSelect}
         >
@@ -35,7 +35,7 @@ export default function AddressSelectionCard({
                     "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                     isSelected ? "border-black bg-black" : "border-foreground/10"
                 )}>
-                    {isSelected && <div className="w-2 h-2 rounded-full bg-white animate-in zoom-in duration-300" />}
+                    {isSelected && <div className="w-2 h-2 rounded-full bg-background animate-in zoom-in duration-300" />}
                 </div>
             </div>
 

@@ -3,14 +3,13 @@ import AppSidebar from "@/components/app-sidebar";
 import Navbar from "@/components/navbar/navbar";
 import Footer from "@/components/Footer";
 
-import { AdminStoreBanner } from "@/components/admin-store-banner";
+// import { AdminStoreBanner } from "@/components/admin-store-banner";
 import { auth } from "@/auth";
 import { OrganizationSchema, WebsiteSchema } from "@/components/shared/structured-data";
 import { CartProvider } from "@/context/cart-context";
 import { CartSidebar } from "@/components/cart/cart-sidebar";
 import { ProductOptionsProvider } from "@/context/product-options-context";
 import { ProductOptionsSidebar } from "@/components/product/product-options-sidebar";
-import { getStoreSettings } from "@/lib/actions/store-settings-actions";
 import { FloatingChat } from "@/components/chat/floating-chat";
 
 export default async function RootLayout({
@@ -18,15 +17,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-  const userRole = session?.user?.role;
-  const storeSettings = await getStoreSettings();
 
   return (
     <ProductOptionsProvider>
       <CartProvider>
         <main className="w-full">
-          <AdminStoreBanner userRole={userRole} />
 
           <div className="w-full">
             <AppSidebar />
@@ -41,7 +36,7 @@ export default async function RootLayout({
           </div>
 
           {/* Floating Concierge Chat */}
-          <FloatingChat phoneNumber={storeSettings.phone} />
+          <FloatingChat />
 
           {/* Structured Data for SEO */}
           <OrganizationSchema />

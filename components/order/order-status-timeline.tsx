@@ -27,11 +27,11 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
                 { label: "Confirmed", status: "completed", date: null, icon: CheckCircle2 },
                 { label: "Shipped", status: "completed", date: null, icon: Truck },
                 { label: "Delivered", status: "completed", date: order.deliveredAt, icon: Home },
-                { 
-                    label: order.status === "RETURNED" ? "Returned" : "Return Requested", 
-                    status: "return", 
+                {
+                    label: order.status === "RETURNED" ? "Returned" : "Return Requested",
+                    status: "return",
                     date: order.returnRequestedAt,
-                    icon: RotateCcw 
+                    icon: RotateCcw
                 },
             ];
         }
@@ -46,35 +46,35 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
 
         // Normal flow
         const steps = [
-            { 
-                label: "Order Placed", 
-                status: order.status === "PENDING" ? "current" : "completed", 
+            {
+                label: "Order Placed",
+                status: order.status === "PENDING" ? "current" : "completed",
                 date: order.createdAt,
                 icon: Package
             },
-            { 
-                label: "Confirmed", 
-                status: order.status === "CONFIRMED" ? "current" : 
-                       ["PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status) ? "completed" : "pending",
+            {
+                label: "Confirmed",
+                status: order.status === "CONFIRMED" ? "current" :
+                    ["PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status) ? "completed" : "pending",
                 date: null,
                 icon: CheckCircle2
             },
-            { 
-                label: "Processing", 
-                status: order.status === "PROCESSING" ? "current" : 
-                       ["SHIPPED", "DELIVERED"].includes(order.status) ? "completed" : "pending",
+            {
+                label: "Processing",
+                status: order.status === "PROCESSING" ? "current" :
+                    ["SHIPPED", "DELIVERED"].includes(order.status) ? "completed" : "pending",
                 date: null,
                 icon: Package
             },
-            { 
-                label: "Shipped", 
-                status: order.status === "SHIPPED" ? "current" : 
-                       order.status === "DELIVERED" ? "completed" : "pending",
+            {
+                label: "Shipped",
+                status: order.status === "SHIPPED" ? "current" :
+                    order.status === "DELIVERED" ? "completed" : "pending",
                 date: null,
                 icon: Truck
             },
-            { 
-                label: "Delivered", 
+            {
+                label: "Delivered",
                 status: order.status === "DELIVERED" ? "completed" : "pending",
                 date: order.deliveredAt,
                 icon: Home
@@ -87,7 +87,7 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
     const steps = getStatusSteps();
 
     return (
-        <Card className="rounded-3xl border-none shadow-sm bg-white overflow-hidden">
+        <Card className="rounded-3xl border-none shadow-sm bg-background overflow-hidden">
             <CardHeader className="bg-muted/30 border-b border-muted-foreground/5 p-content py-4">
                 <CardTitle className="text-lg font-bold">Order Journey</CardTitle>
             </CardHeader>

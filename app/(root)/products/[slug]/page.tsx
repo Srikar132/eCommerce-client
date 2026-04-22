@@ -19,6 +19,10 @@ interface ProductPageProps {
 }
 
 
+const URL = process.env.NEXT_PUBLIC_FRONTEND_URL ?? "https://nalaarmoire.com";
+
+
+
 
 export async function generateMetadata({
     params
@@ -45,7 +49,7 @@ export async function generateMetadata({
             openGraph: {
                 title: `${product.name} | Nala Armoire`,
                 description,
-                url: `https://nalaarmoire.com/products/${slug}`,
+                url: `${URL}/products/${slug}`,
                 images: [
                     {
                         url: productImage,
@@ -63,7 +67,7 @@ export async function generateMetadata({
                 images: [productImage],
             },
             alternates: {
-                canonical: `https://nalaarmoire.com/products/${slug}`,
+                canonical: `${URL}/products/${slug}`,
             },
         };
     } catch {
@@ -86,15 +90,15 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     }
 
     // Fetch variants using cached function
-    const variants = await getProductVariants(product.id);
+    const variants = product.variants;
 
     // Prepare structured data
-    const productUrl = `https://nalaarmoire.com/products/${product.slug}`;
+    const productUrl = `${URL}/products/${product.slug}`;
     const productImage = product.images?.[0]?.imageUrl || PLACEHOLDER_IMAGE;
     const productPrice = product.basePrice;
 
     const breadcrumbItems = [
-        { name: "Home", url: "https://nalaarmoire.com" },
+        { name: "Home", url: URL },
         { name: "Products", url: "https://nalaarmoire.com/products" },
         { name: product.name, url: productUrl },
     ];
@@ -119,7 +123,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 <BreadcrumbNavigation />
             </div>
             <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-                <ProductDetailClient product={product} variants={variants} />
+                <ProductDetailClient product={product} variants={variants || []} />
 
                 {/* Reviews Section - Moved up */}
                 <Suspense fallback={<ReviewsSkeleton />}>
@@ -134,12 +138,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 </div>
 
                 {/* You May Also Like Section */}
-                <div className="mt-20">
-                    <ProductRecommendations
-                        excludeProductId={product.id}
-                        categorySlug={product.category?.slug}
-                    />
-                </div>
+                <Suspense fallback={<div>...</div>}>
+                    <div className="mt-20">
+                        <ProductRecommendations
+                            excludeProductId={product.id}
+                            categorySlug={product.category?.slug}
+                        />
+                    </div>
+                </Suspense>
             </div>
         </div>
     );

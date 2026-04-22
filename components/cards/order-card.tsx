@@ -67,12 +67,12 @@ export default function OrderCard({ order }: OrderCardProps) {
     const { canCancel, daysRemaining } = canCancelOrder(order);
 
     return (
-        <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white overflow-hidden group">
+        <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-all duration-300 bg-background overflow-hidden group">
             <CardHeader className="pb-3 bg-muted/20 border-b border-muted-foreground/5 p-5 md:px-8">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                            <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center shadow-sm">
                                 <Package className="h-4 w-4 text-accent" />
                             </div>
                             <span className="h4 !text-base">
@@ -88,13 +88,13 @@ export default function OrderCard({ order }: OrderCardProps) {
                     <div className="flex flex-wrap gap-2 sm:ml-auto">
                         <Badge
                             variant="secondary"
-                            className={cn("px-4 py-1 rounded-full font-bold text-[9px] uppercase tracking-wider bg-white", statusColors[order.status])}
+                            className={cn("px-4 py-1 rounded-full font-bold text-[9px] uppercase tracking-wider bg-background", statusColors[order.status])}
                         >
                             {formatStatus(order.status)}
                         </Badge>
                         <Badge
                             variant="secondary"
-                            className={cn("px-4 py-1 rounded-full font-bold text-[9px] uppercase tracking-wider bg-white", paymentStatusColors[order.paymentStatus])}
+                            className={cn("px-4 py-1 rounded-full font-bold text-[9px] uppercase tracking-wider bg-background", paymentStatusColors[order.paymentStatus])}
                         >
                             <CreditCard className="h-3 w-3 mr-1.5" />
                             {formatPaymentStatus(order.paymentStatus)}
@@ -182,7 +182,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                 {/* Refund Requested Notice */}
                 {order.paymentStatus === "REFUND_REQUESTED" && (
                     <div className="mt-4 p-3 bg-orange-50 rounded-2xl border border-orange-100 flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-background flex items-center justify-center shadow-sm shrink-0">
                             <AlertCircle className="h-3.5 w-3.5 text-orange-500" />
                         </div>
                         <span className="p-xs text-orange-800 font-medium leading-tight">Refund is being processed. It may take 5-7 business days.</span>

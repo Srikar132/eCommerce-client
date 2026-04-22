@@ -52,7 +52,7 @@ export default async function OrdersPage({
             ) : (
                 <div className="max-w-2xl mx-auto py-20 px-6">
                     <div className="bg-muted/30 rounded-[3rem] p-12 md:p-20 text-center flex flex-col items-center shadow-sm border border-muted-foreground/5">
-                        <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-md mb-8">
+                        <div className="w-24 h-24 rounded-full bg-background flex items-center justify-center shadow-md mb-8">
                             <Package className="w-12 h-12 text-accent" />
                         </div>
                         <h2 className="h2 mb-4">No Orders Yet</h2>
@@ -73,4 +73,4 @@ export default async function OrdersPage({
         </div>
     );
 }
-
+

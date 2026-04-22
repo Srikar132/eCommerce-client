@@ -35,17 +35,17 @@ export default function CategoryCard({
           className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-        
+
         {/* Subtle Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
-      
+
       <div className="flex items-center justify-between px-2">
         <div className="flex flex-col">
-          <span className="text-[10px] font-bold tracking-[0.2em] text-black/30 uppercase mb-1">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-foreground/30 uppercase mb-1">
             Collection
           </span>
-          <h3 className="font-bold text-2xl text-black tracking-tight group-hover:translate-x-1 transition-transform duration-300">
+          <h3 className="font-bold text-2xl text-foreground tracking-tight group-hover:translate-x-1 transition-transform duration-300">
             {title}
           </h3>
         </div>
