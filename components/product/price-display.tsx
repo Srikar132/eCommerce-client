@@ -25,7 +25,7 @@ export default function PriceDisplay({
     showBreakdown = true
 }: PriceDisplayProps) {
     const currencySymbol = currency === "INR" ? "₹" : "$";
-    const hasAdditionalPrice = selectedVariant && selectedVariant.additionalPrice > 0;
+    const hasPriceModifier = selectedVariant && selectedVariant.priceModifier > 0;
 
     return (
         <div className="space-y-1">
@@ -40,9 +40,9 @@ export default function PriceDisplay({
             </div>
 
             {/* Variant Price Note */}
-            {hasAdditionalPrice && showBreakdown && selectedColor && (
+            {hasPriceModifier && showBreakdown && selectedColor && (
                 <p className="text-xs text-muted-foreground">
-                    +{currencySymbol}{formatIndianPrice(selectedVariant.additionalPrice)} for {selectedColor} variant
+                    +{currencySymbol}{formatIndianPrice(selectedVariant.priceModifier)} for {selectedColor} variant
                 </p>
             )}
         </div>

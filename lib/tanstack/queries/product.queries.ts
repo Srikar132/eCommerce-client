@@ -2,22 +2,74 @@
 // QUERY HOOKS
 // ============================================================================
 
-import { addReviewToProduct, getAllProducts, getReviewsByProductId } from "@/lib/actions/product-actions";
+import { 
+  addReviewToProduct, 
+  getAllProducts, 
+  getReviewsByProductId,
+  getAllCategories,
+  updateCategory 
+} from "@/lib/actions/product-actions";
 import { PagedResponse } from "@/types";
 import { AddReviewRequest, Product, ProductParams, Review } from "@/types/product";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../query-keys";
+
+
+/**
+ * Fetch all categories
+ */
+export const useCategories = () => {
+  return useQuery({
+    queryKey: queryKeys.categories.all(),
+    queryFn: getAllCategories,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+};
+
+/**
+ * Update a category
+ */
+export const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { 
+      id: string; 
+      data: Partial<{
+        name: string;
+        slug: string;
+        description: string;
+        imageUrl: string;
+        isActive: boolean;
+        displayOrder: number;
+      }> 
+    }) => updateCategory(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() });
+    },
+  });
+};
 
 /**
  * Infinite scroll product list with filters, pagination, and sorting
  */
 export const useInfiniteProducts = (params: ProductParams) => {
-  const { category, size, searchQuery, page = 0, limit = 20, sortBy = 'CREATED_AT_DESC' } = params;
+  const { 
+    category, 
+    sizes, 
+    colors, 
+    minPrice, 
+    maxPrice, 
+    searchQuery, 
+    page = 0, 
+    limit = 20, 
+    sortBy = 'CREATED_AT_DESC' 
+  } = params;
 
   return useInfiniteQuery({
-    queryKey: queryKeys.products.list({ category, size, searchQuery, page, limit, sortBy }),
+    queryKey: queryKeys.products.list({ category, sizes, colors, minPrice, maxPrice, searchQuery, page, limit, sortBy }),
     queryFn: ({ pageParam = page }) =>
-      getAllProducts({ category, size, searchQuery, page: pageParam, limit, sortBy }),
+      getAllProducts({ category, sizes, colors, minPrice, maxPrice, searchQuery, page: pageParam, limit, sortBy }),
     initialPageParam: page,
     getNextPageParam: (lastPage: PagedResponse<Product>) =>
       lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,

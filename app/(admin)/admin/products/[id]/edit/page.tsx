@@ -34,7 +34,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
                 color: variant.color,
                 colorHex: variant.colorHex || undefined,
                 stockQuantity: Number(variant.stockQuantity) || 0,
-                additionalPrice: Number(variant.additionalPrice) || 0,
+                priceModifier: Number(variant.priceModifier) || 0,
                 sku: variant.sku,
             })),
         }
@@ -42,8 +42,8 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
 
     return (
         <ProductForm
-            initialData={initialData}
-            isEditing={true}
+            initialData={initialData as any}
+            isEditing={true} 
             productId={id}
         />
     );

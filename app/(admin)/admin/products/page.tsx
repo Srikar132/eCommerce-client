@@ -95,7 +95,7 @@ function ProductsContent() {
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-2">
-                    <Link href="/admin/products/create">
+                    <Link href="/admin/products/new">
                         <Button className="admin-primary-button">
                             <Plus className="mr-2 h-4 w-4" />
                             Create Product

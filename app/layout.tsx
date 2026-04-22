@@ -5,8 +5,6 @@ import Script from "next/script";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import NextTopLoader from "nextjs-toploader";
 import AuthProvider from "@/providers/auth-provider";
-import { Suspense } from "react";
-import PageLoadingSkeleton from "@/components/ui/skeletons/page-loading-skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata, Viewport } from "next";
 
@@ -146,7 +144,7 @@ export default function Layout({
       >
         {/* Page Loading Progress Bar */}
         <NextTopLoader
-          color="#ff909a"
+          color="#000000"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}

@@ -9,50 +9,21 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
     DialogFooter,
 } from "@/components/ui/dialog";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { LayoutGrid, Plus, Pencil, Trash2, Loader2, AlertTriangle } from "lucide-react";
+import { LayoutGrid, Pencil, Loader2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUpload, type UploadedImage } from "@/components/admin/image-upload";
 import {
-    useLandingCategories,
-    useCreateLandingCategory,
-    useUpdateLandingCategory,
-    useDeleteLandingCategory,
-    type LandingCategory,
-} from "@/lib/tanstack/queries/content.queries";
+    useCategories,
+    useUpdateCategory,
+} from "@/lib/tanstack/queries/product.queries";
 import { Skeleton } from "@/components/ui/skeleton";
-
-// Category options with their link URLs
-const CATEGORY_OPTIONS = [
-    { title: "MEN", linkUrl: "/products?category=mens" },
-    { title: "WOMEN", linkUrl: "/products?category=womens" },
-    { title: "BOYS", linkUrl: "/products?category=kid-boys" },
-    { title: "GIRLS", linkUrl: "/products?category=kid-girls" },
-] as const;
 
 export function CategoriesSectionSkeleton() {
     return (
@@ -63,7 +34,6 @@ export function CategoriesSectionSkeleton() {
                         <Skeleton className="h-6 w-40" />
                         <Skeleton className="h-4 w-64" />
                     </div>
-                    <Skeleton className="h-9 w-32" />
                 </div>
             </CardHeader>
             <CardContent className="pt-6">
@@ -83,89 +53,42 @@ export function CategoriesSectionSkeleton() {
 }
 
 export default function CategoriesSection() {
-    const { data: categories = [], isLoading, isError } = useLandingCategories();
-    const createMutation = useCreateLandingCategory();
-    const updateMutation = useUpdateLandingCategory();
-    const deleteMutation = useDeleteLandingCategory();
+    const { data: categories = [], isLoading, isError } = useCategories();
+    const updateMutation = useUpdateCategory();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [editItem, setEditItem] = useState<LandingCategory | null>(null);
-    const [selectedCategory, setSelectedCategory] = useState<string>("");
+    const [editItem, setEditItem] = useState<any | null>(null);
     const [categoryImage, setCategoryImage] = useState<UploadedImage[]>([]);
     const [displayOrder, setDisplayOrder] = useState(0);
+    const [isActive, setIsActive] = useState(true);
 
-    // Delete confirmation dialog state
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState<LandingCategory | null>(null);
-
-    const resetForm = () => {
-        setSelectedCategory("");
-        setCategoryImage([]);
-        setDisplayOrder(0);
-        setEditItem(null);
-    };
-
-    const handleOpenDialog = (cat?: LandingCategory) => {
-        if (cat) {
-            setEditItem(cat);
-            setSelectedCategory(cat.title);
-            setCategoryImage(cat.imageUrl ? [{ url: cat.imageUrl }] : []);
-            setDisplayOrder(cat.displayOrder);
-        } else {
-            resetForm();
-        }
+    const handleOpenDialog = (item: any) => {
+        setEditItem(item);
+        setCategoryImage(item.imageUrl ? [{ url: item.imageUrl }] : []);
+        setDisplayOrder(item.displayOrder || 0);
+        setIsActive(item.isActive ?? true);
         setIsDialogOpen(true);
     };
 
     const handleSubmit = async () => {
-        if (!selectedCategory || categoryImage.length === 0) {
-            toast.error("Please select a category and upload an image");
-            return;
-        }
-
-        const categoryOption = CATEGORY_OPTIONS.find(c => c.title === selectedCategory);
-        if (!categoryOption) {
-            toast.error("Invalid category selected");
-            return;
-        }
+        if (!editItem) return;
 
         const submitData = {
-            title: categoryOption.title,
-            imageUrl: categoryImage[0].url,
-            linkUrl: categoryOption.linkUrl,
+            imageUrl: categoryImage.length > 0 ? categoryImage[0].url : undefined,
             displayOrder,
+            isActive,
         };
 
         try {
-            if (editItem) {
-                const result = await updateMutation.mutateAsync({ id: editItem.id, data: submitData });
-                toast[result.success ? "success" : "error"](result.message);
-            } else {
-                const result = await createMutation.mutateAsync(submitData);
-                toast[result.success ? "success" : "error"](result.message);
-            }
+            const result = await updateMutation.mutateAsync({ id: editItem.id, data: submitData });
+            toast[result.success ? "success" : "error"](result.message);
             setIsDialogOpen(false);
-            resetForm();
         } catch {
             toast.error("Operation failed");
         }
     };
 
-    const handleDeleteClick = (cat: LandingCategory) => {
-        setItemToDelete(cat);
-        setDeleteDialogOpen(true);
-    };
-
-    const handleConfirmDelete = async () => {
-        if (!itemToDelete) return;
-
-        const result = await deleteMutation.mutateAsync(itemToDelete.id);
-        toast[result.success ? "success" : "error"](result.message);
-        setDeleteDialogOpen(false);
-        setItemToDelete(null);
-    };
-
-    const handleToggleActive = async (item: LandingCategory) => {
+    const handleToggleActive = async (item: any) => {
         const result = await updateMutation.mutateAsync({
             id: item.id,
             data: { isActive: !item.isActive }
@@ -173,15 +96,7 @@ export default function CategoriesSection() {
         toast[result.success ? "success" : "error"](result.message);
     };
 
-    // Get available categories (not already added, unless editing)
-    const getAvailableCategories = () => {
-        const usedTitles = categories.map(c => c.title);
-        return CATEGORY_OPTIONS.filter(
-            opt => !usedTitles.includes(opt.title) || (editItem && editItem.title === opt.title)
-        );
-    };
-
-    const isPending = createMutation.isPending || updateMutation.isPending;
+    const isPending = updateMutation.isPending;
 
     if (isLoading) {
         return <CategoriesSectionSkeleton />;
@@ -206,75 +121,12 @@ export default function CategoriesSection() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                                 <LayoutGrid className="h-4 w-4 text-primary" />
                             </div>
-                            Shop by Category
+                            Category Display Settings
                         </CardTitle>
                         <CardDescription className="mt-1.5">
-                            Manage category cards on the landing page (MEN, WOMEN, BOYS, GIRLS)
+                            Manage images and display order for your store categories.
                         </CardDescription>
                     </div>
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button
-                                size="sm"
-                                className="gap-2 shadow-sm"
-                                onClick={() => handleOpenDialog()}
-                                disabled={getAvailableCategories().length === 0}
-                            >
-                                <Plus className="h-4 w-4" />
-                                Add Category
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-lg">
-                            <DialogHeader>
-                                <DialogTitle>{editItem ? "Edit" : "Add"} Category</DialogTitle>
-                                <DialogDescription>
-                                    {editItem ? "Update category details" : "Add a new category to the landing page"}
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4 py-4">
-                                <div className="space-y-2">
-                                    <Label>Category *</Label>
-                                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select category" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {getAvailableCategories().map((cat) => (
-                                                <SelectItem key={cat.title} value={cat.title}>
-                                                    {cat.title}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Category Image *</Label>
-                                    <ImageUpload
-                                        images={categoryImage}
-                                        onImagesChange={setCategoryImage}
-                                        maxImages={1}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Display Order</Label>
-                                    <Input
-                                        type="number"
-                                        value={displayOrder}
-                                        onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                                    />
-                                </div>
-                            </div>
-                            <DialogFooter>
-                                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                                    Cancel
-                                </Button>
-                                <Button onClick={handleSubmit} disabled={isPending}>
-                                    {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                                    {editItem ? "Update" : "Add"}
-                                </Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
                 </div>
             </CardHeader>
             <CardContent className="pt-6">
@@ -283,10 +135,8 @@ export default function CategoriesSection() {
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-card shadow-sm mb-4">
                             <LayoutGrid className="h-8 w-8 text-primary/40" />
                         </div>
-                        <p className="font-semibold text-foreground">No categories yet</p>
-                        <p className="text-sm mt-1 max-w-[200px] text-center">
-                            Add your main categories to help customers navigate.
-                        </p>
+                        <p className="font-semibold text-foreground">No categories found</p>
+                        <p className="text-sm mt-1">Add categories in the Products section first.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -299,15 +149,22 @@ export default function CategoriesSection() {
                                     }`}
                             >
                                 <div className="aspect-3/4 relative bg-muted overflow-hidden">
-                                    <Image
-                                        src={cat.imageUrl}
-                                        alt={cat.title}
-                                        fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
+                                    {cat.imageUrl ? (
+                                        <Image
+                                            src={cat.imageUrl}
+                                            alt={cat.name}
+                                            fill
+                                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                    ) : (
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground bg-muted/50">
+                                            <ImageIcon className="h-10 w-10 mb-2 opacity-20" />
+                                            <span className="text-xs font-medium">No Image</span>
+                                        </div>
+                                    )}
                                     {/* Overlay on hover */}
                                     <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
- 
+  
                                     {/* Action buttons */}
                                     <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-[-10px] group-hover:translate-y-0">
                                         <Button
@@ -318,28 +175,20 @@ export default function CategoriesSection() {
                                         >
                                             <Pencil className="h-3.5 w-3.5" />
                                         </Button>
-                                        <Button
-                                            size="icon"
-                                            variant="destructive"
-                                            className="h-8 w-8 shadow-xl"
-                                            onClick={() => handleDeleteClick(cat)}
-                                        >
-                                            <Trash2 className="h-3.5 w-3.5" />
-                                        </Button>
                                     </div>
- 
+  
                                     {/* Order badge */}
                                     <div className="absolute top-3 left-3">
                                         <Badge variant="secondary" className="bg-black/60 text-white border-0 backdrop-blur-md text-[10px] font-bold px-2 py-0.5">
                                             #{cat.displayOrder}
                                         </Badge>
                                     </div>
- 
+  
                                     {/* Status indicator */}
                                     {!cat.isActive && (
                                         <div className="absolute bottom-3 left-3">
                                             <Badge variant="destructive" className="text-[10px] uppercase font-bold tracking-tight">
-                                                Inactive
+                                                Hidden
                                             </Badge>
                                         </div>
                                     )}
@@ -347,8 +196,8 @@ export default function CategoriesSection() {
                                 <div className="p-4">
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="min-w-0">
-                                            <p className="font-bold tracking-tight truncate text-foreground">{cat.title}</p>
-                                            <p className="text-[10px] text-muted-foreground truncate font-medium">{cat.linkUrl}</p>
+                                            <p className="font-bold tracking-tight truncate text-foreground">{cat.name}</p>
+                                            <p className="text-[10px] text-muted-foreground truncate font-medium">/{cat.slug}</p>
                                         </div>
                                         <Switch
                                             checked={cat.isActive}
@@ -364,38 +213,60 @@ export default function CategoriesSection() {
                 )}
             </CardContent>
 
-            {/* Delete Confirmation Dialog */}
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-destructive" />
-                            Delete Category
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Are you sure you want to delete the <span className="font-semibold text-foreground">{itemToDelete?.title}</span> category?
-                            This action cannot be undone.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleConfirmDelete}
-                            disabled={deleteMutation.isPending}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            {deleteMutation.isPending ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                    Deleting...
-                                </>
-                            ) : (
-                                "Delete"
-                            )}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Edit Category Display</DialogTitle>
+                        <DialogDescription>
+                            Update the visual representation of <strong>{editItem?.name}</strong>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-6 py-4">
+                        <div className="space-y-3">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Category Image</Label>
+                            <div className="rounded-xl border-2 border-dashed border-border/50 p-2">
+                                <ImageUpload
+                                    images={categoryImage}
+                                    onImagesChange={setCategoryImage}
+                                    maxImages={1}
+                                    folder="nala-armoire/categories"
+                                />
+                            </div>
+                            <p className="text-[10px] text-muted-foreground text-center">
+                                Recommended: 800x1000px (Portrait)
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Display Order</Label>
+                                <Input
+                                    type="number"
+                                    value={displayOrder}
+                                    onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
+                                    className="h-10 bg-muted/30"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Visibility</Label>
+                                <div className="flex items-center h-10 gap-2 px-3 border rounded-md bg-muted/30">
+                                    <Switch checked={isActive} onCheckedChange={setIsActive} />
+                                    <span className="text-sm font-medium">{isActive ? "Visible" : "Hidden"}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="rounded-xl">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleSubmit} disabled={isPending} className="rounded-xl min-w-[100px]">
+                            {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                            Save Changes
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </Card>
     );
 }

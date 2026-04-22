@@ -1,251 +1,207 @@
 "use client";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/components/ui/sidebar"
-import { useEffect } from "react";
+
 import {
-  ChevronDown,
-  User,
-  Mail,
-  ShoppingCart,
-  Search,
-  Home,
-  ShoppingBag,
-  Heart,
-  Info,
-  Package
+    Sidebar,
+    SidebarContent,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuItem,
+    SidebarMenuButton,
+    useSidebar
+} from "@/components/ui/sidebar";
+import { useEffect } from "react";
+import { cn } from "@/lib/utils";
+import {
+    ChevronDown,
+    User,
+    Mail,
+    ShoppingCart,
+    Home,
+    ShoppingBag,
+    Info,
+    Package,
+    HelpCircle,
+    X,
+    ClipboardList
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { collections } from "@/constants";
-import { Separator } from "./ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import Image from "next/image";
 
 export default function AppSidebar() {
-  const { open, setOpen, isMobile, setOpenMobile } = useSidebar()
+    const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
 
-  // lock scrolling when sidebar is open
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-
-    return () => {
-      document.body.style.overflow = 'auto';
+    const handleClose = () => {
+        if (isMobile) {
+            setOpenMobile(false);
+        } else {
+            setOpen(false);
+        }
     };
-  }, [open]);
 
-
-  const handleClose = () => {
-    if (isMobile) {
-      setOpenMobile(false);
-    } else {
-      setOpen(false);
-    }
-  };
-
-  return (
-    <>
-      {!isMobile && open && (
-        <div
-          className="fixed inset-0 backdrop-blur-sm bg-black/40 z-9999 transition-opacity duration-300"
-          onClick={handleClose}
-          aria-hidden="true"
-        />
-      )}
-
-      <Sidebar collapsible="offcanvas" className="z-99999 border-r border-border overflow-x-hidden">
-        {/* Header with Logo */}
-        <SidebarHeader className="border-b border-border bg-background/95 backdrop-blur-sm overflow-x-hidden">
-          <div className="px-6 py-5">
-            <div className="flex items-center justify-between mb-4">
-              <Link href="/" onClick={handleClose} className="flex items-center space-x-3 group">
-                <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-105">
-                  <Image
-                    src="/images/logo.webp"
-                    alt="The Nala Armoire"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="text-xs font-medium tracking-[0.2em] uppercase text-foreground">Nala Armoire</p>
-                  <p className="text-[10px] italic text-muted-foreground -mt-0.5">where beauty roars</p>
-                </div>
-              </Link>
-
-              <Button
-                variant="ghost"
-                size="icon"
+    return (
+        <>
+            {/* Backdrop Blur Overlay */}
+            <div
+                className={cn(
+                    "fixed inset-0 backdrop-blur-sm bg-black/10 z-[9998] transition-all duration-500 ease-in-out hidden md:block",
+                    open ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+                )}
                 onClick={handleClose}
-                className="h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <span className="text-2xl font-light">×</span>
-              </Button>
-            </div>
-          </div>
-        </SidebarHeader>
+                aria-hidden="true"
+            />
 
-        <SidebarContent className="py-2 scrollbar-hide overflow-x-hidden">
-          <SidebarMenu>
-            {/* Home */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-              >
-                <Link href="/" onClick={handleClose} className="flex items-center gap-3">
-                  <Home className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-sm font-light tracking-wide">Home</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <Sidebar
+                collapsible="offcanvas"
+                className="z-[9999] border-r-0 shadow-2xl overflow-x-hidden bg-background"
+            >
+                {/* Header with Brand Identity */}
+                <SidebarHeader className="bg-background pt-10 pb-6 px-8">
+                    <div className="flex items-center justify-between">
+                        <Link href="/" onClick={handleClose} className="group">
+                            <div className="flex items-center gap-4">
+                                <div className="relative w-12 h-12 transition-transform duration-500 group-hover:rotate-12">
+                                    <Image
+                                        src="/images/logo.webp"
+                                        alt="Nala Armoire"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold tracking-tighter text-foreground leading-none">
+                                        <span className="font-cursive! lowercase text-3xl normal-case">nala</span> Armoire
+                                    </p>
+                                    <p className="text-xs italic text-muted-foreground tracking-wide mt-1 opacity-60">
+                                        where beauty roars
+                                    </p>
+                                </div>
+                            </div>
+                        </Link>
 
-            {/* Collections - Expandable */}
-            <SidebarMenuItem>
-              <Collapsible>
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton
-                    className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Package className="w-5 h-5" strokeWidth={1.5} />
-                      <span className="text-sm font-light tracking-wide">Collections</span>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleClose}
+                            className="rounded-full hover:bg-accent/10 h-10 w-10"
+                        >
+                            <X className="w-5 h-5" strokeWidth={1.5} />
+                        </Button>
                     </div>
-                    <ChevronDown
-                      className="w-4 h-4 mr-5 transition-transform duration-200 group-data-[state=open]:rotate-180"
-                      strokeWidth={1.5}
-                    />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
+                </SidebarHeader>
 
-                <CollapsibleContent>
-                  <div className="mx-4 mt-1 mb-2 bg-accent/30 rounded-lg overflow-hidden">
-                    {collections.map((collection) => (
-                      <Link
-                        key={collection.title}
-                        href={collection.href}
-                        onClick={handleClose}
-                        className={`block px-6 py-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0 `}
-                      >
-                        <p className={`text-xs font-medium tracking-wider uppercase `}>
-                          {collection.title}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
-                          {collection.description}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </SidebarMenuItem>
+                {/* Main Navigation - Unified Scrollable Content */}
+                <SidebarContent className="px-6 py-6 scrollbar-hide">
+                    <div className="flex flex-col min-h-full">
+                        <SidebarMenu className="gap-3">
+                            {/* Primary Links */}
+                            {[
+                                { icon: Home, label: "Home", href: "/" },
+                                { icon: ShoppingBag, label: "Shop All", href: "/products" },
+                            ].map((item) => (
+                                <SidebarMenuItem key={item.label}>
+                                    <SidebarMenuButton
+                                        asChild
+                                        className="h-16 px-6 rounded-full hover:bg-accent/5 transition-all duration-300 active:scale-95"
+                                    >
+                                        <Link href={item.href} onClick={handleClose} className="flex items-center gap-4">
+                                            <item.icon className="w-6 h-6 text-accent" strokeWidth={1.25} />
+                                            <span className="text-lg font-medium tracking-tight text-foreground/80">{item.label}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
 
-            <Separator className="my-2 mx-4" />
+                            {/* Expandable Collections */}
+                            <SidebarMenuItem>
+                                <Collapsible className="group/collapsible">
+                                    <CollapsibleTrigger asChild>
+                                        <SidebarMenuButton
+                                            className="h-16 px-6 rounded-full hover:bg-accent/5 transition-all duration-300 flex items-center justify-between"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <Package className="w-6 h-6 text-accent" strokeWidth={1.25} />
+                                                <span className="text-lg font-medium tracking-tight text-foreground/80">Collections</span>
+                                            </div>
+                                            <ChevronDown
+                                                className="w-5 h-5 transition-transform duration-300 group-data-[state=open]/collapsible:rotate-180"
+                                                strokeWidth={1.25}
+                                            />
+                                        </SidebarMenuButton>
+                                    </CollapsibleTrigger>
 
-            {/* Shop */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-              >
-                <Link href="/products" onClick={handleClose} className="flex items-center gap-3">
-                  <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-sm font-light tracking-wide">Shop</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+                                    <CollapsibleContent className="px-4 pt-3">
+                                        <div className="space-y-2 pl-6 border-l border-accent/20 py-2 ml-3">
+                                            {collections.map((collection) => (
+                                                <Link
+                                                    key={collection.title}
+                                                    href={collection.href}
+                                                    onClick={handleClose}
+                                                    className="flex flex-col py-3.5 px-5 rounded-2xl hover:bg-accent/5 transition-colors group/subitem"
+                                                >
+                                                    <span className="text-sm font-semibold text-foreground/70 group-hover/subitem:text-accent transition-colors">
+                                                        {collection.title}
+                                                    </span>
+                                                    <span className="text-xs text-muted-foreground/70 leading-relaxed mt-1">
+                                                        {collection.description}
+                                                    </span>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            </SidebarMenuItem>
 
-            <Separator className="my-2 mx-4" />
+                            {/* Secondary Links */}
+                            {[
+                                { icon: ShoppingCart, label: "Shopping Bag", href: "/cart" },
+                                { icon: ClipboardList, label: "My Orders", href: "/orders" },
+                            ].map((item) => (
+                                <SidebarMenuItem key={item.label}>
+                                    <SidebarMenuButton
+                                        asChild
+                                        className="h-16 px-6 rounded-full hover:bg-accent/5 transition-all duration-300"
+                                    >
+                                        <Link href={item.href} onClick={handleClose} className="flex items-center gap-4">
+                                            <item.icon className="w-6 h-6 text-accent" strokeWidth={1.25} />
+                                            <span className="text-lg font-medium tracking-tight text-foreground/80">{item.label}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
 
-            {/* Search */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-              >
-                <Link href="/products" onClick={handleClose} className="flex items-center gap-3">
-                  <Search className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-sm font-light tracking-wide">Search</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            {/* Wishlist */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-              >
-                <Link href="/account/wishlist" onClick={handleClose} className="flex items-center gap-3">
-                  <Heart className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-sm font-light tracking-wide">Wishlist</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            {/* Cart */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                className="mx-4 my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-              >
-                <Link href="/cart" onClick={handleClose} className="flex items-center gap-3">
-                  <ShoppingCart className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-sm font-light tracking-wide">Cart</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-
-        <SidebarFooter className="border-t border-border bg-muted/30 overflow-x-hidden">
-          <div className="px-4 py-3">
-            <SidebarMenu>
-              {/* Account */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className="my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-                >
-                  <Link href="/account" onClick={handleClose} className="flex items-center gap-3">
-                    <User className="w-5 h-5" strokeWidth={1.5} />
-                    <span className="text-sm font-light tracking-wide">Account</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* About */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className="my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-                >
-                  <Link href="/about" onClick={handleClose} className="flex items-center gap-3">
-                    <Info className="w-5 h-5" strokeWidth={1.5} />
-                    <span className="text-sm font-light tracking-wide">About</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Contact */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className="my-1 px-4 py-3 hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
-                >
-                  <Link href="/contact" onClick={handleClose} className="flex items-center gap-3">
-                    <Mail className="w-5 h-5" strokeWidth={1.5} />
-                    <span className="text-sm font-light tracking-wide">Contact</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </div>
-        </SidebarFooter>
-      </Sidebar>
-    </>
-
-  )
+                        {/* Support & Info Section - Now part of the main scroll */}
+                        <div className="mt-12 mb-8 space-y-6">
+                            <p className="text-[10px] font-bold text-muted-foreground/40 px-6 tracking-[0.3em] uppercase">
+                                Support & Info
+                            </p>
+                            <SidebarMenu className="gap-2">
+                                {[
+                                    { icon: User, label: "My Account", href: "/account" },
+                                    { icon: Info, label: "About Nala", href: "/about" },
+                                    { icon: Mail, label: "Get in Touch", href: "/contact" },
+                                    { icon: HelpCircle, label: "FAQ", href: "/faq" },
+                                ].map((item) => (
+                                    <SidebarMenuItem key={item.label}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            className="h-14 px-6 rounded-full hover:bg-accent/5 transition-all duration-300"
+                                        >
+                                            <Link href={item.href} onClick={handleClose} className="flex items-center gap-4">
+                                                <item.icon className="w-5 h-5 text-accent/50" strokeWidth={1.5} />
+                                                <span className="text-base font-medium text-foreground/60 tracking-tight">{item.label}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </div>
+                    </div>
+                </SidebarContent>
+            </Sidebar>
+        </>
+    );
 }

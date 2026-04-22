@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
 
         const formData = await request.formData();
         const files = formData.getAll('files') as File[];
+        const folder = formData.get('folder') as string || 'nala-armoire/misc';
 
         if (!files || files.length === 0) {
             return NextResponse.json(
@@ -69,11 +70,12 @@ export async function POST(request: NextRequest) {
                 const bytes = await file.arrayBuffer();
                 const buffer = Buffer.from(bytes);
 
-                console.log(`Uploading file: ${file.name}, size: ${buffer.length} bytes`);
+                console.log(`Uploading file: ${file.name}, size: ${buffer.length} bytes to folder: ${folder}`);
 
                 const result = await uploadImage(buffer, {
-                    folder: 'nala-armoire/products',
+                    folder: folder,
                 });
+
 
                 console.log(`Upload successful: ${result.secure_url}`);
 

@@ -69,26 +69,28 @@ export function EditAccountDialog({ open, onOpenChange, currentName, currentEmai
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-106.25">
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-8 md:p-10 border-none shadow-2xl overflow-hidden">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
-                        <DialogHeader>
-                            <DialogTitle>Edit Account Details</DialogTitle>
-                            <DialogDescription>
-                                Update your name and email address. Click save when you&apos;re done.
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                        <DialogHeader className="space-y-2">
+                            <DialogTitle className="h3 !text-2xl">Edit Account</DialogTitle>
+                            <DialogDescription className="p-sm text-muted-foreground">
+                                Update your profile information below.
                             </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
+
+                        <div className="space-y-6 py-2">
                             <FormField
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Full Name</FormLabel>
+                                    <FormItem className="space-y-2">
+                                        <FormLabel className="p-xs uppercase font-bold tracking-widest opacity-70 ml-1">Full Name</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Enter your full name"
                                                 disabled={isPending}
+                                                className="rounded-2xl h-12 border-muted-foreground/10 focus:border-accent/30 transition-all bg-muted/20"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -96,40 +98,31 @@ export function EditAccountDialog({ open, onOpenChange, currentName, currentEmai
                                     </FormItem>
                                 )}
                             />
-                            {/* <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email Address</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="email"
-                                                placeholder="Enter your email"
-                                                disabled={isPending}
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        <p className="text-xs text-muted-foreground">
-                                            Changing your email will require verification.
-                                        </p>
-                                    </FormItem>
-                                )}
-                            /> */}
                         </div>
-                        <DialogFooter>
+
+                        <DialogFooter className="sm:justify-between gap-4 pt-4 border-t border-muted-foreground/10">
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="ghost"
                                 onClick={() => onOpenChange(false)}
                                 disabled={isPending}
+                                className="rounded-full px-8 h-12 font-bold hover:bg-muted transition-all"
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={isPending}>
-                                {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                                Save Changes
+                            <Button 
+                                type="submit" 
+                                disabled={isPending}
+                                className="rounded-full px-10 h-12 font-bold bg-accent text-white hover:bg-accent/90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                            >
+                                {isPending ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : (
+                                    'Save Changes'
+                                )}
                             </Button>
                         </DialogFooter>
                     </form>

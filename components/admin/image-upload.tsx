@@ -32,6 +32,7 @@ interface ImageUploadProps {
     onImagesChange: (images: UploadedImage[]) => void;
     maxImages?: number;
     disabled?: boolean;
+    folder?: string;
 }
 
 export function ImageUpload({
@@ -39,6 +40,7 @@ export function ImageUpload({
     onImagesChange,
     maxImages = 10,
     disabled = false,
+    folder,
 }: ImageUploadProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -68,6 +70,9 @@ export function ImageUpload({
     const uploadFile = async (file: File): Promise<{ url: string; publicId: string }> => {
         const formData = new FormData();
         formData.append('files', file);
+        if (folder) {
+            formData.append('folder', folder);
+        }
 
         // Add timeout to prevent hanging
         const controller = new AbortController();

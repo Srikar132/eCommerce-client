@@ -78,6 +78,8 @@ export default function HeroSection() {
     const [buttonLabel, setButtonLabel] = useState("");
     const [altText, setAltText] = useState("");
     const [displayOrder, setDisplayOrder] = useState(0);
+    const [textColor, setTextColor] = useState("#FFFFFF");
+
 
     // Delete confirmation dialog state
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -90,8 +92,10 @@ export default function HeroSection() {
         setButtonLabel("");
         setAltText("");
         setDisplayOrder(0);
+        setTextColor("#FFFFFF");
         setEditItem(null);
     };
+
 
     const handleOpenDialog = (item?: HeroSlide) => {
         if (item) {
@@ -102,7 +106,9 @@ export default function HeroSection() {
             setButtonLabel(item.buttonLabel);
             setAltText(item.altText);
             setDisplayOrder(item.displayOrder);
+            setTextColor(item.textColor || "#FFFFFF");
         } else {
+
             resetForm();
         }
         setIsDialogOpen(true);
@@ -124,9 +130,11 @@ export default function HeroSection() {
             altText: altText || heading,
             eyebrow,
             heading,
+            textColor,
             buttonLabel,
             displayOrder,
         };
+
 
         try {
             if (editItem) {
@@ -233,6 +241,7 @@ export default function HeroSection() {
                                                 images={heroImage}
                                                 onImagesChange={setHeroImage}
                                                 maxImages={1}
+                                                folder="nala-armoire/hero"
                                             />
                                         </div>
                                         <p className="text-[10px] text-center text-muted-foreground">
@@ -292,6 +301,25 @@ export default function HeroSection() {
                                                         className="h-12 bg-muted/30 border-border/50 rounded-2xl focus-visible:ring-primary/20 transition-all px-5"
                                                     />
                                                 </div>
+                                                <div className="space-y-2 group">
+                                                    <Label htmlFor="textColor" className="text-xs font-bold text-muted-foreground ml-1 group-focus-within:text-primary transition-colors">TEXT COLOR</Label>
+                                                    <div className="flex items-center gap-3 h-12 bg-muted/30 border-border/50 rounded-2xl px-5 transition-all focus-within:ring-2 focus-within:ring-primary/20">
+                                                        <Input
+                                                            id="textColor"
+                                                            type="color"
+                                                            value={textColor}
+                                                            onChange={(e) => setTextColor(e.target.value)}
+                                                            className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer"
+                                                        />
+                                                        <Input
+                                                            type="text"
+                                                            value={textColor}
+                                                            onChange={(e) => setTextColor(e.target.value)}
+                                                            placeholder="#FFFFFF"
+                                                            className="flex-1 bg-transparent border-0 focus-visible:ring-0 px-0 uppercase"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -350,14 +378,23 @@ export default function HeroSection() {
                                     
                                     {/* Content Overlay - Preview style */}
                                     <div className="absolute inset-0 bg-linear-to-r from-black/60 via-black/30 to-transparent flex flex-col justify-center px-10 sm:px-16 pointer-events-none">
-                                        <p className="text-[10px] font-bold tracking-[0.2em] text-white/90 uppercase mb-2 drop-shadow-md">
+                                        <p 
+                                            className="text-[10px] font-bold tracking-[0.2em] uppercase mb-2 drop-shadow-md opacity-90"
+                                            style={{ color: slide.textColor }}
+                                        >
                                             {slide.eyebrow}
                                         </p>
-                                        <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-white whitespace-pre-line leading-[1.1] drop-shadow-lg">
+                                        <h3 
+                                            className="text-sm sm:text-lg lg:text-xl font-bold whitespace-pre-line leading-[1.1] drop-shadow-lg"
+                                            style={{ color: slide.textColor }}
+                                        >
                                             {slide.heading}
                                         </h3>
                                         <div className="mt-4 inline-flex h-7 items-center rounded-full bg-white/20 backdrop-blur-md px-4 border border-white/30">
-                                            <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
+                                            <span 
+                                                className="text-[10px] font-semibold uppercase tracking-wider"
+                                                style={{ color: slide.textColor }}
+                                            >
                                                 {slide.buttonLabel}
                                             </span>
                                         </div>

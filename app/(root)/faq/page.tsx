@@ -4,96 +4,141 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import Header from "@/components/header";
+import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
+import ScrollingBanner from "@/components/landing-page/scrolling-banner";
+import CustomButton from "@/components/ui/custom-button-2";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "FAQ - The Nala Armoire",
+    title: "FAQ - Nala Armoire",
     description: "Answers to commonly asked questions about orders, shipping, returns, and customizations.",
 };
 
 const faqs = [
     {
-        question: "How do I place a custom order?",
-        answer: "Reach out to us via the Contact page with your idea — a reference image, color preference, or just a feeling. We'll get back to you within 24 hours to discuss details, pricing, and timelines."
+        category: "Orders & Customizations",
+        items: [
+            {
+                question: "How do I place a custom order?",
+                answer: "Reach out to us via the Contact page with your idea — a reference image, color preference, or just a feeling. We'll get back to you within 24 hours to discuss details, pricing, and timelines."
+            },
+            {
+                question: "Can I cancel my order?",
+                answer: "Orders for non-customized items can be cancelled within 24 hours of placement. Customized orders cannot be cancelled once the crafting process has begun."
+            }
+        ]
     },
     {
-        question: "What is your return policy?",
-        answer: "We accept returns within 7 days of delivery for non-customized items. The product must be unused, unwashed, and in its original packaging. Customized pieces are non-returnable unless there is a defect on our end."
+        category: "Shipping & Delivery",
+        items: [
+            {
+                question: "How long does shipping take?",
+                answer: "Standard delivery takes 5–7 business days across India. Customized pieces may take an additional 3–5 days for crafting. Once dispatched, you'll receive a tracking link via email."
+            },
+            {
+                question: "Do you ship internationally?",
+                answer: "Currently, we ship within India only. We're working on expanding internationally — follow our Instagram @nala_armoire for updates."
+            },
+            {
+                question: "What are the shipping charges?",
+                answer: "We offer free shipping on all orders above ₹1999. For orders below that, a flat shipping fee of ₹99 is applicable."
+            }
+        ]
     },
     {
-        question: "How long does shipping take?",
-        answer: "Standard delivery takes 5–7 business days across India. We ship prepaid orders only. Once dispatched, you'll receive a tracking link via WhatsApp or email."
+        category: "Returns & Refunds",
+        items: [
+            {
+                question: "What is your return policy?",
+                answer: "We accept returns within 7 days of delivery for non-customized items in original condition. Customized pieces are non-returnable unless there is a manufacturing defect."
+            },
+            {
+                question: "How do I request a refund?",
+                answer: "Drop us an email at support@nala-armoire.com with your order number and reason for return. Once approved, the refund will be processed to your original payment method within 5-7 working days."
+            }
+        ]
     },
     {
-        question: "Do you ship internationally?",
-        answer: "Currently we ship within India only. We're working on expanding internationally — follow our Instagram for updates."
-    },
-    {
-        question: "How do I track my order?",
-        answer: "After placing your order, head to the Orders section in your account. You'll see real-time status and a tracking number once your order is dispatched."
-    },
-    {
-        question: "Can I cancel my order?",
-        answer: "Orders can be cancelled within 12 hours of placement. After that, production may have already started. To cancel, log in and visit the Orders page, or contact us directly."
-    },
-    {
-        question: "What materials do you use?",
-        answer: "We use premium fabrics including soft cotton, silk blends, and sustainable textiles depending on the product. Each product page lists the material. We prioritize skin-friendly, breathable fabrics."
-    },
-    {
-        question: "How should I care for my NaLa piece?",
-        answer: "Most of our pieces require gentle machine wash (cold) or hand wash. Avoid bleach and tumble drying. Care instructions are included on the product label and listed on each product page under Wash & Care."
-    },
-    {
-        question: "Is payment secure?",
-        answer: "Yes. We use Razorpay for all transactions, which is PCI-DSS compliant. We accept UPI, credit/debit cards, and net banking. We do not store your card details."
-    },
-    {
-        question: "I have more questions — how do I reach you?",
-        answer: "Use the Contact page to send us a message, or DM us on Instagram @the.nala.armoire. We typically respond within a few hours during business days."
-    },
+        category: "Product Care",
+        items: [
+            {
+                question: "How do I care for my embroidered garments?",
+                answer: "We recommend gentle hand wash or professional dry cleaning to preserve the life of the hand-stitching. Iron on reverse or use a pressing cloth for best results."
+            }
+        ]
+    }
 ];
 
-export default function FaqPage() {
+export default function FAQPage() {
     return (
-        <section className="min-h-screen bg-background">
-            <Header
-                title="Frequently Asked Questions"
-                subtitle="Everything you need to know about ordering, shipping, and customization."
-            />
+        <div className="min-h-screen bg-background">
+            <div className="container mx-auto px-4 py-12 md:py-20 max-w-4xl">
+                {/* Header Section */}
+                <div className="mb-14">
+                    <div className="mb-8">
+                        <BreadcrumbNavigation />
+                    </div>
+                    <div className="text-left space-y-4">
+                        <h1 className="h1 italic">Frequently Asked Questions</h1>
+                        <p className="p-base text-muted-foreground max-w-2xl leading-relaxed">
+                            Everything you need to know about our artisanal process, shipping policies,
+                            and how we bring your memories to life through stitches.
+                        </p>
+                    </div>
+                </div>
 
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
-                <Accordion type="single" collapsible className="w-full space-y-2">
-                    {faqs.map((faq, index) => (
-                        <AccordionItem
-                            key={index}
-                            value={`item-${index}`}
-                            className="border border-border rounded-lg px-5 bg-card hover:bg-accent/20 transition-colors data-[state=open]:bg-accent/20"
-                        >
-                            <AccordionTrigger className="text-sm sm:text-base font-medium text-foreground hover:text-primary hover:no-underline py-4">
-                                {faq.question}
-                            </AccordionTrigger>
-                            <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-5">
-                                {faq.answer}
-                            </AccordionContent>
-                        </AccordionItem>
+                {/* FAQ Accordions */}
+                <div className="space-y-12">
+                    {faqs.map((group, groupIdx) => (
+                        <div key={groupIdx} className="space-y-6">
+                            <h2 className="text-xs tracking-[0.3em] uppercase text-accent font-bold px-2">
+                                {group.category}
+                            </h2>
+                            <Accordion type="single" collapsible className="space-y-4">
+                                {group.items.map((faq, faqIdx) => (
+                                    <AccordionItem
+                                        key={faqIdx}
+                                        value={`item-${groupIdx}-${faqIdx}`}
+                                        className="border-none bg-accent/5 rounded-[2rem] px-6 transition-all hover:bg-accent/10 data-[state=open]:bg-accent/10"
+                                    >
+                                        <AccordionTrigger className="h3 !text-lg md:!text-xl py-6 hover:no-underline text-left">
+                                            {faq.question}
+                                        </AccordionTrigger>
+                                        <AccordionContent className="p-base text-muted-foreground pb-8 leading-relaxed">
+                                            {faq.answer}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </div>
                     ))}
-                </Accordion>
+                </div>
 
-                {/* Bottom CTA */}
-                <div className="mt-12 text-center py-8 border border-dashed border-border rounded-2xl bg-muted/30">
-                    <p className="text-sm text-muted-foreground mb-3">
-                        Didn't find your answer?
+                {/* Still have questions? */}
+                <div className="mt-24 p-10 md:p-16 bg-foreground text-background rounded-[3rem] text-center space-y-6">
+                    <h2 className="h2 !text-background">Still have questions?</h2>
+                    <p className="p-base text-background/70 max-w-xl mx-auto">
+                        Can&apos;t find the answer you&apos;re looking for? Reach out to our
+                        customer care team and we&apos;ll be happy to help.
                     </p>
-                    <a
-                        href="/contact"
-                        className="inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-all duration-300 hover:scale-105 active:scale-95"
-                    >
-                        Contact Us
-                    </a>
+                    <div className="pt-4 flex justify-center">
+                        <CustomButton
+                            href="/contact"
+                            bgColor="#ffffff"
+                            fillColor="#000000"
+                            textColor="#000000"
+                            textHoverColor="#ffffff"
+                        >
+                            Contact Support
+                        </CustomButton>
+                    </div>
                 </div>
             </div>
-        </section>
+
+            {/* Footer Banner */}
+            <div className="mt-20">
+                <ScrollingBanner />
+            </div>
+        </div>
     );
 }

@@ -3,7 +3,7 @@
 import { db } from "@/drizzle/db";
 import { storeSettings } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache, revalidateTag } from "next/cache";
 
 export interface StoreSettingsData {
     id: string;
@@ -29,44 +29,51 @@ const DEFAULT_SETTINGS: Omit<StoreSettingsData, "updatedAt"> = {
     country: "India",
 };
 
-// Get store settings (creates default if not exists)
-export async function getStoreSettings(): Promise<StoreSettingsData> {
-    try {
-        const [settings] = await db
-            .select()
-            .from(storeSettings)
-            .where(eq(storeSettings.id, "default"))
-            .limit(1);
+// Get store settings (cached)
+export const getStoreSettings = unstable_cache(
+    async (): Promise<StoreSettingsData> => {
+        try {
+            const [settings] = await db
+                .select()
+                .from(storeSettings)
+                .where(eq(storeSettings.id, "default"))
+                .limit(1);
 
-        if (!settings) {
-            // Create default settings if none exist
-            const [newSettings] = await db
-                .insert(storeSettings)
-                .values({
-                    id: "default",
-                    email: DEFAULT_SETTINGS.email,
-                    phone: DEFAULT_SETTINGS.phone,
-                    address: DEFAULT_SETTINGS.address,
-                    city: DEFAULT_SETTINGS.city,
-                    state: DEFAULT_SETTINGS.state,
-                    pincode: DEFAULT_SETTINGS.pincode,
-                    country: DEFAULT_SETTINGS.country,
-                })
-                .returning();
+            if (!settings) {
+                // Create default settings if none exist
+                const [newSettings] = await db
+                    .insert(storeSettings)
+                    .values({
+                        id: "default",
+                        email: DEFAULT_SETTINGS.email,
+                        phone: DEFAULT_SETTINGS.phone,
+                        address: DEFAULT_SETTINGS.address,
+                        city: DEFAULT_SETTINGS.city,
+                        state: DEFAULT_SETTINGS.state,
+                        pincode: DEFAULT_SETTINGS.pincode,
+                        country: DEFAULT_SETTINGS.country,
+                    })
+                    .returning();
 
-            return newSettings;
+                return newSettings;
+            }
+
+            return settings;
+        } catch (error) {
+            console.error("Error fetching store settings:", error);
+            // Return defaults if DB error
+            return {
+                ...DEFAULT_SETTINGS,
+                updatedAt: new Date(),
+            };
         }
-
-        return settings;
-    } catch (error) {
-        console.error("Error fetching store settings:", error);
-        // Return defaults if DB error
-        return {
-            ...DEFAULT_SETTINGS,
-            updatedAt: new Date(),
-        };
+    },
+    ["store-settings"],
+    {
+        tags: ["store-settings"],
+        revalidate: 60 * 60 * 24 // 24 hours
     }
-}
+);
 
 // Update store settings
 export async function updateStoreSettings(data: {
@@ -119,10 +126,11 @@ export async function updateStoreSettings(data: {
             updatedSettings = updated;
         }
 
-        // Revalidate pages that use store settings
-        revalidatePath("/");
-        revalidatePath("/contact");
-        revalidatePath("/admin/settings");
+        // Revalidate cached store settings
+        revalidateTag("store-settings", "page");
+        revalidatePath("/", "page");
+        revalidatePath("/contact", "page");
+        revalidatePath("/admin/settings", "page");
 
         return {
             success: true,

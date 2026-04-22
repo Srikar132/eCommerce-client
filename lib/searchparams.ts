@@ -72,7 +72,7 @@ export function buildProductParams(searchParams: URLSearchParams): ProductParams
         sortBy,
         searchQuery: getStringParam(searchParams, "search"),
         category: getStringParam(searchParams, "category"),
-        size: getStringParam(searchParams, "productSize"), // Use different param name for product size
+        sizes: getStringParam(searchParams, "productSize"), // Use different param name for product size
     };
 }
 

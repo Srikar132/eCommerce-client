@@ -40,6 +40,7 @@ export function DataTable<TData, TValue>({
   isFetching = false,
   onRowClick,
 }: DataTableProps<TData, TValue>) {
+  "use no memo";
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

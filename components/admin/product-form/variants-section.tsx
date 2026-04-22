@@ -12,6 +12,7 @@ import { Plus, Trash2, Layers, IndianRupee, Palette } from "lucide-react";
 import { UseFieldArrayReturn, UseFormReturn } from "react-hook-form";
 // FIX: import PRODUCT_SIZES and PRODUCT_COLORS from validations (they are the DB enum values)
 import { ProductFormData, PRODUCT_SIZES, PRODUCT_COLORS } from "@/lib/validations";
+import { ProductSize, ProductColor } from "@/lib/constants/enums";
 import { cn, generateSKU } from "@/lib/utils";
 
 // ============================================================================
@@ -155,9 +156,137 @@ function ColorPicker({ value, colorHex, onChange, disabled }: ColorPickerProps) 
     );
 }
 
-// ============================================================================
-// VariantsSection
-// ============================================================================
+interface VariantItemProps {
+    index: number;
+    form: UseFormReturn<ProductFormData>;
+    disabled: boolean;
+    canDelete: boolean;
+    onDelete: () => void;
+}
+
+function VariantItem({ index, form, disabled, canDelete, onDelete }: VariantItemProps) {
+    return (
+        <div className="p-4 rounded-xl bg-muted/30 border border-border/50 space-y-4">
+            <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Variant {index + 1}</span>
+                {canDelete && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={onDelete}
+                        disabled={disabled}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                )}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {/* Size */}
+                <FormField
+                    control={form.control}
+                    name={`variants.${index}.size`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-xs">Size</FormLabel>
+                            <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                                disabled={disabled}
+                            >
+                                <FormControl>
+                                    <SelectTrigger className="h-9">
+                                        <SelectValue placeholder="Size" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {commonSizes.map((size) => (
+                                        <SelectItem key={size} value={size}>
+                                            {size}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                {/* Color */}
+                <FormField
+                    control={form.control}
+                    name={`variants.${index}.color`}
+                    render={({ field }) => {
+                        const colorHex = form.watch(`variants.${index}.colorHex`) || "";
+                        return (
+                            <FormItem>
+                                <FormLabel className="text-xs">Color</FormLabel>
+                                <FormControl>
+                                    <ColorPicker
+                                        value={field.value}
+                                        colorHex={colorHex}
+                                        onChange={(colorName, hex) => {
+                                            field.onChange(colorName);
+                                            form.setValue(`variants.${index}.colorHex`, hex);
+                                        }}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        );
+                    }}
+                />
+
+                {/* Stock */}
+                <FormField
+                    control={form.control}
+                    name={`variants.${index}.stockQuantity`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-xs">Stock</FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="number"
+                                    className="h-9"
+                                    placeholder="0"
+                                    disabled={disabled}
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name={`variants.${index}.priceModifier`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-xs">Extra Price</FormLabel>
+                            <FormControl>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                                    <Input
+                                        type="number"
+                                        className="h-9 pl-7"
+                                        placeholder="0"
+                                        disabled={disabled}
+                                        {...field}
+                                    />
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+        </div>
+    );
+}
 
 interface VariantsSectionProps {
     form: UseFormReturn<ProductFormData>;
@@ -167,13 +296,11 @@ interface VariantsSectionProps {
 }
 
 const DEFAULT_VARIANT = {
-    size: PRODUCT_SIZES[0],
-    color: PRODUCT_COLORS[0],
+    size: PRODUCT_SIZES[0] as ProductSize,
+    color: PRODUCT_COLORS[0] as ProductColor,
     colorHex: COLOR_HEX_MAP[PRODUCT_COLORS[0]] ?? "#000000",
     stockQuantity: 0,
-    // FIX: field renamed from additionalPrice → priceModifier
     priceModifier: 0,
-    sku: "",
     isActive: true,
 };
 
@@ -213,7 +340,7 @@ export function VariantsSection({
     const handleAddVariantForColor = (color: string, colorHex: string) => {
         append({
             ...DEFAULT_VARIANT,
-            color,
+            color: color as any,
             colorHex,
             sku: generateSKU("VAR"),
         });
@@ -343,7 +470,7 @@ export function VariantsSection({
                                                             group.items.forEach((item) => {
                                                                 form.setValue(
                                                                     `variants.${item.index}.color`,
-                                                                    colorName
+                                                                    colorName as any
                                                                 );
                                                                 form.setValue(
                                                                     `variants.${item.index}.colorHex`,

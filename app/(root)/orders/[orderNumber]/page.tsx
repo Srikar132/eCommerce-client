@@ -3,6 +3,7 @@
 import { getOrderDetails } from "@/lib/actions/order-actions";
 import { notFound } from "next/navigation";
 import OrderTrackingClient from "@/components/order/order-tracking-client";
+import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
 
 export default async function OrderPage({
     params

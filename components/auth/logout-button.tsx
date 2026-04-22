@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Button } from '../ui/button';
+import CustomButton from '../ui/custom-button';
 import { logout } from '@/lib/actions/auth-actions';
 import { LogOut, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -36,7 +36,7 @@ export default function LogoutButton() {
         queryClient.removeQueries({ queryKey: queryKeys.user.all() });
         queryClient.removeQueries({ queryKey: queryKeys.account.all() });
         queryClient.removeQueries({ queryKey: queryKeys.addresses.all() });
-        
+
         toast.success('Logged out successfully');
         router.push('/login');
         router.refresh();
@@ -52,44 +52,48 @@ export default function LogoutButton() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="w-full h-12 border-2 border-primary/20 rounded-2xl hover:bg-primary/5 hover:border-primary/30 hover:scale-[1.02] transition-all duration-200 max-w-sm shadow-md hover:shadow-lg"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 size={18} className="mr-3 animate-spin text-primary" />
-          ) : (
-            <LogOut size={18} className="mr-3 text-primary" />
-          )}
-          <span className="font-medium">
+        <div className="w-full">
+          <CustomButton
+            onClick={() => { }}
+            circleSize={32}
+            circleColor="#ef4444"
+            textColor="#111111"
+            textHoverColor="#ffffff"
+            className="w-full shadow-sm"
+            disabled={isLoading}
+          >
             {isLoading ? 'Signing Out...' : 'Sign Out'}
-          </span>
-        </Button>
+          </CustomButton>
+        </div>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="rounded-[2rem] p-8 md:p-10 border-none shadow-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
-          <AlertDialogDescription>
-            You will be logged out of your account and redirected to the login page.
+          <AlertDialogTitle className="h3 !text-2xl">Sign Out</AlertDialogTitle>
+          <AlertDialogDescription className="p-base text-muted-foreground pt-2">
+            Are you sure you want to sign out? You will be redirected to the login page and your current session will end.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+        <AlertDialogFooter className="pt-6 gap-3">
+          <AlertDialogCancel
+            disabled={isLoading}
+            className="rounded-full px-8 py-6 h-auto font-bold border-muted-foreground/20 hover:bg-muted transition-all"
+          >
+            Stay Logged In
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleLogout}
             disabled={isLoading}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            className="rounded-full px-8 py-6 h-auto font-bold bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all flex items-center gap-2"
           >
             {isLoading ? (
               <>
-                <Loader2 size={16} className="mr-2 animate-spin" />
+                <Loader2 size={18} className="animate-spin" />
                 Signing Out...
               </>
             ) : (
               <>
-                <LogOut size={16} className="mr-2" />
-                Sign Out
+                <LogOut size={18} />
+                Confirm Sign Out
               </>
             )}
           </AlertDialogAction>

@@ -1,10 +1,9 @@
-
 export interface ProductSummary {
     id: string;
     name: string;
     slug: string;
     sku: string;
-    primaryImageUrl: string;  // The main image for this variant
+    primaryImageUrl: string;
 }
 
 export interface VariantSummary {
@@ -14,23 +13,16 @@ export interface VariantSummary {
     sku: string;
 }
 
-
-/**
- * Individual cart item with product, variant, and customization details
- */
 export interface CartItem {
     id: string;
     product: ProductSummary;
-    variant: VariantSummary;  // Make required, not optional
+    variant: VariantSummary;
     quantity: number;
     unitPrice: number;
     itemTotal: number;
-    addedAt: string; // ISO date string
+    addedAt: string;
 }
 
-/**
- * Complete cart response with items and totals
- */
 export interface Cart {
     id: string;
     items: CartItem[];
@@ -38,6 +30,43 @@ export interface Cart {
     subtotal: number;
     discountAmount?: number;
     total: number;
-    createdAt: string; // ISO date string
-    updatedAt: string; // ISO date string
+    createdAt: string;
+    updatedAt: string;
+}
+
+// ============================================================================
+// GUEST CART — localStorage / Zustand
+// ============================================================================
+
+/**
+ * Stored in localStorage. Extends CartItem shape with the IDs needed
+ * to call server actions during merge, plus a stable localId key.
+ */
+export interface GuestCartItem {
+    localId: string;            // stable React key + remove/update handle
+    productId: string;          // needed for server addItemToCart on merge
+    productVariantId: string;   // needed for server addItemToCart on merge
+    quantity: number;
+    unitPrice: number;
+    itemTotal: number;
+    addedAt: string;
+    product: ProductSummary;    // snapshot for display — no extra fetch needed
+    variant: VariantSummary;    // snapshot for display
+}
+
+// ============================================================================
+// UNIFIED CART — single shape for all UI consumers
+// ============================================================================
+
+export type UnifiedCartSource = "guest" | "auth";
+
+export interface UnifiedCart {
+    source: UnifiedCartSource;
+    items: CartItem[];          // GuestCartItems are mapped to this shape
+    totalItems: number;
+    subtotal: number;
+    discountAmount: number;
+    total: number;
+    isLoading: boolean;
+    isFetching: boolean;
 }

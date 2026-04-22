@@ -18,6 +18,7 @@ import { getAllCategories, getProductById } from "@/lib/actions/product-actions"
 import { useCreateProduct, useUpdateProduct } from "@/hooks/use-product-mutations";
 import { productFormSchema, ProductFormData, PRODUCT_SIZES, PRODUCT_COLORS } from "@/lib/validations";
 import { generateSKU } from "@/lib/utils";
+import { queryKeys } from "@/lib/tanstack/query-keys";
 
 // Transform API product data to form data structure
 function transformProductToFormData(productData: any): ProductFormData {
@@ -134,9 +135,10 @@ export function useProductForm({
 }: UseProductFormProps) {
     // Get categories
     const { data: categoriesData } = useQuery({
-        queryKey: ["categories"],
+        queryKey: queryKeys.categories.all(),
         queryFn: getAllCategories,
     });
+
 
     // Fetch product data for editing
     const {
@@ -163,11 +165,13 @@ export function useProductForm({
 
     // Initialize form
     const form = useForm<ProductFormData>({
-        resolver: zodResolver(productFormSchema),
+        resolver: zodResolver(productFormSchema) as any,
         defaultValues: useMemo(() => {
-            return effectiveProductData
-                ? transformProductToFormData(effectiveProductData)
-                : getDefaultFormValues();
+            if (effectiveProductData) {
+                return transformProductToFormData(effectiveProductData);
+            }
+            // For new products, we want a stable object for default values
+            return getDefaultFormValues();
         }, [effectiveProductData]),
         mode: "onChange",
     });
@@ -209,7 +213,7 @@ export function useProductForm({
     const isLoading =
         createProductMutation.isPending || updateProductMutation.isPending;
     const isFormDisabled = isLoading || isLoadingProduct;
-    const categories = categoriesData?.data || [];
+    const categories = categoriesData || [];
 
     return {
         // Form management

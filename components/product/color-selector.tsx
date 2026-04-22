@@ -44,7 +44,7 @@ export default function ColorSelector({
                             type="button"
                             onClick={() => onColorChange(colorOption.color)}
                             className={cn(
-                                "relative w-8 h-8 sm:w-9 sm:h-9 rounded-full cursor-pointer transition-all duration-200",
+                                "relative w-10 h-8 sm:w-12 sm:h-7 cursor-pointer transition-all duration-200",
                                 "border-2",
                                 isSelected
                                     ? "border-foreground scale-110"
@@ -54,7 +54,7 @@ export default function ColorSelector({
                             aria-label={`Select color ${colorOption.color}`}
                         >
                             <span
-                                className="absolute inset-0.5 rounded-full"
+                                className="absolute inset-0.5"
                                 style={{ backgroundColor: colorOption.colorHex }}
                             />
 

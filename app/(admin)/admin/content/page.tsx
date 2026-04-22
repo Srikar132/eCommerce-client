@@ -1,51 +1,19 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import { LayoutPanelTop, MessageSquareQuote, LayoutGrid } from "lucide-react";
 import {
-    LayoutGrid,
-    Sparkles,
-    MessageSquareQuote,
-    ImageIcon,
-    LayoutPanelTop,
-} from "lucide-react";
-import {
-    CategoriesSection,
-    CategoriesSectionSkeleton,
-    ShowcaseSection,
-    ShowcaseSectionSkeleton,
-    TestimonialsSection,
-    TestimonialsSectionSkeleton,
-    SliderSection,
-    SliderSectionSkeleton,
     HeroSection,
     HeroSectionSkeleton,
+    TestimonialsSection,
+    TestimonialsSectionSkeleton,
+    CategoriesSection,
+    CategoriesSectionSkeleton,
 } from "@/components/admin/content";
-import {
-    useLandingCategories,
-    useShowcaseProducts,
-    useTestimonials,
-    useSliderImages,
-    useHeroSlides,
-} from "@/lib/tanstack/queries/content.queries";
-
-// Stats component to show counts in tabs
-function useContentStats() {
-    const { data: categories = [] } = useLandingCategories();
-    const { data: showcase = [] } = useShowcaseProducts();
-    const { data: testimonials = [] } = useTestimonials();
-    const { data: slider = [] } = useSliderImages();
-    const { data: hero = [] } = useHeroSlides();
-
-    return {
-        categories: categories.length,
-        showcase: showcase.length,
-        testimonials: testimonials.length,
-        slider: slider.length,
-        hero: hero.length,
-    };
-}
+import { useHeroSlides, useTestimonials } from "@/lib/tanstack/queries/content.queries";
+import { useCategories } from "@/lib/tanstack/queries/product.queries";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 function TabBadge({ count, isActive }: { count: number; isActive: boolean }) {
     return (
@@ -66,7 +34,15 @@ const TAB_TRIGGER_CLASS = "flex-shrink-0 inline-flex items-center justify-center
 
 export default function ContentPage() {
     const [activeTab, setActiveTab] = useState("hero");
-    const stats = useContentStats();
+    const { data: hero = [] } = useHeroSlides();
+    const { data: testimonials = [] } = useTestimonials();
+    const { data: categories = [] } = useCategories();
+
+    const stats = {
+        hero: hero.length,
+        testimonials: testimonials.length,
+        categories: categories.length,
+    };
 
     return (
         <div className="space-y-6">
@@ -78,48 +54,56 @@ export default function ContentPage() {
                 </p>
             </div>
 
-            {/* Quick Stats - clickable to switch tabs */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                <QuickStatCard
-                    label="Hero Slides"
-                    count={stats.hero}
-                    icon={LayoutPanelTop}
-                    color="bg-indigo-500/10 text-indigo-600"
-                    isActive={activeTab === "hero"}
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4">
+                <button
                     onClick={() => setActiveTab("hero")}
-                />
-                <QuickStatCard
-                    label="Categories"
-                    count={stats.categories}
-                    icon={LayoutGrid}
-                    color="bg-primary/10 text-primary"
-                    isActive={activeTab === "categories"}
-                    onClick={() => setActiveTab("categories")}
-                />
-                <QuickStatCard
-                    label="Showcase"
-                    count={stats.showcase}
-                    icon={Sparkles}
-                    color="bg-amber-500/10 text-amber-600"
-                    isActive={activeTab === "showcase"}
-                    onClick={() => setActiveTab("showcase")}
-                />
-                <QuickStatCard
-                    label="Testimonials"
-                    count={stats.testimonials}
-                    icon={MessageSquareQuote}
-                    color="bg-blue-500/10 text-blue-600"
-                    isActive={activeTab === "testimonials"}
+                    className={`admin-stat-card cursor-pointer text-left transition-all duration-200 ${
+                        activeTab === "hero"
+                            ? "ring-2 ring-primary/40 border-primary/30 shadow-md"
+                            : "hover:shadow-md hover:border-border"
+                    }`}
+                >
+                    <div className="admin-stat-icon bg-indigo-500/10 text-indigo-600">
+                        <LayoutPanelTop className="h-5 w-5" />
+                    </div>
+                    <div>
+                        <p className="text-2xl font-bold">{stats.hero}</p>
+                        <p className="text-xs text-muted-foreground">Hero Slides</p>
+                    </div>
+                </button>
+                <button
                     onClick={() => setActiveTab("testimonials")}
-                />
-                <QuickStatCard
-                    label="Slider"
-                    count={stats.slider}
-                    icon={ImageIcon}
-                    color="bg-pink-500/10 text-pink-600"
-                    isActive={activeTab === "slider"}
-                    onClick={() => setActiveTab("slider")}
-                />
+                    className={`admin-stat-card cursor-pointer text-left transition-all duration-200 ${
+                        activeTab === "testimonials"
+                            ? "ring-2 ring-primary/40 border-primary/30 shadow-md"
+                            : "hover:shadow-md hover:border-border"
+                    }`}
+                >
+                    <div className="admin-stat-icon bg-blue-500/10 text-blue-600">
+                        <MessageSquareQuote className="h-5 w-5" />
+                    </div>
+                    <div>
+                        <p className="text-2xl font-bold">{stats.testimonials}</p>
+                        <p className="text-xs text-muted-foreground">Testimonials</p>
+                    </div>
+                </button>
+                <button
+                    onClick={() => setActiveTab("categories")}
+                    className={`admin-stat-card cursor-pointer text-left transition-all duration-200 ${
+                        activeTab === "categories"
+                            ? "ring-2 ring-primary/40 border-primary/30 shadow-md"
+                            : "hover:shadow-md hover:border-border"
+                    }`}
+                >
+                    <div className="admin-stat-icon bg-amber-500/10 text-amber-600">
+                        <LayoutGrid className="h-5 w-5" />
+                    </div>
+                    <div>
+                        <p className="text-2xl font-bold">{stats.categories}</p>
+                        <p className="text-xs text-muted-foreground">Categories</p>
+                    </div>
+                </button>
             </div>
 
             <div className="h-px bg-border/50 my-2" />
@@ -133,95 +117,58 @@ export default function ContentPage() {
                             <span>Hero</span>
                             <TabBadge count={stats.hero} isActive={activeTab === "hero"} />
                         </TabsTrigger>
-                        <TabsTrigger value="categories" className={TAB_TRIGGER_CLASS}>
-                            <LayoutGrid className="h-4 w-4 shrink-0" />
-                            <span>Categories</span>
-                            <TabBadge count={stats.categories} isActive={activeTab === "categories"} />
-                        </TabsTrigger>
-                        <TabsTrigger value="showcase" className={TAB_TRIGGER_CLASS}>
-                            <Sparkles className="h-4 w-4 shrink-0" />
-                            <span>Showcase</span>
-                            <TabBadge count={stats.showcase} isActive={activeTab === "showcase"} />
-                        </TabsTrigger>
                         <TabsTrigger value="testimonials" className={TAB_TRIGGER_CLASS}>
                             <MessageSquareQuote className="h-4 w-4 shrink-0" />
                             <span>Testimonials</span>
                             <TabBadge count={stats.testimonials} isActive={activeTab === "testimonials"} />
                         </TabsTrigger>
-                        <TabsTrigger value="slider" className={TAB_TRIGGER_CLASS}>
-                            <ImageIcon className="h-4 w-4 shrink-0" />
-                            <span>Slider</span>
-                            <TabBadge count={stats.slider} isActive={activeTab === "slider"} />
+                        <TabsTrigger value="categories" className={TAB_TRIGGER_CLASS}>
+                            <LayoutGrid className="h-4 w-4 shrink-0" />
+                            <span>Categories</span>
+                            <TabBadge count={stats.categories} isActive={activeTab === "categories"} />
                         </TabsTrigger>
                     </TabsList>
                 </div>
 
-                <TabsContent value="categories" className="mt-6">
-                    <Suspense fallback={<CategoriesSectionSkeleton />}>
-                        <CategoriesSection />
-                    </Suspense>
-                </TabsContent>
-
-                <TabsContent value="showcase" className="mt-6">
-                    <Suspense fallback={<ShowcaseSectionSkeleton />}>
-                        <ShowcaseSection />
-                    </Suspense>
+                <TabsContent value="hero" className="mt-6">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2 px-1">
+                            <LayoutPanelTop className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-bold">Hero Carousel</h2>
+                        </div>
+                        
+                        <Suspense fallback={<HeroSectionSkeleton />}>
+                            <HeroSection />
+                        </Suspense>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="testimonials" className="mt-6">
-                    <Suspense fallback={<TestimonialsSectionSkeleton />}>
-                        <TestimonialsSection />
-                    </Suspense>
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2 px-1">
+                            <MessageSquareQuote className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-bold">Customer Testimonials</h2>
+                        </div>
+                        
+                        <Suspense fallback={<TestimonialsSectionSkeleton />}>
+                            <TestimonialsSection />
+                        </Suspense>
+                    </div>
                 </TabsContent>
 
-                <TabsContent value="slider" className="mt-6">
-                    <Suspense fallback={<SliderSectionSkeleton />}>
-                        <SliderSection />
-                    </Suspense>
-                </TabsContent>
-
-                <TabsContent value="hero" className="mt-6">
-                    <Suspense fallback={<HeroSectionSkeleton />}>
-                        <HeroSection />
-                    </Suspense>
+                <TabsContent value="categories" className="mt-6">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2 px-1">
+                            <LayoutGrid className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-bold">Landing Page Categories</h2>
+                        </div>
+                        
+                        <Suspense fallback={<CategoriesSectionSkeleton />}>
+                            <CategoriesSection />
+                        </Suspense>
+                    </div>
                 </TabsContent>
             </Tabs>
         </div>
-    );
-}
-
-// Quick stat card component - clickable to switch tabs
-function QuickStatCard({
-    label,
-    count,
-    icon: Icon,
-    color,
-    isActive,
-    onClick,
-}: {
-    label: string;
-    count: number;
-    icon: React.ElementType;
-    color: string;
-    isActive: boolean;
-    onClick: () => void;
-}) {
-    return (
-        <button
-            onClick={onClick}
-            className={`admin-stat-card cursor-pointer text-left transition-all duration-200 ${
-                isActive
-                    ? "ring-2 ring-primary/40 border-primary/30 shadow-md"
-                    : "hover:shadow-md hover:border-border"
-            }`}
-        >
-            <div className={`admin-stat-icon ${color}`}>
-                <Icon className="h-5 w-5" />
-            </div>
-            <div>
-                <p className="text-2xl font-bold">{count}</p>
-                <p className="text-xs text-muted-foreground">{label}</p>
-            </div>
-        </button>
     );
 }

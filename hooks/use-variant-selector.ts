@@ -12,7 +12,7 @@ export interface SizeOption {
     variantId: string;
     inStock: boolean;
     stockQuantity: number;
-    additionalPrice: number;
+    priceModifier: number;
 }
 
 interface UseVariantSelectionProps {
@@ -61,7 +61,7 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
                 variantId: v.id,
                 inStock: v.stockQuantity > 0,
                 stockQuantity: v.stockQuantity,
-                additionalPrice: v.additionalPrice
+                priceModifier: v.priceModifier
             }));
     }, [variants, selectedColor]);
 
@@ -87,8 +87,8 @@ export function useVariantSelection({ product, variants }: UseVariantSelectionPr
     // Calculate final price
     const finalPrice = useMemo(() => {
         if (!product) return 0;
-        const additionalPrice = selectedVariant?.additionalPrice || 0;
-        return product.basePrice + additionalPrice;
+        const priceModifier = selectedVariant?.priceModifier || 0;
+        return product.basePrice + priceModifier;
     }, [product, selectedVariant]);
 
     // Auto-select first color when colors become available (synchronous update before paint)

@@ -26,15 +26,12 @@ export function CollectionsDropdown() {
             <ChevronDown className="ml-1.5 h-3 w-3 transition-transform duration-200" />
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-60 gap-2 p-3 bg-background/95 backdrop-blur-sm shadow-lg border border-primary-100/20">
+            <ul className="grid w-60 gap-2 p-3 bg-background/95 backdrop-blur-sm shadow-lg border border-accent/20">
               {collections.map((item) => (
                 <ListItem
                   key={item.title}
                   title={item.title}
                   href={item.href}
-                  // className={cn(
-                  //   item.special && "text-destructive italic"
-                  // )}
                 >
                   {item.description}
                 </ListItem>
@@ -58,13 +55,13 @@ const ListItem = React.forwardRef<
           ref={ref}
           href={href}
           className={cn(
-            "block select-none space-y-0.5 rounded-lg p-2.5 leading-none no-underline outline-none transition-colors hover:bg-rose-50 hover:text-rose-500 focus:bg-rose-50 focus:text-rose-500",
+            "block select-none space-y-0.5 rounded-lg p-2.5 leading-none no-underline outline-none ",
             className
           )}
           {...props}
         >
           <div className="text-xs font-medium leading-tight tracking-wide">{title}</div>
-          <p className="line-clamp-1 text-[10px] leading-snug text-gray-500">
+          <p className="line-clamp-1 text-[10px] leading-snug text-muted-foreground">
             {children}
           </p>
         </Link>

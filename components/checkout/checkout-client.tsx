@@ -3,27 +3,38 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useCart } from "@/lib/tanstack/queries/cart.queries";
 import { useUserAddresses } from "@/lib/tanstack/queries/address.queries";
 import { checkout } from "@/lib/actions/order-actions";
 import { useRazorpayCheckout } from "@/hooks/use-razorpay-checkout";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { LoginRequired } from "@/components/auth/login-required";
-import { ShoppingBag, Loader2, MessageSquare } from "lucide-react";
+import { ShoppingBag, MessageSquare, ChevronRight, MapPin, Package, CreditCard, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import AddressSelectionCard from "./address-selection-card";
 import CheckoutOrderSummary from "./checkout-order-summary";
+import { useCartContext } from "@/context/cart-context";
+import CustomButton from "@/components/ui/custom-button";
+import { cn } from "@/lib/utils";
+import { Cart } from "@/types/cart";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CheckoutClient() {
     const router = useRouter();
-    const { data: session, status } = useSession();
-    const { data: cart, isLoading: isCartLoading } = useCart({ enabled: !!session });
+    const { status } = useSession();
+
+    // ── Use the unified Cart Context ──────────────────────────────────────
+    const {
+        items,
+        totalItems,
+        subtotal,
+        discountAmount,
+        total,
+        isLoading: isCartLoading,
+    } = useCartContext();
+
     const { data: addresses, isLoading: isAddressesLoading } = useUserAddresses();
 
     const [selectedAddressId, setSelectedAddressId] = useState<string>("");
@@ -33,16 +44,18 @@ export default function CheckoutClient() {
     const isLoading = isCartLoading || isAddressesLoading;
 
     // Use Razorpay checkout hook
-    // With payment-first flow: no order exists until payment succeeds
-    // On failure/cancel, user stays on checkout page (no redirect)
     const { openCheckout, isProcessing } = useRazorpayCheckout({
         onSuccess: (orderNumber) => {
-            router.push(`/orders/${orderNumber}`);
+            toast.success("Payment successful! Redirecting to your order...", {
+                icon: <div className="bg-black rounded-full p-1"><Package className="w-3 h-3 text-white" /></div>,
+                duration: 3000,
+            });
+            setTimeout(() => {
+                router.push(`/orders/${orderNumber}`);
+            }, 1000);
         },
-        // No redirect on failure/cancel - user stays on checkout to retry
         clearCartOnSuccess: true,
     });
-
 
     // Auto-select default address
     const defaultAddressId = addresses?.find(addr => addr.isDefault)?.id ?? addresses?.[0]?.id;
@@ -60,17 +73,17 @@ export default function CheckoutClient() {
         }
 
         try {
-            // Create order and get Razorpay details
             const checkoutData = await checkout({
                 shippingAddressId: selectedAddressId,
                 billingAddressId: selectedAddressId,
-                notes: orderNotes.trim() || undefined, // Pass notes if provided
+                notes: orderNotes.trim() || undefined,
             });
 
-            // Open Razorpay checkout using the hook
             openCheckout(checkoutData);
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Checkout failed");
+            toast.error(error instanceof Error ? error.message : "Checkout failed", {
+                icon: <div className="bg-destructive rounded-full p-1"><CreditCard className="w-3 h-3 text-white" /></div>,
+            });
         }
     };
 
@@ -84,30 +97,64 @@ export default function CheckoutClient() {
         );
     }
 
-    // Loading state
+    // Loading state (Skeleton)
     if (isLoading) {
         return (
-            <div className="container mx-auto px-4 py-16 max-w-6xl">
-                <div className="flex items-center justify-center min-h-[60vh]">
-                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            <div className="container mx-auto px-6 py-12 max-w-7xl">
+                <div className="mb-12 space-y-4">
+                    <Skeleton className="h-4 w-24 bg-foreground/5 rounded-full" />
+                    <Skeleton className="h-16 md:h-24 w-64 md:w-96 bg-foreground/5 rounded-3xl" />
+                </div>
+                <div className="grid lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 space-y-12">
+                        <div className="space-y-6">
+                            <Skeleton className="h-10 w-48 bg-foreground/5 rounded-2xl" />
+                            <div className="grid gap-4">
+                                <Skeleton className="h-32 w-full bg-foreground/5 rounded-[2rem]" />
+                                <Skeleton className="h-32 w-full bg-foreground/5 rounded-[2rem]" />
+                            </div>
+                        </div>
+                        <Skeleton className="h-64 w-full bg-foreground/5 rounded-[2rem]" />
+                    </div>
+                    <div className="lg:col-span-1">
+                        <Skeleton className="h-[500px] w-full bg-foreground/5 rounded-[2rem]" />
+                    </div>
                 </div>
             </div>
         );
     }
 
-    // Empty cart (should redirect, but show message just in case)
-    if (!cart || !cart.items || cart.items.length === 0) {
+    // Empty cart
+    if (!items || items.length === 0) {
         return (
-            <div className="container mx-auto px-4 py-16 max-w-6xl">
-                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                    <ShoppingBag className="w-16 h-16 text-muted-foreground/50 mb-4" />
-                    <h2 className="text-2xl font-semibold mb-2">Your cart is empty</h2>
-                    <p className="text-muted-foreground mb-6">
-                        Add items to your cart to proceed with checkout
-                    </p>
-                    <Button asChild>
-                        <Link href="/products">Continue Shopping</Link>
-                    </Button>
+            <div className="container mx-auto px-6 py-32 max-w-7xl">
+                <div className="flex flex-col items-center justify-center text-center space-y-10">
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl scale-150 transition-transform duration-500 group-hover:scale-[2]" />
+                        <div className="relative w-32 h-32 rounded-full bg-white shadow-xl flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-2">
+                            <ShoppingBag className="w-12 h-12 text-foreground" strokeWidth={1.5} />
+                            <div className="absolute top-0 right-0 w-4 h-4 bg-black rounded-full animate-ping" />
+                        </div>
+                    </div>
+                    <div className="space-y-4 max-w-md">
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none italic">
+                            Empty Basket
+                        </h2>
+                        <p className="text-muted-foreground text-lg leading-relaxed">
+                            Your curation is currently empty. Explore our latest pieces to add them to your collection.
+                        </p>
+                    </div>
+                    <CustomButton
+                        href="/products"
+                        bgColor="#000000"
+                        circleColor="#ffffff"
+                        textColor="#ffffff"
+                        textHoverColor="#000000"
+                        circleSize={52}
+                        className="h-16 px-10 text-lg"
+                    >
+                        Explore Gallery
+                    </CustomButton>
                 </div>
             </div>
         );
@@ -116,148 +163,270 @@ export default function CheckoutClient() {
     // No addresses
     if (!addresses || addresses.length === 0) {
         return (
-            <div className="container mx-auto px-4 py-16 max-w-6xl">
-                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                    <h2 className="text-2xl font-semibold mb-2">No delivery address found</h2>
-                    <p className="text-muted-foreground mb-6">
-                        Please add a delivery address to continue
-                    </p>
-                    <Button asChild>
-                        <Link href="/account">Add Address</Link>
-                    </Button>
+            <div className="container mx-auto px-6 py-32 max-w-7xl">
+                <div className="flex flex-col items-center justify-center text-center space-y-10">
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-secondary/20 rounded-full blur-3xl scale-150 transition-transform duration-500 group-hover:scale-[2]" />
+                        <div className="relative w-32 h-32 rounded-full bg-white shadow-xl flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-2">
+                            <MapPin className="w-12 h-12 text-foreground" strokeWidth={1.5} />
+                        </div>
+                    </div>
+                    <div className="space-y-4 max-w-md">
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none italic">
+                            Delivery Destination
+                        </h2>
+                        <p className="text-muted-foreground text-lg leading-relaxed">
+                            We need a destination to send your handcrafted pieces. Please add a delivery address in your account.
+                        </p>
+                    </div>
+                    <CustomButton
+                        href="/account"
+                        bgColor="#000000"
+                        circleColor="#ffffff"
+                        textColor="#ffffff"
+                        textHoverColor="#000000"
+                        circleSize={52}
+                        className="h-16 px-10 text-lg"
+                    >
+                        Add Address
+                    </CustomButton>
                 </div>
             </div>
         );
     }
 
+    // Build a Cart-shaped object for CheckoutOrderSummary from context values
+    const cartForSummary: Cart = {
+        id: "ctx",
+        items,
+        totalItems,
+        subtotal,
+        discountAmount,
+        total,
+        createdAt: "",
+        updatedAt: "",
+    };
+
     return (
-        <>
-            <div className="container mx-auto px-4 py-6 md:py-10 max-w-6xl">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-2xl md:text-3xl font-bold mb-2">Checkout</h1>
-                    <p className="text-sm text-muted-foreground">
-                        Complete your order in a few simple steps
+        <div className="space-y-10">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border/40">
+                <div className="space-y-1">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tighter italic">Checkout</h1>
+                    <p className="text-sm text-muted-foreground tracking-tight">
+                        Complete your purchase and secure your handcrafted pieces.
                     </p>
                 </div>
+                <div className="text-right">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+                        Securing {totalItems} {totalItems === 1 ? 'Item' : 'Items'}
+                    </p>
+                </div>
+            </div>
 
-                <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-                    {/* Left: Address Selection */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Delivery Address */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-lg">Delivery Address</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <RadioGroup value={selectedAddressId} onValueChange={setSelectedAddressId}>
-                                    {addresses.map((address) => (
-                                        <AddressSelectionCard
-                                            key={address.id}
-                                            address={address}
-                                            isSelected={selectedAddressId === address.id}
-                                            onSelect={() => setSelectedAddressId(address.id)}
-                                        />
-                                    ))}
-                                </RadioGroup>
-
-                                <Button
-                                    variant="outline"
-                                    className="w-full"
-                                    asChild
-                                >
-                                    <Link href="/account">
-                                        Manage Addresses
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-
-                        {/* Order Items Preview */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-lg">
-                                    Order Items ({cart.totalItems} {cart.totalItems === 1 ? 'item' : 'items'})
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    {cart.items.slice(0, 3).map((item) => (
-                                        <div key={item.id} className="flex items-center gap-3">
-                                            {item.product.primaryImageUrl && (
-                                                <div className="relative w-16 h-16 shrink-0">
-                                                    <Image
-                                                        src={item.product.primaryImageUrl}
-                                                        alt={item.product.name}
-                                                        fill
-                                                        sizes="64px"
-                                                        className="object-cover rounded"
-                                                    />
-                                                </div>
-                                            )}
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-sm truncate">
-                                                    {item.product.name}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {item.variant.color} • {item.variant.size} • Qty: {item.quantity}
-                                                </p>
-                                            </div>
-                                            <p className="font-medium text-sm">
-                                                ₹{item.itemTotal.toFixed(2)}
-                                            </p>
-                                        </div>
-                                    ))}
-                                    {cart.items.length > 3 && (
-                                        <p className="text-xs text-muted-foreground text-center pt-2">
-                                            + {cart.items.length - 3} more {cart.items.length - 3 === 1 ? 'item' : 'items'}
-                                        </p>
-                                    )}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                {/* Left: Address + Items + Notes */}
+                <div className="lg:col-span-7 space-y-10">
+                    {/* Delivery Address */}
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between pb-4 border-b border-foreground/5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center">
+                                    <MapPin size={16} className="text-foreground/60" />
                                 </div>
-                            </CardContent>
-                        </Card>
+                                <h3 className="tracking-normal font-bold">Shipping</h3>
+                            </div>
+                            <Link
+                                href="/account"
+                                className="group flex items-center gap-2 p-xs font-bold uppercase tracking-widest text-foreground/40 hover:text-black transition-colors"
+                            >
+                                Manage
+                                <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
+                            </Link>
+                        </div>
 
-                        {/* Order Notes */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                    <MessageSquare className="w-5 h-5" />
-                                    Order Notes
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    <Label htmlFor="order-notes" className="text-sm text-muted-foreground">
-                                        Add any special instructions for your order (optional)
-                                    </Label>
-                                    <Textarea
-                                        id="order-notes"
-                                        placeholder="E.g., Gift wrap, delivery instructions, customization requests..."
-                                        value={orderNotes}
-                                        onChange={(e) => setOrderNotes(e.target.value)}
-                                        rows={4}
-                                        maxLength={500}
-                                        className="resize-none"
-                                    />
-                                    <p className="text-xs text-muted-foreground text-right">
-                                        {orderNotes.length}/500 characters
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <RadioGroup value={selectedAddressId} onValueChange={setSelectedAddressId} className="grid gap-4">
+                            {addresses.map((address) => (
+                                <AddressSelectionCard
+                                    key={address.id}
+                                    address={address}
+                                    isSelected={selectedAddressId === address.id}
+                                    onSelect={() => setSelectedAddressId(address.id)}
+                                />
+                            ))}
+                        </RadioGroup>
                     </div>
 
-                    {/* Right: Order Summary */}
-                    <div className="lg:col-span-1">
+                    {/* Order Items Preview */}
+                    <div className="bg-white border border-foreground/5 rounded-[2rem] p-content shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+                        <div className="flex items-center justify-between mb-10">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center">
+                                    <Package size={16} className="text-foreground/60" />
+                                </div>
+                                <h4 className="tracking-normal font-bold">
+                                    Review Items
+                                </h4>
+                            </div>
+                            <span className="px-4 py-1.5 rounded-full bg-accent/10 text-accent p-xs font-black uppercase tracking-widest">
+                                {totalItems} {totalItems === 1 ? 'item' : 'items'}
+                            </span>
+                        </div>
+
+                        <div className="space-y-6 md:space-y-8">
+                            {items.slice(0, 3).map((item) => (
+                                <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 group">
+                                    {item.product.primaryImageUrl && (
+                                        <div className="relative w-full sm:w-24 h-48 sm:h-24 shrink-0 overflow-hidden rounded-2xl sm:rounded-[2rem] bg-foreground/[0.02] border border-foreground/[0.03]">
+                                            <Image
+                                                src={item.product.primaryImageUrl}
+                                                alt={item.product.name}
+                                                fill
+                                                sizes="96px"
+                                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="p-base font-bold tracking-normal truncate leading-relaxed group-hover:text-accent transition-colors">
+                                            {item.product.name}
+                                        </p>
+                                        <div className="flex items-center gap-3 mt-2">
+                                            <span className="px-2 py-0.5 rounded-md bg-foreground/5 text-[9px] font-bold uppercase tracking-widest text-foreground/40">
+                                                {item.variant.color}
+                                            </span>
+                                            <span className="px-2 py-0.5 rounded-md bg-foreground/5 text-[9px] font-bold uppercase tracking-widest text-foreground/40">
+                                                {item.variant.size}
+                                            </span>
+                                            <span className="px-2 py-0.5 rounded-md bg-foreground/5 text-[9px] font-bold uppercase tracking-widest text-foreground/40">
+                                                Qty: {item.quantity}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center w-full sm:w-auto">
+                                        <p className="p-base font-bold tracking-tight">
+                                            ₹{item.itemTotal.toLocaleString()}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                            {items.length > 3 && (
+                                <Link
+                                    href="/cart"
+                                    className="flex items-center justify-center gap-2 py-5 text-[10px] font-bold uppercase tracking-widest text-foreground/40 hover:text-black transition-colors bg-foreground/[0.02] rounded-2xl hover:bg-foreground/[0.05]"
+                                >
+                                    + {items.length - 3} more {items.length - 3 === 1 ? 'item' : 'items'}
+                                    <ChevronRight size={12} />
+                                </Link>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Order Notes */}
+                    <div className="bg-white border border-foreground/5 rounded-[2rem] p-content shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center">
+                                <MessageSquare size={16} className="text-foreground/60" />
+                            </div>
+                            <h4 className="tracking-normal font-bold">Special Requests</h4>
+                        </div>
+
+                        <div className="space-y-6">
+                            <p className="text-[13px] font-medium text-foreground/40 leading-relaxed max-w-md">
+                                Add any special instructions or customization requests for your order. We&apos;ll do our best to accommodate them.
+                            </p>
+                            <div className="relative">
+                                <Textarea
+                                    id="order-notes"
+                                    placeholder="E.g., Gift wrap, delivery instructions..."
+                                    value={orderNotes}
+                                    onChange={(e) => setOrderNotes(e.target.value)}
+                                    rows={4}
+                                    maxLength={500}
+                                    className="resize-none rounded-[1.5rem]  border-foreground/5 focus:bg-white focus:ring-black/5 transition-all p-8 text-base placeholder:text-foreground/20"
+                                />
+                                <div className="absolute bottom-6 right-8">
+                                    <span className={cn(
+                                        "text-[9px] font-bold uppercase tracking-widest",
+                                        orderNotes.length > 450 ? "text-destructive" : "text-foreground/20"
+                                    )}>
+                                        {orderNotes.length} / 500
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right: Order Summary */}
+                <div className="lg:col-span-5">
+                    <div className="sticky top-24 space-y-6">
                         <CheckoutOrderSummary
-                            cart={cart}
+                            cart={cartForSummary}
                             onCheckout={handleCheckout}
                             isProcessing={isProcessing}
                             isAddressSelected={!!selectedAddressId}
                         />
+
+                        {/* Trust Badges */}
+                        <div className="px-8 flex flex-col gap-4">
+                            <div className="flex items-center gap-3 opacity-40">
+                                <div className="w-6 h-6 rounded-full bg-foreground/10 flex items-center justify-center">
+                                    <ShieldCheck size={12} />
+                                </div>
+                                <span className="text-[9px] font-bold uppercase tracking-widest">Encrypted Checkout</span>
+                            </div>
+                            <div className="flex items-center gap-3 opacity-40">
+                                <div className="w-6 h-6 rounded-full bg-foreground/10 flex items-center justify-center">
+                                    <Package size={12} />
+                                </div>
+                                <span className="text-[9px] font-bold uppercase tracking-widest">White-glove Delivery</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </>
+
+            {/* Processing Overlay */}
+            {isProcessing && (
+                <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[100] flex flex-col items-center justify-center text-center p-6 animate-in fade-in duration-500">
+                    <div className="space-y-6 max-w-sm">
+                        <div className="relative w-24 h-24 mx-auto">
+                            <div className="absolute inset-0 border-4 border-foreground/5 rounded-full" />
+                            <div className="absolute inset-0 border-4 border-black rounded-full border-t-transparent animate-spin" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <CreditCard className="w-8 h-8 text-black" />
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <h3 className="italic">Securing Order</h3>
+                            <p className="p-base text-muted-foreground leading-relaxed max-w-xs mx-auto">
+                                Please do not refresh or close this window while we finalize your payment...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function ShieldCheck({ size = 20, className = "" }: { size?: number, className?: string }) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+        >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            <path d="m9 12 2 2 4-4" />
+        </svg>
     );
 }

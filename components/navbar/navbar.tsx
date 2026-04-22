@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
 import { SidebarTrigger } from '../ui/sidebar';
 import { Button } from '../ui/button';
 import Link from 'next/link';
@@ -9,10 +8,8 @@ import { SearchInput } from '../search-input';
 import { cn } from '@/lib/utils';
 import { CollectionsDropdown } from './collections-dropdown';
 import { Search } from 'lucide-react';
-import WishlistButton from './wishlist-button';
 import CartButton from '../cart/cart-button';
 import { AccountHoverCard } from './account-hover-card';
-import { useSession } from 'next-auth/react';
 import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -23,70 +20,99 @@ gsap.registerPlugin(ScrollTrigger);
 const SCROLL_THRESHOLD = 60;
 
 const Navbar = () => {
-    const { data: session } = useSession();
+
     const pathname = usePathname();
     const navRef = useRef<HTMLElement>(null);
 
     const isHomePage = pathname === '/';
     const isProductsPage = pathname === '/products';
 
-useGSAP(() => {
-    if (!navRef.current) return;
-    const nav = navRef.current;
+    useGSAP(() => {
+        if (!navRef.current) return;
+        const nav = navRef.current;
 
-    // Non-home: clear any residual GSAP inline styles and exit
-    if (!isHomePage) {
-        gsap.set(nav, { clearProps: 'all' });
-        ScrollTrigger.getAll().forEach(t => t.kill()); // kill any lingering triggers
-        return;
-    }
+        // Non-home: clear any residual GSAP inline styles and exit
+        if (!isHomePage) {
+            gsap.set(nav, { clearProps: 'all' });
+            ScrollTrigger.getAll().forEach(t => t.kill());
+            return;
+        }
 
-    const mm = gsap.matchMedia();
+        const mm = gsap.matchMedia();
 
-    mm.add("(min-width: 1024px)", () => {
-        // ── Desktop only: floating pill → full-width bar animation ──
+        mm.add("(min-width: 1024px)", () => {
+            const initialTop = nav.offsetTop;
 
-        const initialTop = nav.offsetTop;
+            // ── Initial State Transition ──
+            // Instead of snapping, we animate from the "default" state to the "pill" state
+            gsap.fromTo(nav,
+                {
+                    autoAlpha: 0,
+                    borderRadius: '0px',
+                    maxWidth: '100%',
+                    marginTop: '0px',
+                    top: '0px'
+                },
+                {
+                    autoAlpha: 1,
+                    borderRadius: '1rem',
+                    maxWidth: '90vw',
+                    marginTop: '20px',
+                    top: `${initialTop}px`,
+                    duration: 0.8,
+                    ease: 'power3.out'
+                }
+            );
 
-        const toScrolled = () => gsap.to(nav, {
-            borderRadius: '0px', maxWidth: '100%', marginTop: '0px', top: '0px',
-            duration: 0.4, ease: 'power2.out',
+            const toScrolled = () => gsap.to(nav, {
+                borderRadius: '0px', maxWidth: '100%', marginTop: '0px', top: '0px',
+                duration: 0.4, ease: 'power2.out',
+            });
+
+            const toTop = () => gsap.to(nav, {
+                borderRadius: '1rem', maxWidth: '90vw', marginTop: '20px', top: `${initialTop}px`,
+                duration: 0.4, ease: 'power2.out',
+            });
+
+            const trigger = ScrollTrigger.create({
+                start: `top+=${SCROLL_THRESHOLD} top`,
+                onEnter: toScrolled,
+                onLeaveBack: toTop,
+            });
+
+            return () => {
+                trigger.kill();
+                gsap.set(nav, { clearProps: 'borderRadius,maxWidth,marginTop,top,autoAlpha' });
+            };
         });
 
-        const toTop = () => gsap.to(nav, {
-            borderRadius: '1rem', maxWidth: '90vw', marginTop: '20px', top: `${initialTop}px`,
-            duration: 0.4, ease: 'power2.out',
+        mm.add("(max-width: 1023px)", () => {
+            // ── Mobile: Simple fade in ──
+            gsap.to(nav, {
+                autoAlpha: 1,
+                duration: 0.6,
+                ease: 'power2.out'
+            });
+
+            return () => {
+                gsap.set(nav, { clearProps: 'autoAlpha' });
+            };
         });
 
-        gsap.set(nav, { borderRadius: '1rem', maxWidth: '90vw', marginTop: '20px', top: `${initialTop}px` });
+        return () => mm.revert();
 
-        const trigger = ScrollTrigger.create({
-            start: `top+=${SCROLL_THRESHOLD} top`,
-            onEnter: toScrolled,
-            onLeaveBack: toTop,
-        });
-
-        // matchMedia cleanup — runs when viewport drops below 1024px
-        return () => {
-            trigger.kill();
-            gsap.set(nav, { clearProps: 'borderRadius,maxWidth,marginTop,top' });
-        };
-    });
-
-    // Global cleanup — runs on unmount / dependency change
-    return () => mm.revert();
-
-}, { scope: navRef, dependencies: [isHomePage] });
+    }, { scope: navRef, dependencies: [isHomePage] });
 
     return (
         <nav
             ref={navRef}
             className={cn(
-                "w-full bg-background z-50 border-b border-border",
+                "w-full bg-background z-50 border-b border-border transition-colors duration-300",
                 isHomePage
                     ? "max-sm:sticky! max-sm:top-0 sm:fixed sm:left-1/2 sm:-translate-x-1/2 shadow-sm border border-border"
                     : "sticky top-0 shadow-sm",
             )}
+            style={isHomePage ? { opacity: 0, visibility: "hidden" } : {}}
         >
             <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
                 <div className="flex items-center h-16 lg:h-[4.5rem] gap-4">
@@ -106,8 +132,7 @@ useGSAP(() => {
                                 </Link>
                             )}
                             <AccountHoverCard />
-                            {/* <Link href="/wishlist"><WishlistButton enabled={!!session} /></Link> */}
-                            <Link href="/cart"><CartButton enabled={!!session} /></Link>
+                            <CartButton />
                         </div>
                     </div>
 
@@ -119,16 +144,18 @@ useGSAP(() => {
                         <CollectionsDropdown />
                         {isHomePage && (
                             <>
-                                <Link href="/products" className="nav-link font-medium text-sm whitespace-nowrap">Shop</Link>
-                                <Link href="/about" className="nav-link font-medium text-sm whitespace-nowrap">About</Link>
-                                <Link href="/contact" className="nav-link font-medium text-sm whitespace-nowrap">Contact</Link>
+                                <Link href="/products" className="nav-link font-medium text-sm whitespace-nowrap link-underline">Shop</Link>
+                                <Link href="/about" className="nav-link font-medium text-sm whitespace-nowrap link-underline">About</Link>
+                                <Link href="/contact" className="nav-link font-medium text-sm whitespace-nowrap link-underline">Contact</Link>
+                                <Link href="/faq" className="nav-link font-medium text-sm whitespace-nowrap link-underline">FAQ</Link>
                             </>
                         )}
                         {!isHomePage && (
                             <>
-                                <Link href="/products" className="nav-link font-medium text-sm whitespace-nowrap">Shop</Link>
-                                <Link href="/about" className="nav-link font-medium text-sm whitespace-nowrap">About</Link>
-                                <Link href="/contact" className="nav-link font-medium text-sm whitespace-nowrap">Contact</Link>
+                                <Link href="/products" className="nav-link font-medium text-sm whitespace-nowrap link-underline">Shop</Link>
+                                <Link href="/about" className="nav-link font-medium text-sm whitespace-nowrap link-underline">About</Link>
+                                <Link href="/contact" className="nav-link font-medium text-sm whitespace-nowrap link-underline">Contact</Link>
+                                <Link href="/faq" className="nav-link font-medium text-sm whitespace-nowrap link-underline">FAQ</Link>
                             </>
                         )}
                     </div>
@@ -161,8 +188,7 @@ useGSAP(() => {
                         />
                         <div className="h-5 w-px bg-border mx-1" />
                         <AccountHoverCard />
-                        <Link href="/wishlist"><WishlistButton enabled={!!session} /></Link>
-                        <Link href="/cart"><CartButton enabled={!!session} /></Link>
+                        <CartButton />
                     </div>
 
                 </div>

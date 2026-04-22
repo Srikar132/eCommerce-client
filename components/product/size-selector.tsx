@@ -1,7 +1,7 @@
 "use client";
 
-import React, {useState} from "react";
-import {SizeGuideModal} from "@/components/product/size-guide-modal";
+import React, { useState } from "react";
+import { SizeGuideModal } from "@/components/product/size-guide-modal";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ interface SizeOption {
     size: string;
     variantId: string;
     inStock: boolean;
-    additionalPrice: number;
+    priceModifier: number;
 }
 
 interface SizeSelectorProps {
@@ -53,8 +53,8 @@ export default function SizeSelector({
                 </Button>
             </div>
 
-            <RadioGroup 
-                value={selectedSize} 
+            <RadioGroup
+                value={selectedSize}
                 onValueChange={onSizeChange}
                 className="grid grid-cols-4 sm:grid-cols-5 gap-3"
             >
@@ -69,7 +69,7 @@ export default function SizeSelector({
                         <Label
                             htmlFor={`size-${sizeOption.variantId}`}
                             className={cn(
-                                "flex h-14 cursor-pointer flex-col items-center justify-center rounded-lg border-2 transition-all duration-300",
+                                "flex h-11 cursor-pointer flex-col items-center justify-center  border-2 transition-all duration-300 px-4",
                                 "hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                                 selectedSize === sizeOption.size
                                     ? "border-primary bg-primary text-primary-foreground shadow-lg scale-105 font-semibold"
@@ -77,10 +77,10 @@ export default function SizeSelector({
                                 !sizeOption.inStock && "cursor-not-allowed border-dashed opacity-40 hover:scale-100 hover:bg-card hover:border-border"
                             )}
                             title={
-                                !sizeOption.inStock 
-                                    ? 'Out of stock' 
-                                    : sizeOption.additionalPrice > 0 
-                                        ? `+₹${sizeOption.additionalPrice.toFixed(2)}` 
+                                !sizeOption.inStock
+                                    ? 'Out of stock'
+                                    : sizeOption.priceModifier > 0
+                                        ? `+₹${sizeOption.priceModifier.toFixed(2)}`
                                         : undefined
                             }
                         >
@@ -88,14 +88,14 @@ export default function SizeSelector({
                                 <span className={cn("text-base", !sizeOption.inStock && "line-through")}>
                                     {sizeOption.size}
                                 </span>
-                                {sizeOption.inStock && sizeOption.additionalPrice > 0 && (
+                                {sizeOption.inStock && sizeOption.priceModifier > 0 && (
                                     <span className={cn(
                                         "text-[10px] font-normal",
-                                        selectedSize === sizeOption.size 
-                                            ? "text-primary-foreground/80" 
+                                        selectedSize === sizeOption.size
+                                            ? "text-primary-foreground/80"
                                             : "text-muted-foreground"
                                     )}>
-                                        +₹{sizeOption.additionalPrice}
+                                        +₹{sizeOption.priceModifier}
                                     </span>
                                 )}
                                 {!sizeOption.inStock && (

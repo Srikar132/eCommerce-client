@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
-import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogClose, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface ImageZoomModalProps {
   image: {
@@ -20,7 +20,12 @@ const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
 }) => {
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background/95 backdrop-blur-sm">
+      <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background/95 backdrop-blur-sm border-none shadow-none">
+        {/* Accessibility Requirements */}
+        <DialogTitle className="sr-only">Image Zoom: {image.alt}</DialogTitle>
+        <DialogDescription className="sr-only">Detailed view of the product image.</DialogDescription>
+
+        {/* Close Button */}
         {/* Close Button */}
         <DialogClose className="absolute top-4 right-4 z-50 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-colors shadow-lg">
           <X className="h-5 w-5" />

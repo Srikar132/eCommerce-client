@@ -42,89 +42,84 @@ export function AccountDetailsSection() {
     }
 
     return (
-        <>
-            <Card className="overflow-hidden border hover:shadow-lg transition-all duration-300">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                    <CardTitle className="text-lg font-semibold">Account Details</CardTitle>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsEditOpen(true)}
-                        className="gap-2 hover:bg-accent"
-                    >
-                        <Edit className="w-4 h-4" />
-                        Edit
-                    </Button>
-                </CardHeader>
-                <CardContent className="space-y-3 pt-3">
+        <Card className="rounded-[2rem] border-none shadow-sm bg-white overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between px-6 py-5 border-b border-muted/20">
+                <CardTitle className="h4 !text-xl font-bold">Personal Details</CardTitle>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditOpen(true)}
+                    className="rounded-full px-4 py-2 h-auto font-bold text-accent hover:bg-accent/5 transition-all gap-2"
+                >
+                    <Edit className="w-3.5 h-3.5" />
+                    Edit Profile
+                </Button>
+            </CardHeader>
+            <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Name */}
-                    <div className="flex items-center gap-3 p-3 rounded-md border bg-card hover:bg-accent/50 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10 shrink-0">
-                            <Shield className="w-4 h-4 text-primary" />
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                            <Shield className="w-4 h-4 text-accent" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs text-muted-foreground">Full Name</p>
-                            <p className="text-sm font-medium truncate">
+                            <p className="p-xs uppercase font-bold tracking-widest opacity-50 text-[9px] mb-0.5">Name</p>
+                            <p className="text-sm font-bold truncate">
                                 {user.name || 'Not set'}
                             </p>
                         </div>
                     </div>
 
                     {/* Email */}
-                    <div className="flex items-center gap-3 p-3 rounded-md border bg-card hover:bg-accent/50 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10 shrink-0">
-                            <Mail className="w-4 h-4 text-primary" />
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                            <Mail className="w-4 h-4 text-accent" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                                <p className="text-xs text-muted-foreground">Email Address</p>
-                                {user.emailVerified ? (
-                                    <Badge variant="default" className="text-[10px] h-4 px-1.5">
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <p className="p-xs uppercase font-bold tracking-widest opacity-50 text-[9px]">Email</p>
+                                {user.emailVerified && (
+                                    <Badge className="bg-accent/10 text-accent border-none text-[8px] h-3.5 px-1.5 font-bold uppercase tracking-tighter">
                                         Verified
                                     </Badge>
-                                ) : user.email ? (
-                                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-                                        Not Verified
-                                    </Badge>
-                                ) : null}
+                                )}
                             </div>
-                            <p className="text-sm font-medium truncate">
+                            <p className="text-sm font-bold truncate">
                                 {user.email || 'Not set'}
                             </p>
                         </div>
                     </div>
 
                     {/* Phone */}
-                    {user.phone && (
-                        <div className="flex items-center gap-3 p-3 rounded-md border bg-card hover:bg-accent/50 transition-colors">
-                            <div className="p-2 rounded-full bg-primary/10 shrink-0">
-                                <Phone className="w-4 h-4 text-primary" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-xs text-muted-foreground">Phone Number</p>
-                                <p className="text-sm font-medium">{user.phone}</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Account Created */}
-                    <div className="flex items-center gap-3 p-3 rounded-md border bg-card hover:bg-accent/50 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10 shrink-0">
-                            <Calendar className="w-4 h-4 text-primary" />
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                            <Phone className="w-4 h-4 text-accent" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs text-muted-foreground">Member Since</p>
-                            <p className="text-sm font-medium">
+                            <p className="p-xs uppercase font-bold tracking-widest opacity-50 text-[9px] mb-0.5">Phone</p>
+                            <p className="text-sm font-bold truncate">
+                                {user.phone || 'Not set'}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Member Since */}
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                            <Calendar className="w-4 h-4 text-accent" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="p-xs uppercase font-bold tracking-widest opacity-50 text-[9px] mb-0.5">Member Since</p>
+                            <p className="text-sm font-bold">
                                 {new Date(user.createdAt).toLocaleDateString('en-US', {
                                     year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
+                                    month: 'short',
                                 })}
                             </p>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </CardContent>
 
             <EditAccountDialog
                 open={isEditOpen}
@@ -132,6 +127,6 @@ export function AccountDetailsSection() {
                 currentName={user.name || ''}
                 currentEmail={user.email || ''}
             />
-        </>
+        </Card>
     );
 }

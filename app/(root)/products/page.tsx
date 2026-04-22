@@ -57,18 +57,36 @@ type Props = {
   searchParams: Promise<ProductParams>;
 }
 
+import BreadcrumbNavigation from "@/components/breadcrumb-navigation";
+
 export default async function ProductsPage({ searchParams }: Props) {
-  const { page = 0, limit = 20, category, searchQuery, sortBy = 'CREATED_AT_DESC', size } = await searchParams;
+  const {
+    page = 0,
+    limit = 20,
+    category,
+    searchQuery,
+    sortBy = 'CREATED_AT_DESC',
+    sizes,
+    colors,
+    minPrice,
+    maxPrice
+  } = await searchParams;
 
   return (
-    <div className="mx-auto px-0 lg:px-8 py-0 lg:py-6">
+    <div className="mx-auto lg:px-8 py-10 space-y-10">
+      <div className="px-2 lg:px-0">
+        <BreadcrumbNavigation />
+      </div>
       <ProductsClient
-        page={page}
-        limit={limit}
+        page={Number(page)}
+        limit={Number(limit)}
         category={category}
         sortBy={sortBy}
         searchQuery={searchQuery}
-        size={size}
+        sizes={sizes}
+        colors={colors}
+        minPrice={minPrice ? Number(minPrice) : undefined}
+        maxPrice={maxPrice ? Number(maxPrice) : undefined}
       />
     </div>
   );

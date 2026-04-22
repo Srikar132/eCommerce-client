@@ -9,12 +9,13 @@ interface OrderStatusTimelineProps {
     order: Order;
 }
 
+
 export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps) {
     const getStatusSteps = () => {
         // Handle cancelled orders
         if (order.status === "CANCELLED") {
             return [
-                { label: "Order Placed", status: "completed", date: order.createdAt },
+                { label: "Order Placed", status: "completed", date: order.createdAt, icon: Package },
                 { label: "Cancelled", status: "cancelled", date: order.cancelledAt, icon: XCircle },
             ];
         }
@@ -22,10 +23,10 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
         // Handle return requested/returned orders
         if (order.status === "RETURN_REQUESTED" || order.status === "RETURNED") {
             return [
-                { label: "Order Placed", status: "completed", date: order.createdAt },
-                { label: "Confirmed", status: "completed", date: null },
-                { label: "Shipped", status: "completed", date: null },
-                { label: "Delivered", status: "completed", date: order.deliveredAt },
+                { label: "Order Placed", status: "completed", date: order.createdAt, icon: Package },
+                { label: "Confirmed", status: "completed", date: null, icon: CheckCircle2 },
+                { label: "Shipped", status: "completed", date: null, icon: Truck },
+                { label: "Delivered", status: "completed", date: order.deliveredAt, icon: Home },
                 { 
                     label: order.status === "RETURNED" ? "Returned" : "Return Requested", 
                     status: "return", 
@@ -38,7 +39,7 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
         // Handle refunded orders
         if (order.status === "REFUNDED") {
             return [
-                { label: "Order Placed", status: "completed", date: order.createdAt },
+                { label: "Order Placed", status: "completed", date: order.createdAt, icon: Package },
                 { label: "Refunded", status: "refunded", date: null, icon: RotateCcw },
             ];
         }
@@ -86,11 +87,11 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
     const steps = getStatusSteps();
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-lg">Order Status</CardTitle>
+        <Card className="rounded-3xl border-none shadow-sm bg-white overflow-hidden">
+            <CardHeader className="bg-muted/30 border-b border-muted-foreground/5 p-content py-4">
+                <CardTitle className="text-lg font-bold">Order Journey</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-content pt-8">
                 <div className="relative">
                     {steps.map((step, index) => {
                         const Icon = step.icon || Circle;
@@ -102,61 +103,71 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
                         const isRefunded = step.status === "refunded";
 
                         return (
-                            <div key={index} className="flex gap-4 pb-8 relative">
+                            <div key={index} className="flex gap-6 pb-10 relative last:pb-0">
                                 {/* Timeline Line */}
                                 {!isLast && (
                                     <div
                                         className={cn(
-                                            "absolute left-[15px] top-8 w-0.5 h-full -translate-x-1/2",
-                                            isCompleted || isCurrent ? "bg-primary" : "bg-border"
+                                            "absolute left-[19px] top-10 w-[2px] h-full -translate-x-1/2 transition-colors duration-500",
+                                            isCompleted ? "bg-accent" : "bg-muted"
                                         )}
                                     />
                                 )}
 
-                                {/* Icon */}
+                                {/* Icon Container */}
                                 <div
                                     className={cn(
-                                        "w-8 h-8 rounded-full flex items-center justify-center z-10 shrink-0",
-                                        isCompleted && "bg-primary text-primary-foreground",
-                                        isCurrent && "bg-primary text-primary-foreground animate-pulse",
-                                        isCancelled && "bg-destructive text-destructive-foreground",
+                                        "w-10 h-10 rounded-full flex items-center justify-center z-10 shrink-0 transition-all duration-300 shadow-sm",
+                                        isCompleted && "bg-accent text-white",
+                                        isCurrent && "bg-accent text-white ring-4 ring-accent/20 animate-pulse",
+                                        isCancelled && "bg-destructive text-white",
                                         isReturn && "bg-orange-500 text-white",
                                         isRefunded && "bg-orange-500 text-white",
-                                        !isCompleted && !isCurrent && !isCancelled && !isReturn && !isRefunded && "bg-muted text-muted-foreground"
+                                        !isCompleted && !isCurrent && !isCancelled && !isReturn && !isRefunded && "bg-muted text-muted-foreground/40"
                                     )}
                                 >
-                                    {isCompleted || isCurrent ? (
-                                        <Icon className="w-4 h-4" />
-                                    ) : (
-                                        <Circle className="w-4 h-4" />
-                                    )}
+                                    <Icon className={cn("w-5 h-5", !isCompleted && !isCurrent && !isCancelled && !isReturn && !isRefunded && "opacity-50")} />
                                 </div>
 
                                 {/* Content */}
-                                <div className="flex-1 pt-0.5">
-                                    <p
-                                        className={cn(
-                                            "font-medium text-sm",
-                                            (isCompleted || isCurrent) && "text-foreground",
-                                            isCancelled && "text-destructive",
-                                            isReturn && "text-orange-600",
-                                            isRefunded && "text-orange-600",
-                                            !isCompleted && !isCurrent && !isCancelled && !isReturn && !isRefunded && "text-muted-foreground"
+                                <div className="flex-1 pt-1.5">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div>
+                                            <p
+                                                className={cn(
+                                                    "h4 !text-base mb-1",
+                                                    (isCompleted || isCurrent) && "text-foreground",
+                                                    isCancelled && "text-destructive",
+                                                    isReturn && "text-orange-600",
+                                                    isRefunded && "text-orange-600",
+                                                    !isCompleted && !isCurrent && !isCancelled && !isReturn && !isRefunded && "text-muted-foreground"
+                                                )}
+                                            >
+                                                {step.label}
+                                            </p>
+                                            {step.date && (
+                                                <p className="p-xs text-muted-foreground">
+                                                    {new Date(step.date).toLocaleDateString("en-US", {
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        year: "numeric",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                    })}
+                                                </p>
+                                            )}
+                                        </div>
+                                        {isCompleted && (
+                                            <div className="bg-accent/10 text-accent px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tight">
+                                                Done
+                                            </div>
                                         )}
-                                    >
-                                        {step.label}
-                                    </p>
-                                    {step.date && (
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                            {new Date(step.date).toLocaleDateString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                            })}
-                                        </p>
-                                    )}
+                                        {isCurrent && (
+                                            <div className="bg-accent text-white px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tight">
+                                                In Progress
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         );
@@ -166,3 +177,4 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
         </Card>
     );
 }
+

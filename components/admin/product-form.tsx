@@ -178,6 +178,7 @@ export function ProductForm({
                                 images={currentImages}
                                 onImagesChange={handleImagesChange}
                                 disabled={isFormDisabled}
+                                folder="nala-armoire/products"
                             />
 
                             <VariantsSection

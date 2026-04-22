@@ -13,12 +13,8 @@ import { getWelcomeMessage } from '@/lib/auth-utils';
 import {
     Shield,
     User,
-    Settings,
-    ShoppingBag,
-    Star,
-    LogOut
+
 } from 'lucide-react';
-import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 
 const RoleIcon = ({ role }: { role: string | undefined }) => {
@@ -73,30 +69,34 @@ export default function RoleBasedWelcome() {
 
 
     return (
-        <div className="space-y-6">
-            {/* Welcome Card */}
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <RoleIcon role={userRole} />
+        <>
+            <Card className="rounded-[2rem] border-none shadow-sm bg-accent/5 overflow-hidden">
+                <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm shrink-0">
+                                <RoleIcon role={userRole} />
+                            </div>
                             <div>
-                                <CardTitle className="text-xl">
-                                    {user.name || 'Welcome!'}
-                                </CardTitle>
-                                <CardDescription className="flex items-center gap-2">
-                                    <Badge variant={userRole === 'ADMIN' ? 'destructive' : 'outline'}>
+                                <h3 className="h3 !text-lg mb-0.5">
+                                    Hello, {user.name?.split(' ')[0] || 'Member'}
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="secondary" className="px-2 py-0 rounded-full font-bold text-[8px] uppercase tracking-wider bg-white border-none h-4">
                                         {getRoleDisplayName()}
                                     </Badge>
-                                    <span>•</span>
-                                    <span>{user.email}</span>
-                                </CardDescription>
+                                    <span className="text-muted-foreground/30">•</span>
+                                    <p className="text-[10px] text-muted-foreground font-medium truncate max-w-[150px]">{user.email}</p>
+                                </div>
                             </div>
                         </div>
+
+                        <div className="md:text-right">
+                            <p className="text-xs text-muted-foreground italic leading-relaxed opacity-70">
+                                {welcomeMessage}
+                            </p>
+                        </div>
                     </div>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">{welcomeMessage}</p>
                 </CardContent>
             </Card>
 
@@ -120,6 +120,6 @@ export default function RoleBasedWelcome() {
                     </CardContent>
                 </Card>
             )}
-        </div>
+        </>
     );
 }
